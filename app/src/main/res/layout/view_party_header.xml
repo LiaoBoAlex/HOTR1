@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="blocksDescendants"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_people"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:text="TextView"
+            android:textColor="@color/text_grey2"
+            android:textSize="12sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_title"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginEnd="12dp" />
+
+        <TextView
+            android:id="@+id/tv_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="21dp"
+            android:layout_marginTop="13dp"
+            android:text="TextView"
+            android:textColor="@color/red"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/textView92"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+        <TextView
+            android:id="@+id/textView92"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="@string/money"
+            android:textColor="@color/red"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_price"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginStart="12dp" />
+        <com.xiao.nicevideoplayer.NiceVideoPlayer
+            android:id="@+id/vv_video"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:0.728"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="30dp"
+            android:text="TextView"
+            android:textColor="@color/text_black"
+            android:textSize="17sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vv_video"
+            app:layout_constraintRight_toLeftOf="@+id/tv_people"
+            android:layout_marginRight="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp" />
+    </android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:id="@+id/iv_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/holder_city"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:background="@color/divider2"
+        android:padding="12dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:text="@string/party_introduction"
+        android:gravity="center_vertical"
+        android:paddingLeft="12dp"
+        android:textColor="@color/text_black"
+        android:textSize="14sp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider2"/>
+    <TextView
+        android:id="@+id/tv_intro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="20dp"
+        android:text="TextView"
+        android:textSize="12sp"
+        android:textColor="@color/text_grey2"/>
+
+    <TextView
+        android:id="@+id/tv_see_more"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingBottom="13sp"
+        android:paddingTop="6dp"
+        android:text="@string/see_all"
+        android:textColor="@color/text_black"
+        android:textSize="12sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="@color/divider2"/>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="49dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/party_date"
+            app:layout_constraintLeft_toRightOf="@+id/imageView29"
+            android:layout_marginLeft="6dp"
+            android:textSize="14sp"
+            android:textColor="@color/text_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="6dp" />
+
+        <ImageView
+            android:id="@+id/imageView29"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/ic_calendar1"
+            android:layout_marginLeft="12dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="12dp" />
+    </android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:overScrollMode="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="@color/divider2"/>
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_post_title"
+        android:layout_width="match_parent"
+        android:layout_height="49dp">
+
+        <TextView
+            android:id="@+id/tv_share"
+            android:layout_width="58dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@drawable/bg_button_green_holo"
+            android:gravity="center"
+            android:text="@string/write_post"
+            android:textColor="@color/cyan"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/popular_post"
+            android:textColor="@color/text_black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="12dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginStart="12dp" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/divider2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="0dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="0dp"
+            app:layout_constraintLeft_toLeftOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

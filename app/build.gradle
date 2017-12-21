@@ -1,0 +1,101 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+    defaultConfig {
+        applicationId "com.us.hotr"
+        minSdkVersion 19
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+        }
+        manifestPlaceholders = [
+                MTA_APPKEY:"AY1WFQ2W53IQ",
+                MTA_CHANNEL:"play"
+        ]
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../hotr.jks")
+            storePassword "Us82125258"
+            keyAlias "hotr"
+            keyPassword "Us82125258"
+        }
+    }
+
+    buildTypes {
+
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.release
+        }
+
+        release {
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    greendao{
+        schemaVersion 1
+        daoPackage 'com.women.hotr.storage.greendao'
+        targetGenDir 'src/main/java'
+    }
+}
+
+
+dependencies {
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.sina.weibo.sdk:core:4.1.4:openDefaultRelease@aar'
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:design:25.3.1'
+    compile 'org.greenrobot:greendao:3.2.2'
+    compile 'com.qq.mta:mta:3.2.0-alpha'
+    compile 'com.tencent.mid:mid:3.73-a'
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.6'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.9.0'
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.flyco.banner:FlycoBanner_Lib:2.0.2@aar'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
+    compile 'q.rorbin:badgeview:1.1.2'
+    compile 'com.github.chrisbanes:PhotoView:2.1.3'
+    compile 'com.songhang:smart-headerfooter-recyclerview:1.0.0'
+    compile 'com.github.rahatarmanahmed:circularprogressview:2.5.0'
+    compile 'com.romandanylyk:pageindicatorview:0.2.0'
+    compile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    compile files('libs/BaiduLBS_Android.jar')
+    compile project(':RxGallary_library')
+    compile project(':citypickerview')
+    compile project(':nicevideoplayer')
+
+}

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="44dp">
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_search"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:layout_marginLeft="12dp"
+            android:layout_gravity="center_vertical">
+            <EditText
+                android:layout_weight="1"
+                android:paddingLeft="12dp"
+                android:id="@+id/et_input"
+                android:layout_gravity="center_vertical"
+                android:drawableLeft="@mipmap/ic_search"
+                android:drawablePadding="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:textSize="16sp"
+                android:textColor="@color/text_black"
+                android:textCursorDrawable="@drawable/cursor_black"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:textColorHint="@color/text_grey"
+                android:hint="@string/search_hint"/>
+
+            <ImageView
+                android:visibility="gone"
+                android:paddingRight="12dp"
+                android:src="@mipmap/ic_cancel"
+                android:id="@+id/img_delete"
+                android:layout_gravity="right|center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+        <TextView
+            android:layout_weight="0"
+            android:id="@+id/tv_cancel"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
+            android:textColor="@color/text_black"
+            android:textSize="15sp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"/>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider2"/>
+</LinearLayout>

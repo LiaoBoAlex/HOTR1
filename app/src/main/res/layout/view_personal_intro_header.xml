@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView34"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/gender"
+        android:textColor="@color/text_grey2"
+        android:textSize="14sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView35"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/age"
+        android:textColor="@color/text_grey2"
+        android:textSize="14sp"
+        app:layout_constraintLeft_toLeftOf="@+id/textView34"
+        app:layout_constraintTop_toBottomOf="@+id/textView34" />
+
+    <TextView
+        android:id="@+id/textView36"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/city"
+        android:textColor="@color/text_grey2"
+        android:textSize="14sp"
+        app:layout_constraintLeft_toLeftOf="@+id/textView35"
+        app:layout_constraintTop_toBottomOf="@+id/textView35" />
+
+    <TextView
+        android:id="@+id/textView44"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:text="@string/intro"
+        android:textColor="@color/text_grey2"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_intro"
+        app:layout_constraintLeft_toLeftOf="@+id/textView36" />
+
+    <TextView
+        android:id="@+id/tv_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:text="TextView"
+        android:textColor="@color/text_black"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textView34"
+        app:layout_constraintLeft_toRightOf="@+id/textView34" />
+
+    <TextView
+        android:id="@+id/tv_age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:text="TextView"
+        android:textColor="@color/text_black"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textView35"
+        app:layout_constraintLeft_toRightOf="@+id/textView35" />
+
+    <TextView
+        android:id="@+id/tv_area"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:text="TextView"
+        android:textColor="@color/text_black"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textView36"
+        app:layout_constraintLeft_toRightOf="@+id/textView36" />
+
+    <TextView
+        android:id="@+id/tv_intro"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="12dp"
+        android:text="TextView"
+        android:textColor="@color/text_black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/textView44"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_area"
+        app:layout_constraintVertical_bias="1.0" />
+</android.support.constraint.ConstraintLayout>

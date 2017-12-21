@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+    <ImageView
+        android:visibility="gone"
+        android:background="@color/divider2"
+        android:id="@+id/iv_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@mipmap/ic_delete_order"
+        android:paddingLeft="12dp"
+        android:paddingRight="16dp"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="118dp">
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/tv_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mins"
+                android:textColor="@color/red"
+                android:textSize="11sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tv_pay_amount"
+                app:layout_constraintLeft_toRightOf="@+id/tv_pay_amount"
+                android:layout_marginLeft="0dp" />
+
+            <com.us.hotr.customview.ShapedImageView
+                android:id="@+id/iv_product_avatar"
+                android:layout_width="98dp"
+                android:layout_height="98dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                app:shape_mode="circle"
+                android:scaleType="centerCrop"
+                android:src="@drawable/placeholder_post_2"
+                app:layout_constraintDimensionRatio="w,1:1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/tv_sold_out"
+                android:layout_width="98dp"
+                android:layout_height="98dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_round_dark"
+                android:text="@string/sold_out"
+                android:textSize="19sp"
+                android:textColor="@color/white"
+                android:gravity="center"
+                app:layout_constraintDimensionRatio="w,1:1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="14dp"
+                android:layout_marginTop="15dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="TextView"
+                android:textColor="@color/text_black"
+                android:textSize="14dp"
+                app:layout_constraintLeft_toRightOf="@+id/iv_product_avatar"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_product_doctor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="5dp"
+                android:text="TextView"
+                android:textColor="@color/text_grey2"
+                android:textSize="11sp"
+                app:layout_constraintLeft_toLeftOf="@+id/tv_title"
+                app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+            <TextView
+                android:id="@+id/tv_product_fav"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="14dp"
+                android:layout_marginTop="0dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="TextView"
+                android:textColor="@color/text_grey2"
+                android:textSize="11sp"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toRightOf="@+id/tv_product_doctor"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_product_doctor" />
+
+            <TextView
+                android:id="@+id/tv_appointment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="TextView"
+                android:textColor="@color/text_grey2"
+                android:textSize="11sp"
+                app:layout_constraintLeft_toLeftOf="@+id/tv_product_doctor"
+                app:layout_constraintTop_toBottomOf="@+id/tv_product_doctor" />
+
+            <TextView
+                android:id="@+id/tv_pay_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textColor="@color/red"
+                android:textSize="15sp"
+                app:layout_constraintLeft_toRightOf="@+id/tv_money"
+                android:layout_marginLeft="0dp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tv_money" />
+
+            <TextView
+                android:id="@+id/tv_price_before"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="TextView"
+                android:textColor="@color/text_grey2"
+                android:textSize="11sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tv_min"
+                app:layout_constraintLeft_toRightOf="@+id/tv_min" />
+
+            <ImageView
+                android:id="@+id/iv_go"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:srcCompat="@mipmap/ic_arror_red_right" />
+
+            <TextView
+                android:id="@+id/tv_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/money"
+                android:textColor="@color/red"
+                android:textSize="11sp"
+                android:layout_marginLeft="0dp"
+                app:layout_constraintLeft_toLeftOf="@+id/tv_appointment"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="12dp" />
+
+            <ImageView
+                android:id="@+id/iv_one_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_price_before"
+                app:layout_constraintStart_toEndOf="@+id/tv_price_before"
+                app:srcCompat="@mipmap/list_icon_ikj" />
+
+            <ImageView
+                android:id="@+id/iv_promo_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_price_before"
+                app:layout_constraintStart_toEndOf="@+id/iv_one_price"
+                app:srcCompat="@mipmap/list_icon_cxj" />
+        </android.support.constraint.ConstraintLayout>
+
+        <View
+            android:id="@+id/v_divider"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:background="@color/divider2" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.us.hotr.customview.DeactivatedViewPager
+        android:id="@+id/pager"
+        android:layout_above="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <View
+        android:id="@+id/view"
+        android:layout_above="@+id/constraintlayout"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"/>
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintlayout"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/tab_home"
+            android:layout_width="67dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="11dp"
+            android:layout_marginTop="11dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/tab_found"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/icon_home" />
+
+        <ImageView
+            android:id="@+id/tab_found"
+            android:layout_width="67dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/tab_home"
+            app:layout_constraintRight_toLeftOf="@+id/tab_all"
+            app:layout_constraintTop_toTopOf="@+id/tab_home"
+            app:srcCompat="@mipmap/icon_found" />
+
+        <ImageView
+            android:id="@+id/tab_all"
+            android:layout_width="67dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/tab_found"
+            app:layout_constraintRight_toLeftOf="@+id/tab_voucher"
+            app:layout_constraintTop_toTopOf="@+id/tab_found"
+            app:srcCompat="@mipmap/icon_all" />
+
+        <ImageView
+            android:id="@+id/tab_voucher"
+            android:layout_width="67dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/tab_all"
+            app:layout_constraintRight_toLeftOf="@+id/tab_info"
+            app:layout_constraintTop_toTopOf="@+id/tab_all"
+            app:srcCompat="@mipmap/icon_voucher" />
+
+        <ImageView
+            android:id="@+id/tab_info"
+            android:layout_width="68dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/tab_voucher"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tab_voucher"
+            app:srcCompat="@mipmap/icon_info" />
+    </android.support.constraint.ConstraintLayout>
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/fl_dim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dim_bg">
+        <ImageView
+            android:id="@+id/iv_post"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/ic_post"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"/>
+        <ImageView
+            android:id="@+id/iv_compare"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/ic_compare"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"/>
+        <ImageView
+            android:id="@+id/tab_all1"
+            android:layout_width="wrap_content"
+            android:layout_height="49dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            app:srcCompat="@mipmap/icon_all" />
+    </RelativeLayout>
+
+</RelativeLayout>

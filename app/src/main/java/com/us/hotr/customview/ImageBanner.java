@@ -1,0 +1,74 @@
+package com.us.hotr.customview;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import com.bumptech.glide.Glide;
+import com.flyco.banner.widget.Banner.BaseIndicatorBanner;
+import com.us.hotr.R;
+import com.us.hotr.util.Tools;
+
+
+/**
+ * Created by Mloong on 2017/8/31.
+ */
+
+public class ImageBanner extends BaseIndicatorBanner<String, ImageBanner> {
+
+    private BannerClickListener mListener;
+    private double ratio;
+
+    public ImageBanner(Context context) {
+        this(context, null, 0);
+    }
+
+    public ImageBanner(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public ImageBanner(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    public void setRatio(double ratio){
+        this.ratio = ratio;
+    }
+
+    public void setBannerItemClickListener(BannerClickListener l){
+        mListener = l;
+    }
+
+    @Override
+    public View onCreateItemView(final int position) {
+        View inflate = View.inflate(mContext, R.layout.item_banner_iamge, null);
+        final ImageView iv = (ImageView) inflate.findViewById(R.id.iv);
+
+        int itemWidth = Tools.getScreenWidth(mContext.getApplicationContext());
+        int itemHeight = (int) (itemWidth * ratio);
+        iv.setScaleType(ImageView.ScaleType.FIT_XY);
+        iv.setLayoutParams(new LinearLayout.LayoutParams(itemWidth, itemHeight));
+
+        String imgUrl = mDatas.get(position);
+
+        if (imgUrl != null && !imgUrl.isEmpty()) {
+            Glide.with(mContext).load(imgUrl).placeholder(R.drawable.placeholder_banner).error(R.drawable.placeholder_banner).fitCenter().into(iv);
+        }
+        if(mListener!=null){
+            iv.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onBannerItemClicked(position);
+                }
+            });
+        }
+
+        return inflate;
+    }
+
+    public interface BannerClickListener {
+        void onBannerItemClicked(int position);
+    }
+}

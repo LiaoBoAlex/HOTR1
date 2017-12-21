@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="wrap_content">
+
+
+
+    <com.us.hotr.customview.ShapedImageView
+        app:shape_mode="circle"
+        android:scaleType="centerCrop"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:src="@mipmap/image_holder_1"
+        android:id="@+id/img_avator"
+        android:layout_marginLeft="12dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/guideline10"
+        android:layout_marginRight="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="12dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintDimensionRatio="h,1:1"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp" />
+
+    <ImageView
+        android:id="@+id/iv_certified1"
+        android:layout_width="30dp"
+        android:layout_height="14dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/img_avator"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/guideline10"
+        app:layout_constraintTop_toBottomOf="@+id/img_avator"
+        app:layout_constraintVertical_bias="0.5"
+        app:srcCompat="@mipmap/ic_certified" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:textSize="14sp"
+        android:textColor="@color/text_black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="12dp"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline10" />
+
+    <TextView
+        android:id="@+id/tv_title1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="12sp"
+        android:textColor="@color/text_grey2"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_name" />
+
+    <TextView
+        android:id="@+id/tv_title2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="TextView"
+        android:textSize="12sp"
+        android:textColor="@color/text_grey2"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title1"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_title1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="22dp"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/iv_certified2"
+        android:layout_width="30dp"
+        android:layout_height="14dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="18dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_certified" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline10"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="82dp" />
+
+    <View
+        android:id="@+id/v_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:background="@color/divider2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="0dp"
+        android:text="TextView"
+        android:textColor="@color/cyan"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

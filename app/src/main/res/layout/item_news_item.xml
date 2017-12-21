@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tv_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_black"
+        android:textSize="12sp"
+        android:maxLines="1"
+        android:ellipsize="marquee"
+        android:layout_weight="1"/>
+    <ImageView
+        android:layout_marginLeft="12dp"
+        android:src="@mipmap/ic_right_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"/>
+
+</LinearLayout>

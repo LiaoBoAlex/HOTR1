@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <com.us.hotr.customview.ShapedImageView
+        app:round_radius="2dp"
+        app:shape_mode="round_rect"
+        android:layout_margin="3dp"
+        android:id="@+id/image"
+        android:layout_width="85dp"
+        android:layout_height="79dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/holder_merchant_image"/>
+
+</LinearLayout>

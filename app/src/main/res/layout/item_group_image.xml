@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <com.us.hotr.customview.ShapedImageView
+        app:round_radius="2dp"
+        app:shape_mode="round_rect"
+        android:id="@+id/iv_avatar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/placeholder_post3"/>
+    <TextView
+        android:layout_width="22dp"
+        android:layout_height="12dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/bg_button_green_corner"
+        android:gravity="center"
+        android:text="@string/recommended"
+        android:textColor="@color/white"
+        android:textSize="9sp"/>
+</RelativeLayout>

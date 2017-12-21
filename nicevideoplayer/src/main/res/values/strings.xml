@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NiceVideoPlayer</string>
+    <string name="network_error">网络未连接，请检查网络设置</string>
+    <string name="retry">点击重试</string>
+</resources>

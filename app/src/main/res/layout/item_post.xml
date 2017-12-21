@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:orientation="horizontal">
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/iv_delete"
+            android:layout_width="51dp"
+            android:layout_height="match_parent"
+            android:src="@mipmap/ic_delete_order"
+            android:paddingLeft="12dp"
+            android:paddingRight="16dp"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:descendantFocusability="blocksDescendants"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="11dp"
+            android:ellipsize="marquee"
+            android:maxLines="1"
+            android:text="金坛做了这个活动很开心也想去刀殂到些昂不想要到任何的没有画画星期很不是很好。走走，没有家的孩子卡不到些昂不想要到任何的没有画画星期很不是很好。"
+            android:textColor="@color/text_black"
+            android:textSize="14sp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_user" />
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/divider2"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="0dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginRight="0dp"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <com.us.hotr.customview.ShapedImageView
+            android:scaleType="centerCrop"
+            app:shape_mode="circle"
+            android:id="@+id/img_user"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view6"
+            android:src="@mipmap/image_holder_1" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="14dp"
+            android:text="知识侠"
+            android:textColor="@color/text_black"
+            android:textSize="14sp"
+            app:layout_constraintLeft_toRightOf="@+id/img_user"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="3小时前"
+            android:textColor="@color/text_grey"
+            android:textSize="10sp"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_name"
+            app:layout_constraintTop_toBottomOf="@+id/tv_name" />
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="26dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_button"
+            android:gravity="center"
+            android:text="@string/guanzhu"
+            android:textColor="@color/text_black"
+            android:textSize="12sp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="11dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="金坛做了这个活动很开心也想去刀殂到些昂不想要到任何的没有画画星期很不是很好。走走，没有家的孩子卡不到些昂不想要到任何的没有画画星期很不是很好。"
+            android:textColor="@color/text_black"
+            android:textSize="14sp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerview" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/divider2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_subject" />
+
+        <TextView
+            android:id="@+id/tv_read"
+            android:layout_width="60dp"
+            android:layout_height="34dp"
+            android:drawableLeft="@mipmap/ic_comment"
+            android:gravity="center"
+            android:text="4457"
+            android:textColor="@color/text_grey2"
+            android:textSize="11sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/tv_comment"
+            app:layout_constraintTop_toBottomOf="@+id/view" />
+
+        <TextView
+            android:id="@+id/tv_zan"
+            android:layout_width="60dp"
+            android:layout_height="34dp"
+            android:drawableLeft="@mipmap/ic_zan"
+            android:gravity="center"
+            android:text="63"
+            android:textColor="@color/text_grey2"
+            android:textSize="11sp"
+            app:layout_constraintLeft_toRightOf="@+id/tv_comment"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_comment" />
+
+        <TextView
+            android:id="@+id/tv_comment"
+            android:layout_width="60dp"
+            android:layout_height="34dp"
+            android:drawableLeft="@mipmap/ic_read"
+            android:gravity="center"
+            android:text="24"
+            android:textColor="@color/text_grey2"
+            android:textSize="11sp"
+            app:layout_constraintLeft_toRightOf="@+id/tv_read"
+            app:layout_constraintRight_toLeftOf="@+id/tv_zan"
+            app:layout_constraintTop_toTopOf="@+id/tv_read" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:background="@color/divider2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_comment"
+            app:layout_constraintVertical_bias="0.53" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl_subject"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_message">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_marginLeft="13dp"
+                android:layout_marginStart="12dp"
+                android:background="@mipmap/bg_item"
+                android:gravity="center"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:text="开内眼角"
+                android:textColor="@color/text_black"
+                android:textSize="12sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView6"
+                app:layout_constraintLeft_toRightOf="@+id/textView6" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_marginBottom="0dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="0dp"
+                android:gravity="center"
+                android:text="@string/you_may_interested"
+                android:textColor="@color/text_grey2"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <com.us.hotr.customview.ScrollThroughRecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="11dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+        <ImageView
+            android:overScrollMode="never"
+            android:layout_width="30dp"
+            android:layout_height="14dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="2dp"
+            app:layout_constraintLeft_toRightOf="@+id/tv_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_name"
+            app:srcCompat="@mipmap/ic_certified" />
+
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

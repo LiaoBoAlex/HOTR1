@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/toolbar"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:textSize="16sp"
+        android:textColor="@color/text_black"
+        android:text="@string/faq"
+        android:gravity="center_vertical"
+        android:paddingLeft="12dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider2"/>
+    <android.support.v7.widget.RecyclerView
+        android:layout_weight="1"
+        android:id="@+id/recyclerview"
+        android:overScrollMode="never"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <TextView
+        android:layout_weight="0"
+        android:id="@+id/tv_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:textColor="@color/white"
+        android:background="@color/text_black"
+        android:text="@string/feedback"
+        android:gravity="center"
+        android:textSize="16sp"/>
+
+</LinearLayout>
