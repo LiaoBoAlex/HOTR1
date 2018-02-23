@@ -10,7 +10,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/tv_time"
+            android:id="@+id/tv_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
@@ -28,8 +28,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="-1dp"
-            app:bb_scale="0.96"
-            app:layout_constraintDimensionRatio="h,1:0.96"
+            app:bb_scale="1"
+            app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -81,7 +81,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_time"
+            app:layout_constraintTop_toBottomOf="@+id/tv_info"
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
@@ -161,7 +161,7 @@
         android:layout_width="match_parent"
         android:layout_height="44dp">
         <TextView
-            android:id="@+id/tv_address"
+            android:id="@+id/tv_place"
             android:paddingLeft="12dp"
             android:textSize="12dp"
             android:textColor="@color/text_grey2"

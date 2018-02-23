@@ -13,11 +13,20 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.lljjcoder.citypickerview.widget.CityPicker;
+import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.customview.CityPicker;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Address;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Mloong on 2017/10/24.
@@ -25,10 +34,11 @@ import com.us.hotr.util.Tools;
 
 public class EditDeliverAddressActivity extends BaseActivity {
 
-    private EditText etName, etPhone, etAddress;
+    private EditText etName, etPhone, etAddress, etEmail;
     private TextView tvCity, tvSave;
     private ConstraintLayout clCity, clDefault;
     private SwitchCompat swDefalut;
+    private Address address;
 
     private boolean isCitySelected = false, isChanged = false;
 
@@ -40,7 +50,13 @@ public class EditDeliverAddressActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMyTitle(R.string.add_new_address);
+        setMyTitle(getIntent().getExtras().getInt(Constants.PARAM_TITLE));
+        if(getIntent().getExtras()!=null)
+            address = (Address)getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+        if(address == null) {
+            address = new Address();
+            address.setDefaultAddress(1);
+        }
         initStaticView();
     }
 
@@ -48,34 +64,50 @@ public class EditDeliverAddressActivity extends BaseActivity {
         etName = (EditText) findViewById(R.id.et_name);
         etPhone = (EditText) findViewById(R.id.et_phone);
         etAddress = (EditText) findViewById(R.id.et_address);
-        tvCity = (TextView) findViewById(R.id.tv_area);
+        etEmail = (EditText) findViewById(R.id.et_email);
+        tvCity = (TextView) findViewById(R.id.tv_type);
         tvSave = (TextView) findViewById(R.id.tv_save);
         clCity = (ConstraintLayout) findViewById(R.id.cl_city);
         clDefault = (ConstraintLayout) findViewById(R.id.cl_defalut);
         swDefalut = (SwitchCompat) findViewById(R.id.sw_default);
+        if(address.getPersonName()!=null && !address.getPersonName().isEmpty())
+            etName.setText(address.getPersonName());
+        if(address.getTelephone()!=null && !address.getTelephone().isEmpty())
+            etPhone.setText(address.getTelephone());
+        if(address.getDetailAddr()!=null && !address.getDetailAddr().isEmpty())
+            etAddress.setText(address.getDetailAddr());
+        if(address.getUserEmail()!=null && !address.getUserEmail().isEmpty())
+            etEmail.setText(address.getUserEmail());
+        if(address.getProvinceName()!=null && !address.getProvinceName().isEmpty()
+                && address.getCityName()!=null && !address.getCityName().isEmpty()
+                && address.getStreetName()!=null && !address.getStreetName().isEmpty()) {
+            tvCity.setText(address.getProvinceName() + " "
+                    + address.getCityName() + " "
+                    + address.getStreetName());
+            isCitySelected = true;
+        }
+        if(address.getDefaultAddress() == 1)
+            swDefalut.setChecked(true);
+        else
+            swDefalut.setChecked(false);
 
         clCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 hideKeyBoard();
                 CityPicker cityPicker = new CityPicker.Builder(EditDeliverAddressActivity.this)
-                        .textSize(14)
-                        .title("")
-                        .titleBackgroundColor(getResources().getColor(R.color.divider2))
-                        .confirTextColor(getResources().getColor(R.color.blue))
-                        .cancelTextColor(getResources().getColor(R.color.blue))
-                        .textColor(getResources().getColor(R.color.text_grey2))
-                        .cityCyclic(false)
-                        .districtCyclic(false)
-                        .provinceCyclic(false)
-                        .visibleItemsCount(7)
-                        .itemPadding(10)
+                        .province(address.getProvinceName())
+                        .city(address.getCityName())
+                        .district(address.getStreetName())
                         .build();
                 cityPicker.show();
 
                 cityPicker.setOnCityItemClickListener(new CityPicker.OnCityItemClickListener() {
                     @Override
                     public void onSelected(String... citySelected) {
+                        address.setProvinceName(citySelected[0]);
+                        address.setCityName(citySelected[1]);
+                        address.setStreetName(citySelected[2]);
                         String s = "";
                         for(int i=0;i<citySelected.length - 1;i++)
                             s = s + citySelected[i] + " ";
@@ -108,8 +140,12 @@ public class EditDeliverAddressActivity extends BaseActivity {
                     Tools.Toast(EditDeliverAddressActivity.this, getString(R.string.key_in_address));
                 else if(etAddress.getText().toString().trim().length()<5)
                     Tools.Toast(EditDeliverAddressActivity.this, getString(R.string.address_less_than_5));
+                else if(etEmail.getText().toString().trim().isEmpty())
+                    Tools.Toast(EditDeliverAddressActivity.this, getString(R.string.key_in_email));
+                else if(!validateEmail(etEmail.getText().toString().trim()))
+                    Tools.Toast(EditDeliverAddressActivity.this, getString(R.string.wrong_email_format));
                 else{
-
+                    saveAddress();
                 }
             }
         });
@@ -167,6 +203,41 @@ public class EditDeliverAddressActivity extends BaseActivity {
 
             }
         });
+    }
+
+    private boolean validateEmail(String email){
+        Pattern pattern;
+        Matcher matcher;
+        final String EMAIL_PATTERN =
+                "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        pattern = Pattern.compile(EMAIL_PATTERN);
+        matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    private void saveAddress(){
+        hideKeyBoard();
+        address.setPersonName(etName.getText().toString().trim());
+        address.setDetailAddr(etAddress.getText().toString().trim());
+        address.setTelephone(etPhone.getText().toString().trim());
+        address.setUserEmail(etEmail.getText().toString().trim());
+        if(swDefalut.isChecked())
+            address.setDefaultAddress(1);
+        else
+            address.setDefaultAddress(0);
+        SubscriberListener mListener = new SubscriberListener<String>() {
+            @Override
+            public void onNext(String result) {
+                if(address.getDefaultAddress() == 1)
+                    HOTRSharePreference.getInstance(getApplicationContext()).storeDefaultAddress(address);
+                setResult(RESULT_OK);
+                Tools.Toast(EditDeliverAddressActivity.this, getString(R.string.password_changed));
+                finish();
+            }
+        };
+        ServiceClient.getInstance().addDeliveryAddress(new ProgressSubscriber(mListener, this),
+                HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), address);
     }
 
     private void hideKeyBoard(){

@@ -1,6 +1,7 @@
 package cn.finalteam.rxgalleryfinal.rxjob.job;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 
@@ -18,10 +19,12 @@ public class ImageThmbnailJob implements Job {
 
     private final MediaBean mediaBean;
     private final Context context;
+    private final JobFinishedListener listener;
 
-    public ImageThmbnailJob(Context context, Params params) {
+    public ImageThmbnailJob(Context context, Params params, JobFinishedListener listener) {
         this.context = context;
         this.mediaBean = (MediaBean) params.getRequestData();
+        this.listener = listener;
     }
 
     @Override
@@ -39,4 +42,14 @@ public class ImageThmbnailJob implements Job {
         result.setResultData(mediaBean);
         return result;
     }
+
+    @Override
+    public void onJobFinished() {
+        listener.OnJobFinished();
+    }
+
+    public interface JobFinishedListener{
+        void OnJobFinished();
+    }
+
 }

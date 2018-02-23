@@ -23,9 +23,10 @@ public abstract class BaseLoadingFragment extends BaseFragment {
 
     private LoadingView mLoadingView;
     protected RefreshLayout refreshLayout;
-    protected Integer cityCode = null;
-    protected Integer subjectId = null;
+    protected Long cityCode = null;
+    protected Long subjectId = null;
     protected Integer typeId = null;
+    protected String keyword = null;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -86,12 +87,19 @@ public abstract class BaseLoadingFragment extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        GlobalBus.getBus().register(this);
+        if(!GlobalBus.getBus().isRegistered(this))
+            GlobalBus.getBus().register(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        GlobalBus.getBus().unregister(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         GlobalBus.getBus().unregister(this);
     }
 
@@ -107,10 +115,10 @@ public abstract class BaseLoadingFragment extends BaseFragment {
 
     @Subscribe
     public void getMessage(Events.SubjectSelected subjectSelected) {
-        if(subjectSelected.getSubjectId()<0)
+        if(subjectSelected.getFtId()<0)
             subjectId = null;
         else
-            subjectId = subjectSelected.getSubjectId();
+            subjectId = subjectSelected.getFtId();
         loadData(Constants.LOAD_DIALOG);
 
     }

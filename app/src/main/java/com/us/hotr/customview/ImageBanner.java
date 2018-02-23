@@ -20,6 +20,7 @@ public class ImageBanner extends BaseIndicatorBanner<String, ImageBanner> {
 
     private BannerClickListener mListener;
     private double ratio;
+    private int placehoderResource = 0;
 
     public ImageBanner(Context context) {
         this(context, null, 0);
@@ -37,13 +38,17 @@ public class ImageBanner extends BaseIndicatorBanner<String, ImageBanner> {
         this.ratio = ratio;
     }
 
+    public void setPlacehoderResource(int resource){
+        placehoderResource = resource;
+    }
+
     public void setBannerItemClickListener(BannerClickListener l){
         mListener = l;
     }
 
     @Override
     public View onCreateItemView(final int position) {
-        View inflate = View.inflate(mContext, R.layout.item_banner_iamge, null);
+        View inflate = View.inflate(mContext, R.layout.item_banner_image, null);
         final ImageView iv = (ImageView) inflate.findViewById(R.id.iv);
 
         int itemWidth = Tools.getScreenWidth(mContext.getApplicationContext());
@@ -54,7 +59,9 @@ public class ImageBanner extends BaseIndicatorBanner<String, ImageBanner> {
         String imgUrl = mDatas.get(position);
 
         if (imgUrl != null && !imgUrl.isEmpty()) {
-            Glide.with(mContext).load(imgUrl).placeholder(R.drawable.placeholder_banner).error(R.drawable.placeholder_banner).fitCenter().into(iv);
+            if(placehoderResource == 0)
+                placehoderResource = R.drawable.placeholder_banner;
+            Glide.with(mContext).load(imgUrl).placeholder(placehoderResource).error(placehoderResource).fitCenter().into(iv);
         }
         if(mListener!=null){
             iv.setOnClickListener(new OnClickListener() {

@@ -15,7 +15,7 @@ import com.us.hotr.ui.activity.BaseActivity;
  */
 
 public class FavoriteCategoryActivity extends BaseActivity implements View.OnClickListener{
-    private ConstraintLayout clBeauty, clMassage, clParty, clCase, clPost, clNews, clInterview;
+    private ConstraintLayout clProduct, clMassage, clParty, clCase, clPost, clNews, clInterview, clHospital, clDoctor, clMasseur, clSpa;
     @Override
     protected int getLayout() {
         return R.layout.activity_favorite_category;
@@ -26,15 +26,23 @@ public class FavoriteCategoryActivity extends BaseActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setMyTitle(R.string.fav_title);
 
-        clBeauty = (ConstraintLayout) findViewById(R.id.cl_beauty);
+        clProduct = (ConstraintLayout) findViewById(R.id.cl_product);
+        clHospital = (ConstraintLayout) findViewById(R.id.cl_hospital);
+        clDoctor = (ConstraintLayout) findViewById(R.id.cl_doctor);
         clMassage = (ConstraintLayout) findViewById(R.id.cl_massage);
+        clMasseur = (ConstraintLayout) findViewById(R.id.cl_masseur);
+        clSpa = (ConstraintLayout) findViewById(R.id.cl_spa);
         clParty = (ConstraintLayout) findViewById(R.id.cl_party);
         clCase = (ConstraintLayout) findViewById(R.id.cl_case);
         clPost = (ConstraintLayout) findViewById(R.id.cl_post);
         clNews = (ConstraintLayout) findViewById(R.id.cl_news);
         clInterview = (ConstraintLayout) findViewById(R.id.cl_interview);
-        clBeauty.setOnClickListener(this);
+        clProduct.setOnClickListener(this);
+        clHospital.setOnClickListener(this);
+        clDoctor.setOnClickListener(this);
         clMassage.setOnClickListener(this);
+        clMasseur.setOnClickListener(this);
+        clSpa.setOnClickListener(this);
         clParty.setOnClickListener(this);
         clCase.setOnClickListener(this);
         clPost.setOnClickListener(this);
@@ -47,9 +55,17 @@ public class FavoriteCategoryActivity extends BaseActivity implements View.OnCli
         int type = -1;
         String title = "";
         switch (view.getId()){
-            case R.id.cl_beauty:
+            case R.id.cl_product:
                 type = Constants.TYPE_PRODUCT;
-                title = getString(R.string.beauty_title);
+                title = getString(R.string.product);
+                break;
+            case R.id.cl_hospital:
+                type = Constants.TYPE_HOSPITAL;
+                title = getString(R.string.hospital);
+                break;
+            case R.id.cl_doctor:
+                type = Constants.TYPE_DOCTOR;
+                title = getString(R.string.doctor);
                 break;
             case R.id.cl_case:
                 type = Constants.TYPE_CASE;
@@ -61,7 +77,15 @@ public class FavoriteCategoryActivity extends BaseActivity implements View.OnCli
                 break;
             case R.id.cl_massage:
                 type = Constants.TYPE_MASSAGE;
-                title = getString(R.string.massage_title);
+                title = getString(R.string.massage);
+                break;
+            case R.id.cl_masseur:
+                type = Constants.TYPE_MASSEUR;
+                title = getString(R.string.masseur1);
+                break;
+            case R.id.cl_spa:
+                type = Constants.TYPE_SPA;
+                title = getString(R.string.spa);
                 break;
             case R.id.cl_interview:
                 type = Constants.TYPE_INTERVIEW;

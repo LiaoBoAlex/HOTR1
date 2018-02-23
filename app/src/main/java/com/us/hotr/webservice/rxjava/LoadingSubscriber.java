@@ -81,13 +81,13 @@ public class LoadingSubscriber<T> extends DisposableObserver<T>{
                 if(((ApiException) e).getErrorCode() == Constants.ERROR_INVALID_SESSIONID){
                     Tools.Toast(mFragment.getActivity(), ((ApiException) e).getErrorMsg());
                     HOTRSharePreference.getInstance(mFragment.getActivity().getApplicationContext()).storeUserID("");
-//                    LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
-//                        @Override
-//                        public void onLoginSuccess() {
-//                            if(mSubscriberWithReloadListener!=null)
-//                                mSubscriberWithReloadListener.reload();
-//                        }
-//                    });
+                    LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                        @Override
+                        public void onLoginSuccess() {
+                            if(mSubscriberWithReloadListener!=null)
+                                mSubscriberWithReloadListener.reload();
+                        }
+                    });
                     Intent i = new Intent(mFragment.getActivity(), LoginActivity.class);
 //                    i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT|Intent.FLAG_ACTIVITY_NEW_TASK);
                     mFragment.getActivity().startActivity(i);
@@ -107,13 +107,13 @@ public class LoadingSubscriber<T> extends DisposableObserver<T>{
                 if(((ApiException) e).getErrorCode() == Constants.ERROR_INVALID_SESSIONID){
                     Tools.Toast(mFragment.getActivity(), ((ApiException) e).getErrorMsg());
                     HOTRSharePreference.getInstance(mActivity.getApplicationContext()).storeUserID("");
-//                    LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
-//                        @Override
-//                        public void onLoginSuccess() {
-//                            if(mSubscriberWithReloadListener!=null)
-//                                mSubscriberWithReloadListener.reload();
-//                        }
-//                    });
+                    LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                        @Override
+                        public void onLoginSuccess() {
+                            if(mSubscriberWithReloadListener!=null)
+                                mSubscriberWithReloadListener.reload();
+                        }
+                    });
                     Intent i = new Intent(mActivity, LoginActivity.class);
                     mActivity.startActivity(i);
                 }

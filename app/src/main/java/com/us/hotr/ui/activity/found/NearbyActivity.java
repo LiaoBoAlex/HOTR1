@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.us.hotr.Constants;
@@ -49,11 +50,13 @@ public class NearbyActivity extends BaseActivity {
             }};
 
         fragmentList = new ArrayList<Fragment>() {{
-            add(FriendListFragment.newInstance(Constants.TYPE_NEARBY_PEOPLE));
-            add(PostListFragment.newInstance(true));
+            add(FriendListFragment.newInstance(null, Constants.TYPE_NEARBY_PEOPLE));
+            add(PostListFragment.newInstance(null, true, Constants.TYPE_NEARBY_POST,-1, -1));
         }};
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
         viewPager = (ViewPager) findViewById(R.id.pager);
 
         adapter = new PagerAdapter(getSupportFragmentManager(), titleList, fragmentList);
@@ -61,7 +64,7 @@ public class NearbyActivity extends BaseActivity {
         tabLayout.setupWithViewPager(viewPager, true);
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> titleList;
         private ArrayList<Fragment> fragmentList;

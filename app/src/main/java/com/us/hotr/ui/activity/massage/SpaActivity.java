@@ -2,7 +2,6 @@ package com.us.hotr.ui.activity.massage;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -17,27 +16,32 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.baidu.mapapi.model.LatLng;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
 import com.us.hotr.customview.HorizontalImageAdapter;
 import com.us.hotr.customview.ImageBanner;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.Masseur;
-import com.us.hotr.webservice.response.GetSpaDetailResponse;
+import com.us.hotr.storage.bean.Type;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
-import com.us.hotr.ui.activity.ImageViewerActivity;
+import com.us.hotr.ui.activity.MapViewActivity;
 import com.us.hotr.ui.activity.beauty.ListActivity;
 import com.us.hotr.ui.activity.beauty.ListWithCategoryActivity;
+import com.us.hotr.ui.view.MassageView;
+import com.us.hotr.ui.view.MasseurView;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.GetSpaDetailResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,13 +54,15 @@ public class SpaActivity extends BaseLoadingActivity {
 
     private RecyclerView mRecyclerView;
     private SpaAdapter mAdapter;
+    private ConstraintLayout clPay;
     private float offset = 0;
-    private int mSpaId;
+    private long mSpaId;
+    private boolean isCollected = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSpaId = getIntent().getExtras().getInt(Constants.PARAM_ID);
+        mSpaId = getIntent().getExtras().getLong(Constants.PARAM_ID);
 
         initStaticView();
         setMyTitle(R.string.spa_detail);
@@ -71,7 +77,8 @@ public class SpaActivity extends BaseLoadingActivity {
 
     private void initStaticView(){
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-
+        clPay = (ConstraintLayout) findViewById(R.id.cl_pay);
+        clPay.setVisibility(View.GONE);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         enableLoadMore(false);
@@ -109,6 +116,7 @@ public class SpaActivity extends BaseLoadingActivity {
                     showErrorPage();
                     return;
                 }
+                isCollected = result.getIs_collected()==1?true:false;
                 mAdapter = new SpaAdapter(SpaActivity.this, result);
                 MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
                 myBaseAdapter.setFooterView();
@@ -117,10 +125,10 @@ public class SpaActivity extends BaseLoadingActivity {
         };
         if(type == Constants.LOAD_PAGE)
             ServiceClient.getInstance().getSpaDetail(new LoadingSubscriber(mListener, this),
-                    mSpaId);
+                    mSpaId, HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
         else if (type == Constants.LOAD_PULL_REFRESH)
             ServiceClient.getInstance().getSpaDetail(new SilentSubscriber(mListener, this, refreshLayout),
-                    mSpaId);
+                    mSpaId, HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
     }
 
     public class SpaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -155,8 +163,8 @@ public class SpaActivity extends BaseLoadingActivity {
                 itemList.add(new Item(TYPE_MASSAGE_HEADER));
                 for(int i=0;i<spaDetail.getMassageList().size();i++)
                     itemList.add(new Item(TYPE_MASSAGE, spaDetail.getMassageList().get(i)));
-//                if(spaDetail.getTotalMassageCount()>3)
-                    itemList.add(new Item(TYPE_MASSAGE_FOOTER));
+                if(spaDetail.getTotalMassageCount()>3)
+                itemList.add(new Item(TYPE_MASSAGE_FOOTER));
             }
 //            if(hospitalDetail.getCaseList()!=null && hospitalDetail.getCaseList().size()>0){
 //                itemList.add(new Item(TYPE_CASE_HEADER));
@@ -184,8 +192,8 @@ public class SpaActivity extends BaseLoadingActivity {
                 ivAdd = (ImageView) view.findViewById(R.id.iv_add);
                 ivMsg = (ImageView) view.findViewById(R.id.iv_msg);
                 tvName = (TextView) view.findViewById(R.id.tv_name);
-                tvTime = (TextView) view.findViewById(R.id.tv_time);
-                tvAddress = (TextView) view.findViewById(R.id.tv_address);
+                tvTime = (TextView) view.findViewById(R.id.tv_info);
+                tvAddress = (TextView) view.findViewById(R.id.tv_place);
                 tvIntroduction = (TextView) view.findViewById(R.id.tv_introduction);
                 tvShowAll = (TextView) view.findViewById(R.id.tv_expend);
                 tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
@@ -215,37 +223,18 @@ public class SpaActivity extends BaseLoadingActivity {
         }
 
         public class MasseurHolder extends RecyclerView.ViewHolder {
-            TextView tvName, tvAddress, tvAppointment;
-            ImageView ivAvatar, ivLike;
-
+            MasseurView masseurView;
             public MasseurHolder(View view) {
                 super(view);
-                tvName = (TextView) view.findViewById(R.id.tv_name);
-                tvAddress = (TextView) view.findViewById(R.id.tv_address);
-                tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
-                ivLike = (ImageView) view.findViewById(R.id.iv_like);
+                masseurView = (MasseurView) view;
             }
         }
 
         public class MassageHolder extends RecyclerView.ViewHolder {
-            TextView tvTitle, tvDoctor, tvHospital, tvAppointment, tvPriceBefore, tvPriceAfter, tvMin;
-            ImageView ivAvatar, ivGo, ivDelete, ivPromoPrice, ivOnePrice;
-
+            MassageView massageView;
             public MassageHolder(View view) {
                 super(view);
-                tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvDoctor = (TextView) view.findViewById(R.id.tv_product_doctor);
-                tvHospital = (TextView) view.findViewById(R.id.tv_product_fav);
-                tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
-                tvPriceBefore = (TextView) view.findViewById(R.id.tv_price_before);
-                tvPriceAfter = (TextView) view.findViewById(R.id.tv_pay_amount);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_product_avatar);
-                ivGo = (ImageView) view.findViewById(R.id.iv_go);
-                ivDelete = (ImageView) view.findViewById(R.id.iv_delete);
-                tvMin = (TextView) view.findViewById(R.id.tv_min);
-                ivPromoPrice = (ImageView) view.findViewById(R.id.iv_promo_price);
-                ivOnePrice = (ImageView) view.findViewById(R.id.iv_one_price);
+                massageView = (MassageView) view;
             }
         }
 
@@ -258,13 +247,13 @@ public class SpaActivity extends BaseLoadingActivity {
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_spa_header, parent, false);
                     return new SpaHeaderHolder(view);
                 case TYPE_MASSAGE:
-                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_massage, parent, false);
                     return new MassageHolder(view);
                 case TYPE_MASSEUR:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_masseur, parent, false);
                     return new MasseurHolder(view);
 //                case TYPE_CASE:
-//                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_compare, parent, false);
+//                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_case, parent, false);
 //                    return new CaseHolder(view);
                 case TYPE_MASSEUR_HEADER:
                 case TYPE_POST_HEADER:
@@ -308,9 +297,9 @@ public class SpaActivity extends BaseLoadingActivity {
                         public void onClick(View v) {
                             Intent i = new Intent(SpaActivity.this, ListWithCategoryActivity.class);
                             Bundle b = new Bundle();
-                            b.putString(Constants.PARAM_TITLE, getString(R.string.product_list));
+                            b.putString(Constants.PARAM_TITLE, getString(R.string.spa_appointment));
                             b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
-                            b.putInt(Constants.PARAM_SPA_ID, spaDetail.getMassage().getKey());
+                            b.putLong(Constants.PARAM_SPA_ID, spaDetail.getMassage().getKey());
                             i.putExtras(b);
                             startActivity(i);
                         }
@@ -324,7 +313,7 @@ public class SpaActivity extends BaseLoadingActivity {
                         public void onClick(View v) {
                             Intent i = new Intent(SpaActivity.this, ListActivity.class);
                             Bundle b = new Bundle();
-                            b.putInt(Constants.PARAM_SPA_ID, spaDetail.getMassage().getKey());
+                            b.putLong(Constants.PARAM_SPA_ID, spaDetail.getMassage().getKey());
                             b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MASSEUR);
                             b.putString(Constants.PARAM_TITLE, getString(R.string.masseur_list));
                             i.putExtras(b);
@@ -359,30 +348,7 @@ public class SpaActivity extends BaseLoadingActivity {
                 case TYPE_MASSEUR:
                     final Masseur masseur = (Masseur)itemList.get(position).getContent();
                     MasseurHolder masseurHolder = (MasseurHolder) holder;
-                    if(position%2==1) {
-                        ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) masseurHolder.ivAvatar.getLayoutParams();
-                        lp.setMargins(12, 0, 6, 0);
-                        masseurHolder.ivAvatar.setLayoutParams(lp);
-                    }
-                    else {
-                        ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) masseurHolder.ivAvatar.getLayoutParams();
-                        lp.setMargins(6, 0, 12, 0);
-                        masseurHolder.ivAvatar.setLayoutParams(lp);
-                    }
-                    Glide.with(SpaActivity.this).load(masseur.getMassagist_main_img()).placeholder(R.drawable.holder_masseur).error(R.drawable.holder_masseur).into(masseurHolder.ivAvatar);
-                    masseurHolder.tvAddress.setText(masseur.getAddress());
-                    masseurHolder.tvAppointment.setText(String.format(getString(R.string.masseur_appointment), masseur.getOrder_num()));
-                    masseurHolder.tvName.setText(masseur.getMassagist_name());
-                    masseurHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent i = new Intent(SpaActivity.this, MasseurActivity.class);
-                            Bundle b = new Bundle();
-                            b.putInt(Constants.PARAM_ID, masseur.getId());
-                            i.putExtras(b);
-                            startActivity(i);
-                        }
-                    });
+                    masseurHolder.masseurView.setData(masseur, position);
                     break;
                 case TYPE_HEADER:
                     final SpaHeaderHolder spaHeaderHolder = (SpaHeaderHolder) holder;
@@ -391,8 +357,8 @@ public class SpaActivity extends BaseLoadingActivity {
 //                    spaHeaderHolder.tvAppointment.setText(String.format(getString(R.string.masseur_appointment), spaDetail.get));
                     if(spaDetail.getTypeList()!=null && spaDetail.getTypeList().size()>0) {
                         List<String> subjects = new ArrayList<>();
-                        for(GetSpaDetailResponse.Type t:spaDetail.getTypeList())
-                            subjects.add(t.getType_name() + " " + t.getOrder_num());
+                        for(Type t:spaDetail.getTypeList())
+                            subjects.add(t.getTypeName() + " " + t.getProduct_num()+getString(R.string.appointment));
                         spaHeaderHolder.flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
                             @Override
                             public void onItemClick(String content, int position) {
@@ -401,25 +367,46 @@ public class SpaActivity extends BaseLoadingActivity {
                         });
                     }else
                         spaHeaderHolder.clSubject.setVisibility(View.GONE);
-                    final List<String> mUrls = Arrays.asList(Tools.validatePhotoString(spaDetail.getMassage().getMassagePhotos()).split("\\s*,\\s*"));
+                    final List<String> mUrls = Tools.mapToList(Tools.gsonStringToMap(spaDetail.getMassage().getMassagePhotos()));
+                    List<String> bannerUrls = new ArrayList<>();
+                    if(mUrls.size()<4)
+                        bannerUrls = mUrls;
+                    else{
+                        for(int i=0;i<3;i++)
+                            bannerUrls.add(mUrls.get(i));
+                    }
                     spaHeaderHolder.recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
                     HorizontalImageAdapter mSAdapter = new HorizontalImageAdapter(mContext, mUrls);
                     spaHeaderHolder.recyclerView.setAdapter(mSAdapter);
 
-                    spaHeaderHolder.banner.setRatio(0.96);
-                    spaHeaderHolder.banner.setSource(mUrls);
-                    spaHeaderHolder.banner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
+                    spaHeaderHolder.banner.setRatio(1);
+                    spaHeaderHolder.banner.setPlacehoderResource(R.drawable.placeholder_post_2);
+                    spaHeaderHolder.banner.setSource(bannerUrls);
+//                    spaHeaderHolder.banner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
+//                        @Override
+//                        public void onBannerItemClicked(int position) {
+//                            Intent i = new Intent(SpaActivity.this, ImageViewerActivity.class);
+//                            Bundle b = new Bundle();
+//                            b.putSerializable(Constants.PARAM_DATA, (Serializable)mUrls);
+//                            b.putInt(Constants.PARAM_ID, position);
+//                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+//                            i.putExtras(b);
+//                            startActivity(i);
+//                        }
+//                    });
+                    spaHeaderHolder.rlAddress.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onBannerItemClicked(int position) {
-                            Intent i = new Intent(SpaActivity.this, ImageViewerActivity.class);
-                            Bundle b = new Bundle();
-                            b.putSerializable(Constants.PARAM_DATA, (Serializable)mUrls);
-                            b.putInt(Constants.PARAM_ID, position);
-                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                        public void onClick(View v) {
+                            Intent i = new Intent(SpaActivity.this, MapViewActivity.class);
+                            Bundle b= new Bundle();
+                            b.putParcelable(Constants.PARAM_DATA, new LatLng(spaDetail.getMassage().getLat(),spaDetail.getMassage().getLon()));
+                            b.putString(Constants.PARAM_TITLE, spaDetail.getMassage().getMassageName());
+                            b.putString(Constants.PARAM_HOSPITAL_ID, spaDetail.getMassage().getMassageAddress());
                             i.putExtras(b);
                             startActivity(i);
                         }
                     });
+                    spaHeaderHolder.tvAppointment.setText(String.format(getString(R.string.masseur_appointment), spaDetail.getMassage().getOrder_num()));
                     spaHeaderHolder.banner.startScroll();
                     spaHeaderHolder.tvAddress.setText(spaDetail.getMassage().getProvinceName() +
                             spaDetail.getMassage().getCityName() +
@@ -448,39 +435,48 @@ public class SpaActivity extends BaseLoadingActivity {
                             }
                         });
                     }
+                    if(isCollected)
+                        spaHeaderHolder.ivAdd.setImageResource(R.mipmap.ic_click);
+                    else
+                        spaHeaderHolder.ivAdd.setImageResource(R.mipmap.ic_add);
+                    spaHeaderHolder.ivAdd.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isCollected) {
+                                SubscriberWithReloadListener mListener = new SubscriberWithReloadListener<String>() {
+                                    @Override
+                                    public void onNext(String result) {
+                                        isCollected = false;
+                                        Tools.Toast(SpaActivity.this, getString(R.string.remove_fav_item_success));
+                                        notifyItemChanged(position);
+                                    }
+                                    @Override
+                                    public void reload() {
+                                        loadData(Constants.LOAD_DIALOG);
+                                    }
+                                };
+                                ServiceClient.getInstance().removeFavoriteItem(new ProgressSubscriber(mListener, SpaActivity.this),
+                                        HOTRSharePreference.getInstance(SpaActivity.this.getApplicationContext()).getUserID(),  Arrays.asList(spaDetail.getMassage().getKey()), 4);
+                            }else{
+                                SubscriberListener mListener = new SubscriberListener<String>() {
+                                    @Override
+                                    public void onNext(String result) {
+                                        Tools.Toast(SpaActivity.this, getString(R.string.fav_item_success));
+                                        isCollected = true;
+                                        notifyItemChanged(position);
+                                    }
+                                };
+                                ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, SpaActivity.this),
+                                        HOTRSharePreference.getInstance(SpaActivity.this.getApplicationContext()).getUserID(), spaDetail.getMassage().getKey(), 4);
+                            }
+                        }
+                    });
                     break;
 
                 case TYPE_MASSAGE:
                     final Massage massage = (Massage) itemList.get(position).getContent();
                     final MassageHolder massageHolder = (MassageHolder) holder;
-                    massageHolder.tvTitle.setText(getString(R.string.bracket_left)+massage.getProduct_name()+getString(R.string.bracket_right)+massage.getProduct_usp());
-                    massageHolder.tvDoctor.setText(massage.getMassage_name());
-                    massageHolder.tvHospital.setText("");
-                    massageHolder.tvAppointment.setText(String.format(getString(R.string.num_of_appointment1), massage.getOrder_num()));
-                    massageHolder.tvPriceBefore.setText(String.format(getString(R.string.price), massage.getShop_price()));
-                    if(massage.getProduct_type() == Constants.PROMOTION_PRODUCT) {
-                        massageHolder.tvPriceAfter.setText(massage.getActivity_price() + "/" + massage.getService_time());
-                        massageHolder.ivPromoPrice.setVisibility(View.VISIBLE);
-                    }
-                    else {
-                        massageHolder.tvPriceAfter.setText(massage.getOnline_price() + "/" + massage.getService_time());
-                        massageHolder.ivPromoPrice.setVisibility(View.GONE);
-                    }
-                    massageHolder.tvPriceBefore.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-                    massageHolder.tvMin.setVisibility(View.VISIBLE);
-                    massageHolder.ivOnePrice.setVisibility(View.GONE);
-                    Glide.with(SpaActivity.this).load(massage.getProduct_main_img()).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(massageHolder.ivAvatar);
-
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent i = new Intent(SpaActivity.this, MassageActivity.class);
-                            Bundle b = new Bundle();
-                            b.putInt(Constants.PARAM_ID, massage.getId());
-                            i.putExtras(b);
-                            startActivity(i);
-                        }
-                    });
+                    massageHolder.massageView.setData(massage);
                     break;
 
 

@@ -6,6 +6,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -52,6 +53,7 @@ public class ImageViewerActivity extends AppCompatActivity {
             case Constants.TYPE_DOCTOR:
             case Constants.TYPE_HOSPITAL:
             case Constants.TYPE_MASSAGE:
+            case Constants.TYPE_POST:
                 clProduct.setVisibility(View.GONE);
                 break;
         }
@@ -82,7 +84,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<Fragment> fragmentList;
 

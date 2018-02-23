@@ -8,7 +8,6 @@ import android.widget.ImageView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
-import com.us.hotr.eventbus.Events;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.fragment.beauty.CaseListFragment;
 import com.us.hotr.ui.fragment.beauty.ListWithFilterFragment;
@@ -18,8 +17,6 @@ import com.us.hotr.ui.fragment.found.OfficialPostListFragment;
 import com.us.hotr.ui.fragment.info.FriendListFragment;
 import com.us.hotr.ui.fragment.massage.InterviewListFragment;
 
-import org.greenrobot.eventbus.Subscribe;
-
 /**
  * Created by Mloong on 2017/9/5.
  */
@@ -28,12 +25,14 @@ public class ListWithSearchActivity extends BaseActivity {
 
     private Fragment listFragment;
     private int type;
+    private int subjectId;
     private ImageView ivSearch;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String title = getIntent().getStringExtra(Constants.PARAM_TITLE);
         type = getIntent().getIntExtra(Constants.PARAM_TYPE, -1);
+        subjectId = getIntent().getIntExtra(Constants.PARAM_ID, -1);
         setMyTitle(title);
         initStaticView();
     }
@@ -53,25 +52,22 @@ public class ListWithSearchActivity extends BaseActivity {
             case Constants.TYPE_SPA:
             case Constants.TYPE_MASSEUR:
             case Constants.TYPE_MASSAGE:
-                listFragment = new ListWithFilterFragment().newInstance(type, true);
+                listFragment = new ListWithFilterFragment().newInstance(null, type, subjectId, true);
                 break;
-            case Constants.TYPE_FRIEND:
-                listFragment = new FriendListFragment().newInstance(Constants.TYPE_FRIEND);
+            case Constants.TYPE_FANS:
+            case Constants.TYPE_FAVORITE:
+                listFragment = new FriendListFragment().newInstance(null, type);
                 ivSearch.setVisibility(View.GONE);
                 break;
-            case Constants.TYPE_MY_PRODUCT:
-                listFragment = new ProductListFragment().newInstance(true, -1, -1, -1, -1);
-                break;
             case Constants.TYPE_CASE:
-                listFragment = new CaseListFragment().newInstance(true);
+                listFragment = new CaseListFragment().newInstance(null, true, false);
                 break;
             case Constants.TYPE_INTERVIEW:
                 listFragment = new InterviewListFragment().newInstance();
                 break;
             case Constants.TYPE_POST:
-                listFragment = new PostListFragment().newInstance(true);
-            case Constants.TYPE_OFFICIAL_POST:
-                listFragment = new OfficialPostListFragment().newInstance();
+                listFragment = new PostListFragment().newInstance(null, true, Constants.TYPE_POST, -1, -1);
+
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
     }

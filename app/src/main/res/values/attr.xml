@@ -4,7 +4,9 @@
     <attr name="verticalSpacing" format="dimension" />
     <attr name="itemSize" format="dimension" />
     <attr name="itemColor" format="color" />
+    <attr name="highlightedItemColor" format="color" />
     <attr name="backgroundResource" format="reference" />
+    <attr name="highlightedBackgroundResource" format="reference" />
     <attr name="textPaddingH" format="dimension" />
     <attr name="textPaddingV" format="dimension" />
 
@@ -14,6 +16,8 @@
         <attr name="itemSize" />
         <attr name="itemColor" />
         <attr name="backgroundResource" />
+        <attr name="highlightedBackgroundResource" />
+        <attr name="highlightedItemColor" />
         <attr name="textPaddingH" />
         <attr name="textPaddingV" />
     </declare-styleable>

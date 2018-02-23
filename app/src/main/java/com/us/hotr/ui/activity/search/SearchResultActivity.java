@@ -27,6 +27,8 @@ import com.us.hotr.ui.fragment.info.FriendListFragment;
 import com.us.hotr.ui.fragment.party.PartyListFragment;
 import com.us.hotr.ui.fragment.search.HintSearchFragment;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 
 /**
@@ -42,7 +44,7 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
     private DeactivatedViewPager viewPager;
     private SearchView mSearchView;
     private Fragment myListFragment;
-    private TextView tvNext;
+    private TextView tvNext, tvNumber;
     private ConstraintLayout clTitle;
 
     private int type;
@@ -54,15 +56,26 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
         initStaticView();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        GlobalBus.getBus().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        GlobalBus.getBus().unregister(this);
+    }
+
     private void initStaticView(){
         viewPager = (DeactivatedViewPager) findViewById(R.id.pager);
         mSearchView = (SearchView) findViewById(R.id.search_view);
         tvNext = (TextView) findViewById(R.id.tv_next);
+        tvNumber = (TextView) findViewById(R.id.tv_number);
         clTitle = (ConstraintLayout) findViewById(R.id.cl_title);
 
         mSearchView.setSearchViewListener(this);
-
-        setSearchText(getIntent().getStringExtra(Constants.PARAM_SEARCH_STRING));
 
         tvNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +98,8 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
         viewPager.setAdapter(adapter);
 
         viewPager.setCurrentItem(0, false);
+
+        setSearchText(getIntent().getStringExtra(Constants.PARAM_SEARCH_STRING));
     }
 
     private void updateResult(){
@@ -97,32 +112,70 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
     private void configListFragment(){
         switch (type){
             case Constants.TYPE_CASE:
-                myListFragment = CaseListFragment.newInstance(true);
+                myListFragment = CaseListFragment.newInstance(mSearchView.getEtInput(), true, false);
                 break;
             case Constants.TYPE_POST:
-                myListFragment = PostListFragment.newInstance(true);
+                myListFragment = PostListFragment.newInstance(mSearchView.getEtInput(), true,  Constants.TYPE_POST,-1 ,-1);
                 break;
             case Constants.TYPE_PARTY:
-                myListFragment = PartyListFragment.newInstance();
+                myListFragment = PartyListFragment.newInstance(mSearchView.getEtInput(), false);
                 break;
             case Constants.TYPE_DOCTOR:
             case Constants.TYPE_HOSPITAL:
             case Constants.TYPE_SPA:
             case Constants.TYPE_MASSEUR:
-                myListFragment = ListWithFilterFragment.newInstance(type, true);
+                myListFragment = ListWithFilterFragment.newInstance(mSearchView.getEtInput(), type, -1, true);
                 break;
             case Constants.TYPE_PRODUCT:
             case Constants.TYPE_MASSAGE:
-                myListFragment = ProductListWithFilterFragment.newInstance(type, true, null);
+                myListFragment = ProductListWithFilterFragment.newInstance(mSearchView.getEtInput(), type, true, -1l);
                 break;
-            case Constants.TYPE_FRIEND:
-                myListFragment = FriendListFragment.newInstance(Constants.TYPE_FRIEND);
+            case Constants.TYPE_SEARCH_PEOPLE:
+                myListFragment = FriendListFragment.newInstance(mSearchView.getEtInput(), type);
         }
     }
 
     public void setSearchText(String text){
         if(mSearchView!=null)
             mSearchView.setEtInput(text);
+    }
+
+    @Subscribe
+    public void getMessage(Events.GetSearchCount getSearchCount) {
+        String s = "";
+        switch (type){
+            case Constants.TYPE_CASE:
+                s = getString(R.string.case_title);
+                break;
+            case Constants.TYPE_POST:
+                s = getString(R.string.post_title);
+                break;
+            case Constants.TYPE_PARTY:
+                s = getString(R.string.party_title);
+                break;
+            case Constants.TYPE_DOCTOR:
+                s = getString(R.string.doctor);
+                break;
+            case Constants.TYPE_HOSPITAL:
+                s = getString(R.string.hospital1);
+                break;
+            case Constants.TYPE_SPA:
+                s = getString(R.string.spa1);
+                break;
+            case Constants.TYPE_MASSEUR:
+                s = getString(R.string.masseur2);
+                break;
+            case Constants.TYPE_PRODUCT:
+                s = getString(R.string.product1);
+                break;
+            case Constants.TYPE_MASSAGE:
+                s = getString(R.string.massage1);
+                break;
+            case Constants.TYPE_SEARCH_PEOPLE:
+                s = getString(R.string.user);
+                break;
+        }
+        tvNumber.setText(String.format(getString(R.string.search_total), s, getSearchCount.getSearchCount()));
     }
 
     @Override
@@ -149,24 +202,24 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
 
     @Override
     public void onRefreshAutoComplete(String text) {
-        if(text.length() > 0) {
-            viewPager.setCurrentItem(1, false);
-            clTitle.setVisibility(View.GONE);
-            Events.SearchKeywordHint event = new Events.SearchKeywordHint(text);
-            GlobalBus.getBus().post(event);
-        }
-        else {
-            viewPager.setCurrentItem(0, false);
-            clTitle.setVisibility(View.VISIBLE);
-        }
+//        if(text.length() > 0) {
+//            viewPager.setCurrentItem(1, false);
+//            clTitle.setVisibility(View.GONE);
+//            Events.SearchKeywordHint event = new Events.SearchKeywordHint(text);
+//            GlobalBus.getBus().post(event);
+//        }
+//        else {
+//            viewPager.setCurrentItem(0, false);
+//            clTitle.setVisibility(View.VISIBLE);
+//        }
     }
 
     @Override
     public void onSearch(String text) {
         viewPager.setCurrentItem(0, false);
         clTitle.setVisibility(View.VISIBLE);
-        DataBaseHelper.insertSearchHistory(text);
-
+        DataBaseHelper.getInstance(getApplicationContext()).insertSearchHistory(text);
+        updateResult();
     }
 
     @Override

@@ -34,30 +34,33 @@ class JobManager {
     }
 
     private void start() {
-        Observable.create((ObservableOnSubscribe<Job>) subscriber -> {
-            queueFree = false;
-            Job job;
-            while ((job = jobQueue.poll()) != null) {
-                job.onRunJob();
-            }
-            subscriber.onComplete();
-        })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<Job>() {
-                    @Override
-                    public void onComplete() {
-                        queueFree = true;
-                    }
+        Job job;
+        queueFree = false;
+        while ((job = jobQueue.poll()) != null) {
+            final Job j = job;
+            Observable.create((ObservableOnSubscribe<Job>) subscriber -> {
+                j.onRunJob();
+                subscriber.onNext(j);
+                subscriber.onComplete();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new DisposableObserver<Job>() {
+                        @Override
+                        public void onComplete() {
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                    }
+                        @Override
+                        public void onError(Throwable e) {
+                        }
 
-                    @Override
-                    public void onNext(Job job) {
-                    }
-                });
+                        @Override
+                        public void onNext(Job job) {
+                            job.onJobFinished();
+                        }
+                    });
+        }
+        queueFree = true;
     }
 
     public void clear() {

@@ -1,5 +1,7 @@
 package com.us.hotr.storage.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -9,18 +11,34 @@ import java.io.Serializable;
 public class User implements Serializable {
     private String city_name;
     private String username;
+    @SerializedName(value = "province_name", alternate = {"provinceName"})
     private String province_name;
+    @SerializedName(value = "head_portrait", alternate = {"head_image_path"})
     private String head_portrait;
+    @SerializedName(value = "attentionCount", alternate = {"follow_numb"})
     private int attentionCount;
+    @SerializedName(value = "user_typ", alternate = {"user_type"})
     private int user_typ;
+    @SerializedName(value = "fanCount", alternate = {"fans_numb"})
     private int fanCount;
-    private int userId;
-    private int gender;
+    @SerializedName(value = "userId", alternate = {"id"})
+    private long userId;
+    private Integer gender;
     private String signature;
     private String mobile;
     private int orientation;
+    @SerializedName(value = "nickname", alternate = {"nick_name", "nickName"})
     private String nickname;
-    private int age;
+    private Integer age;
+    private int is_attention;
+
+    public int getIs_attention() {
+        return is_attention;
+    }
+
+    public void setIs_attention(int is_attention) {
+        this.is_attention = is_attention;
+    }
 
     public String getCity_name() {
         return city_name;
@@ -78,19 +96,19 @@ public class User implements Serializable {
         this.fanCount = fanCount;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
-    public int getGender() {
+    public Integer getGender() {
         return gender;
     }
 
-    public void setGender(int gender) {
+    public void setGender(Integer gender) {
         this.gender = gender;
     }
 
@@ -126,11 +144,11 @@ public class User implements Serializable {
         this.nickname = nickname;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 }

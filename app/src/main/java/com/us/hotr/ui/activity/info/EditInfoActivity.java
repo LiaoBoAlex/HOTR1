@@ -1,8 +1,7 @@
 package com.us.hotr.ui.activity.info;
 
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -10,12 +9,10 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.lljjcoder.citypickerview.widget.CityPicker;
-import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.customview.CityPicker;
 import com.us.hotr.customview.ItemPicker;
 import com.us.hotr.customview.ShapedImageView;
 import com.us.hotr.storage.HOTRSharePreference;
@@ -29,6 +26,7 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.yalantis.ucrop.model.AspectRatio;
 
 import java.io.File;
+import java.io.IOException;
 
 import cn.finalteam.rxgalleryfinal.RxGalleryFinal;
 import cn.finalteam.rxgalleryfinal.RxGalleryFinalApi;
@@ -37,6 +35,7 @@ import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageRadioResultEvent;
 import cn.finalteam.rxgalleryfinal.ui.RxGalleryListener;
 import cn.finalteam.rxgalleryfinal.ui.base.IRadioImageCheckedListener;
+import id.zelory.compressor.Compressor;
 
 /**
  * Created by Mloong on 2017/9/26.
@@ -49,15 +48,25 @@ public class EditInfoActivity extends BaseActivity {
     private TextView tvGender, tvAge, tvCity, tvSex, tvSave;
     private EditText etName, etIntro;
     private Integer gender = null, age = null, sex = null;
-    private String province = null, city = null, avatar = null;
+    private String province = null, city = null, avatarPath = null;
     private User mUser;
 
+    private String selectedProvince, selectedCity;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUser = (User) getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+        mUser = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo();
+        if(mUser!=null) {
+            selectedCity = mUser.getCity_name();
+            selectedProvince = mUser.getProvince_name();
+        }
         setMyTitle(R.string.edit_title);
         initStaticView();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     private void initStaticView(){
@@ -69,31 +78,37 @@ public class EditInfoActivity extends BaseActivity {
         clSex = (ConstraintLayout) findViewById(R.id.cl_sex);
         tvGender = (TextView) findViewById(R.id.tv_gender);
         tvAge = (TextView) findViewById(R.id.tv_age);
-        tvCity = (TextView) findViewById(R.id.tv_area);
+        tvCity = (TextView) findViewById(R.id.tv_type);
         tvSex = (TextView) findViewById(R.id.tv_sex);
         tvSave = (TextView) findViewById(R.id.tv_save);
         etName = (EditText) findViewById(R.id.et_nickname);
         etIntro = (EditText) findViewById(R.id.et_intro);
         if(mUser.getHead_portrait()!=null && !mUser.getHead_portrait().isEmpty()){
             Glide.with(this).load(mUser.getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
-            avatar = mUser.getHead_portrait();
         }
         etName.setText(mUser.getNickname());
         if(mUser!=null) {
             tvGender.setText(getResources().getStringArray(R.array.gender)[mUser.getGender()]);
-            tvSex.setText(getResources().getStringArray(R.array.sex)[mUser.getOrientation() + 1]);
+            tvGender.setTextColor(getResources().getColor(R.color.text_black));
+            if(mUser.getOrientation()>0) {
+                tvSex.setText(getResources().getStringArray(R.array.sex)[mUser.getOrientation() - 1]);
+                tvSex.setTextColor(getResources().getColor(R.color.text_black));
+            }
             tvAge.setText(String.format(getString(R.string.age_number), mUser.getAge()));
+            tvAge.setTextColor(getResources().getColor(R.color.text_black));
             gender = mUser.getGender();
             age =mUser.getAge();
             sex =mUser.getOrientation();
+            if((mUser.getProvince_name()!= null && !mUser.getProvince_name().isEmpty())
+                    ||(mUser.getCity_name()!=null && !mUser.getProvince_name().isEmpty())) {
+                tvCity.setText(mUser.getProvince_name() + " " + mUser.getCity_name());
+                province = mUser.getProvince_name();
+                city = mUser.getCity_name();
+                tvCity.setTextColor(getResources().getColor(R.color.text_black));
+            }
+            etIntro.setText(mUser.getSignature());
         }
-        if((mUser.getProvince_name()!= null && !mUser.getProvince_name().isEmpty())
-                ||(mUser.getCity_name()!=null && !mUser.getProvince_name().isEmpty())) {
-            tvCity.setText(mUser.getProvince_name() + mUser.getCity_name());
-            province = mUser.getProvince_name();
-            city = mUser.getCity_name();
-        }
-        etIntro.setText(mUser.getSignature());
+
 
         clAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +125,7 @@ public class EditInfoActivity extends BaseActivity {
                         .subscribe(new RxBusResultDisposable<ImageRadioResultEvent>() {
                             @Override
                             protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
-                                Toast.makeText(getBaseContext(), "选中了图片路径：" + imageRadioResultEvent.getResult().getOriginalPath(), Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(getBaseContext(), "选中了图片路径：" + imageRadioResultEvent.getResult().getOriginalPath(), Toast.LENGTH_SHORT).show();
                             }
                         })
                         .openGallery();
@@ -122,13 +137,22 @@ public class EditInfoActivity extends BaseActivity {
                 .setRadioImageCheckedListener(
                         new IRadioImageCheckedListener() {
                             @Override
-                            public void cropAfter(Object t) {
-                                File file = (File)t;
-                                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                                ivAvatar.setImageBitmap(bitmap);
-                                avatar = "aaa";
-                            }
+                            public void cropAfter(Object t){
 
+                                File fromPic = (File)t;
+                                File toFile = null;
+                                try {
+                                    toFile = new Compressor(EditInfoActivity.this)
+                                            .setMaxWidth(100)
+                                            .setMaxHeight(100)
+                                            .setDestinationDirectoryPath(Tools.getZipFileName(fromPic.getName()))
+                                            .compressToFile(fromPic);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                Glide.with(EditInfoActivity.this).load(toFile.getAbsolutePath()).into(ivAvatar);
+                                avatarPath = toFile.getAbsolutePath();
+                            }
                             @Override
                             public boolean isActivityFinish() {
                                 return true;
@@ -142,17 +166,8 @@ public class EditInfoActivity extends BaseActivity {
             public void onClick(View view) {
                 hideKeyBoard();
                 ItemPicker itemPicker = new ItemPicker.Builder(EditInfoActivity.this)
-                        .textSize(14)
                         .setData(getResources().getStringArray(R.array.gender))
-                        .title("")
-                        .titleBackgroundColor(getResources().getColor(R.color.divider2))
-                        .confirTextColor(getResources().getColor(R.color.blue))
-                        .cancelTextColor(getResources().getColor(R.color.blue))
-                        .textColor(getResources().getColor(R.color.text_grey2))
-                        .itemCyclic(false)
-                        .visibleItemsCount(7)
-                        .itemPadding(10)
-                        .defalutItem(getResources().getStringArray(R.array.gender)[mUser.getGender()])
+                        .defalutItem(tvGender.getText().toString().trim())
                         .build();
                 itemPicker.show();
 
@@ -177,17 +192,8 @@ public class EditInfoActivity extends BaseActivity {
             public void onClick(View view) {
                 hideKeyBoard();
                 ItemPicker itemPicker = new ItemPicker.Builder(EditInfoActivity.this)
-                        .textSize(14)
                         .setData(getResources().getStringArray(R.array.sex))
-                        .title("")
-                        .titleBackgroundColor(getResources().getColor(R.color.divider2))
-                        .confirTextColor(getResources().getColor(R.color.blue))
-                        .cancelTextColor(getResources().getColor(R.color.blue))
-                        .textColor(getResources().getColor(R.color.text_grey2))
-                        .itemCyclic(false)
-                        .visibleItemsCount(7)
-                        .itemPadding(10)
-                        .defalutItem(getResources().getStringArray(R.array.sex)[mUser.getOrientation() + 1])
+                        .defalutItem(tvSex.getText().toString().trim())
                         .build();
                 itemPicker.show();
 
@@ -196,7 +202,7 @@ public class EditInfoActivity extends BaseActivity {
                     public void onSelected(String itemSelected, int position) {
                         tvSex.setText(itemSelected);
                         tvSex.setTextColor(getResources().getColor(R.color.text_black));
-                        sex = position;
+                        sex = position+1;
                     }
 
                     @Override
@@ -215,17 +221,8 @@ public class EditInfoActivity extends BaseActivity {
             public void onClick(View view) {
                 hideKeyBoard();
                 ItemPicker itemPicker = new ItemPicker.Builder(EditInfoActivity.this)
-                        .textSize(14)
                         .setData(ageList)
-                        .title("")
-                        .titleBackgroundColor(getResources().getColor(R.color.divider2))
-                        .confirTextColor(getResources().getColor(R.color.blue))
-                        .cancelTextColor(getResources().getColor(R.color.blue))
-                        .textColor(getResources().getColor(R.color.text_grey2))
-                        .itemCyclic(false)
-                        .visibleItemsCount(7)
-                        .itemPadding(10)
-                        .defalutItem(String.format(getString(R.string.age_number), mUser.getAge()))
+                        .defalutItem(tvAge.getText().toString().trim())
                         .build();
                 itemPicker.show();
 
@@ -250,19 +247,9 @@ public class EditInfoActivity extends BaseActivity {
             public void onClick(View view) {
                 hideKeyBoard();
                 CityPicker cityPicker = new CityPicker.Builder(EditInfoActivity.this)
-                        .textSize(14)
-                        .title("")
-                        .titleBackgroundColor(getResources().getColor(R.color.divider2))
-                        .confirTextColor(getResources().getColor(R.color.blue))
-                        .cancelTextColor(getResources().getColor(R.color.blue))
-                        .textColor(getResources().getColor(R.color.text_grey2))
-                        .cityCyclic(false)
-                        .districtCyclic(false)
-                        .provinceCyclic(false)
-                        .visibleItemsCount(7)
-                        .itemPadding(10)
-                        .province(mUser.getProvince_name())
-                        .city(mUser.getCity_name())
+                        .province(selectedProvince)
+                        .city(selectedCity)
+                        .onlyShowProvinceAndCity(true)
                         .build();
                 cityPicker.show();
 
@@ -270,6 +257,8 @@ public class EditInfoActivity extends BaseActivity {
                     @Override
                     public void onSelected(String... citySelected) {
                         String s = "";
+                        selectedCity = citySelected[1];
+                        selectedProvince = citySelected[0];
                         for(int i=0;i<citySelected.length - 1;i++)
                             s = s + citySelected[i] + " ";
                         tvCity.setText(s);
@@ -301,7 +290,7 @@ public class EditInfoActivity extends BaseActivity {
                     Tools.Toast(EditInfoActivity.this, getString(R.string.choose_city));
                 else if(etIntro.getText().toString().trim().isEmpty())
                     Tools.Toast(EditInfoActivity.this, getString(R.string.key_in_intro));
-                else if(avatar==null)
+                else if(avatarPath==null && mUser.getHead_portrait() == null)
                     Tools.Toast(EditInfoActivity.this, getString(R.string.choose_avatar));
                 else{
                     updateUserInfo();
@@ -311,22 +300,34 @@ public class EditInfoActivity extends BaseActivity {
     }
 
     private void updateUserInfo(){
-        UpdateUserRequest request = new UpdateUserRequest();
-        request.setAge(age);
-        request.setCityName(city);
-        request.setGender(gender);
-        request.setNickname(etName.getText().toString().trim());
-        request.setOrientation(sex);
-        request.setProvinceName(province);
-        request.setSignature(etIntro.getText().toString().trim());
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+
+        updateUserRequest.setAge(age);
+        updateUserRequest.setCityName(city);
+        updateUserRequest.setGender(gender);
+        updateUserRequest.setNickname(etName.getText().toString().trim());
+        updateUserRequest.setOrientation(sex);
+        updateUserRequest.setProvinceName(province);
+        updateUserRequest.setSignature(etIntro.getText().toString().trim());
 
         SubscriberListener mListener = new SubscriberListener<User>() {
             @Override
             public void onNext(User result) {
+                HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(result);
+                setResult(Activity.RESULT_OK);
+                if(avatarPath!=null && !avatarPath.isEmpty()) {
+                    File file = new File(avatarPath);
+                    file.delete();
+                    avatarPath = avatarPath.replace("ZIP", "crop");
+                    file = new File(avatarPath);
+                    file.delete();
+                }
+                finish();
             }
         };
+
         ServiceClient.getInstance().updateUserDetail(new ProgressSubscriber(mListener, EditInfoActivity.this),
-                HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), request);
+                HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), avatarPath, updateUserRequest);
     }
     @Override
     protected int getLayout() {

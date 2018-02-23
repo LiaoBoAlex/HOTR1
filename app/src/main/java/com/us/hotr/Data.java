@@ -50,7 +50,7 @@ public class Data {
         searchTypeResultList.add(s);
         s = new SearchTypeResult("用户", "1", 1236);
         searchTypeResultList.add(s);
-        s = new SearchTypeResult("按摩", "1", 345);
+        s = new SearchTypeResult("按摩项目", "1", 345);
         searchTypeResultList.add(s);
         s = new SearchTypeResult("技师", "1", 45);
         searchTypeResultList.add(s);
@@ -66,183 +66,118 @@ public class Data {
 
     public static List<BeautyItem> getPopularPostItems(){
         List<BeautyItem> items = new ArrayList<>();
-        BeautyItem item = new BeautyItem();
-        item.setData("banner_data");
-        item.setId(Constants.BANNER_ID);
-        items.add(item);
+//        BeautyItem item = new BeautyItem();
+//        item.setData("banner_data");
+//        item.setId(Constants.BANNER_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("subject_data");
+//        item.setId(Constants.MODULE_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("subject_data");
+//        item.setId(Constants.GROUP_ID);
+//        items.add(item);
 
-        item = new BeautyItem();
-        item.setData("subject_data");
-        item.setId(Constants.MODULE_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("subject_data");
-        item.setId(Constants.GROUP_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.POST_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("news_data");
-        item.setId(Constants.POST_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("news_data");
-        item.setId(Constants.POST_ID);
-        items.add(item);
-
-        return items;
-
-    }
-
-    public static List<BeautyItem> getBeautyItmes(){
-        List<BeautyItem> items = new ArrayList<>();
-        BeautyItem item = new BeautyItem();
-        item.setData("banner_data");
-        item.setId(Constants.BANNER_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("subject_data");
-        item.setId(Constants.MODULE_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("subject_data");
-        item.setId(Constants.MODULE_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.DIVIDER_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("news_data");
-        item.setId(Constants.NEWS_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("news_data");
-        item.setId(Constants.AD1_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("news_data");
-        item.setId(Constants.AD3_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.DIVIDER_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.TITLE_IMGE_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.AD1_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.DIVIDER_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.TITLE_IMGE_ID);
-        items.add(item);
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.POST_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("news_data");
+//        item.setId(Constants.POST_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("news_data");
+//        item.setId(Constants.POST_ID);
+//        items.add(item);
 
         return items;
 
     }
+
 
     public static List<BeautyItem> getMassageItems(){
         List<BeautyItem> items = new ArrayList<>();
-        BeautyItem item = new BeautyItem();
-        item = new BeautyItem();
-        item.setData("news_data");
-        item.setId(Constants.AD1_ID);
-        items.add(item);
+//        BeautyItem item = new BeautyItem();
+//        item = new BeautyItem();
+//        item.setData("news_data");
+//        item.setId(Constants.AD1_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("subject_data");
+//        item.setId(Constants.MODULE_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.DIVIDER_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.INTERVIEW_LIST_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.TITLE_IMGE_ID);
+//        items.add(item);
 
-        item = new BeautyItem();
-        item.setData("subject_data");
-        item.setId(Constants.MODULE_ID);
-        items.add(item);
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.MASSEUR_ID);
+//        items.add(item);
 
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.DIVIDER_ID);
-        items.add(item);
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.MASSEUR_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.MASSEUR_ID);
+//        items.add(item);
 
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.INTERVIEW_LIST_ID);
-        items.add(item);
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.MASSEUR_ID);
+//        items.add(item);
 
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.TITLE_IMGE_ID);
-        items.add(item);
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.DIVIDER_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.TITLE_IMGE_ID);
+//        items.add(item);
 
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.MASSEUR_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.MASSEUR_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.MASSEUR_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.MASSEUR_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.DIVIDER_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.TITLE_IMGE_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.SPA_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.SPA_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.SPA_ID);
-        items.add(item);
-
-        item = new BeautyItem();
-        item.setData("divider_data");
-        item.setId(Constants.SPA_ID);
-        items.add(item);
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.SPA_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.SPA_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.SPA_ID);
+//        items.add(item);
+//
+//        item = new BeautyItem();
+//        item.setData("divider_data");
+//        item.setId(Constants.SPA_ID);
+//        items.add(item);
 
 
 

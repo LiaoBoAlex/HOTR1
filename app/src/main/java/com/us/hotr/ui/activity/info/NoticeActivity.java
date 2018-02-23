@@ -6,10 +6,10 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.us.hotr.R;
 import com.us.hotr.ui.activity.BaseActivity;
@@ -18,7 +18,6 @@ import com.us.hotr.ui.fragment.info.NoticeFriendFragment;
 import com.us.hotr.ui.fragment.info.NoticeLikeFragment;
 import com.us.hotr.ui.fragment.info.NoticeMessageFragment;
 import com.us.hotr.ui.fragment.info.NoticeNoticeFragment;
-import com.us.hotr.ui.fragment.info.VoucherFragment;
 
 import java.util.ArrayList;
 
@@ -89,7 +88,7 @@ public class NoticeActivity extends BaseActivity {
         return R.layout.activity_voucher;
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> titleList;
         private ArrayList<Fragment> fragmentList;

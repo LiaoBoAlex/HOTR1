@@ -2,12 +2,20 @@
     <string name="app_name">HOTR</string>
     <!--title-->
     <string name="beauty_title">医美</string>
+    <string name="doctor_list_title">名医馆</string>
+    <string name="hospital_list_title">明星机构</string>
+    <string name="massage_list_title">按摩项目</string>
+    <string name="masseur_list_title">挑技师</string>
+    <string name="spa_list_title">按摩院</string>
+    <string name="case_list_title">医美案例</string>
     <string name="massage_title">按摩</string>
     <string name="party_title">派对</string>
     <string name="product_title">商品</string>
     <string name="case_title">案例</string>
     <string name="doctor_title">医生主页</string>
     <string name="hospital_title">医院主页</string>
+    <string name="discovery_title">发现</string>
+    <string name="hospital1">医院</string>
     <string name="appointment_title">医生的预约</string>
     <string name="confirm_order_title">确认订单</string>
     <string name="pay_order_title">支付订单</string>
@@ -18,7 +26,7 @@
     <string name="refunded_title">已退款</string>
     <string name="receipt_title">核销券</string>
     <string name="content_title">内容</string>
-    <string name="voucher_title">优惠</string>
+    <string name="voucher_title">优惠券</string>
     <string name="notice_title">消息通知</string>
     <string name="home_title">主页</string>
     <string name="compare_title">对比照</string>
@@ -33,8 +41,20 @@
     <string name="choose_doctor_title">选择医生</string>
     <string name="settings">设置</string>
     <string name="manage_deliver_address">管理收货地址</string>
+    <string name="select_deliver_address">选择收货地址</string>
     <string name="popular_post_title">热帖</string>
     <string name="group_title">圈子</string>
+    <string name="select_group">选择圈子</string>
+    <string name="hospital">医美机构</string>
+    <string name="product">医美产品</string>
+    <string name="product1">医美项目</string>
+    <string name="doctor">医生</string>
+    <string name="spa">SPA机构</string>
+    <string name="spa1">SPA</string>
+    <string name="masseur1">按摩技师</string>
+    <string name="massage">按摩产品</string>
+    <string name="massage1">按摩项目</string>
+
     <!--beauty-->
     <string name="guanzhu">关注TA</string>
     <string name="subject">相关项目</string>
@@ -68,11 +88,13 @@
     <string name="total">共%1$d条</string>
     <string name="total2">%1$d条</string>
     <string name="num_of_appointment">%1$d 预约</string>
+    <string name="appointment">预约</string>
     <string name="num_of_appointment1">预约数：%1$d</string>
-    <string name="price">¥%1$d</string>
+    <string name="price">¥%1$s</string>
     <string name="num_of_case">%1$d 案例</string>
     <string name="specialize">擅长项目</string>
-    <string name="specialize1">擅长项目：</string>
+    <string name="specialize1">擅长项目：</string>、
+    <string name="specialize2">擅长 </string>
     <string name="doctor_info">医生资料</string>
     <string name="doctor_job">担任职务：</string>
     <string name="doctor_intro">医生简介：</string>
@@ -80,7 +102,7 @@
     <string name="hospital_info">机构介绍</string>
     <string name="deposit">预约金：</string>
     <string name="full_amount">全款：</string>
-    <string name="pay_at_shop">到店再付：¥%1$d</string>
+    <string name="pay_at_shop">到店再付：¥%1$s</string>
     <string name="no_need_to_pay_at_shop">无需到店支付</string>
     <string name="voucher">优惠券</string>
     <string name="remaining_total2">（到店支付）</string>
@@ -96,8 +118,18 @@
     <string name="pay_merchant">服务机构：</string>
     <string name="pay_product">商品名称：</string>
     <string name="pay_number">商品数量：</string>
+    <string name="pay_number1">商品数量：x%1$d</string>
+    <string name="order_id">订单号：%1$s</string>
+    <string name="number">数量：%1$d</string>
+    <string name="order_create_time">创建时间：%1$s</string>
+    <string name="order_pay_time">付款时间：%1$s</string>
+    <string name="wechat_pay_id">微信支付交易号：%1$s</string>
+    <string name="alipay_pay_id">支付宝支付交易号：%1$s</string>
+    <string name="pay_by_wechat">支付方式：微信支付</string>
+    <string name="pay_by_alipay">支付方式：支付宝支付</string>
     <string name="total_amount">预约金合计：</string>
     <string name="go_to_voucher">前往卡卷包查看</string>
+    <string name="go_to_coupon">查看核销券</string>
     <string name="continue_shopping">继续逛逛</string>
     <string name="money">¥</string>
     <string name="see_all">查看全部</string>
@@ -125,10 +157,14 @@
     <string name="favorite">收藏</string>
     <string name="invite_friend">邀请好友</string>
     <string name="total_price">金额合计：</string>
+    <string name="total_price1">支付金额合计：</string>
     <string name="all">全部</string>
+    <string name="product_price">商品价格：</string>
     <string name="not_paid">待付款</string>
     <string name="paid">已付款</string>
+    <string name="pay_time">付款时间：</string>
     <string name="order_pay_success">付款成功</string>
+    <string name="pay">去付款</string>
     <string name="order_wait_pay">等待付款</string>
     <string name="cancel_order">取消订单</string>
     <string name="pay_now">立即付款</string>
@@ -144,6 +180,7 @@
     <string name="used">已使用（%1$d）</string>
     <string name="expired">已过期（%1$d）</string>
     <string name="reply1">回复</string>
+    <string name="reply2">回复 %1$s：</string>
     <string name="follow_you">关注了您</string>
     <string name="notice_message">私信</string>
     <string name="notice_comment">评论</string>
@@ -151,7 +188,7 @@
     <string name="notice_friend">新粉丝</string>
     <string name="notice_notice">通知</string>
     <string name="my_follower">我的粉丝</string>
-    <string name="my_fav">我喜欢的</string>
+    <string name="my_fav">我关注的</string>
     <string name="gender">性别：</string>
     <string name="age">年龄：</string>
     <string name="sex">性向：</string>
@@ -176,6 +213,7 @@
     <string name="post_hint">想和大家分享些什么呢？ （正文不能少于20字）</string>
     <string name="min_50">内容最少50个字哦</string>
     <string name="min_20">内容最少20个字哦</string>
+    <string name="at_least_1_pic">请至少添加一张照片</string>
     <string name="min_4">标题最少4个字哦</string>
     <string name="hint_title">请输入标题</string>
     <string name="update_personal_info">修改个人资料</string>
@@ -185,6 +223,8 @@
     <string name="about_us">关于我们</string>
     <string name="business_partner">商务合作</string>
     <string name="customer_service_number">客服电话</string>
+    <string name="customer_service_number1">客服电话：</string>
+    <string name="opration_hour">工作时间：9:00-18:00</string>
     <string name="check_for_update">检查更新</string>
     <string name="clean_cache">清除缓存</string>
     <string name="phone_number">手机号</string>
@@ -244,16 +284,29 @@
     <string name="doctor_list">医生列表</string>
     <string name="hospital_list">医院列表</string>
     <string name="product_list">产品列表</string>
-    <string name="sold_out"> 抢光了</string>
-    <string name="hospital_environment"> 医院环境</string>
-    <string name="popular_product_in_hospital"> 同院热门预约</string>
+    <string name="hospital_appointment">医院的预约</string>
+    <string name="sold_out">抢光了</string>
+    <string name="hospital_environment">医院环境</string>
+    <string name="popular_product_in_hospital">同院热门预约</string>
+    <string name="order_time_left">剩余付款时间</string>
+    <string name="hour">小时</string>
+    <string name="min">分钟</string>
+    <string name="sec">秒</string>
+    <string name="order_canceled">订单已取消</string>
+    <string name="order_deleted">订单已删除</string>
+    <string name="before">前</string>
+    <string name="after">后</string>
+    <string name="deposit_title">预约金说明</string>
+    <string name="promise_title">服务说明</string>
+    <string name="deposit_content">预约金指的是收取商品总价的一定比例，剩余款项需到门店支付。</string>
     <!--massage-->
     <string name="masseur_album">技师相册</string>
     <string name="operation_time">营业时间</string>
     <string name="operation_time1">营业时间：%1$s</string>
     <string name="mins">Min</string>
     <string name="choose_masseur">推荐技师</string>
-    <string name="massage_highlight">按摩特色</string>
+    <string name="massage_highlight">按摩院特色</string>
+    <string name="massage_enviorment">按摩院环境</string>
     <string name="masseur_appointment">%1$d人约</string>
     <string name="massage_appointment">已预约 %1$d</string>
     <string name="height">%1$dcm</string>
@@ -261,16 +314,29 @@
     <string name="all_masseur">查看本院全部技师</string>
     <string name="all_product">查看本院全部预约</string>
     <string name="masseur">技师团队</string>
+    <string name="masseur2">技师</string>
+    <string name="masseur3">技师：%1$s</string>
     <string name="masseur_list">技师团队列表</string>
     <string name="popular_massage">热门预约</string>
     <string name="masseur_detail">技师详情</string>
     <string name="spa_detail">机构详情</string>
+    <string name="pay_total">支付金额小计：¥%1$s</string>
+    <string name="pay_deposit">预约金小计：¥%1$s</string>
+    <string name="pay_other">尾款小计：¥%1$s</string>
+    <string name="spa_appointment">按摩院预约</string>
     <!--party-->
     <string name="filter">筛选条件</string>
     <string name="calendar">活动日历</string>
+    <string name="party_detail">活动详情</string>
     <string name="party_status">派对状态</string>
+    <string name="turn_on_notification">开通提醒</string>
+    <string name="turned_on_notification">已开通开售提醒</string>
+    <string name="no_ticket_for_recommended_party">推荐活动不进行卖票哦</string>
+    <string name="no_ticket_for_promoted_party">预告派对不进行卖票哦</string>
+    <string name="no_ticket_for_ended_party">活动已结束~</string>
+    <string name="party_no_price">该活动暂无报价</string>
     <string name="party_introduction">派对介绍</string>
-    <string name="party_date">活动时间</string>
+    <string name="party_date">活动信息</string>
     <string name="popular_post">热门分享</string>
     <string name="write_post">写分享</string>
     <string name="mon">一</string>
@@ -282,6 +348,11 @@
     <string name="sun">日</string>
     <string name="date">%1$d年%2$d月</string>
     <string name="date1">%1$s年%2$s月%3$s日</string>
+    <string name="date2">%1$d月%2$d日</string>
+    <string name="one_day_ago">一天前</string>
+    <string name="hours_ago">%1$d小时前</string>
+    <string name="mins_ago">%1$d分钟前</string>
+    <string name="now">刚刚</string>
     <string name="ticket_notice">购票须知</string>
     <string name="ticket_on_sale">在售门票</string>
     <string name="ticket_info">门票信息</string>
@@ -293,22 +364,28 @@
     <string name="deliver_1">快递</string>
     <string name="deliver_2">自提点取票</string>
     <string name="deliver_3">排队现场取票</string>
-    <string name="add_address">添加收货地址</string>
+    <string name="add_address">收票人信息</string>
     <string name="add_new_address">添加新地址</string>
+    <string name="edit_address">编辑地址</string>
     <string name="buyer_info">购买人信息</string>
     <string name="buyer">收货人</string>
+    <string name="buyer1">收货人:</string>
     <string name="contact">联系电话</string>
     <string name="address">所在地区</string>
     <string name="address_hint">请填写详细地址，不少于5个字</string>
     <string name="pls_choose">请选择</string>
     <string name="set_default">设为默认</string>
+    <string name="default_address">默认地址</string>
     <string name="key_in_name">请填写收货人姓名</string>
     <string name="key_in_phone">请填写联系电话</string>
     <string name="choose_city">请选择所在地区</string>
     <string name="key_in_address">请填写详细地址</string>
     <string name="address_less_than_5">详细地址不能少于5个字哦</string>
+    <string name="key_in_email">填写电子邮箱</string>
+    <string name="wrong_email_format">请填写正确的邮箱格式</string>
     <string name="address_changed_without_save">修改了信息还未保存，确认现在返回吗?</string>
-    <string name="add_buyer_info">请添加您的信息</string>
+    <string name="add_buyer_info">请添加购票人的信息</string>
+    <string name="add_getter_info">请添加收票人的信息</string>
     <string name="choose_voucher">请选择优惠券</string>
     <string name="name">姓名</string>
     <string name="doc_type">证件类型</string>
@@ -329,8 +406,36 @@
     <string name="choose_age">请选择年龄</string>
     <string name="choose_avatar">请选择头像</string>
     <string name="choose_doc_date">请选择证件有效期</string>
+    <string name="deduct_amount">优惠金额：-¥%1$s</string>
     <string name="pay1">支付金额：</string>
     <string name="collect_ticket_notice">取票须知</string>
+    <string name="status_on_sale">在售</string>
+    <string name="status_on_going">派对进行中</string>
+    <string name="status_pre_sale">%1$d月%2$d日开售</string>
+    <string name="status_pre_view">预告</string>
+    <string name="status_end">已结束</string>
+    <string name="status_promo">推荐活动</string>
+    <string name="party_interested_number">%1$d人感兴趣</string>
+    <string name="party_sale_number">%1$d人已参加</string>
+    <string name="party_join_number">%1$d人参与了该活动</string>
+    <string name="party_date1">%1$d年 %2$d月%3$d日-%4$d月%5$d日</string>
+    <string name="party_date3">%1$d年 %2$d月%3$d日</string>
+    <string name="party_date2">活动时间：%1$d月%2$d日-%3$d月%4$d日</string>
+    <string name="party_date4">活动时间：</string>
+    <string name="party">派对活动</string>
+    <string name="buy_ticket">%1$s，火热售票中，速来抢购把~</string>
+    <string name="on_sale">售票中</string>
+    <string name="ticket_left">仅剩%1$d张</string>
+    <string name="city_map">城市攻略</string>
+    <string name="email">电子邮箱</string>
+    <string name="hk_pass">港澳通行证</string>
+    <string name="passport">护照</string>
+    <string name="insufficient_ticket">门票库存不足，请重新选择~</string>
+    <string name="ticket_sold_out">门票已经被抢光了哦！</string>
+    <string name="buyer_info1">证件号：%1$s 手机号：%2$s</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
     <string-array name="month">
         <item>一月</item>
         <item>二月</item>
@@ -345,22 +450,51 @@
         <item>十一月</item>
         <item>十二月</item>
     </string-array>
+
+    <string-array name="party_status">
+        <item>在售</item>
+        <item>派对进行中</item>
+        <item>预售</item>
+        <item>推荐活动</item>
+        <item>预告</item>
+        <item>已结束</item>
+    </string-array>
     <!--found-->
     <string name="all_group">全部圈子</string>
     <string name="my_group">我的圈子</string>
     <string name="recommended_group">推荐圈子</string>
     <string name="you_have_no_group">您还没有关注圈子哦</string>
+    <string name="no_group">暂未关注任何圈子哦</string>
     <string name="check_all_group">查看全部圈子</string>
     <string name="more">更多</string>
     <string name="recommended">推荐</string>
     <string name="announcement1">公告</string>
     <string name="fav">关注</string>
+    <string name="fav_ed">已关注</string>
     <string name="fresh">新鲜</string>
     <string name="hot_in_the_week">本周最热</string>
     <string name="nearby_people">附近的人</string>
     <string name="nearby_post">附近动态</string>
     <string name="nearby">附近</string>
+    <string name="group_attention">今日：%1$d</string>
+    <string name="certify">认证</string>
+    <string name="official">官方</string>
+    <string name="popular_reply">热门评论</string>
+    <string name="recommend_spa">相关SPA机构推荐</string>
+    <string name="recommend_hospital">相关医美机构推荐</string>
+    <string name="recommend_product">相关医美产品推荐</string>
+    <string name="recommend_doctor">相关医生推荐</string>
+    <string name="recommend_massage">相关按摩产品推荐</string>
+    <string name="recommend_masseur">相关按摩技师推荐</string>
+    <string name="no_comment">别让楼主寂寞太久</string>
+    <string name="my_fav_group">我关注的</string>
+    <string name="post_to">确认发布至%1$s</string>
+    <string name="publish_when">发布于%1$s</string>
+    <string name="joined_group">加入的圈子</string>
+    <string name="delivery_address">收货地址</string>
+    <string name="colon">：</string>
     <!--general-->
+    <string name="validation_code_sent">短信已发送，请注意查收</string>
     <string name="delete_search_history">确认删除全部历史纪录？</string>
     <string name="yes">确认</string>
     <string name="no">取消</string>
@@ -368,6 +502,7 @@
     <string name="back">返回</string>
     <string name="do_you_want_to_leave">该商品现在很抢手哦\n真的要离开吗？</string>
     <string name="do_you_want_to_delete_order">订单删除后无法恢复，确认删除？</string>
+    <string name="delete_fav_people">确定不再关注此人？</string>
     <string name="leave">去意已决</string>
     <string name="stay">继续支付</string>
     <string name="edit">编辑</string>
@@ -385,8 +520,38 @@
     <string name="bracket_right">】</string>
     <string name="follow_count">关注 %1$d</string>
     <string name="followed_by_count">粉丝 %1$d</string>
-
+    <string name="normal_user">普通用户</string>
+    <string name="user">用户</string>
+    <string name="no_comment_allowed">禁止评论</string>
+    <string name="no_available_voucher">没有可用优惠卷</string>
+    <string name="fav_item_success">收藏成功</string>
+    <string name="remove_fav_item_success">取消收藏</string>
+    <string name="fav_people_success">关注成功</string>
+    <string name="remove_fav_people_success">取消关注</string>
+    <string name="like_success">点赞成功</string>
+    <string name="already_liked">你已经赞过了</string>
+    <string name="post_success">发帖成功</string>
+    <string name="comment_success">回帖成功</string>
+    <string name="delete_success">删除成功</string>
+    <string name="voucher_condition">订单满%1$s元可用</string>
+    <string name="voucher_time">有效期：%1$s~%2$s</string>
+    <string name="product_sold_out">商品已经被抢光了哦！</string>
+    <string name="product_left">该商品库存仅剩%1$d个</string>
+    <string name="buy_limit">该商品限购%1$d个，不要太贪心哦！</string>
+    <string name="search_total">在“%1$s”下共%2$d条搜索信息</string>
+    <string name="empty_list">没有找到相应的内容，再看看别的吧</string>
+    <string name="map_autonavi">开启高德地图导航</string>
+    <string name="map_baidu">开启百度地图导航</string>
+    <string name="map_tencent">开启腾讯地图导航</string>
+    <string name="no_map_software">没有可用的导航软件</string>
+    <string name="scroll_down">上拉查看图文详情</string>
+    <string name="password_changed">修改成功</string>
+    <string name="bound_mobile">请绑定手机号</string>
+    <string name="verify_id">为了账户安全，请先验证身份。</string>
+    <string name="submit_feedback">提交成功，感谢您的反馈</string>
     <string name="end_of_list">我也是有底线的</string>
+    <string name="confirm_logout">确认要退出当前账号？</string>
+    <string name="call">呼叫</string>
     <string name="end_info">HOTR提示：本页面内信息由医院/医生发布并对信息的真实性及合法性负责，如您对信息真实性和合法性有质疑，请拨打客服热线：4000800051</string>
 
     <string-array name="gender">

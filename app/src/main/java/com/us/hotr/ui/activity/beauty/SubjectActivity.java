@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.animation.Animation;
@@ -51,14 +52,14 @@ public class SubjectActivity extends BaseLoadingActivity {
     private ArrayList<String> titleList;
     private ArrayList<Fragment> fragmentList;
     private ProductListWithFilterFragment productListFragment;
-    private int subjectId;
+    private long subjectId;
 
     public boolean isSubjectListOpen = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        subjectId = getIntent().getExtras().getInt(Constants.PARAM_ID);
+        subjectId = getIntent().getExtras().getLong(Constants.PARAM_ID);
         initStaticView();
     }
 
@@ -93,7 +94,7 @@ public class SubjectActivity extends BaseLoadingActivity {
         tvTimes = (TextView) findViewById(R.id.tv_times);
         tvKnowMore = (TextView) findViewById(R.id.tv_know_more);
 
-        final Fragment selectSubjectFragment = new SelectSubjectFragment().newInstance(false);
+        final Fragment selectSubjectFragment = new SelectSubjectFragment().newInstance(false, subjectId);
         getSupportFragmentManager().beginTransaction().replace(R.id.container, selectSubjectFragment).commit();
 
         tvTitle.setText(getIntent().getExtras().getString(Constants.PARAM_NAME));
@@ -105,8 +106,10 @@ public class SubjectActivity extends BaseLoadingActivity {
                 }else {
                     if (!isSubjectListOpen) {
                         showAnimation();
+                        enablePullDownRefresh(false);
                     } else {
                         hideAnimation();
+                        enablePullDownRefresh(true);
                     }
                 }
             }
@@ -143,10 +146,10 @@ public class SubjectActivity extends BaseLoadingActivity {
     @Override
     public void loadData(int loadType){
         if(productListFragment == null) {
-            productListFragment = ProductListWithFilterFragment.newInstance(Constants.TYPE_PRODUCT, false, subjectId);
+            productListFragment = ProductListWithFilterFragment.newInstance(null, Constants.TYPE_PRODUCT, false, subjectId);
             fragmentList = new ArrayList<Fragment>() {{
                 add(productListFragment);
-                add(CaseListFragment.newInstance(false));
+                add(CaseListFragment.newInstance(null, false, false));
             }};
             adapter = new PagerAdapter(getSupportFragmentManager(), titleList, fragmentList);
             viewPager.setAdapter(adapter);
@@ -164,6 +167,7 @@ public class SubjectActivity extends BaseLoadingActivity {
                 tvPrice.setText(result.getPrice_range());
                 tvTimes.setText(result.getTreatmentTimes());
                 tvTreatment.setText(result.getTreatmentMethosDesc());
+                tvTitle.setText(result.getProject_name());
             }
         };
         if(loadType == Constants.LOAD_PULL_REFRESH)
@@ -181,7 +185,7 @@ public class SubjectActivity extends BaseLoadingActivity {
     @Subscribe
     public void getMessage(Events.SubjectSelected subjectSelected) {
         tvTitle.setText(subjectSelected.getSelectedSubject());
-        subjectId = subjectSelected.getSubjectId();
+        subjectId = subjectSelected.getFtId();
         hideAnimation();
         loadData(Constants.LOAD_PAGE);
 
@@ -245,7 +249,7 @@ public class SubjectActivity extends BaseLoadingActivity {
         ((DisableableAppBarLayoutBehavior) layoutParams.getBehavior()).setEnabled(value);
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> titleList;
         private ArrayList<Fragment> fragmentList;

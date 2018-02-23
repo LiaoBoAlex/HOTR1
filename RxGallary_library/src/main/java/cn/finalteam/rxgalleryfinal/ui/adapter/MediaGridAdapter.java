@@ -1,6 +1,7 @@
 package cn.finalteam.rxgalleryfinal.ui.adapter;
 
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.CompoundButtonCompat;
@@ -28,6 +29,7 @@ import cn.finalteam.rxgalleryfinal.rxbus.RxBus;
 import cn.finalteam.rxgalleryfinal.rxbus.event.MediaCheckChangeEvent;
 import cn.finalteam.rxgalleryfinal.rxjob.Job;
 import cn.finalteam.rxgalleryfinal.rxjob.RxJob;
+import cn.finalteam.rxgalleryfinal.rxjob.job.ImageThmbnailJob;
 import cn.finalteam.rxgalleryfinal.rxjob.job.ImageThmbnailJobCreate;
 import cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity;
 import cn.finalteam.rxgalleryfinal.ui.base.IMultiImageCheckedListener;
@@ -101,6 +103,13 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.Grid
             holder.mTvCameraTxt.setText(mConfiguration.isImage() ? mMediaActivity.getString(R.string.gallery_take_image) : mMediaActivity.getString(R.string.gallery_video));
             holder.mIvCameraImage.setBackgroundColor(mCameraImageBgColor);
         } else {
+            if(mediaBean.getOriginalPath() == null || mediaBean.getThumbnailSmallPath() == null || mediaBean.getThumbnailBigPath() == null) {
+                holder.mCbCheck.setVisibility(View.GONE);
+                holder.mIvMediaImage.setVisibility(View.GONE);
+                holder.mLlCamera.setVisibility(View.VISIBLE);
+                holder.mTvCameraTxt.setText(mMediaActivity.getString(R.string.gallery_wrong_file));
+                return;
+            }
             if (mConfiguration.isRadio()) {
                 holder.mCbCheck.setVisibility(View.GONE);
             } else {
@@ -109,38 +118,58 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.Grid
                 holder.mCbCheck.setOnCheckedChangeListener(new OnCheckBoxCheckListener(mediaBean));
             }
             holder.mIvMediaImage.setVisibility(View.VISIBLE);
+            ((FixImageView)holder.mIvMediaImage).setImageResource(R.drawable.gallery_default_image);
             holder.mLlCamera.setVisibility(View.GONE);
             holder.mCbCheck.setChecked(mMediaActivity.getCheckedList() != null && mMediaActivity.getCheckedList().contains(mediaBean));
             String bitPath = mediaBean.getThumbnailBigPath();
             String smallPath = mediaBean.getThumbnailSmallPath();
 
-            if (!new File(bitPath).exists() || !new File(smallPath).exists()) {
-                Job job = new ImageThmbnailJobCreate(mMediaActivity, mediaBean).create();
-                RxJob.getDefault().addJob(job);
-            }
-            String path;
-            if (mConfiguration.isPlayGif() && (imageLoaderType == 3 || imageLoaderType == 2)) {
-                path = mediaBean.getOriginalPath();
-            } else {
-                path = mediaBean.getThumbnailSmallPath();
-                if (TextUtils.isEmpty(path)) {
-                    path = mediaBean.getThumbnailBigPath();
-                }
-                if (TextUtils.isEmpty(path)) {
-                    path = mediaBean.getOriginalPath();
-                }
-            }
-            Logger.w("提示path：" + path);
+//            if (!new File(bitPath).exists() || !new File(smallPath).exists()) {
+//                Job job = new ImageThmbnailJobCreate(mMediaActivity, mediaBean, new ImageThmbnailJob.JobFinishedListener() {
+//                    @Override
+//                    public void OnJobFinished() {
+//                        loadImage(mediaBean, holder);
+//                    }
+//                }).create();
+//                RxJob.getDefault().addJob(job);
+//            }else
+//                loadImage(mediaBean, holder);
             if (imageLoaderType != 3) {
                 OsCompat.setBackgroundDrawableCompat(holder.mIvMediaImage, mImageViewBg);
                 mConfiguration.getImageLoader()
-                        .displayImage(mMediaActivity, path, (FixImageView) holder.mIvMediaImage, mDefaultImage, mConfiguration.getImageConfig(),
+                        .displayImage(mMediaActivity, mediaBean.getOriginalPath(), (FixImageView) holder.mIvMediaImage, mDefaultImage, mConfiguration.getImageConfig(),
                                 true, mConfiguration.isPlayGif(), mImageSize, mImageSize, mediaBean.getOrientation());
             } else {
                 OsCompat.setBackgroundDrawableCompat(holder.mIvMediaImage, mImageViewBg);
-                FrescoImageLoader.setImageSmall("file://" + path, (SimpleDraweeView) holder.mIvMediaImage,
+                FrescoImageLoader.setImageSmall("file://" + mediaBean.getOriginalPath(), (SimpleDraweeView) holder.mIvMediaImage,
                         mImageSize, mImageSize, holder.relativeLayout, mConfiguration.isPlayGif());
             }
+        }
+    }
+
+    private void loadImage(MediaBean mediaBean, GridViewHolder holder){
+        String path;
+        if (mConfiguration.isPlayGif() && (imageLoaderType == 3 || imageLoaderType == 2)) {
+            path = mediaBean.getOriginalPath();
+        } else {
+            path = mediaBean.getThumbnailSmallPath();
+            if (TextUtils.isEmpty(path)) {
+                path = mediaBean.getThumbnailBigPath();
+            }
+            if (TextUtils.isEmpty(path)) {
+                path = mediaBean.getOriginalPath();
+            }
+        }
+        Logger.w("提示path：" + path);
+        if (imageLoaderType != 3) {
+            OsCompat.setBackgroundDrawableCompat(holder.mIvMediaImage, mImageViewBg);
+            mConfiguration.getImageLoader()
+                    .displayImage(mMediaActivity, path, (FixImageView) holder.mIvMediaImage, mDefaultImage, mConfiguration.getImageConfig(),
+                            true, mConfiguration.isPlayGif(), mImageSize, mImageSize, mediaBean.getOrientation());
+        } else {
+            OsCompat.setBackgroundDrawableCompat(holder.mIvMediaImage, mImageViewBg);
+            FrescoImageLoader.setImageSmall("file://" + path, (SimpleDraweeView) holder.mIvMediaImage,
+                    mImageSize, mImageSize, holder.relativeLayout, mConfiguration.isPlayGif());
         }
     }
 

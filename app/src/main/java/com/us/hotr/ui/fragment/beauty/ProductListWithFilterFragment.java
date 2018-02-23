@@ -48,16 +48,19 @@ public class ProductListWithFilterFragment extends Fragment{
     private SubjectActivity parentActivity;
     private boolean haveParent = false;
     private Fragment productListFragment, selectCityFragment, selectTypeFragment;
-    private Integer type, id;
+    private Integer type;
+    private Long id;
     private HOTRSharePreference hotrSharePreference;
+    private String keyword;
 
-    public static ProductListWithFilterFragment newInstance(int type, boolean enableRefresh, Integer id) {
+    public static ProductListWithFilterFragment newInstance(String keyword, int type, boolean enableRefresh, Long id) {
         ProductListWithFilterFragment productListFragment = new ProductListWithFilterFragment();
         Bundle b = new Bundle();
         b.putBoolean(Constants.PARAM_ENABLE_REFRESH, enableRefresh);
+        b.putString(Constants.PARAM_KEYWORD, keyword);
         b.putInt(Constants.PARAM_TYPE, type);
         if(id!=null)
-            b.putInt(Constants.PARAM_NAME, id);
+            b.putLong(Constants.PARAM_NAME, id);
         productListFragment.setArguments(b);
         return productListFragment;
     }
@@ -72,7 +75,8 @@ public class ProductListWithFilterFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
 
         type = getArguments().getInt(Constants.PARAM_TYPE);
-        id = getArguments().getInt(Constants.PARAM_NAME);
+        id = getArguments().getLong(Constants.PARAM_NAME);
+        keyword = getArguments().getString(Constants.PARAM_KEYWORD);
         hotrSharePreference = HOTRSharePreference.getInstance(getActivity().getApplicationContext());
 
         if(getActivity() instanceof  SubjectActivity) {
@@ -85,17 +89,45 @@ public class ProductListWithFilterFragment extends Fragment{
         tvFilterCity = (TextView) view.findViewById(R.id.tv_filter_city);
         mContainerCity = (FrameLayout) view.findViewById(R.id.container1);
         mContainerList = (FrameLayout) view.findViewById(R.id.container2);
-        int cityId = -1;
-        if(hotrSharePreference.getSelectedCityID() > 0) {
-            tvFilterCity.setText(hotrSharePreference.getSelectedCityName());
-            cityId = hotrSharePreference.getSelectedCityID();
+        long cityId = -1;
+
+
+
+        switch(type){
+            case Constants.TYPE_PRODUCT:
+                if(hotrSharePreference.getSelectedProductCityID() > 0) {
+                    tvFilterCity.setText(hotrSharePreference.getSelectedCityName());
+                    cityId = hotrSharePreference.getSelectedProductCityID();
+                }
+                else{
+                    if(Tools.getCityCodeFromBaidu(hotrSharePreference.getCurrentCityID()).getProductCityCode()>=0){
+                        tvFilterCity.setText(hotrSharePreference.getCurrentCityName());
+                        cityId = Tools.getCityCodeFromBaidu(hotrSharePreference.getCurrentCityID()).getProductCityCode();
+                    }else{
+                        tvFilterCity.setText(getString(R.string.filter_city));
+                        cityId = Constants.ALL_CITY_ID;
+                    }
+                }
+                break;
+            case Constants.TYPE_MASSAGE:
+                if(hotrSharePreference.getSelectedMassageCityID() > 0) {
+                    tvFilterCity.setText(hotrSharePreference.getSelectedCityName());
+                    cityId = hotrSharePreference.getSelectedMassageCityID();
+                }
+                else{
+                    if(Tools.getCityCodeFromBaidu(hotrSharePreference.getCurrentCityID()).getMassageCityCode()>=0){
+                        tvFilterCity.setText(hotrSharePreference.getCurrentCityName());
+                        cityId = Tools.getCityCodeFromBaidu(hotrSharePreference.getCurrentCityID()).getMassageCityCode();
+                    }else{
+                        tvFilterCity.setText(getString(R.string.filter_city));
+                        cityId = Constants.ALL_CITY_ID;
+                    }
+                }
+                break;
         }
-        else{
-            if(Tools.getCityCode(hotrSharePreference.getCurrentCityID())>0){
-                tvFilterCity.setText(hotrSharePreference.getCurrentCityName());
-                cityId = Tools.getCityCode(hotrSharePreference.getCurrentCityID());
-            }
-        }
+
+
+
         if(cityId == Constants.ALL_CITY_ID)
             cityId = -1;
 
@@ -143,14 +175,14 @@ public class ProductListWithFilterFragment extends Fragment{
 
         switch(type){
             case Constants.TYPE_PRODUCT:
-                productListFragment = new ProductListFragment().newInstance(getArguments().getBoolean(Constants.PARAM_ENABLE_REFRESH), id, cityId, -1, -1);
+                productListFragment = new ProductListFragment().newInstance(keyword, getArguments().getBoolean(Constants.PARAM_ENABLE_REFRESH),type, id, cityId, -1, -1);
                 break;
             case Constants.TYPE_MASSAGE:
-                productListFragment = new MassageListFragment().newInstance(id, cityId, -1);
+                productListFragment = new MassageListFragment().newInstance(keyword,false, id, cityId, -1);
                 break;
         }
 
-        selectCityFragment = new SelectCityFragment().newInstance(false);
+        selectCityFragment = new SelectCityFragment().newInstance(0, false);
         selectTypeFragment = new SelectTypeFragment().newInstance(type, true);
         getChildFragmentManager().beginTransaction().add(R.id.container2, productListFragment).commit();
         getChildFragmentManager().beginTransaction().add(R.id.container1, selectCityFragment).hide(selectCityFragment).commit();

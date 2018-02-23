@@ -7,6 +7,7 @@ import android.support.constraint.solver.SolverVariable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 
 import com.us.hotr.Constants;
@@ -86,13 +87,13 @@ public class SearchHintActivity extends AppCompatActivity implements SearchView.
 
     @Override
     public void onRefreshAutoComplete(String text) {
-        if(text.length() > 0) {
-            viewPager.setCurrentItem(1, false);
-            Events.SearchKeywordHint event = new Events.SearchKeywordHint(text);
-            GlobalBus.getBus().post(event);
-        }
-        else
-            viewPager.setCurrentItem(0, false);
+//        if(text.length() > 0) {
+//            viewPager.setCurrentItem(1, false);
+//            Events.SearchKeywordHint event = new Events.SearchKeywordHint(text);
+//            GlobalBus.getBus().post(event);
+//        }
+//        else
+//            viewPager.setCurrentItem(0, false);
     }
 
     @Override
@@ -108,7 +109,7 @@ public class SearchHintActivity extends AppCompatActivity implements SearchView.
         finish();
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<Fragment> fragmentList;
 

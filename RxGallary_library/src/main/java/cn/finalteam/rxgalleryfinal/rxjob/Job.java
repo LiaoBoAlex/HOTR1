@@ -1,5 +1,6 @@
 package cn.finalteam.rxgalleryfinal.rxjob;
 
+import android.net.sip.SipSession;
 import android.support.annotation.NonNull;
 
 /**
@@ -9,6 +10,8 @@ import android.support.annotation.NonNull;
  */
 public interface Job {
     Result onRunJob();
+
+    void onJobFinished();
 
     enum Result {
 
@@ -31,6 +34,7 @@ public interface Job {
     class Params {
         private final Object data;
         private final String tag;
+
 
         public Params(@NonNull String tag, Object requestData) {
             this.tag = tag;

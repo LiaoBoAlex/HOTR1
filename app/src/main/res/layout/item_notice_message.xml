@@ -18,7 +18,7 @@
     <com.us.hotr.customview.ShapedImageView
         android:scaleType="centerCrop"
         app:shape_mode="circle"
-        android:id="@+id/iv_product_avatar"
+        android:id="@+id/iv_user_avatar"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/placeholder_post_2"
@@ -36,11 +36,11 @@
         android:textColor="@color/text_black"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="13dp"
-        app:layout_constraintLeft_toRightOf="@+id/iv_product_avatar"
+        app:layout_constraintLeft_toRightOf="@+id/iv_user_avatar"
         android:layout_marginLeft="12dp" />
 
     <TextView
-        android:id="@+id/tv_time"
+        android:id="@+id/tv_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
@@ -63,9 +63,9 @@
         android:textColor="@color/text_grey2"
         android:maxLines="1"
         android:ellipsize="marquee"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_time"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_info"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_time" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_info" />
 
     <ImageView
         android:id="@+id/iv_certified"

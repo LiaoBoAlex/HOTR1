@@ -23,6 +23,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:paddingLeft="12dp"
+                android:paddingRight="30dp"
                 android:src="@mipmap/ic_back" />
 
             <TextView
@@ -74,6 +75,7 @@
                 <android.support.design.widget.AppBarLayout
                     android:id="@+id/appbar"
                     app:layout_behavior="android.support.design.widget.DisableableAppBarLayoutBehavior"
+                    app:elevation="0dp"
                     android:background="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -95,6 +97,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
+                            android:visibility="gone"
                             android:id="@+id/tv_know_more"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -110,11 +113,13 @@
 
                         <TextView
                             android:id="@+id/tv_description"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="12dp"
                             android:layout_marginTop="18dp"
                             android:textColor="@color/text_black"
                             android:textSize="14dp"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintLeft_toLeftOf="@+id/textView4"
                             app:layout_constraintTop_toBottomOf="@+id/textView4" />
 

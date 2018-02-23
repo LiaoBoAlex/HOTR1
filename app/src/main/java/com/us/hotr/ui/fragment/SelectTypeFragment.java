@@ -52,6 +52,7 @@ public class SelectTypeFragment extends Fragment{
         type = getArguments().getInt(Constants.PARAM_TYPE);
         isProduct = getArguments().getBoolean(PARAM_IS_PRODUCT);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        recyclerView.setBackground(null);
         llContainer = (LinearLayout) view.findViewById(R.id.ll_container);
         llContainer.setBackgroundResource(R.color.dim_bg);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

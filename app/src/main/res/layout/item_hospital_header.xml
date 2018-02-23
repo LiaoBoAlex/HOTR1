@@ -3,12 +3,24 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     android:descendantFocusability="blocksDescendants"
     android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:text="@string/hospital_title"
+        android:background="@color/text_black"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@color/text_black"/>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <LinearLayout
             android:id="@+id/linearLayout3"
             android:layout_width="0dp"
@@ -76,7 +88,7 @@
 
         <com.us.hotr.customview.ShapedImageView
             app:shape_mode="circle"
-            android:id="@+id/iv_product_avatar"
+            android:id="@+id/iv_user_avatar"
             android:layout_width="90dp"
             android:layout_height="90dp"
             android:layout_marginEnd="8dp"
@@ -153,7 +165,7 @@
             app:layout_constraintRight_toRightOf="parent" />
 
         <TextView
-            android:id="@+id/tv_product_fav"
+            android:id="@+id/tv_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -177,7 +189,7 @@
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/linearLayout"
-            app:layout_constraintTop_toBottomOf="@+id/tv_product_fav">
+            app:layout_constraintTop_toBottomOf="@+id/tv_address">
 
             <TextView
                 android:layout_width="match_parent"
@@ -256,7 +268,7 @@
         android:layout_width="match_parent"
         android:layout_height="44dp">
         <TextView
-            android:id="@+id/tv_address"
+            android:id="@+id/tv_place"
             android:paddingLeft="12dp"
             android:textSize="12dp"
             android:textColor="@color/text_grey2"

@@ -43,6 +43,7 @@
         android:layout_marginRight="12dp"
         android:layout_marginTop="9dp"
         android:text="TextView"
+        android:paddingBottom="9dp"
         android:textColor="@color/text_grey2"
         android:textSize="12sp"/>
 
@@ -52,7 +53,6 @@
         android:layout_height="wrap_content"
         android:paddingBottom="9dp"
         android:layout_marginLeft="12dp"
-        android:paddingTop="6dp"
         android:text="@string/see_all"
         android:textColor="@color/cyan"
         android:textSize="12sp"

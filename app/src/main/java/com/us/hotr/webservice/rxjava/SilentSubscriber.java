@@ -67,16 +67,18 @@ public class SilentSubscriber<T> extends DisposableObserver<T>{
         } else if (e instanceof ConnectException) {
             Tools.Toast(context, context.getString(R.string.network_error));
         }else if (e instanceof ApiException){
+            if(((ApiException) e).getErrorCode() == Constants.SUCCESS)
+                return;
             Tools.Toast(context, ((ApiException) e).getErrorMsg());
             if(((ApiException) e).getErrorCode() == Constants.ERROR_INVALID_SESSIONID){
                 HOTRSharePreference.getInstance(context.getApplicationContext()).storeUserID("");
-//                LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
-//                    @Override
-//                    public void onLoginSuccess() {
-//                        if(mSubscriberWithReloadListener!=null)
-//                            mSubscriberWithReloadListener.reload();
-//                    }
-//                });
+                LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                    @Override
+                    public void onLoginSuccess() {
+                        if(mSubscriberWithReloadListener!=null)
+                            mSubscriberWithReloadListener.reload();
+                    }
+                });
                 Intent i = new Intent(context, LoginActivity.class);
                 context.startActivity(i);
             }

@@ -42,6 +42,11 @@ public class FlowLayout extends RelativeLayout {
     private int textColor = Color.BLACK;
     // 关键字背景框
     private int backgroundResource = R.drawable.bg_search;
+
+    private int highlightedBackgroundResource  = R.drawable.bg_search;
+
+    private int highlightedTextColor = Color.BLACK;
+
     // 关键字水平padding，单位为dp
     private int textPaddingH = dp2px(7);
     // 关键字竖直padding，单位为dp
@@ -77,8 +82,14 @@ public class FlowLayout extends RelativeLayout {
             } else if (attr == R.styleable.FlowLayoutAttrs_itemColor) {
                 textColor = typedArray.getColor(attr, Color.BLACK);
 
-            } else if (attr == R.styleable.FlowLayoutAttrs_backgroundResource) {
+            } else if (attr == R.styleable.FlowLayoutAttrs_highlightedItemColor) {
+                highlightedTextColor = typedArray.getColor(attr, Color.BLACK);
+
+            }else if (attr == R.styleable.FlowLayoutAttrs_backgroundResource) {
                 backgroundResource = typedArray.getResourceId(attr, R.drawable.bg_search);
+
+            }else if (attr == R.styleable.FlowLayoutAttrs_highlightedBackgroundResource) {
+                highlightedBackgroundResource = typedArray.getResourceId(attr, R.drawable.bg_search);
 
             } else if (attr == R.styleable.FlowLayoutAttrs_textPaddingH) {
                 textPaddingV = typedArray.getDimensionPixelSize(attr, dp2px(7));
@@ -241,6 +252,7 @@ public class FlowLayout extends RelativeLayout {
     }
 
     public void setFlowLayout(List<String> list, final OnItemClickListener onItemClickListener) {
+        mTextViewList = new ArrayList<>();
         this.removeAllViews();
         for (int i = 0; i < list.size(); i++) {
             final TextView tv = new TextView(getContext());
@@ -265,6 +277,20 @@ public class FlowLayout extends RelativeLayout {
                     onItemClickListener.onItemClick(tv.getText().toString(), finalI);
                 }
             });
+        }
+    }
+
+    public void setHighlightedItem(int position){
+        if(position >= 0 && position < mTextViewList.size()){
+            for(int i=0;i<mTextViewList.size();i++) {
+                if(position == i) {
+                    mTextViewList.get(i).setBackgroundResource(highlightedBackgroundResource);
+                    mTextViewList.get(i).setTextColor(highlightedTextColor);
+                }else{
+                    mTextViewList.get(i).setBackgroundResource(backgroundResource);
+                    mTextViewList.get(i).setTextColor(textColor);
+                }
+            }
         }
     }
 

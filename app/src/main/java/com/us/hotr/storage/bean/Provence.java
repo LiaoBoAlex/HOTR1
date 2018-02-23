@@ -41,10 +41,19 @@ public class Provence implements Serializable {
         private int key;
         private String areaName;
         private int isHotcity;
+        private long code;
 
-        public int getKey() {
-            return key;
+        public long getCode() {
+            return code;
         }
+
+        public void setCode(long code) {
+            this.code = code;
+        }
+
+//        public int getKey() {
+//            return key;
+//        }
 
         public void setKey(int key) {
             this.key = key;

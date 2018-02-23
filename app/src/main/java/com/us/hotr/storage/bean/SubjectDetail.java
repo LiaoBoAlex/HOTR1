@@ -12,6 +12,15 @@ public class SubjectDetail implements Serializable {
     private String treatmentTimes;
     private String restoreCycle;
     private String treatmentMethosDesc;
+    private String project_name;
+
+    public String getProject_name() {
+        return project_name;
+    }
+
+    public void setProject_name(String project_name) {
+        this.project_name = project_name;
+    }
 
     public String getPrice_range() {
         return price_range;

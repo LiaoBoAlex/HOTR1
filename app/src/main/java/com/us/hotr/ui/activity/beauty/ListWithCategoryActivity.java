@@ -8,7 +8,7 @@ import android.view.View;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
-import com.us.hotr.storage.bean.TypeWithCount;
+import com.us.hotr.storage.bean.Type;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.fragment.beauty.CaseListFragment;
 import com.us.hotr.ui.fragment.beauty.ProductListFragment;
@@ -25,21 +25,21 @@ import java.util.List;
  */
 
 public class ListWithCategoryActivity extends BaseActivity {
-    private int hospitalId = -1, doctorId = -1, spaId = -1;
+    private long hospitalId = -1, doctorId = -1, spaId = -1;
 
     private FlowLayout flSubject;
     private int type;
     private Fragment listFragment;
-    private int selectedSubjectID = 0;
+    private long selectedSubjectID = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String title = getIntent().getStringExtra(Constants.PARAM_TITLE);
         type = getIntent().getExtras().getInt(Constants.PARAM_TYPE, -1);
-        hospitalId = getIntent().getExtras().getInt(Constants.PARAM_HOSPITAL_ID, -1);
-        doctorId = getIntent().getExtras().getInt(Constants.PARAM_DOCTOR_ID, -1);
-        spaId = getIntent().getExtras().getInt(Constants.PARAM_SPA_ID, -1);
+        hospitalId = getIntent().getExtras().getLong(Constants.PARAM_HOSPITAL_ID, -1);
+        doctorId = getIntent().getExtras().getLong(Constants.PARAM_DOCTOR_ID, -1);
+        spaId = getIntent().getExtras().getLong(Constants.PARAM_SPA_ID, -1);
         flSubject = (FlowLayout) findViewById(R.id.fl_subject);
         setMyTitle(title);
         loadData();
@@ -54,61 +54,67 @@ public class ListWithCategoryActivity extends BaseActivity {
     private void loadPage(){
         switch (type){
             case Constants.TYPE_CASE:
-                listFragment = new CaseListFragment().newInstance(true);
+                listFragment = new CaseListFragment().newInstance(null, true, false);
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
                 break;
             case Constants.TYPE_PRODUCT:
-                listFragment = new ProductListFragment().newInstance(true, selectedSubjectID, -1, hospitalId, doctorId);
+                listFragment = new ProductListFragment().newInstance(null, true, type, selectedSubjectID, -1, hospitalId, doctorId);
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
                 break;
             case Constants.TYPE_MASSAGE:
-                listFragment = new MassageListFragment().newInstance(selectedSubjectID, -1, spaId);
+                listFragment = new MassageListFragment().newInstance(null, false, selectedSubjectID, -1, spaId);
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
         }
     }
 
     private void loadData(){
+        SubscriberListener mListener = new SubscriberListener<List<Type>>() {
+            @Override
+            public void onNext(final List<Type> result) {
+                if(result != null && result.size()>0){
+                    flSubject.setVisibility(View.VISIBLE);
+                    int count = 0;
+                    for(Type t:result)
+                        count = count + t.getProduct_num();
+
+                    //TODO:typeId = -1 or 0?
+                    result.add(0, new Type(0, count, getString(R.string.all)));
+
+                    List<String> subjects = new ArrayList<>();
+                    for(Type t:result)
+                        subjects.add(t.getTypeName() + " " + t.getProduct_num());
+
+                    flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(String content, int position) {
+                            selectedSubjectID = result.get(position).getTypeId();
+                            loadPage();
+                            for(int i=0;i<flSubject.getTextViewList().size();i++){
+                                if(i == position){
+                                    flSubject.getTextViewList().get(i).setTextColor(getResources().getColor(R.color.white));
+                                    flSubject.getTextViewList().get(i).setBackgroundResource(R.drawable.bg_search_pressed);
+                                }else{
+                                    flSubject.getTextViewList().get(i).setTextColor(getResources().getColor(R.color.text_black));
+                                    flSubject.getTextViewList().get(i).setBackgroundResource(R.drawable.bg_search);
+                                }
+                            }
+                        }
+                    });
+                    flSubject.getTextViewList().get(0).setTextColor(getResources().getColor(R.color.white));
+                    flSubject.getTextViewList().get(0).setBackgroundResource(R.drawable.bg_search_pressed);
+                }
+            }
+        };
         switch (type){
             case Constants.TYPE_CASE:
                 break;
             case Constants.TYPE_PRODUCT:
+                if(doctorId!=-1)
+                    ServiceClient.getInstance().getProductTypeListByDoctor(new SilentSubscriber(mListener, this, null), doctorId);
+                if(hospitalId!=-1)
+                    ServiceClient.getInstance().getProductTypeListByHospital(new SilentSubscriber(mListener, this, null), hospitalId);
                 break;
             case Constants.TYPE_MASSAGE:
-                SubscriberListener mListener = new SubscriberListener<List<TypeWithCount>>() {
-                    @Override
-                    public void onNext(final List<TypeWithCount> result) {
-                        if(result != null && result.size()>0){
-                            flSubject.setVisibility(View.VISIBLE);
-                            int count = 0;
-                            for(TypeWithCount t:result)
-                                count = count + t.getProduct_num();
-                            result.add(0, new TypeWithCount(0, count, getString(R.string.all)));
-
-                            List<String> subjects = new ArrayList<>();
-                            for(TypeWithCount t:result)
-                                subjects.add(t.getType_name() + " " + t.getProduct_num());
-
-                            flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(String content, int position) {
-                                    selectedSubjectID = result.get(position).getType_id();
-                                    loadPage();
-                                    for(int i=0;i<flSubject.getTextViewList().size();i++){
-                                        if(i == position){
-                                            flSubject.getTextViewList().get(i).setTextColor(getResources().getColor(R.color.white));
-                                            flSubject.getTextViewList().get(i).setBackgroundResource(R.drawable.bg_search_pressed);
-                                        }else{
-                                            flSubject.getTextViewList().get(i).setTextColor(getResources().getColor(R.color.text_black));
-                                            flSubject.getTextViewList().get(i).setBackgroundResource(R.drawable.bg_search);
-                                        }
-                                    }
-                                }
-                            });
-                            flSubject.getTextViewList().get(0).setTextColor(getResources().getColor(R.color.white));
-                            flSubject.getTextViewList().get(0).setBackgroundResource(R.drawable.bg_search_pressed);
-                        }
-                    }
-                };
                 ServiceClient.getInstance().getMassageTypeListBySpa(new SilentSubscriber(mListener, this, null), spaId);
                 break;
         }

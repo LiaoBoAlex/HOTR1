@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,16 +16,22 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Post;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.activity.beauty.CompareActivity;
-import com.us.hotr.ui.dialog.CancelPostDialogFragment;
+import com.us.hotr.ui.activity.beauty.CaseActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.UploadPostResponse;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +40,7 @@ import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import cn.finalteam.rxgalleryfinal.imageloader.ImageLoaderType;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageMultipleResultEvent;
+import id.zelory.compressor.Compressor;
 
 /**
  * Created by Mloong on 2017/10/10.
@@ -45,32 +51,87 @@ public class UploadPostActivity1 extends BaseActivity {
     private TextView tvPost;
     private EditText etContent, etTitle;
     private RecyclerView mRecyclerView;
-    private ImageView ivAddPic, ivAddVideo;
-    private ConstraintLayout clBar;
+//    private ImageView ivAddPic, ivAddVideo;
+//    private ConstraintLayout clBar;
+    private long groupId = -1;
 
-    private List<MediaBean> list = new ArrayList<>();
+    private List<MediaBean> photoList = new ArrayList<>();
     private MyAdapter mAdapter;
 
     private View.OnClickListener postListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             if(etTitle.getText().toString().trim().length()<4)
-                Tools.Toast(getBaseContext(), getString(R.string.min_4));
+                Tools.Toast(getApplicationContext(), getString(R.string.min_4));
             else if(etContent.getText().toString().trim().length()<20)
-                Tools.Toast(getBaseContext(), getString(R.string.min_20));
+                Tools.Toast(getApplicationContext(), getString(R.string.min_20));
+            else if(photoList == null || photoList.size() == 0)
+                Tools.Toast(getApplicationContext(), getString(R.string.at_least_1_pic));
             else {
-                Intent i = new Intent(UploadPostActivity1.this, CompareActivity.class);
-                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_POST);
-                startActivity(i);
+                if(groupId == -1)
+                    startActivityForResult(new Intent(UploadPostActivity1.this, UploadPostActivity2.class), 0);
+                else
+                    uploadPost(groupId);
             }
         }
     };
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK)
+            uploadPost(data.getExtras().getLong(Constants.PARAM_ID));
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getIntent().getExtras()!=null)
+            groupId = getIntent().getExtras().getLong(Constants.PARAM_ID);
         setMyTitle(R.string.upload_post);
         initStaticView();
+    }
+
+    private void uploadPost(final long groupId){
+        final List<String>  list = new ArrayList<>();
+        if(photoList!=null && photoList.size()>0) {
+            for (MediaBean mb : photoList) {
+                File fromPic = new File(mb.getOriginalPath());
+                try {
+                    File toFile = new Compressor(UploadPostActivity1.this)
+                            .setDestinationDirectoryPath(Tools.getZipFileName(fromPic.getName()))
+                            .compressToFile(fromPic);
+                    list.add(toFile.getAbsolutePath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            SubscriberListener mListener = new SubscriberListener<UploadPostResponse>() {
+                @Override
+                public void onNext(UploadPostResponse result) {
+                    for(String s:list){
+                        File file = new File(s);
+                        file.delete();
+                    }
+                    Tools.Toast(UploadPostActivity1.this, getString(R.string.post_success));
+                    Intent i = new Intent(UploadPostActivity1.this, CaseActivity.class);
+                    Bundle b = new Bundle();
+                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                    b.putLong(Constants.PARAM_ID, result.getTopicId());
+                    i.putExtras(b);
+                    startActivity(i);
+                    finish();
+                }
+            };
+            Post post = new Post();
+            post.setTitle(etTitle.getText().toString().trim());
+            post.setTopicType(0);
+            post.setContentWord(etContent.getText().toString().trim());
+            post.setIsOfficial(0);
+
+            ServiceClient.getInstance().uploadPost(new ProgressSubscriber(mListener, UploadPostActivity1.this),
+                    HOTRSharePreference.getInstance(UploadPostActivity1.this.getApplicationContext()).getUserID(), list, post, new ArrayList<Long>(){{add((long)groupId);}});
+        }
     }
 
     @Override
@@ -84,9 +145,9 @@ public class UploadPostActivity1 extends BaseActivity {
         etContent = (EditText) findViewById(R.id.et_content);
         etTitle = (EditText) findViewById(R.id.et_title);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        ivAddPic = (ImageView) findViewById(R.id.iv_add_pic);
-        ivAddVideo = (ImageView) findViewById(R.id.iv_add_video);
-        clBar = (ConstraintLayout) findViewById(R.id.cl_bar);
+//        ivAddPic = (ImageView) findViewById(R.id.iv_add_pic);
+//        ivAddVideo = (ImageView) findViewById(R.id.iv_add_video);
+//        clBar = (ConstraintLayout) findViewById(R.id.cl_bar);
 
         tvPost.setText(R.string.post);
         tvPost.setTextColor(getResources().getColor(R.color.text_grey2));
@@ -127,25 +188,29 @@ public class UploadPostActivity1 extends BaseActivity {
             }
         });
 
-        ivAddPic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openMulti();
-            }
-        });
+//        ivAddPic.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                openMulti();
+//            }
+//        });
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mAdapter = new MyAdapter(photoList);
+        mRecyclerView.setAdapter(mAdapter);
+
     }
 
     private void openMulti(){
         RxGalleryFinal rxGalleryFinal = RxGalleryFinal
                 .with(UploadPostActivity1.this)
                 .image()
+                .crop(false)
                 .multiple();
-        if (list != null && !list.isEmpty()) {
+        if (photoList != null && !photoList.isEmpty()) {
             rxGalleryFinal
-                    .selected(list);
+                    .selected(photoList);
         }
         rxGalleryFinal.maxSize(9)
                 .imageLoader(ImageLoaderType.GLIDE)
@@ -153,14 +218,14 @@ public class UploadPostActivity1 extends BaseActivity {
 
                     @Override
                     protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
-                        list = imageMultipleResultEvent.getResult();
-                        mAdapter = new MyAdapter(list);
+                        photoList = imageMultipleResultEvent.getResult();
+                        mAdapter = new MyAdapter(photoList);
                         mRecyclerView.setAdapter(mAdapter);
-                        if(list.size() == 9){
-                            clBar.setVisibility(View.GONE);
-                        }else{
-                            clBar.setVisibility(View.VISIBLE);
-                        }
+//                        if(photoList.size() == 9){
+//                            clBar.setVisibility(View.GONE);
+//                        }else{
+//                            clBar.setVisibility(View.VISIBLE);
+//                        }
                     }
 
                     @Override
@@ -173,8 +238,7 @@ public class UploadPostActivity1 extends BaseActivity {
 
     private void validateSubmitButton(){
         if(etContent.getText().toString().trim().isEmpty()
-                || etTitle.getText().toString().trim().isEmpty()
-                || list.size()>0) {
+                || etTitle.getText().toString().trim().isEmpty()) {
             tvPost.setTextColor(getResources().getColor(R.color.text_grey2));
             tvPost.setOnClickListener(null);
         }else{
@@ -185,17 +249,16 @@ public class UploadPostActivity1 extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-//        new CancelPostDialogFragment().show(getSupportFragmentManager(), "dialog");
         TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(this);
         alertDialogBuilder.setMessage(getString(R.string.cancel_draft));
-        alertDialogBuilder.setPositiveButton(getString(R.string.no),
+        alertDialogBuilder.setPositiveButton(getString(R.string.yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         UploadPostActivity1.super.onBackPressed();
                     }
                 });
-        alertDialogBuilder.setNegativeButton(getString(R.string.yes),
+        alertDialogBuilder.setNegativeButton(getString(R.string.no),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -230,8 +293,8 @@ public class UploadPostActivity1 extends BaseActivity {
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
-            if(position<list.size()) {
-                final MediaBean mediaBean = list.get(position);
+            if(position<photoList.size()) {
+                final MediaBean mediaBean = photoList.get(position);
                 Bitmap bitmap = Tools.decodeFile(mediaBean.getOriginalPath(), 226, 226);
                 holder.ivPic.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 holder.ivPic.setImageBitmap(bitmap);
@@ -239,13 +302,13 @@ public class UploadPostActivity1 extends BaseActivity {
                 holder.ivDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        list.remove(position);
+                        photoList.remove(position);
                         notifyDataSetChanged();
-                        if(list.size() == 9){
-                            clBar.setVisibility(View.GONE);
-                        }else{
-                            clBar.setVisibility(View.VISIBLE);
-                        }
+//                        if(photoList.size() == 9){
+//                            clBar.setVisibility(View.GONE);
+//                        }else{
+//                            clBar.setVisibility(View.VISIBLE);
+//                        }
                     }
                 });
             }else {
@@ -264,7 +327,7 @@ public class UploadPostActivity1 extends BaseActivity {
 
         @Override
         public int getItemCount() {
-            if(picList!=null && picList.size()>0){
+            if(picList!=null && picList.size()>=0){
                 if(picList.size() == 9)
                     return 9;
                 else

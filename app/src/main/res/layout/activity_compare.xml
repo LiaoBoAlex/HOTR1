@@ -6,19 +6,28 @@
     android:layout_height="match_parent">
     <include layout="@layout/toolbar_share"
         android:id="@+id/toolbar"/>
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/refreshLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/divider2"
         android:layout_below="@+id/toolbar"
         android:layout_above="@+id/constraintlayout">
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerview"
-            android:overScrollMode="never"
-            android:descendantFocusability="blocksDescendants"
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/refreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview"
+                android:overScrollMode="never"
+                android:descendantFocusability="blocksDescendants"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+        <com.us.hotr.customview.LoadingView
+            android:id="@+id/loading_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+    </RelativeLayout>
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintlayout"
         android:background="@color/white"
@@ -72,12 +81,12 @@
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
-        android:visibility="gone"
         android:id="@+id/cl_banner"
-        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="73dp"
-        android:layout_below="@+id/toolbar">
+        android:layout_below="@+id/toolbar"
+        android:background="@color/white"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/tv_price_before"
@@ -87,14 +96,13 @@
             android:text="TextView"
             android:textColor="@color/text_grey2"
             android:textSize="11sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_pay_amount"
-            app:layout_constraintLeft_toRightOf="@+id/tv_pay_amount" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_price"
+            app:layout_constraintLeft_toRightOf="@+id/tv_price" />
 
         <TextView
-            android:id="@+id/tv_pay_amount"
+            android:id="@+id/tv_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
             android:text="TextView"
             android:textColor="@color/red"
             android:textSize="15sp"
@@ -117,31 +125,33 @@
 
         <TextView
             android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
+            android:ellipsize="marquee"
+            android:maxLines="2"
             android:text="TextView"
             android:textColor="@color/text_black"
             android:textSize="13sp"
-            android:maxLines="2"
-            android:ellipsize="marquee"
-            app:layout_constraintLeft_toRightOf="@+id/iv_product_avatar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_user_avatar"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.us.hotr.customview.ShapedImageView
-            android:scaleType="centerCrop"
-            android:id="@+id/iv_product_avatar"
-            app:shape_mode="circle"
+            android:id="@+id/iv_user_avatar"
             android:layout_width="61dp"
             android:layout_height="61dp"
             android:layout_marginBottom="6dp"
             android:layout_marginLeft="6dp"
             android:layout_marginTop="6dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_post3"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/placeholder_post3" />
+            app:shape_mode="circle" />
     </android.support.constraint.ConstraintLayout>
 
 </RelativeLayout>

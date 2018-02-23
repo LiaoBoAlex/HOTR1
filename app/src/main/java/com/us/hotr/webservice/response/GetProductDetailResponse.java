@@ -1,5 +1,6 @@
 package com.us.hotr.webservice.response;
 
+import com.us.hotr.storage.bean.Doctor;
 import com.us.hotr.storage.bean.Product;
 
 import java.io.Serializable;
@@ -17,6 +18,15 @@ public class GetProductDetailResponse implements Serializable {
     private Doctor doctor;
     private List<com.us.hotr.storage.bean.Product> proposedProduct;
     private int proposedProductCount;
+    private int is_collected;
+
+    public int getIs_collected() {
+        return is_collected;
+    }
+
+    public void setIs_collected(int is_collected) {
+        this.is_collected = is_collected;
+    }
 
     public List<com.us.hotr.storage.bean.Product> getProposedProduct() {
         return proposedProduct;
@@ -75,16 +85,16 @@ public class GetProductDetailResponse implements Serializable {
     }
 
     public class Promise implements Serializable{
-        private int id;
+        private long id;
         private String promise_title;
         private String promise_content;
         private String promise_info;
 
-        public int getId() {
+        public long getId() {
             return id;
         }
 
-        public void setId(int id) {
+        public void setId(long id) {
             this.id = id;
         }
 
@@ -113,7 +123,7 @@ public class GetProductDetailResponse implements Serializable {
         }
     }
     public class Hospital implements Serializable{
-        private int key;
+        private long key;
         private String provinceName;
         private String cityName;
         private String areaName;
@@ -139,11 +149,11 @@ public class GetProductDetailResponse implements Serializable {
             this.hospLogo = hospLogo;
         }
 
-        public int getKey() {
+        public long getKey() {
             return key;
         }
 
-        public void setKey(int key) {
+        public void setKey(long key) {
             this.key = key;
         }
 
@@ -196,89 +206,50 @@ public class GetProductDetailResponse implements Serializable {
         }
     }
 
-    public class Doctor implements Serializable{
-        private int id;
-        private String docName;
-        private String typeName;
-        private String docPhoto;
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public String getDocName() {
-            return docName;
-        }
-
-        public void setDocName(String docName) {
-            this.docName = docName;
-        }
-
-        public String getTypeName() {
-            return typeName;
-        }
-
-        public void setTypeName(String typeName) {
-            this.typeName = typeName;
-        }
-
-        public String getDocPhoto() {
-            return docPhoto;
-        }
-
-        public void setDocPhoto(String docPhoto) {
-            this.docPhoto = docPhoto;
-        }
-    }
-
     public class Product implements Serializable{
-        private int key;
-        private int activityOnlinePrice;
-        private int activityPrepayment;
-        private int onlinePrice;
+        private long key;
+        private double activityOnlinePrice;
+        private double activityPrepayment;
+        private double onlinePrice;
         private int paymentType;
-        private int prepayment;
+        private double prepayment;
         private String productDetail;
         private String productImg;
         private String productName;
         private int productType;
         private String productUsp;
-        private int shopPrice;
+        private double shopPrice;
         private int activityCount;
 
-        public int getKey() {
+        public long getKey() {
             return key;
         }
 
-        public void setKey(int key) {
+        public void setKey(long key) {
             this.key = key;
         }
 
-        public int getActivityOnlinePrice() {
+        public double getActivityOnlinePrice() {
             return activityOnlinePrice;
         }
 
-        public void setActivityOnlinePrice(int activityOnlinePrice) {
+        public void setActivityOnlinePrice(double activityOnlinePrice) {
             this.activityOnlinePrice = activityOnlinePrice;
         }
 
-        public int getActivityPrepayment() {
+        public double getActivityPrepayment() {
             return activityPrepayment;
         }
 
-        public void setActivityPrepayment(int activityPrepayment) {
+        public void setActivityPrepayment(double activityPrepayment) {
             this.activityPrepayment = activityPrepayment;
         }
 
-        public int getOnlinePrice() {
+        public double getOnlinePrice() {
             return onlinePrice;
         }
 
-        public void setOnlinePrice(int onlinePrice) {
+        public void setOnlinePrice(double onlinePrice) {
             this.onlinePrice = onlinePrice;
         }
 
@@ -290,11 +261,11 @@ public class GetProductDetailResponse implements Serializable {
             this.paymentType = paymentType;
         }
 
-        public int getPrepayment() {
+        public double getPrepayment() {
             return prepayment;
         }
 
-        public void setPrepayment(int prepayment) {
+        public void setPrepayment(double prepayment) {
             this.prepayment = prepayment;
         }
 
@@ -338,11 +309,11 @@ public class GetProductDetailResponse implements Serializable {
             this.productUsp = productUsp;
         }
 
-        public int getShopPrice() {
+        public double getShopPrice() {
             return shopPrice;
         }
 
-        public void setShopPrice(int shopPrice) {
+        public void setShopPrice(double shopPrice) {
             this.shopPrice = shopPrice;
         }
 

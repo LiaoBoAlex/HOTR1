@@ -3,9 +3,12 @@ package cn.finalteam.rxgalleryfinal.imageloader;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import java.io.File;
 
 import cn.finalteam.rxgalleryfinal.imageloader.rotate.RotateTransformation;
 import cn.finalteam.rxgalleryfinal.ui.widget.FixImageView;
@@ -36,7 +39,6 @@ public class GlideImageLoader implements AbsImageLoader {
 //                .transform(new RotateTransformation(context, rotate))
 //                .diskCacheStrategy(DiskCacheStrategy.NONE)
 //                .into(imageView);
-
         if (isGif) {
             Glide
                     .with(context)
@@ -45,8 +47,8 @@ public class GlideImageLoader implements AbsImageLoader {
                     .error(defaultDrawable)
                     .override(width, height)
                     .crossFade()
-                    .transform(new RotateTransformation(context, rotate))
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .into(imageView);
         } else {
             Glide
@@ -56,8 +58,8 @@ public class GlideImageLoader implements AbsImageLoader {
                     .placeholder(defaultDrawable)
                     .error(defaultDrawable)
                     .override(width, height)
-                    .transform(new RotateTransformation(context, rotate))
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .into(imageView);
         }
     }

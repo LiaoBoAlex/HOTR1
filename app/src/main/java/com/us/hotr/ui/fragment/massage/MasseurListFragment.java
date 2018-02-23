@@ -1,29 +1,26 @@
 package com.us.hotr.ui.fragment.massage;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
+import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Masseur;
-import com.us.hotr.ui.activity.massage.MasseurActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
+import com.us.hotr.ui.view.MasseurView;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
-import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
@@ -41,13 +38,14 @@ public class MasseurListFragment extends BaseLoadingFragment {
     private MyBaseAdapter myBaseAdapter;
     private int totalSize = 0;
     private int currentPage = 1;
-    private Integer SpaId = null;
+    private Long SpaId = null;
 
-    public static MasseurListFragment newInstance(int cityId, int SpaId) {
+    public static MasseurListFragment newInstance(String keyword, long cityId, long SpaId) {
         MasseurListFragment masseurListFragment = new MasseurListFragment();
         Bundle b = new Bundle();
-        b.putInt(Constants.PARAM_DATA, cityId);
-        b.putInt(PARAM_SPA, SpaId);
+        b.putLong(Constants.PARAM_DATA, cityId);
+        b.putLong(PARAM_SPA, SpaId);
+        b.putString(Constants.PARAM_KEYWORD, keyword);
         masseurListFragment.setArguments(b);
         return masseurListFragment;
     }
@@ -60,10 +58,11 @@ public class MasseurListFragment extends BaseLoadingFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        cityCode = getArguments().getInt(Constants.PARAM_DATA);
+        cityCode = getArguments().getLong(Constants.PARAM_DATA);
+        keyword = getArguments().getString(Constants.PARAM_KEYWORD);
         if(cityCode<0)
             cityCode = null;
-        SpaId = getArguments().getInt(PARAM_SPA);
+        SpaId = getArguments().getLong(PARAM_SPA);
         if(SpaId<0)
             SpaId = null;
         if(SpaId!=null){
@@ -82,7 +81,7 @@ public class MasseurListFragment extends BaseLoadingFragment {
     @Override
     protected void loadData(final int loadType) {
         SubscriberListener mListener;
-        if(loadType == Constants.LOAD_MORE){
+        if (loadType == Constants.LOAD_MORE) {
             mListener = new SubscriberListener<BaseListResponse<List<Masseur>>>() {
                 @Override
                 public void onNext(BaseListResponse<List<Masseur>> result) {
@@ -90,8 +89,11 @@ public class MasseurListFragment extends BaseLoadingFragment {
                 }
             };
             ServiceClient.getInstance().getMasseurList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                    SpaId, cityCode, null, null, null, typeId, Constants.MAX_PAGE_ITEM, currentPage);
-        }else{
+                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
+                    keyword, SpaId, cityCode, null,
+                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude(),
+                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude(), typeId, Constants.MAX_PAGE_ITEM, currentPage);
+        } else {
             currentPage = 1;
             mListener = new SubscriberListener<BaseListResponse<List<Masseur>>>() {
                 @Override
@@ -99,32 +101,46 @@ public class MasseurListFragment extends BaseLoadingFragment {
                     updateList(loadType, result);
                 }
             };
-            if(loadType == Constants.LOAD_PAGE)
-                if(SpaId!=null)
+            if (loadType == Constants.LOAD_PAGE)
+                if (SpaId != null)
                     ServiceClient.getInstance().getMasseurListBySpa(new LoadingSubscriber(mListener, this),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
                             SpaId, Constants.MAX_PAGE_ITEM, currentPage);
                 else
                     ServiceClient.getInstance().getMasseurList(new LoadingSubscriber(mListener, this),
-                            SpaId, cityCode, subjectId, null, null, typeId, Constants.MAX_PAGE_ITEM, currentPage);
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
+                            keyword, SpaId, cityCode, subjectId,
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude(),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude(), typeId, Constants.MAX_PAGE_ITEM, currentPage);
             else if (loadType == Constants.LOAD_DIALOG)
-                if(SpaId!=null)
+                if (SpaId != null)
                     ServiceClient.getInstance().getMasseurListBySpa(new LoadingSubscriber(mListener, this),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
                             SpaId, Constants.MAX_PAGE_ITEM, currentPage);
                 else
                     ServiceClient.getInstance().getMasseurList(new LoadingSubscriber(mListener, this),
-                            SpaId, cityCode, subjectId, null, null, typeId, Constants.MAX_PAGE_ITEM, currentPage);
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
+                            keyword, SpaId, cityCode, subjectId,
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude(),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude(), typeId, Constants.MAX_PAGE_ITEM, currentPage);
             else if (loadType == Constants.LOAD_PULL_REFRESH)
-                if(SpaId!=null)
-                    ServiceClient.getInstance().getMasseurListBySpa(new LoadingSubscriber(mListener, this),
+                if (SpaId != null)
+                    ServiceClient.getInstance().getMasseurListBySpa(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
                             SpaId, Constants.MAX_PAGE_ITEM, currentPage);
                 else
-                    ServiceClient.getInstance().getMasseurList(new LoadingSubscriber(mListener, this),
-                            SpaId, cityCode, subjectId, null, null, typeId, Constants.MAX_PAGE_ITEM, currentPage);
+                    ServiceClient.getInstance().getMasseurList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
+                            keyword, SpaId, cityCode, subjectId,
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude(),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude(), typeId, Constants.MAX_PAGE_ITEM, currentPage);
         }
     }
 
     private void updateList(int loadType, BaseListResponse<List<Masseur>> result){
         totalSize = result.getTotal();
+        Events.GetSearchCount event = new Events.GetSearchCount(totalSize);
+        GlobalBus.getBus().post(event);
         if(loadType == Constants.LOAD_MORE){
             mAdapter.addItems(result.getRows());
         }else{
@@ -139,8 +155,10 @@ public class MasseurListFragment extends BaseLoadingFragment {
         if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
                 ||totalSize == 0) {
             enableLoadMore(false);
-            View footer = LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false);
-            myBaseAdapter.setFooterView(footer);
+            if(totalSize>0)
+                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+            else
+                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_empty, mRecyclerView, false));
         }
         else
             enableLoadMore(true);
@@ -151,16 +169,10 @@ public class MasseurListFragment extends BaseLoadingFragment {
         private List<Masseur> masseurList;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            TextView tvName, tvAddress, tvAppointment;
-            ImageView ivAvatar, ivLike;
-
+            MasseurView massageView;
             public MyViewHolder(View view) {
                 super(view);
-                tvName = (TextView) view.findViewById(R.id.tv_name);
-                tvAddress = (TextView) view.findViewById(R.id.tv_address);
-                tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
-                ivLike = (ImageView) view.findViewById(R.id.iv_like);
+                massageView = (MasseurView) view;
             }
         }
 
@@ -181,39 +193,14 @@ public class MasseurListFragment extends BaseLoadingFragment {
 
         @Override
         public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_masseur, parent, false);
-
-            return new MyViewHolder(itemView);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_masseur, parent, false);
+            return new MyViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             final Masseur masseur = masseurList.get(position);
-            if(position%2==0) {
-                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) holder.ivAvatar.getLayoutParams();
-                lp.setMargins(12, 0, 6, 0);
-                holder.ivAvatar.setLayoutParams(lp);
-            }
-            else {
-                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) holder.ivAvatar.getLayoutParams();
-                lp.setMargins(6, 0, 12, 0);
-                holder.ivAvatar.setLayoutParams(lp);
-            }
-            Glide.with(getContext()).load(masseur.getMassagist_main_img()).placeholder(R.drawable.holder_masseur).error(R.drawable.holder_masseur).into(holder.ivAvatar);
-            holder.tvAddress.setText(masseur.getAddress());
-            holder.tvAppointment.setText(String.format(getString(R.string.masseur_appointment), masseur.getOrder_num()));
-            holder.tvName.setText(masseur.getMassagist_name());
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(getActivity(), MasseurActivity.class);
-                    Bundle b = new Bundle();
-                    b.putInt(Constants.PARAM_ID, masseur.getId());
-                    i.putExtras(b);
-                    startActivity(i);
-                }
-            });
+            holder.massageView.setData(masseur, position);
         }
 
         @Override

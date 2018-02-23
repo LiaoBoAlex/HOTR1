@@ -4,52 +4,218 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
-import com.us.hotr.customview.ItemDecorationAlbumColumns;
-import com.us.hotr.customview.ScrollThroughRecyclerView;
-import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.activity.ImageViewerActivity;
+import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Post;
+import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MainActivity;
-import com.us.hotr.ui.activity.beauty.CompareActivity;
+import com.us.hotr.ui.activity.WebViewActivity;
+import com.us.hotr.ui.activity.info.LoginActivity;
+import com.us.hotr.ui.view.PostView;
 import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.GetPartyDetailResponse;
+import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
+import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 import com.xiao.nicevideoplayer.NiceVideoPlayer;
 import com.xiao.nicevideoplayer.NiceVideoPlayerManager;
 import com.xiao.nicevideoplayer.TxVideoPlayerController;
 
-import java.util.Random;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 
-public class PartyActivity extends BaseActivity{
+public class PartyActivity extends BaseLoadingActivity{
 
-    String url = "http://us-shop-2.oss-cn-beijing.aliyuncs.com/images/temp/video/pmf.mp4";
     private RecyclerView recyclerView;
     private MyAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
-    private ImageView ivBack, ivShare, ivFav, ivBackHome;
+    private ImageView ivFav, ivBackHome;
     private TextView tvPurchase;
+
+    private float offset = 0;
+    private long partyId;
+    private GetPartyDetailResponse getPartyDetailResponse;
+    private boolean isCollected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMyTitle("");
+        setMyTitle(R.string.party_detail);
+        partyId = getIntent().getExtras().getLong(Constants.PARAM_ID);
+        increasePartyInterest();
         initStaticView();
+        loadData(Constants.LOAD_PAGE);
+    }
+
+    private void increasePartyInterest(){
+        SubscriberListener mListener = new SubscriberListener() {
+            @Override
+            public void onNext(Object o) {
+
+            }
+        };
+        ServiceClient.getInstance().increasePartyInterest(new SilentSubscriber(mListener, this, null), partyId);
+    }
+
+    @Override
+    protected void loadData(int type) {
+        SubscriberListener mListener = new SubscriberListener<GetPartyDetailResponse>() {
+            @Override
+            public void onNext(final GetPartyDetailResponse result) {
+                if(result == null || result.getTravel() == null){
+                    showErrorPage();
+                    return;
+                }
+                getPartyDetailResponse = result;
+                isCollected = result.getIs_collected()==1?true:false;
+                if(isCollected)
+                    ivFav.setImageResource(R.mipmap.ic_fav_text_ed);
+                else
+                    ivFav.setImageResource(R.mipmap.ic_fav_text);
+                ivFav.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(isCollected) {
+                            SubscriberWithReloadListener mListener = new SubscriberWithReloadListener<String>() {
+                                @Override
+                                public void onNext(String result) {
+                                    isCollected = false;
+                                    Tools.Toast(PartyActivity.this, getString(R.string.remove_fav_item_success));
+                                    ivFav.setImageResource(R.mipmap.ic_fav_text);
+                                }
+                                @Override
+                                public void reload() {
+                                    loadData(Constants.LOAD_DIALOG);
+                                }
+                            };
+                            ServiceClient.getInstance().removeFavoriteItem(new ProgressSubscriber(mListener, PartyActivity.this),
+                                    HOTRSharePreference.getInstance(PartyActivity.this.getApplicationContext()).getUserID(), Arrays.asList(result.getTravel().getId()), 0);
+                        }else{
+                            SubscriberListener mListener = new SubscriberListener<String>() {
+                                @Override
+                                public void onNext(String result) {
+                                    Tools.Toast(PartyActivity.this, getString(R.string.fav_item_success));
+                                    isCollected = true;
+                                    ivFav.setImageResource(R.mipmap.ic_fav_text_ed);
+                                }
+                            };
+                            ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, PartyActivity.this),
+                                    HOTRSharePreference.getInstance(PartyActivity.this.getApplicationContext()).getUserID(), result.getTravel().getId(), 0);
+                        }
+                    }
+                });
+                switch (result.getTravel().getSale_ticket_status()) {
+                    case 0:
+                        tvPurchase.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                purchase();
+                            }
+                        });
+                        break;
+                    case 1:
+                        tvPurchase.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                purchase();
+                            }
+                        });
+                        break;
+                    case 2:
+                        tvPurchase.setText(R.string.turn_on_notification);
+                        tvPurchase.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                turnOnNotification(result.getTravel().getId());
+                            }
+                        });
+                        break;
+                    case 3:
+                        tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+                        tvPurchase.setText(R.string.no_ticket_for_recommended_party);
+                        break;
+                    case 4:
+                        tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+                        tvPurchase.setText(R.string.no_ticket_for_promoted_party);
+                        break;
+                    case 5:
+                        tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+                        tvPurchase.setText(R.string.no_ticket_for_ended_party);
+                        break;
+                }
+                mAdapter = new MyAdapter(result);
+                MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
+                myBaseAdapter.setFooterView();
+                recyclerView.setAdapter(myBaseAdapter);
+            }
+        };
+        if(type == Constants.LOAD_PAGE)
+            ServiceClient.getInstance().getPartyDetail(new LoadingSubscriber(mListener, this),
+                    partyId, HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+        else if (type == Constants.LOAD_PULL_REFRESH)
+            ServiceClient.getInstance().getPartyDetail(new SilentSubscriber(mListener, this, refreshLayout),
+                    partyId, HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+    }
+
+    public void purchase(){
+        if(Tools.isUserLogin(getApplicationContext())){
+            purchaseCheckCount();
+        }else{
+            LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                @Override
+                public void onLoginSuccess() {
+                    purchaseCheckCount();
+                }
+            });
+            startActivityForResult(new Intent(PartyActivity.this, LoginActivity.class), 0);
+        }
+
+    }
+
+    public void purchaseCheckCount(){
+            SubscriberListener mListener = new SubscriberListener<Boolean>() {
+                @Override
+                public void onNext(Boolean result) {
+                    if(!result){
+                        Tools.Toast(PartyActivity.this, getString(R.string.ticket_sold_out));
+                        tvPurchase.setText(R.string.sold_out);
+                        tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+                        tvPurchase.setOnClickListener(null);
+                    }else {
+                        Intent i = new Intent(PartyActivity.this, PartyPayNumberActivity.class);
+                        Bundle b = new Bundle();
+                        b.putSerializable(Constants.PARAM_DATA, getPartyDetailResponse);
+                        i.putExtras(b);
+                        startActivity(i);
+                    }
+                }
+            };
+            ServiceClient.getInstance().checkPartyOrderCount(new ProgressSubscriber(mListener, PartyActivity.this), getPartyDetailResponse.getTicket());
+    }
+
+    private void turnOnNotification(long id){
+        tvPurchase.setText(R.string.turned_on_notification);
+        tvPurchase.setBackgroundResource(R.color.bg_button_grey);
     }
 
     private void initStaticView(){
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        ivBack = (ImageView) findViewById(R.id.img_back);
-        ivShare = (ImageView) findViewById(R.id.iv_share);
         ivFav = (ImageView) findViewById(R.id.iv_fav);
         ivBackHome = (ImageView) findViewById(R.id.iv_homepage);
         tvPurchase = (TextView) findViewById(R.id.tv_purchase);
@@ -57,8 +223,6 @@ public class PartyActivity extends BaseActivity{
         mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
-        mAdapter = new MyAdapter();
-        recyclerView.setAdapter(mAdapter);
 
         ivBackHome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,12 +233,10 @@ public class PartyActivity extends BaseActivity{
             }
         });
 
-        tvPurchase.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(PartyActivity.this, PartyPayNumberActivity.class));
-            }
-        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        enableLoadMore(false);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -85,31 +247,32 @@ public class PartyActivity extends BaseActivity{
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                int offset = getScollYDistance();
-                if (offset > 300) {
+                offset = offset + dy;
+                if(offset > 300){
                     ivBack.setImageResource(R.mipmap.ic_back);
                     ivShare.setImageResource(R.mipmap.ic_share);
-                } else {
-                    findViewById(R.id.toolbar).getBackground().setAlpha((int) offset * 255 / 300);
+                    findViewById(R.id.v_divider).setAlpha(1);
+                    findViewById(R.id.tb_title).setAlpha(1);
+                }else{
                     findViewById(R.id.tb_title).setAlpha(offset / 300);
-                    findViewById(R.id.v_divider).setAlpha(offset / 300);
                     ivBack.setImageResource(R.mipmap.ic_back_dark);
                     ivShare.setImageResource(R.mipmap.ic_share_dark);
+                    findViewById(R.id.v_divider).setAlpha(offset / 300);
                 }
             }
         });
     }
 
-    public int getScollYDistance() {
-        int position = mLayoutManager.findFirstVisibleItemPosition();
-        View firstVisiableChildView = mLayoutManager.findViewByPosition(position);
-        int itemHeight = firstVisiableChildView.getHeight();
-        return (position) * itemHeight - firstVisiableChildView.getTop();
-    }
+//    public int getScollYDistance() {
+//        int position = mLayoutManager.findFirstVisibleItemPosition();
+//        View firstVisiableChildView = mLayoutManager.findViewByPosition(position);
+//        int itemHeight = firstVisiableChildView.getHeight();
+//        return (position) * itemHeight - firstVisiableChildView.getTop();
+//    }
 
     @Override
     protected int getLayout() {
-        return R.layout.activity_party;
+        return R.layout.activity_masseur;
     }
 
     @Override
@@ -126,45 +289,50 @@ public class PartyActivity extends BaseActivity{
 
     public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-        int postColumn;
-        int postPhontoCount;
+        private GetPartyDetailResponse response;
 
-        public static final int VIEW_TYPE_POST = 100;
-        public static final int VIEW_TYPE_HEADER = 101;
+        private static final int VIEW_TYPE_POST = 100;
+        private static final int VIEW_TYPE_HEADER = 101;
+        private static final int VIEW_WEB = 102;
 
         private boolean isEdit = false;
 
         public class MyPostHolder extends RecyclerView.ViewHolder {
-            ScrollThroughRecyclerView recyclerView;
-            ImageView ivDelete;
-            TextView tvTitle;
-
+            PostView postView;
             public MyPostHolder(View view) {
                 super(view);
-                recyclerView = (ScrollThroughRecyclerView) view.findViewById(R.id.recyclerview);
-                ivDelete = (ImageView) view.findViewById(R.id.iv_delete);
-                tvTitle = (TextView) view.findViewById(R.id.tv_title);
+                postView = (PostView) view;
+            }
+        }
+
+        public class WebHolder extends RecyclerView.ViewHolder {
+            WebView wvContent;
+            public WebHolder(View itemView) {
+                super(itemView);
+                wvContent = (WebView) itemView.findViewById(R.id.wv_content);
             }
         }
 
         public class MyHeaderHolder extends RecyclerView.ViewHolder {
-            ImageView ivCity;
-            TextView tvTitle, tvPeople, tvPrice, tvIntro, tvSeeAll, tvShare;
+            ImageView ivCity, ivAvatar;
+            TextView tvTitle, tvPeople, tvPrice, tvShare, tvStatus, tvAddress, tvMoney, tvNoPrice;
             ConstraintLayout clShare;
-            RecyclerView recyclerView;
             NiceVideoPlayer vvVideo;
-            public TxVideoPlayerController mController;
+            TxVideoPlayerController mController;
 
             public MyHeaderHolder(View view) {
                 super(view);
                 recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
                 ivCity = (ImageView) view.findViewById(R.id.iv_city);
+                ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
                 tvPeople = (TextView) view.findViewById(R.id.tv_people);
+                tvAddress = (TextView) view.findViewById(R.id.tv_address);
                 tvPrice = (TextView) view.findViewById(R.id.tv_price);
-                tvIntro = (TextView) view.findViewById(R.id.tv_intro);
-                tvSeeAll = (TextView) view.findViewById(R.id.tv_see_more);
+                tvMoney = (TextView) view.findViewById(R.id.tv_money);
+                tvNoPrice = (TextView) view.findViewById(R.id.tv_no_price);
                 tvShare = (TextView) view.findViewById(R.id.tv_share);
+                tvStatus = (TextView) view.findViewById(R.id.tv_status);
                 clShare = (ConstraintLayout) view.findViewById(R.id.cl_post_title);
                 vvVideo = (NiceVideoPlayer) view.findViewById(R.id.vv_video);
             }
@@ -176,15 +344,8 @@ public class PartyActivity extends BaseActivity{
             }
         }
 
-        public MyAdapter() {
-            Random rand = new Random();
-            postPhontoCount = rand.nextInt(9) + 1;
-            if (postPhontoCount == 1)
-                postColumn = 1;
-            else if (postPhontoCount == 2 || postPhontoCount == 4)
-                postColumn = 2;
-            else
-                postColumn = 3;
+        public MyAdapter(GetPartyDetailResponse response) {
+            this.response = response;
         }
 
         public void setEnableEdit(boolean enable) {
@@ -193,19 +354,20 @@ public class PartyActivity extends BaseActivity{
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view;
             switch (viewType) {
                 case VIEW_TYPE_POST:
-                    View itemView = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.item_post, parent, false);
-                    MyPostHolder holder = new MyPostHolder(itemView);
-                    holder.recyclerView.addItemDecoration(new ItemDecorationAlbumColumns(12, postColumn));
-                    return holder;
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent, false);
+                    return new MyPostHolder(view);
                 case VIEW_TYPE_HEADER:
-                    View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_party_header, parent, false);
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_party_header, parent, false);
                     MyHeaderHolder headerHolder = new MyHeaderHolder(view);
                     TxVideoPlayerController controller = new TxVideoPlayerController(PartyActivity.this);
                     headerHolder.setController(controller);
                     return headerHolder;
+                case VIEW_WEB:
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_web, parent, false);
+                    return new WebHolder(view);
                 default:
                     return null;
             }
@@ -216,153 +378,102 @@ public class PartyActivity extends BaseActivity{
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_POST:
                     MyPostHolder postHolder = (MyPostHolder) holder;
-                    postHolder.recyclerView.setLayoutManager(new GridLayoutManager(PartyActivity.this, postColumn));
-                    PicGridAdapter adapter = new PicGridAdapter(postPhontoCount, isEdit);
-                    postHolder.recyclerView.setAdapter(adapter);
-
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent i = new Intent(PartyActivity.this, CompareActivity.class);
-                            i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_POST);
-                            startActivity(i);
-                        }
-                    });
-
-                    if (isEdit) {
-                        postHolder.ivDelete.setVisibility(View.VISIBLE);
-                        postHolder.ivDelete.setImageResource(R.mipmap.ic_delete_order);
-                        postHolder.ivDelete.setTag(false);
-                    } else
-                        postHolder.ivDelete.setVisibility(View.GONE);
-
-                    postHolder.ivDelete.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if ((boolean) view.getTag()) {
-                                ((ImageView) view).setImageResource(R.mipmap.ic_delete_order);
-                                view.setTag(false);
-                            } else {
-                                ((ImageView) view).setImageResource(R.mipmap.ic_delete_order_clicked);
-                                view.setTag(true);
-                            }
-                        }
-                    });
+                    postHolder.postView.setData(new Post());
+                    postHolder.postView.enableEdit(isEdit);
+                    break;
+                case VIEW_WEB:
+                    ((WebHolder)holder).wvContent.loadData(Tools.getHtmlData(response.getTravel().getTravelInfo()), "text/html; charset=UTF-8", null);
                     break;
                 case VIEW_TYPE_HEADER:
                     final MyHeaderHolder headerHolder = (MyHeaderHolder) holder;
-                    headerHolder.recyclerView.setLayoutManager(new LinearLayoutManager(PartyActivity.this));
-                    headerHolder.recyclerView.setItemAnimator(new DefaultItemAnimator());
-                    MyAddressAdapter mAdapter = new MyAddressAdapter();
-                    headerHolder.recyclerView.setAdapter(mAdapter);
-
-                    final String mData = "这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。这是一个医院。";
-                    final String displayData = mData.substring(0, 50) + "...";
-                    headerHolder.tvIntro.setText(displayData);
-                    headerHolder.tvSeeAll.setTag(false);
-                    headerHolder.tvSeeAll.setOnClickListener(new View.OnClickListener() {
+                    headerHolder.tvAddress.setText(response.getTravel().getTravelAddress());
+                    headerHolder.tvTitle.setText(response.getTravel().getTravel_name());
+                    headerHolder.tvPrice.setText(new DecimalFormat("#").format(response.getTravel().getPriceRangeLow()) + "-" + new DecimalFormat("#").format(response.getTravel().getPriceRangeHigh()));
+                    Glide.with(PartyActivity.this).load(response.getTravel().getCityStrategyImg()).error(R.drawable.holder_city).placeholder(R.drawable.holder_city).into(headerHolder.ivCity);
+                    headerHolder.ivCity.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view) {
-                            if (!(boolean) view.getTag()) {
-                                headerHolder.tvIntro.setText(mData);
-                                view.setTag(true);
-                                headerHolder.tvSeeAll.setText(R.string.see_part);
-                            } else {
-                                headerHolder.tvIntro.setText(displayData);
-                                view.setTag(false);
-                                headerHolder.tvSeeAll.setText(R.string.see_all);
-                            }
-
+                        public void onClick(View v) {
+                            Intent i = new Intent(PartyActivity.this, WebViewActivity.class);
+                            Bundle b = new Bundle();
+                            b.putString(Constants.PARAM_TITLE, getString(R.string.city_map));
+                            b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_DATA);
+                            b.putString(Constants.PARAM_DATA, response.getTravel().getCityStrategyDetail());
+                            i.putExtras(b);
+                            startActivity(i);
                         }
                     });
-                    headerHolder.mController.imageView().setImageResource(R.drawable.holder_city);
-                    headerHolder.vvVideo.setUp(url, null);
+                    switch (response.getTravel().getSale_ticket_status()) {
+                        case 0:
+                            headerHolder.tvStatus.setText(getString(R.string.status_on_sale));
+                            headerHolder.tvPeople.setText(String.format(getString(R.string.party_sale_number), response.getTravel().getOrder_num()));
+                            headerHolder.tvNoPrice.setVisibility(View.INVISIBLE);
+                            headerHolder.tvMoney.setVisibility(View.VISIBLE);
+                            headerHolder.tvPrice.setVisibility(View.VISIBLE);
+                            break;
+                        case 1:
+                            headerHolder.tvStatus.setText(getString(R.string.status_on_going));
+                            headerHolder.tvPeople.setText(String.format(getString(R.string.party_sale_number), response.getTravel().getOrder_num()));
+                            headerHolder.tvNoPrice.setVisibility(View.INVISIBLE);
+                            headerHolder.tvMoney.setVisibility(View.VISIBLE);
+                            headerHolder.tvPrice.setVisibility(View.VISIBLE);
+                            break;
+                        case 2:
+                            headerHolder.tvStatus.setText(Tools.getSaleTime(PartyActivity.this, response.getTravel().getSale_ticket_time()));
+                            headerHolder.tvPeople.setText(String.format(getString(R.string.party_interested_number), response.getTravel().getAccess_count()));
+                            headerHolder.tvNoPrice.setVisibility(View.INVISIBLE);
+                            headerHolder.tvMoney.setVisibility(View.VISIBLE);
+                            headerHolder.tvPrice.setVisibility(View.VISIBLE);
+                            break;
+                        case 3:
+                            headerHolder.tvStatus.setText(getString(R.string.status_promo));
+                            headerHolder.tvPeople.setText(String.format(getString(R.string.party_interested_number), response.getTravel().getAccess_count()));
+                            headerHolder.tvNoPrice.setVisibility(View.VISIBLE);
+                            headerHolder.tvMoney.setVisibility(View.INVISIBLE);
+                            headerHolder.tvPrice.setVisibility(View.INVISIBLE);
+                            break;
+                        case 4:
+                            headerHolder.tvStatus.setText(getString(R.string.status_pre_view));
+                            headerHolder.tvPeople.setText(String.format(getString(R.string.party_interested_number), response.getTravel().getAccess_count()));
+                            headerHolder.tvNoPrice.setVisibility(View.VISIBLE);
+                            headerHolder.tvMoney.setVisibility(View.INVISIBLE);
+                            headerHolder.tvPrice.setVisibility(View.INVISIBLE);
+                            break;
+                        case 5:
+                            headerHolder.tvStatus.setText(getString(R.string.status_end));
+                            headerHolder.tvPeople.setVisibility(View.GONE);
+                            headerHolder.tvNoPrice.setVisibility(View.INVISIBLE);
+                            headerHolder.tvMoney.setVisibility(View.VISIBLE);
+                            headerHolder.tvPrice.setVisibility(View.VISIBLE);
+                            break;
+                    }
+                    if(response.getTravel().getVideoUrl()!=null) {
+                        headerHolder.vvVideo.setVisibility(View.VISIBLE);
+                        headerHolder.ivAvatar.setVisibility(View.GONE);
+                        Glide.with(PartyActivity.this).load(response.getTravel().getPartyDetailImg()).error(R.color.black).placeholder(R.color.black).into(headerHolder.mController.imageView());
+                        headerHolder.vvVideo.setUp(response.getTravel().getVideoUrl(), null);
+                    }else{
+                        headerHolder.vvVideo.setVisibility(View.GONE);
+                        headerHolder.ivAvatar.setVisibility(View.VISIBLE);
+                        Glide.with(PartyActivity.this).load(response.getTravel().getPartyDetailImg()).error(R.drawable.holder_video).placeholder(R.drawable.holder_video).into(headerHolder.ivAvatar);
+                    }
                     break;
             }
         }
 
         @Override
         public int getItemCount() {
-            return 6;
+            return 2;
         }
 
         @Override
         public int getItemViewType(int position) {
-            if(position == 0){
+            if(position == 0)
                 return VIEW_TYPE_HEADER;
-            }else{
-                return VIEW_TYPE_POST;
-            }
-        }
-    }
-
-    public class PicGridAdapter extends RecyclerView.Adapter<PicGridAdapter.ViewHolder> {
-
-        private int picCount;
-        private boolean isEdit;
-
-        public PicGridAdapter(int picCount, boolean isEdit) {
-            this.picCount = picCount;
-            this.isEdit = isEdit;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grid_image, parent, false);
-            ViewHolder viewHolder = new ViewHolder(view);
-            return viewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            int h;
-            int imageWidth;
-            if (isEdit)
-                imageWidth = (int) (Tools.getScreenWidth(PartyActivity.this) - Tools.dpToPx(PartyActivity.this, 51));
+            else if (position == 1)
+                return VIEW_WEB;
             else
-                imageWidth = Tools.getScreenWidth(PartyActivity.this);
-            LinearLayout.LayoutParams layoutParams;
-            switch (picCount) {
-                case 1:
-                    h = (int) (imageWidth * 0.46);
-                    layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, h);
-                    holder.mImageView.setLayoutParams(layoutParams);
-                    holder.mImageView.setImageResource(R.drawable.placeholder_post1);
-                    break;
-                case 2:
-                case 4:
-                    h = (int) (imageWidth * 0.46);
-                    layoutParams = new LinearLayout.LayoutParams(h, h);
-                    holder.mImageView.setLayoutParams(layoutParams);
-                    holder.mImageView.setImageResource(R.drawable.placeholder_post_2);
-                    break;
-                default:
-                    h = (int) (imageWidth * 0.301);
-                    layoutParams = new LinearLayout.LayoutParams(h, h);
-                    holder.mImageView.setLayoutParams(layoutParams);
-                    holder.mImageView.setImageResource(R.drawable.placeholder_post_2);
-            }
-            holder.mImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(PartyActivity.this, ImageViewerActivity.class));
-                }
-            });
-        }
+                return VIEW_TYPE_POST;
 
-        @Override
-        public int getItemCount() {
-            return picCount;
-        }
-
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public ImageView mImageView;
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-                mImageView = (ImageView) itemView.findViewById(R.id.image);
-            }
         }
     }
 
@@ -373,7 +484,7 @@ public class PartyActivity extends BaseActivity{
 
             public MyViewHolder(View view) {
                 super(view);
-                tvAddress = (TextView) view.findViewById(R.id.tv_address);
+                tvAddress = (TextView) view.findViewById(R.id.tv_place);
                 tvDate = (TextView) view.findViewById(R.id.tv_date);
             }
         }

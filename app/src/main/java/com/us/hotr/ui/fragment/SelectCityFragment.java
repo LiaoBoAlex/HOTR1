@@ -36,14 +36,15 @@ public class SelectCityFragment extends BaseLoadingFragment {
     private RecyclerView rvProvence, rvCity;
     private ProvenceAdapter provenceAdapter;
     private CityAdapter cityAdapter;
-    private int row_index = 0;
+    private int row_index = 0, cityType;
     private boolean isSelect = false;
-    private int selectedCityId;
+    private long selectedCityId;
 
-    public static SelectCityFragment newInstance(boolean isSelect) {
+    public static SelectCityFragment newInstance(int cityType, boolean isSelect) {
         SelectCityFragment selectCityFragment = new SelectCityFragment();
         Bundle b = new Bundle();
-        b.putBoolean(Constants.PARAM_TYPE, isSelect);
+        b.putBoolean(Constants.PARAM_IS_FAV, isSelect);
+        b.putInt(Constants.PARAM_TYPE, cityType);
         selectCityFragment.setArguments(b);
         return selectCityFragment;
     }
@@ -55,10 +56,17 @@ public class SelectCityFragment extends BaseLoadingFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        isSelect = getArguments().getBoolean(Constants.PARAM_TYPE, false);
-        selectedCityId = HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedCityID();
-        if(selectedCityId<=0)
-            selectedCityId = Tools.getCityCode(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getCurrentCityID());
+        isSelect = getArguments().getBoolean(Constants.PARAM_IS_FAV, false);
+        cityType = getArguments().getInt(Constants.PARAM_TYPE);
+        if(cityType == 0) {
+            selectedCityId = HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedProductCityID();
+            if (selectedCityId <= 0)
+                selectedCityId = Tools.getCityCodeFromBaidu(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getCurrentCityID()).getProductCityCode();
+        }else{
+            selectedCityId = HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedMassageCityID();
+            if (selectedCityId <= 0)
+                selectedCityId = Tools.getCityCodeFromBaidu(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getCurrentCityID()).getMassageCityCode();
+        }
 
         rvProvence = (RecyclerView) view.findViewById(R.id.rv_title);
         rvCity = (RecyclerView) view.findViewById(R.id.rv_sub_title);
@@ -79,32 +87,31 @@ public class SelectCityFragment extends BaseLoadingFragment {
             public void onNext(List<Provence> result) {
                 if(result != null && result.size()>0) {
                     boolean found = false;
-                    int selectedCityId = HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedCityID();
-                    if (selectedCityId <= 0)
-                        selectedCityId = Tools.getCityCode(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getCurrentCityID());
-                    List<Provence.City> hotCityList = new ArrayList<>();
-                    for (int i = 0; i < result.size(); i++) {
-                        if (result.get(i).getCityList() != null) {
-                            for (Provence.City c : result.get(i).getCityList()) {
-                                if (c.getIsHotcity() == 1)
-                                    hotCityList.add(c);
-                                if (selectedCityId == c.getKey()) {
-                                    row_index = i;
-                                    found = true;
+                    if(isAdded()) {
+                        List<Provence.City> hotCityList = new ArrayList<>();
+                        for (int i = 0; i < result.size(); i++) {
+                            if (result.get(i).getCityList() != null) {
+                                for (Provence.City c : result.get(i).getCityList()) {
+                                    if (c.getIsHotcity() == 1)
+                                        hotCityList.add(c);
+                                    if (selectedCityId == c.getCode()) {
+                                        row_index = i;
+                                        found = true;
+                                    }
                                 }
                             }
                         }
+                        result.add(0, new Provence(getString(R.string.popular_city), hotCityList));
+                        result.add(0, new Provence(getString(R.string.filter_city)));
+                        if (found)
+                            row_index = row_index + 2;
+                        provenceAdapter = new ProvenceAdapter(result);
+                        rvProvence.setAdapter(provenceAdapter);
                     }
-                    result.add(0, new Provence(getString(R.string.popular_city), hotCityList));
-                    result.add(0, new Provence(getString(R.string.filter_city)));
-                    if (found)
-                        row_index = row_index + 2;
-                    provenceAdapter = new ProvenceAdapter(result);
-                    rvProvence.setAdapter(provenceAdapter);
                 }
             }
         };
-        ServiceClient.getInstance().getCityList(new LoadingSubscriber(mListener, this));
+        ServiceClient.getInstance().getCityList(new LoadingSubscriber(mListener, this), cityType);
     }
 
     @Subscribe
@@ -157,9 +164,11 @@ public class SelectCityFragment extends BaseLoadingFragment {
                     if(getString(R.string.filter_city).equals(provence.getAreaName())){
                         if(isSelect) {
                             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedCityName(provence.getAreaName());
-                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedCityID(Constants.ALL_CITY_ID);
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedProductCityID(Constants.ALL_CITY_ID);
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedMassageCityID(Constants.ALL_CITY_ID);
                         }
-                        cityAdapter.clearCities();
+                        if(cityAdapter!=null)
+                            cityAdapter.clearCities();
                         Events.CitySelected citySelectedEvent = new Events.CitySelected(provence.getAreaName(), -1);
                         GlobalBus.getBus().post(citySelectedEvent);
                     }
@@ -214,7 +223,7 @@ public class SelectCityFragment extends BaseLoadingFragment {
 
             public MyViewHolder(View view) {
                 super(view);
-                tvCity = (TextView) view.findViewById(R.id.tv_area);
+                tvCity = (TextView) view.findViewById(R.id.tv_type);
             }
         }
 
@@ -244,7 +253,7 @@ public class SelectCityFragment extends BaseLoadingFragment {
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             final Provence.City city = cityList.get(position);
             holder.tvCity.setText(city.getAreaName());
-            if(city.getKey() ==selectedCityId)
+            if(city.getCode() ==selectedCityId)
                 holder.tvCity.setTextColor(getResources().getColor(R.color.red));
             else
                 holder.tvCity.setTextColor(getResources().getColor(R.color.text_grey2));
@@ -253,11 +262,20 @@ public class SelectCityFragment extends BaseLoadingFragment {
                 public void onClick(View view) {
                     if(isSelect) {
                         HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedCityName(city.getAreaName());
-                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedCityID(city.getKey());
+                        if(cityType == 0) {
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedProductCityID(city.getCode());
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedMassageCityID(
+                                    Tools.getCityCodeFromProduct(city.getCode()).getMassageCityCode());
+                        }
+                        else {
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedMassageCityID(city.getCode());
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeSelectedProductCityID(
+                                    Tools.getCityCodeFromMassage(city.getCode()).getProductCityCode());
+                        }
                     }
-                    selectedCityId = city.getKey();
+                    selectedCityId = city.getCode();
                     notifyDataSetChanged();
-                    Events.CitySelected citySelectedEvent = new Events.CitySelected(city.getAreaName(), city.getKey());
+                    Events.CitySelected citySelectedEvent = new Events.CitySelected(city.getAreaName(), city.getCode());
                     GlobalBus.getBus().post(citySelectedEvent);
                 }
             });

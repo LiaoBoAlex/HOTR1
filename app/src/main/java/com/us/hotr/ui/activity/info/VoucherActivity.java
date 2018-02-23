@@ -6,11 +6,17 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.fragment.info.VoucherFragment;
+import com.us.hotr.ui.fragment.info.VoucherListFragment;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
@@ -36,15 +42,15 @@ public class VoucherActivity extends BaseActivity {
     private void initStaticView(){
 
         titleList = new ArrayList<String>() {{
-            add(String.format(getString(R.string.not_used), 4));
-            add(String.format(getString(R.string.used), 4));
-            add(String.format(getString(R.string.expired), 4));
+            add(String.format(getString(R.string.not_used), 0));
+            add(String.format(getString(R.string.used), 0));
+            add(String.format(getString(R.string.expired), 0));
         }};
 
         fragmentList = new ArrayList<Fragment>() {{
-            add(VoucherFragment.newInstance(VoucherFragment.TYPE_VALID));
-            add(VoucherFragment.newInstance(VoucherFragment.TYPE_USED));
-            add(VoucherFragment.newInstance(VoucherFragment.TYPE_EXPIRED));
+            add(VoucherListFragment.newInstance(VoucherListFragment.TYPE_VALID, null, null));
+            add(VoucherListFragment.newInstance(VoucherListFragment.TYPE_USED, null, null));
+            add(VoucherListFragment.newInstance(VoucherListFragment.TYPE_EXPIRED, null, null));
         }};
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -54,7 +60,6 @@ public class VoucherActivity extends BaseActivity {
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager, true);
-
     }
 
     @Override
@@ -62,7 +67,7 @@ public class VoucherActivity extends BaseActivity {
         return R.layout.activity_voucher;
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> titleList;
         private ArrayList<Fragment> fragmentList;
@@ -87,5 +92,34 @@ public class VoucherActivity extends BaseActivity {
         public CharSequence getPageTitle(int position) {
             return titleList.get(position);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        GlobalBus.getBus().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        GlobalBus.getBus().unregister(this);
+    }
+
+    @Subscribe
+    public void getMessage(Events.GetVoucherCount getVoucherCount) {
+        switch(getVoucherCount.getVoucherType()){
+            case VoucherListFragment.TYPE_VALID:
+                titleList.set(0,String.format(getString(R.string.not_used), getVoucherCount.getVoucherCount()));
+                break;
+            case VoucherListFragment.TYPE_USED:
+                titleList.set(0,String.format(getString(R.string.used), getVoucherCount.getVoucherCount()));
+                break;
+            case VoucherListFragment.TYPE_EXPIRED:
+                titleList.set(0,String.format(getString(R.string.expired), getVoucherCount.getVoucherCount()));
+                break;
+        }
+        adapter.notifyDataSetChanged();
+
     }
 }

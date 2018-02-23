@@ -24,20 +24,20 @@ public class PermissionCheckUtils {
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
-                Logger.i("ContextCompat.checkSelfPermission(activity, permission):" + ContextCompat.checkSelfPermission(activity, permission));
-                Logger.i("PackageManager.PERMISSION_GRANTED:" + PackageManager.PERMISSION_GRANTED);
-                Logger.i("permission:" + permission);
-                if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(activity);
-                    alertBuilder.setCancelable(false);
-                    alertBuilder.setTitle("授权对话框");
-                    alertBuilder.setMessage(permissionDesc);
-                    alertBuilder.setPositiveButton(android.R.string.yes, (dialog, which) -> ActivityCompat.requestPermissions(activity, new String[]{permission}, requestCode));
-                    AlertDialog alert = alertBuilder.create();
-                    alert.show();
-                } else {
+//                Logger.i("ContextCompat.checkSelfPermission(activity, permission):" + ContextCompat.checkSelfPermission(activity, permission));
+//                Logger.i("PackageManager.PERMISSION_GRANTED:" + PackageManager.PERMISSION_GRANTED);
+//                Logger.i("permission:" + permission);
+//                if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+//                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(activity);
+//                    alertBuilder.setCancelable(false);
+//                    alertBuilder.setTitle("授权对话框");
+//                    alertBuilder.setMessage(permissionDesc);
+//                    alertBuilder.setPositiveButton(android.R.string.yes, (dialog, which) -> ActivityCompat.requestPermissions(activity, new String[]{permission}, requestCode));
+//                    AlertDialog alert = alertBuilder.create();
+//                    alert.show();
+//                } else {
                     ActivityCompat.requestPermissions(activity, new String[]{permission}, requestCode);
-                }
+//                }
                 return false;
             } else {
                 return true;

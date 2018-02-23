@@ -8,13 +8,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Ticket;
 import com.us.hotr.ui.activity.BaseActivity;
+import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.GetPartyDetailResponse;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.DecimalFormat;
 
 /**
  * Created by Mloong on 2017/10/23.
@@ -26,6 +35,9 @@ public class PartyPayNumberActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private MyAdapter mAdapter;
 
+    private GetPartyDetailResponse data;
+    private double total = 0;
+
     @Override
     protected int getLayout() {
         return R.layout.activity_party_pay_number;
@@ -35,37 +47,55 @@ public class PartyPayNumberActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setMyTitle(R.string.choose_ticket);
+        data = (GetPartyDetailResponse) getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
         initStaticView();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadData();
     }
 
     private void initStaticView() {
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        tvAmount = (TextView) findViewById(R.id.tv_amount);
+        tvAmount = (TextView) findViewById(R.id.tv_price);
         tvConfirm = (TextView) findViewById(R.id.tv_confirm);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         mAdapter = new MyAdapter();
         recyclerView.setAdapter(mAdapter);
+    }
 
-        tvConfirm.setOnClickListener(new View.OnClickListener() {
+    protected void loadData() {
+        SubscriberListener mListener = new SubscriberListener<GetPartyDetailResponse>() {
             @Override
-            public void onClick(View view) {
-                startActivity(new Intent(PartyPayNumberActivity.this, PartyOrderActivity.class));
+            public void onNext(final GetPartyDetailResponse result) {
+                if(data!=null){
+                    for(int i=0;i<data.getTicket().size();i++) {
+                        if(data.getTicket().get(i).getCount()<=result.getTicket().get(i).getOnhandInventory())
+                            result.getTicket().get(i).setCount(data.getTicket().get(i).getCount());
+                        else
+                            result.getTicket().get(i).setCount(result.getTicket().get(i).getOnhandInventory());
+                    }
+                }
+                data = result;
+                mAdapter.notifyDataSetChanged();
             }
-        });
+        };
+        ServiceClient.getInstance().getPartyDetail(new SilentSubscriber(mListener, this, null),
+                data.getTravel().getId(), HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
     }
 
     public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        List<Integer> numbers = new ArrayList<>();
-
         public static final int VIEW_TYPE_TICKET = 100;
         public static final int VIEW_TYPE_HEADER = 101;
 
         public class MyTicketHolder extends RecyclerView.ViewHolder {
             TextView tvTitle, tvSubTitle, tvPrice, tvNumber, tvTicket;
-            ImageView ivDeduct, ivAdd;
+            ImageView ivDeduct, ivAdd, ivTicket;
 
             public MyTicketHolder(View view) {
                 super(view);
@@ -76,12 +106,14 @@ public class PartyPayNumberActivity extends BaseActivity {
                 tvTicket = (TextView) view.findViewById(R.id.tv_ticket);
                 ivDeduct = (ImageView) view.findViewById(R.id.iv_deduct);
                 ivAdd = (ImageView) view.findViewById(R.id.iv_add);
+                ivTicket = (ImageView) view.findViewById(R.id.iv_ticket);
             }
         }
 
         public class MyHeaderHolder extends RecyclerView.ViewHolder {
             ImageView ivAvatar;
             TextView tvTitle, tvPeople, tvDate, tvStatus, tvNotice;
+            LinearLayout llNotice;
 
             public MyHeaderHolder(View view) {
                 super(view);
@@ -91,12 +123,8 @@ public class PartyPayNumberActivity extends BaseActivity {
                 tvDate = (TextView) view.findViewById(R.id.tv_date);
                 tvStatus = (TextView) view.findViewById(R.id.tv_status);
                 tvNotice = (TextView) view.findViewById(R.id.tv_notice);
+                llNotice = (LinearLayout) view.findViewById(R.id.ll_notice);
             }
-        }
-
-        public MyAdapter() {
-            for(int i=0;i<6;i++)
-                numbers.add(1);
         }
 
         @Override
@@ -119,19 +147,51 @@ public class PartyPayNumberActivity extends BaseActivity {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_TICKET:
+                    final int p = position - 1;
                     final MyTicketHolder ticketHolder = (MyTicketHolder) holder;
-                    ticketHolder.tvNumber.setText(numbers.get(position)+"");
+                    final Ticket ticket = data.getTicket().get(p);
+                    ticketHolder.tvTitle.setText(ticket.getTicketName());
+                    ticketHolder.tvSubTitle.setText(ticket.getGuideWord());
+                    Glide.with(PartyPayNumberActivity.this).load(ticket.getTicketImg())
+                            .error(R.drawable.holder_ticket).placeholder(R.drawable.holder_ticket).into(ticketHolder.ivTicket);
+                    ticketHolder.tvPrice.setText(new DecimalFormat("0.00").format(ticket.getTicketPrice()));
+                    ticketHolder.tvTicket.setText(String.format(getString(R.string.ticket_left), ticket.getOnhandInventory()));
+
+                    ticketHolder.tvNumber.setText(ticket.getCount()+"");
+                    if(ticket.getCount() == 0)
+                        ticketHolder.ivDeduct.setImageResource(R.mipmap.ic_deduct_gray);
+                    else
+                        ticketHolder.ivDeduct.setImageResource(R.mipmap.ic_deduct);
+                    if(ticket.getCount() == ticket.getOnhandInventory())
+                        ticketHolder.ivAdd.setImageResource(R.mipmap.ic_plus);
+                    else
+                        ticketHolder.ivAdd.setImageResource(R.mipmap.ic_plus);
+                    tvAmount.setText(getString(R.string.money)+calculateTotal());
+                    if(total == 0){
+                        tvConfirm.setBackgroundColor(getResources().getColor(R.color.bg_button_grey));
+                        tvConfirm.setOnClickListener(null);
+                    }else{
+                        tvConfirm.setBackgroundColor(getResources().getColor(R.color.bg_button));
+                        tvConfirm.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent i = new Intent(PartyPayNumberActivity.this, PartyOrderActivity.class);
+                                Bundle b = new Bundle();
+                                b.putSerializable(Constants.PARAM_DATA, data);
+                                b.putDouble(Constants.PARAM_ID, total);
+                                i.putExtras(b);
+                                startActivity(i);
+                            }
+                        });
+                    }
                     ticketHolder.ivDeduct.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if(numbers.get(position) > 1) {
-                                numbers.set(position, numbers.get(position) - 1);
-                                ticketHolder.tvNumber.setText(Integer.toString(numbers.get(position)));
-                            }
-                            if(numbers.get(position) == 1){
-                                numbers.set(position, numbers.get(position) - 1);
-                                ticketHolder.tvNumber.setText(Integer.toString(numbers.get(position)));
-                                ticketHolder.ivDeduct.setImageResource(R.mipmap.ic_deduct_gray);
+                            if(ticket.getCount() > 0) {
+                                ticket.setCount(ticket.getCount()-1);
+//                                numbers.set(p, numbers.get(p) - 1);
+                                notifyItemChanged(position);
+                                tvAmount.setText(calculateTotal());
                             }
                         }
                     });
@@ -139,23 +199,40 @@ public class PartyPayNumberActivity extends BaseActivity {
                     ticketHolder.ivAdd.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            numbers.set(position, numbers.get(position) + 1);
-                            ticketHolder.tvNumber.setText(Integer.toString(numbers.get(position)));
-                            if(numbers.get(position) == 1){
-                                ticketHolder.ivDeduct.setImageResource(R.mipmap.ic_deduct);
+                            if(ticket.getCount()<ticket.getOnhandInventory()) {
+                                ticket.setCount(ticket.getCount()+1);
+//                                numbers.set(p, numbers.get(p) + 1);
+                                notifyItemChanged(position);
+                                tvAmount.setText(calculateTotal());
                             }
                         }
                     });
                     break;
                 case VIEW_TYPE_HEADER:
                     final MyHeaderHolder headerHolder = (MyHeaderHolder) holder;
+                    Glide.with(PartyPayNumberActivity.this).load(data.getTravel().getPartyDetailImg()).error(R.drawable.holder_party_order)
+                            .placeholder(R.drawable.holder_party_order).into(headerHolder.ivAvatar);
+                    headerHolder.tvTitle.setText(String.format(getString(R.string.buy_ticket), data.getTravel().getTravel_name()));
+                    if(data.getTravel().getTravel_end_time()!=null)
+                        headerHolder.tvDate.setText(Tools.getPartyTime2(PartyPayNumberActivity.this, data.getTravel().getTravel_start_time(), data.getTravel().getTravel_end_time()));
+                    else
+                        headerHolder.tvDate.setText(Tools.getPartyTime2(PartyPayNumberActivity.this, data.getTravel().getTravel_start_time()));
+                    headerHolder.tvPeople.setText(String.format(getString(R.string.party_join_number), data.getTravel().getOrder_num()));
+                    if(data.getTravel().getBuyTicketNotice()!=null)
+                        headerHolder.tvNotice.setText(data.getTravel().getBuyTicketNotice());
+                    else
+                        headerHolder.llNotice.setVisibility(View.GONE);
+                    headerHolder.tvStatus.setText(R.string.on_sale);
                     break;
             }
         }
 
         @Override
         public int getItemCount() {
-            return 6;
+            if(data.getTicket()!=null)
+                return data.getTicket().size() + 1;
+            else
+                return 1;
         }
 
         @Override
@@ -165,6 +242,14 @@ public class PartyPayNumberActivity extends BaseActivity {
             }else{
                 return VIEW_TYPE_TICKET;
             }
+        }
+
+        private String calculateTotal(){
+            double t = 0;
+            for(Ticket ticket:data.getTicket())
+                t = t + ticket.getCount()*ticket.getTicketPrice();
+            total = t;
+            return new DecimalFormat("0.00").format(t);
         }
     }
 }

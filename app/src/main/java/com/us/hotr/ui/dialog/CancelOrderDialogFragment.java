@@ -19,6 +19,7 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 public class CancelOrderDialogFragment extends BottomSheetDialogFragment {
     TextView tvCancel, tvDone, tvOption1, tvOption2, tvOption3, tvOption4, lastSelectedView;
     private BottomSheetBehavior mBehavior;
+    private OnItemSelectedListener onItemSeletedListener;
 
     View.OnClickListener buttonOnClickListener = new View.OnClickListener() {
         @Override
@@ -52,6 +53,8 @@ public class CancelOrderDialogFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                if(onItemSeletedListener!= null)
+                    onItemSeletedListener.OnItemSelected(((TextView)view).getText().toString());
             }
         });
         tvCancel.setOnClickListener(new View.OnClickListener() {
@@ -83,5 +86,15 @@ public class CancelOrderDialogFragment extends BottomSheetDialogFragment {
     public void doclick(View v)
     {
         mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    public CancelOrderDialogFragment setOnItemSelectedListener(OnItemSelectedListener onItemSeletedListener){
+        this.onItemSeletedListener = onItemSeletedListener;
+        return this;
+    }
+
+
+    public interface OnItemSelectedListener{
+        void OnItemSelected(String reason);
     }
 }

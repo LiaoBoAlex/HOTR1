@@ -3,10 +3,8 @@ package com.us.hotr.ui.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -115,7 +113,7 @@ public class TwoButtonDialog extends Dialog{
                 }
             }
             if (message != null) {
-                ((TextView) layout.findViewById(R.id.tv_message)).setText(message);
+                ((TextView) layout.findViewById(R.id.tv_content)).setText(message);
             }
             dialog.setContentView(layout);
             return dialog;

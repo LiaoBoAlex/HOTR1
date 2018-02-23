@@ -17,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/mon"
+            android:textColor="@color/text_grey2"
             app:layout_constraintLeft_toRightOf="@+id/textView80"
             app:layout_constraintRight_toLeftOf="@+id/textView83"
             app:layout_constraintTop_toTopOf="@+id/textView83" />
@@ -26,6 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tus"
+            android:textColor="@color/text_grey2"
             app:layout_constraintLeft_toRightOf="@+id/textView82"
             app:layout_constraintRight_toLeftOf="@+id/textView84"
             app:layout_constraintTop_toTopOf="@+id/textView84" />
@@ -35,6 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/wen"
+            android:textColor="@color/text_grey2"
             app:layout_constraintLeft_toRightOf="@+id/textView83"
             app:layout_constraintRight_toLeftOf="@+id/textView85"
             app:layout_constraintTop_toTopOf="@+id/textView85" />
@@ -44,6 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/thu"
+            android:textColor="@color/text_grey2"
             app:layout_constraintLeft_toRightOf="@+id/textView84"
             app:layout_constraintRight_toLeftOf="@+id/textView87"
             app:layout_constraintTop_toTopOf="@+id/textView87" />
@@ -53,6 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/fri"
+            android:textColor="@color/text_grey2"
             app:layout_constraintLeft_toRightOf="@+id/textView85"
             app:layout_constraintRight_toLeftOf="@+id/textView88"
             app:layout_constraintTop_toTopOf="@+id/textView88" />
@@ -63,6 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
             android:text="@string/sat"
+            android:textColor="@color/text_grey2"
             app:layout_constraintLeft_toRightOf="@+id/textView87"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -72,10 +78,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sun"
+            android:textColor="@color/text_grey2"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/textView82"
             app:layout_constraintTop_toTopOf="@+id/textView82" />
     </android.support.constraint.ConstraintLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider2"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:overScrollMode="never"

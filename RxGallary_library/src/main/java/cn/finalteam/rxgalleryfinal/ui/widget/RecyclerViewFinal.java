@@ -57,7 +57,7 @@ public class RecyclerViewFinal extends RecyclerView {
                 }
             }
 
-            dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0));
+//            dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0));
         }
     };
     private FooterAdapter mFooterViewAdapter;

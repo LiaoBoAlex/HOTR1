@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,6 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.User;
-import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.beauty.ListWithSearchActivity;
 import com.us.hotr.ui.activity.info.FavoriteCategoryActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
@@ -26,13 +24,12 @@ import com.us.hotr.ui.activity.info.NoticeActivity;
 import com.us.hotr.ui.activity.info.OrderListActivity;
 import com.us.hotr.ui.activity.info.SettingActivity;
 import com.us.hotr.ui.activity.info.VoucherActivity;
+import com.us.hotr.ui.activity.party.DeliverAddressListActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
+import com.us.hotr.ui.fragment.found.GroupFragment;
 import com.us.hotr.webservice.ServiceClient;
-import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
-import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
-import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
 import q.rorbin.badgeview.QBadgeView;
@@ -45,9 +42,8 @@ public class InfoFragment extends BaseLoadingFragment {
     private ImageView ivAvatar, ivFav, ivFollow, ivSetting;
     private TextView tvTitle, tvCertified, tvCompare, tvPost;
     private TextView tvMyOrder, tvAnnouncment, tvVoucher, tvDraft, tvFav, tvFriend;
-    private ConstraintLayout clMyOrder, clAnnouncment, clVoucher, clDraft, clFav, clFriend;
-
-    private User mUser;
+    private ConstraintLayout clMyOrder, clAnnouncment, clVoucher, clDraft, clFav, clFriend, clAddress;
+    private HOTRSharePreference p;
     private boolean isLoaded = false;
 
     public static InfoFragment newInstance() {
@@ -63,8 +59,9 @@ public class InfoFragment extends BaseLoadingFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        p = HOTRSharePreference.getInstance(getActivity().getApplicationContext());
 
-        ivAvatar = (ImageView) view.findViewById(R.id.iv_product_avatar);
+        ivAvatar = (ImageView) view.findViewById(R.id.iv_user_avatar);
         ivFav = (ImageView) view.findViewById(R.id.iv_fav);
         ivFollow = (ImageView) view.findViewById(R.id.iv_follow);
         ivSetting = (ImageView) view.findViewById(R.id.iv_setting);
@@ -85,6 +82,7 @@ public class InfoFragment extends BaseLoadingFragment {
         clDraft = (ConstraintLayout) view.findViewById(R.id.cl_draft);
         clFav = (ConstraintLayout) view.findViewById(R.id.cl_fav);
         clFriend = (ConstraintLayout) view.findViewById(R.id.cl_friend);
+        clAddress = (ConstraintLayout) view.findViewById(R.id.cl_address);
 
         new QBadgeView(getContext())
                 .bindTarget(tvMyOrder)
@@ -115,7 +113,7 @@ public class InfoFragment extends BaseLoadingFragment {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getActivity(), ListWithSearchActivity.class);
-                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_FRIEND);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_FANS);
                 i.putExtra(Constants.PARAM_TITLE, getString(R.string.my_follower));
                 startActivity(i);
             }
@@ -124,7 +122,7 @@ public class InfoFragment extends BaseLoadingFragment {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getActivity(), ListWithSearchActivity.class);
-                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_FRIEND);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_FAVORITE);
                 i.putExtra(Constants.PARAM_TITLE, getString(R.string.my_fav));
                 startActivity(i);
             }
@@ -133,11 +131,7 @@ public class InfoFragment extends BaseLoadingFragment {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getActivity(), FriendActivity.class);
-                Bundle b = new Bundle();
-                b.putSerializable(Constants.PARAM_DATA, mUser);
-                b.putBoolean(FriendActivity.PARAM_IS_SELF, true);
-                i.putExtras(b);
-                startActivity(i);
+                startActivityForResult(i, Activity.RESULT_FIRST_USER);
             }
         });
         clFav.setOnClickListener(new View.OnClickListener() {
@@ -146,13 +140,25 @@ public class InfoFragment extends BaseLoadingFragment {
                 startActivity(new Intent(getActivity(), FavoriteCategoryActivity.class));
             }
         });
+
+        clAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), DeliverAddressListActivity.class);
+                Bundle b = new Bundle();
+                b.putInt(Constants.PARAM_TYPE, DeliverAddressListActivity.TYPE_SHOW_LIST);
+                i.putExtras(b);
+                startActivity(i);
+            }
+        });
         ivSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().startActivityForResult(new Intent(getActivity(), SettingActivity.class), MainActivity.LOGOUT);
+                getActivity().startActivityForResult(new Intent(getActivity(), SettingActivity.class), 0);
             }
         });
 
+        enableLoadMore(false);
         if(getUserVisibleHint() && !isLoaded){
             loadData(Constants.LOAD_PAGE);
         }
@@ -171,10 +177,9 @@ public class InfoFragment extends BaseLoadingFragment {
         SubscriberWithReloadListener mListener = new SubscriberWithReloadListener<User>() {
             @Override
             public void onNext(User result) {
-                mUser = result;
                 isLoaded = true;
-                tvTitle.setText(result.getNickname());
-                Glide.with(getActivity()).load(result.getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
+                p.storeUserInfo(result);
+                updateUserInfo();
             }
 
             @Override
@@ -182,11 +187,31 @@ public class InfoFragment extends BaseLoadingFragment {
                 loadData(Constants.LOAD_PAGE);
             }
         };
-        if(type == Constants.LOAD_PAGE)
-            ServiceClient.getInstance().getUserDetail(new LoadingSubscriber(mListener, InfoFragment.this),
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
-        if(type == Constants.LOAD_PULL_REFRESH)
-            ServiceClient.getInstance().getUserDetail(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+        if(isAdded()) {
+            if (type == Constants.LOAD_PAGE)
+                ServiceClient.getInstance().getMyDetail(new LoadingSubscriber(mListener, InfoFragment.this),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+            if (type == Constants.LOAD_PULL_REFRESH)
+                ServiceClient.getInstance().getMyDetail(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+        }
+    }
+
+    public void updateUserInfo(){
+        switch (p.getUserInfo().getUser_typ()){
+            case 1:
+                tvCertified.setVisibility(View.VISIBLE);
+                tvCertified.setText(getString(R.string.normal_user));
+            default:
+                tvCertified.setVisibility(View.INVISIBLE);
+        }
+        tvTitle.setText(p.getUserInfo().getNickname());
+        Glide.with(InfoFragment.this).load(p.getUserInfo().getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        updateUserInfo();
     }
 }

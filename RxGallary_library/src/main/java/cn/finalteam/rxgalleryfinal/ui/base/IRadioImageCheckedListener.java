@@ -1,5 +1,7 @@
 package cn.finalteam.rxgalleryfinal.ui.base;
 
+import java.io.IOException;
+
 /**
  * 单选裁剪
  * Created by KARL on 2017-05-31.

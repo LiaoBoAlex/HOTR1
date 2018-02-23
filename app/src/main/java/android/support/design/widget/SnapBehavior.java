@@ -20,22 +20,22 @@ public class SnapBehavior extends AppBarLayout.Behavior {
     private static final int MAX_OFFSET_ANIMATION_DURATION = 600;
 
     private ValueAnimatorCompat mOffsetAnimator;
-    private Context mContext;
-    private TextView mTextView;
+//    private Context mContext;
+//    private TextView mTextView;
     private int lastOffset = 0;
     private int headerHeight;
     private int appBarLayoutOffset;
     private boolean firstTime = true;
 
-    public SnapBehavior(Context context, TextView mTextView) {
+    public SnapBehavior(Context context) {
         super();
-        mContext = context;
-        this.mTextView = mTextView;
+//        mContext = context;
+//        this.mTextView = mTextView;
     }
 
     public SnapBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
+//        mContext = context;
     }
 
     @Override
@@ -115,7 +115,7 @@ public class SnapBehavior extends AppBarLayout.Behavior {
                 if(offset>appBarHeight - screenHeight + 200) {
                     animateOffsetTo(coordinatorLayout, abl, -(abl.getTotalScrollRange()), 0);
                     lastOffset = -(abl.getTotalScrollRange());
-                    mTextView.setText("上拉看主页");
+//                    mTextView.setText("上拉看主页");
                 }else{
                     animateOffsetTo(coordinatorLayout, abl, -(appBarHeight - screenHeight), 0);
                     lastOffset = -(appBarHeight - screenHeight);
@@ -124,7 +124,7 @@ public class SnapBehavior extends AppBarLayout.Behavior {
             }
             if(offset >= appBarHeight - screenHeight && !isScrollDown) {
                 animateOffsetTo(coordinatorLayout, abl, 0, 0);
-                mTextView.setText("下拉看更多");
+//                mTextView.setText("下拉看更多");
                 lastOffset = 0;
             }
         }

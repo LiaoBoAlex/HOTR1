@@ -1,5 +1,7 @@
 package com.us.hotr.storage.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -7,57 +9,38 @@ import java.io.Serializable;
  */
 
 public class Massage implements Serializable {
-    private int service_time;
-    private int id;
-    private int online_price;
-    private int shop_price;
-    private int activity_price;
+    @SerializedName(value = "key", alternate = {"id"})
+    private long key;
+    private int activityCount;
+    @SerializedName(value = "activityPrice", alternate = {"activity_price"})
+    private double activityPrice;
+    private String beginTime;
+    private String endTime;
+    //        private int massageId;
+    @SerializedName(value = "onlinePrice", alternate = {"online_price"})
+    private double onlinePrice;
+    private String productCode;
+    private String productDetail;
+    @SerializedName(value = "productImg", alternate = {"product_img"})
+    private String productImg;
+    @SerializedName(value = "productName", alternate = {"product_name"})
+    private String productName;
+    @SerializedName(value = "productType", alternate = {"product_type"})
+    private int productType;
+    @SerializedName(value = "productUsp", alternate = {"product_usp"})
+    private String productUsp;
+    @SerializedName(value = "serviceTime", alternate = {"service_time"})
+    private int serviceTime;
+    @SerializedName(value = "shopPrice", alternate = {"shop_price"})
+    private double shopPrice;
+    private int singleCount;
+    private int typeId;
+    private int indate;
+    private String usableTime;
     private int order_num;
+    @SerializedName(value = "product_main_img", alternate = {"main_img"})
     private String product_main_img;
-    private int product_type;
     private String massage_name;
-    private String product_name;
-    private String product_usp;
-
-    public int getService_time() {
-        return service_time;
-    }
-
-    public void setService_time(int service_time) {
-        this.service_time = service_time;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getOnline_price() {
-        return online_price;
-    }
-
-    public void setOnline_price(int online_price) {
-        this.online_price = online_price;
-    }
-
-    public int getShop_price() {
-        return shop_price;
-    }
-
-    public void setShop_price(int shop_price) {
-        this.shop_price = shop_price;
-    }
-
-    public int getActivity_price() {
-        return activity_price;
-    }
-
-    public void setActivity_price(int activity_price) {
-        this.activity_price = activity_price;
-    }
 
     public int getOrder_num() {
         return order_num;
@@ -75,14 +58,6 @@ public class Massage implements Serializable {
         this.product_main_img = product_main_img;
     }
 
-    public int getProduct_type() {
-        return product_type;
-    }
-
-    public void setProduct_type(int product_type) {
-        this.product_type = product_type;
-    }
-
     public String getMassage_name() {
         return massage_name;
     }
@@ -91,19 +66,155 @@ public class Massage implements Serializable {
         this.massage_name = massage_name;
     }
 
-    public String getProduct_name() {
-        return product_name;
+    public long getKey() {
+        return key;
     }
 
-    public void setProduct_name(String product_name) {
-        this.product_name = product_name;
+    public void setKey(long key) {
+        this.key = key;
     }
 
-    public String getProduct_usp() {
-        return product_usp;
+    public int getActivityCount() {
+        return activityCount;
     }
 
-    public void setProduct_usp(String product_usp) {
-        this.product_usp = product_usp;
+    public void setActivityCount(int activityCount) {
+        this.activityCount = activityCount;
+    }
+
+    public double getActivityPrice() {
+        return activityPrice;
+    }
+
+    public void setActivityPrice(double activityPrice) {
+        this.activityPrice = activityPrice;
+    }
+
+    public String getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(String beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+//        public int getMassageId() {
+//            return massageId;
+//        }
+//
+//        public void setMassageId(int massageId) {
+//            this.massageId = massageId;
+//        }
+
+    public double getOnlinePrice() {
+        return onlinePrice;
+    }
+
+    public void setOnlinePrice(double onlinePrice) {
+        this.onlinePrice = onlinePrice;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
+
+    public String getProductDetail() {
+        return productDetail;
+    }
+
+    public void setProductDetail(String productDetail) {
+        this.productDetail = productDetail;
+    }
+
+    public String getProductImg() {
+        return productImg;
+    }
+
+    public void setProductImg(String productImg) {
+        this.productImg = productImg;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public int getProductType() {
+        return productType;
+    }
+
+    public void setProductType(int productType) {
+        this.productType = productType;
+    }
+
+    public String getProductUsp() {
+        return productUsp;
+    }
+
+    public void setProductUsp(String productUsp) {
+        this.productUsp = productUsp;
+    }
+
+    public int getServiceTime() {
+        return serviceTime;
+    }
+
+    public void setServiceTime(int serviceTime) {
+        this.serviceTime = serviceTime;
+    }
+
+    public double getShopPrice() {
+        return shopPrice;
+    }
+
+    public void setShopPrice(double shopPrice) {
+        this.shopPrice = shopPrice;
+    }
+
+    public int getSingleCount() {
+        return singleCount;
+    }
+
+    public void setSingleCount(int singleCount) {
+        this.singleCount = singleCount;
+    }
+
+    public int getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
+
+    public int getIndate() {
+        return indate;
+    }
+
+    public void setIndate(int indate) {
+        this.indate = indate;
+    }
+
+    public String getUsableTime() {
+        return usableTime;
+    }
+
+    public void setUsableTime(String usableTime) {
+        this.usableTime = usableTime;
     }
 }

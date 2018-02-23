@@ -1,5 +1,8 @@
 package com.us.hotr.storage.greendao;
 
+import android.content.Context;
+
+import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.SearchHistory;
 import com.us.hotr.storage.bean.SearchTypeResult;
 
@@ -11,9 +14,22 @@ import java.util.List;
  */
 
 public class DataBaseHelper {
+    private static DataBaseHelper instanse;
+    private static Context mContext;
+
+    public DataBaseHelper(Context context) {
+        this.mContext = context;
+    }
+
+    public static DataBaseHelper getInstance(Context context) {
+        if (null == instanse) {
+            instanse = new DataBaseHelper(context);
+        }
+        return instanse;
+    }
 
     public static List<String> getAllSearchHistory(){
-        List<SearchHistory> shl = GreenDaoManager.getInstance().getSession().getSearchHistoryDao().loadAll();
+        List<SearchHistory> shl = GreenDaoManager.getInstance(mContext).getSession().getSearchHistoryDao().loadAll();
         List<String> s = new ArrayList<>();
         if(shl != null && shl.size() > 0){
             for(int i=shl.size()-1;i>=Math.max(shl.size()-10, 0);i--)
@@ -23,7 +39,7 @@ public class DataBaseHelper {
     }
 
     public static void insertSearchHistory(String s){
-        SearchHistoryDao dao = GreenDaoManager.getInstance().getSession().getSearchHistoryDao();
+        SearchHistoryDao dao = GreenDaoManager.getInstance(mContext).getSession().getSearchHistoryDao();
         SearchHistory sh = new SearchHistory(s);
         dao.delete(sh);
         dao.insert(sh);
@@ -41,6 +57,6 @@ public class DataBaseHelper {
     }
 
     public static void clearSearchHistory(){
-        GreenDaoManager.getInstance().getSession().getSearchHistoryDao().deleteAll();
+        GreenDaoManager.getInstance(mContext).getSession().getSearchHistoryDao().deleteAll();
     }
 }

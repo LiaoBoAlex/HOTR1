@@ -2,7 +2,6 @@ package com.us.hotr.ui.activity.beauty;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -16,20 +15,31 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.baidu.mapapi.model.LatLng;
 import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
 import com.us.hotr.customview.HorizontalImageAdapter;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Doctor;
-import com.us.hotr.webservice.response.GetHospitalDetailResponse;
 import com.us.hotr.storage.bean.Product;
+import com.us.hotr.storage.bean.Type;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
+import com.us.hotr.ui.activity.MapViewActivity;
+import com.us.hotr.ui.view.CaseView;
+import com.us.hotr.ui.view.DoctorView;
+import com.us.hotr.ui.view.ProductView;
+import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.GetHospitalDetailResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,12 +54,13 @@ public class HospitalActivity extends BaseLoadingActivity {
     private RecyclerView mRecyclerView;
     private HospitalAdapter mAdapter;
 
-    private int mHospitalId;
+    private long mHospitalId;
+    private boolean isCollected = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHospitalId = getIntent().getExtras().getInt(Constants.PARAM_ID);
+        mHospitalId = getIntent().getExtras().getLong(Constants.PARAM_ID);
 
         setMyTitle(R.string.hospital_title);
         initStaticView();
@@ -80,6 +91,7 @@ public class HospitalActivity extends BaseLoadingActivity {
                     showErrorPage();
                     return;
                 }
+                isCollected = result.getIs_collected()==1?true:false;
                 mAdapter = new HospitalAdapter(HospitalActivity.this, result);
                 MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
                 myBaseAdapter.setFooterView();
@@ -88,10 +100,10 @@ public class HospitalActivity extends BaseLoadingActivity {
         };
         if(type == Constants.LOAD_PAGE)
             ServiceClient.getInstance().getHospitalDetail(new LoadingSubscriber(mListener, this),
-                    mHospitalId);
+                    mHospitalId, HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
         else if (type == Constants.LOAD_PULL_REFRESH)
             ServiceClient.getInstance().getHospitalDetail(new SilentSubscriber(mListener, this, refreshLayout),
-                    mHospitalId);
+                    mHospitalId, HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
     }
 
     public class HospitalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -142,16 +154,11 @@ public class HospitalActivity extends BaseLoadingActivity {
 
 
         public class CaseHolder extends RecyclerView.ViewHolder {
-            ImageView imgBefore, imgAfter;
-            TextView tvSeeMore;
-            RelativeLayout rlSeeMore;
+            CaseView caseView;
 
             public CaseHolder(View view) {
                 super(view);
-                imgBefore = (ImageView) view.findViewById(R.id.img_before);
-                imgAfter = (ImageView) view.findViewById(R.id.imge_after);
-                rlSeeMore = (RelativeLayout) view.findViewById(R.id.rl_see_more);
-                tvSeeMore = (TextView) view.findViewById(R.id.tv_see_more);
+                caseView = (CaseView) view;
             }
         }
 
@@ -175,7 +182,7 @@ public class HospitalActivity extends BaseLoadingActivity {
 
             public HospitalHeaderHolder(View view) {
                 super(view);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_product_avatar);
+                ivAvatar = (ImageView) view.findViewById(R.id.iv_user_avatar);
                 ivAdd = (ImageView) view.findViewById(R.id.iv_add);
                 ivMsg = (ImageView) view.findViewById(R.id.iv_msg);
                 ivCertified = (ImageView) view.findViewById(R.id.iv_certified);
@@ -184,8 +191,8 @@ public class HospitalActivity extends BaseLoadingActivity {
                 tvNumPointment = (TextView) view.findViewById(R.id.tv_num_appointment);
                 tvName = (TextView) view.findViewById(R.id.tv_name);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvHospital = (TextView) view.findViewById(R.id.tv_product_fav);
-                tvAddress = (TextView) view.findViewById(R.id.tv_address);
+                tvHospital = (TextView) view.findViewById(R.id.tv_address);
+                tvAddress = (TextView) view.findViewById(R.id.tv_place);
                 flSubject = (FlowLayout) view.findViewById(R.id.fl_subject);
                 rlAddress = (RelativeLayout) view.findViewById(R.id.rl_address);
                 tvIndroduction = (TextView) view.findViewById(R.id.tv_introduction);
@@ -214,46 +221,18 @@ public class HospitalActivity extends BaseLoadingActivity {
         }
 
         public class DoctorHolder extends RecyclerView.ViewHolder {
-            TextView tvName, tvTitle1, tvTitle2, tvAppointment, tvCase;
-            ImageView ivAvatar;
-            FlowLayout flSubject;
-            View vDivider;
-
+            DoctorView doctorView;
             public DoctorHolder(View view) {
                 super(view);
-                tvName = (TextView) view.findViewById(R.id.tv_name);
-                tvTitle1 = (TextView) view.findViewById(R.id.tv_title1);
-                tvTitle2 = (TextView) view.findViewById(R.id.tv_title2);
-                tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
-                tvCase = (TextView) view.findViewById(R.id.tv_case);
-                ivAvatar = (ImageView) view.findViewById(R.id.img_avator);
-                flSubject = (FlowLayout) view.findViewById(R.id.fl_subject);
-                vDivider = view.findViewById(R.id.v_divider);
-
-                flSubject.setHorizontalSpacing(6);
-                flSubject.setTextPaddingH(14);
+                doctorView = (DoctorView) view;
             }
         }
 
         public class ProductHolder extends RecyclerView.ViewHolder {
-            TextView tvTitle, tvDoctor, tvHospital, tvAppointment, tvPriceBefore, tvPriceAfter, tvSoldOut;
-            ImageView ivAvatar, ivGo, ivOnePrice, ivPromoPrice;
-            View vDivider;
-
+            ProductView productView;
             public ProductHolder(View view) {
                 super(view);
-                tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvDoctor = (TextView) view.findViewById(R.id.tv_product_doctor);
-                tvHospital = (TextView) view.findViewById(R.id.tv_product_fav);
-                tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
-                tvPriceBefore = (TextView) view.findViewById(R.id.tv_price_before);
-                tvPriceAfter = (TextView) view.findViewById(R.id.tv_pay_amount);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_product_avatar);
-                ivGo = (ImageView) view.findViewById(R.id.iv_go);
-                vDivider = view.findViewById(R.id.v_divider);
-                ivOnePrice = (ImageView) view.findViewById(R.id.iv_one_price);
-                ivPromoPrice = (ImageView) view.findViewById(R.id.iv_promo_price);
-                tvSoldOut = (TextView) view.findViewById(R.id.tv_sold_out);
+                productView = (ProductView) view;
             }
         }
 
@@ -271,7 +250,7 @@ public class HospitalActivity extends BaseLoadingActivity {
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_doctor, parent, false);
                     return new DoctorHolder(view);
                 case TYPE_CASE:
-                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_compare, parent, false);
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_case, parent, false);
                     return new CaseHolder(view);
                 case TYPE_DOCTOR_HEADER:
                 case TYPE_CASE_HEADER:
@@ -315,9 +294,9 @@ public class HospitalActivity extends BaseLoadingActivity {
                         public void onClick(View v) {
                             Intent i = new Intent(HospitalActivity.this, ListWithCategoryActivity.class);
                             Bundle b = new Bundle();
-                            b.putString(Constants.PARAM_TITLE, getString(R.string.product_list));
+                            b.putString(Constants.PARAM_TITLE, getString(R.string.hospital_appointment));
                             b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
-                            b.putInt(Constants.PARAM_HOSPITAL_ID, hospitalDetail.getDetail().getHospital_id());
+                            b.putLong(Constants.PARAM_HOSPITAL_ID, hospitalDetail.getDetail().getHospital_id());
                             i.putExtras(b);
                             startActivity(i);
                         }
@@ -333,7 +312,7 @@ public class HospitalActivity extends BaseLoadingActivity {
                             Bundle b = new Bundle();
                             b.putString(Constants.PARAM_TITLE, getString(R.string.doctor_list));
                             b.putInt(Constants.PARAM_TYPE, Constants.TYPE_DOCTOR);
-                            b.putInt(Constants.PARAM_HOSPITAL_ID, hospitalDetail.getDetail().getHospital_id());
+                            b.putLong(Constants.PARAM_HOSPITAL_ID, hospitalDetail.getDetail().getHospital_id());
                             i.putExtras(b);
                             startActivity(i);
                         }
@@ -346,57 +325,17 @@ public class HospitalActivity extends BaseLoadingActivity {
 
                 case TYPE_CASE:
                     CaseHolder caseHolder = (CaseHolder) holder;
-                    caseHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
-                    caseHolder.imgBefore.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
-                    caseHolder.imgAfter.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
+//                    caseHolder.caseView.setData(new Case());
                     break;
 
                 case TYPE_DOCTOR:
                     final Doctor doctor = (Doctor) itemList.get(position).getContent();
                     DoctorHolder doctorHolder = (DoctorHolder) holder;
-                    doctorHolder.tvName.setText(doctor.getDoctor_name());
-                    doctorHolder.tvTitle1.setText(doctor.getDoctor_job());
-                    doctorHolder.tvTitle2.setText(doctor.getHospital_name());
-                    doctorHolder.tvAppointment.setText(String.format(getString(R.string.num_of_appointment), doctor.getOrder_num()));
-                    doctorHolder.tvCase.setText(String.format(getString(R.string.num_of_case), 345) );
-                    Glide.with(mContext).load(doctor.getDoctor_main_img()).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(doctorHolder.ivAvatar);
-                    List<String> subjects = new ArrayList<>();
-                    if(doctor.getGood_at_project_list()!=null && doctor.getGood_at_project_list().size()>0)
-                        for(Doctor.Subject s:doctor.getGood_at_project_list())
-                            subjects.add(s.getType_name());
-                    doctorHolder.flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(String content, int position) {
-
-                        }
-                    });
-
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent i = new Intent(HospitalActivity.this, DoctorActivity.class);
-                            Bundle b = new Bundle();
-                            b.putSerializable(Constants.PARAM_ID, doctor.getDoctor_id());
-                            i.putExtras(b);
-                            startActivity(i);
-                        }
-                    });
+                    doctorHolder.doctorView.setData(doctor);
                     if(position < getItemCount()-1 && !(itemList.get(position+1).getContent() instanceof Doctor))
-                        doctorHolder.vDivider.setVisibility(View.GONE);
+                        doctorHolder.doctorView.showDivider(false);
                     else
-                        doctorHolder.vDivider.setVisibility(View.VISIBLE);
+                        doctorHolder.doctorView.showDivider(true);
                     break;
 
 
@@ -406,6 +345,19 @@ public class HospitalActivity extends BaseLoadingActivity {
                     final HospitalHeaderHolder hospitalHeaderHolder = (HospitalHeaderHolder) holder;
                     hospitalHeaderHolder.tvHospital.setText(hospitalDetail.getDetail().getHospital_type());
                     hospitalHeaderHolder.tvAddress.setText(hospitalDetail.getDetail().getHospital_address());
+                    hospitalHeaderHolder.rlAddress.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent i = new Intent(HospitalActivity.this, MapViewActivity.class);
+                            Bundle b= new Bundle();
+                            b.putParcelable(Constants.PARAM_DATA, new LatLng(hospitalDetail.getDetail().getLat(),hospitalDetail.getDetail().getLon()));
+                            b.putString(Constants.PARAM_TITLE, hospitalDetail.getDetail().getHospital_name());
+                            b.putString(Constants.PARAM_HOSPITAL_ID, hospitalDetail.getDetail().getHospital_address());
+                            i.putExtras(b);
+                            startActivity(i);
+
+                        }
+                    });
                     hospitalHeaderHolder.tvName.setText(hospitalDetail.getDetail().getHospital_name());
                     hospitalHeaderHolder.tvNumCase.setText("1256");
                     hospitalHeaderHolder.tvNumConsult.setText("759");
@@ -418,9 +370,9 @@ public class HospitalActivity extends BaseLoadingActivity {
                             .into(hospitalHeaderHolder.ivAvatar);
                     if(hospitalDetail.getTypeList()!=null && hospitalDetail.getTypeList().size()>0) {
                         hospitalHeaderHolder.clSubject.setVisibility(View.VISIBLE);
-                        subjects = new ArrayList<>();
-                        for (GetHospitalDetailResponse.SubjectCount s : hospitalDetail.getTypeList())
-                            subjects.add(s.getType_name() + " " + s.getOrder_num());
+                        List<String> subjects = new ArrayList<>();
+                        for (Type s : hospitalDetail.getTypeList())
+                            subjects.add(s.getTypeName() + " " + s.getProduct_num()+getString(R.string.appointment));
                         hospitalHeaderHolder.flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
                             @Override
                             public void onItemClick(String content, int position) {
@@ -466,51 +418,58 @@ public class HospitalActivity extends BaseLoadingActivity {
                         }
                     }else
                         hospitalHeaderHolder.tvIndroduction.setVisibility(View.GONE);
+                    if(isCollected)
+                        hospitalHeaderHolder.ivAdd.setImageResource(R.mipmap.ic_click);
+                    else
+                        hospitalHeaderHolder.ivAdd.setImageResource(R.mipmap.ic_add);
+                    hospitalHeaderHolder.ivAdd.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(!isCollected) {
+                                SubscriberWithReloadListener mListener = new SubscriberWithReloadListener<String>() {
+                                    @Override
+                                    public void onNext(String result) {
+                                        isCollected = true;
+                                        Tools.Toast(HospitalActivity.this, getString(R.string.fav_item_success));
+                                        notifyItemChanged(position);
+                                    }
+                                    @Override
+                                    public void reload() {
+                                        loadData(Constants.LOAD_DIALOG);
+                                    }
+                                };
+                                ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, HospitalActivity.this),
+                                        HOTRSharePreference.getInstance(HospitalActivity.this.getApplicationContext()).getUserID(), hospitalDetail.getDetail().getHospital_id(), 1);
+                            }else{
+                                SubscriberListener mListener = new SubscriberListener<String>() {
+                                    @Override
+                                    public void onNext(String result) {
+                                        isCollected = false;
+                                        Tools.Toast(HospitalActivity.this, getString(R.string.remove_fav_item_success));
+                                        notifyItemChanged(position);
+                                    }
+                                };
+                                ServiceClient.getInstance().removeFavoriteItem(new ProgressSubscriber(mListener, HospitalActivity.this),
+                                        HOTRSharePreference.getInstance(HospitalActivity.this.getApplicationContext()).getUserID(), Arrays.asList(hospitalDetail.getDetail().getHospital_id()), 1);
+                            }
+                        }
+                    });
                     break;
 
                 case TYPE_PRODUCT:
                     final Product product = (Product)itemList.get(position).getContent();
                     ProductHolder productHolder = (ProductHolder) holder;
-                    productHolder.tvTitle.setText(product.getProduct_name() + product.getProduct_usp());
-                    productHolder.tvDoctor.setText(product.getDoctor_name());
-                    productHolder.tvHospital.setText(product.getHospital_name());
-                    productHolder.tvAppointment.setText(String.format(getString(R.string.num_of_appointment1), product.getOrder_num()));
-                    productHolder.tvPriceBefore.setText(String.format(getString(R.string.price), product.getShop_price()));
-                    productHolder.tvPriceAfter.setText(product.getOnline_price()+"");
-                    productHolder.tvPriceBefore.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
-                    Glide.with(mContext).load(product.getProduct_main_img()).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(productHolder.ivAvatar);
-                    if(product.getPayment_type() == Constants.FULL_PAYMENT)
-                        productHolder.ivOnePrice.setVisibility(View.VISIBLE);
-                    else
-                        productHolder.ivOnePrice.setVisibility(View.GONE);
-                    if(product.getProduct_type() == Constants.PROMOTION_PRODUCT){
-                        productHolder.ivPromoPrice.setVisibility(View.VISIBLE);
-                        if(product.getAmount()>0)
-                            productHolder.tvSoldOut.setVisibility(View.GONE);
-                        else
-                            productHolder.tvSoldOut.setVisibility(View.GONE);
-                    }else
-                        productHolder.ivPromoPrice.setVisibility(View.GONE);
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent i = new Intent(HospitalActivity.this, ProductActivity.class);
-                            Bundle b= new Bundle();
-                            b.putInt(Constants.PARAM_ID, product.getProductId());
-                            i.putExtras(b);
-                            startActivity(i);
-                        }
-                    });
+                    productHolder.productView.setData(product);
                     if(position < getItemCount()-1 && !(itemList.get(position+1).getContent() instanceof Product))
-                        productHolder.vDivider.setVisibility(View.GONE);
+                        productHolder.productView.showDivider(false);
                     else
-                        productHolder.vDivider.setVisibility(View.VISIBLE);
+                        productHolder.productView.showDivider(true);
                     break;
 
 
                 case TYPE_CASE_SUBJECT:
                     SubjectHolder subjectHolder = (SubjectHolder) holder;
-                    subjects = new ArrayList<>(Arrays.asList("鼻部 23", "面部轮廓 5", "胸部 7", "鼻部 23", "面部轮廓 5", "胸部 7"));
+                    List<String> subjects = new ArrayList<>(Arrays.asList("鼻部 23", "面部轮廓 5", "胸部 7", "鼻部 23", "面部轮廓 5", "胸部 7"));
                     subjectHolder.flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
                         @Override
                         public void onItemClick(String content, int position) {

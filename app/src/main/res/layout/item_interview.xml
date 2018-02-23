@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/tv_avatar"
+        android:id="@+id/iv_avatar"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginLeft="12dp"
@@ -31,8 +31,8 @@
         android:textColor="@color/text_black"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_avatar"
-        app:layout_constraintTop_toBottomOf="@+id/tv_avatar" />
+        app:layout_constraintLeft_toLeftOf="@+id/iv_avatar"
+        app:layout_constraintTop_toBottomOf="@+id/iv_avatar" />
 
     <TextView
         android:id="@+id/tv_number"
@@ -45,5 +45,5 @@
         android:drawableLeft="@mipmap/ic_masseur_popular"
         android:drawablePadding="6dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/tv_name"
-        app:layout_constraintRight_toRightOf="@+id/tv_avatar" />
+        app:layout_constraintRight_toRightOf="@+id/iv_avatar" />
 </android.support.constraint.ConstraintLayout>

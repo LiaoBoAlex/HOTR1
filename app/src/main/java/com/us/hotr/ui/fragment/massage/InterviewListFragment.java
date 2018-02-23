@@ -19,7 +19,7 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.bean.Hospital;
-import com.us.hotr.ui.activity.beauty.CompareActivity;
+import com.us.hotr.ui.activity.beauty.CaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +115,7 @@ public class InterviewListFragment extends Fragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(getActivity(), CompareActivity.class);
+                    Intent i = new Intent(getActivity(), CaseActivity.class);
                     i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_INTERVIEW);
                     startActivity(i);
                 }

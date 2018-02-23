@@ -80,13 +80,13 @@ public class ProgressSubscriber<T> extends DisposableObserver<T> implements Prog
             Tools.Toast(context, ((ApiException) e).getErrorMsg());
             if(((ApiException) e).getErrorCode() == Constants.ERROR_INVALID_SESSIONID){
                 HOTRSharePreference.getInstance(context.getApplicationContext()).storeUserID("");
-//                LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
-//                    @Override
-//                    public void onLoginSuccess() {
-//                        if(mSubscriberWithReloadListener!=null)
-//                            mSubscriberWithReloadListener.reload();
-//                    }
-//                });
+                LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                    @Override
+                    public void onLoginSuccess() {
+                        if(mSubscriberWithReloadListener!=null)
+                            mSubscriberWithReloadListener.reload();
+                    }
+                });
                 Intent i = new Intent(context, LoginActivity.class);
                 context.startActivity(i);
             }
@@ -94,7 +94,6 @@ public class ProgressSubscriber<T> extends DisposableObserver<T> implements Prog
             Tools.Toast(context, context.getString(R.string.network_error));
         }
         dismissProgressDialog();
-
     }
 
     @Override

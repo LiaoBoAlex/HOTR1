@@ -74,7 +74,7 @@ public class NoticeMessageFragment extends Fragment {
             ImageView ivAvatar;
             public MyViewHolder(View view) {
                 super(view);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_product_avatar);
+                ivAvatar = (ImageView) view.findViewById(R.id.iv_user_avatar);
             }
         }
 

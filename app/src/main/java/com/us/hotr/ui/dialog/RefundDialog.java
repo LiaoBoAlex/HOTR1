@@ -112,7 +112,7 @@ public class RefundDialog extends Dialog{
                 }
             }
             if (message != null) {
-                ((TextView) layout.findViewById(R.id.tv_amount)).setText(message);
+                ((TextView) layout.findViewById(R.id.tv_price)).setText(message);
             }
             dialog.setContentView(layout);
             return dialog;

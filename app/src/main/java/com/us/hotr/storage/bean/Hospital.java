@@ -1,5 +1,7 @@
 package com.us.hotr.storage.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,13 +13,60 @@ public class Hospital implements Serializable {
     private String hospital_logo;
     private List<Subject> good_at_project_list;
     private String hospital_name;
-    private int hospital_id;
+    private long hospital_id;
     private String hospital_address;
     private int order_num;
     private String hospital_type;
     private String hospital_photos;
     private String hospital_info;
     private String hospital_style;
+    private double lat;
+    private double lon;
+    private String provinceName;
+    @SerializedName(value = "cityName", alternate = {"city_name"})
+    private String cityName;
+    @SerializedName(value = "areaName", alternate = {"area_name"})
+    private String areaName;
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public String getAreaName() {
+        return areaName;
+    }
+
+    public void setAreaName(String areaName) {
+        this.areaName = areaName;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
 
     public String getHospital_logo() {
         return hospital_logo;
@@ -43,11 +92,11 @@ public class Hospital implements Serializable {
         this.hospital_name = hospital_name;
     }
 
-    public int getHospital_id() {
+    public long getHospital_id() {
         return hospital_id;
     }
 
-    public void setHospital_id(int hospital_id) {
+    public void setHospital_id(long hospital_id) {
         this.hospital_id = hospital_id;
     }
 

@@ -3,7 +3,7 @@ apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.us.hotr"
         minSdkVersion 19
@@ -57,6 +57,10 @@ android {
         daoPackage 'com.women.hotr.storage.greendao'
         targetGenDir 'src/main/java'
     }
+
+    dexOptions {
+        jumboMode true
+    }
 }
 
 
@@ -68,7 +72,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.sina.weibo.sdk:core:4.1.4:openDefaultRelease@aar'
-    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'org.greenrobot:greendao:3.2.2'
     compile 'com.qq.mta:mta:3.2.0-alpha'
@@ -93,9 +97,10 @@ dependencies {
     compile 'com.github.rahatarmanahmed:circularprogressview:2.5.0'
     compile 'com.romandanylyk:pageindicatorview:0.2.0'
     compile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    compile 'com.cesards.android:cropimageview:1.0.2.1'
+    compile 'id.zelory:compressor:2.1.0'
     compile files('libs/BaiduLBS_Android.jar')
     compile project(':RxGallary_library')
-    compile project(':citypickerview')
     compile project(':nicevideoplayer')
 
 }

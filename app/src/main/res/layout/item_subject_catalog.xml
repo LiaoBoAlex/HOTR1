@@ -19,7 +19,9 @@
         android:paddingBottom="18dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:backgroundResource="@mipmap/bg_item"
+        app:highlightedBackgroundResource="@drawable/bg_button_red"
+        app:highlightedItemColor="@color/white"
+        app:backgroundResource="@drawable/bg_button_dash"
         app:itemColor="@color/text_black"
         app:itemSize="12sp"
         app:textPaddingV="12dp"/>

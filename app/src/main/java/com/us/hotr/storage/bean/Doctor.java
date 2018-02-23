@@ -1,5 +1,7 @@
 package com.us.hotr.storage.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -8,16 +10,28 @@ import java.util.List;
  */
 
 public class Doctor implements Serializable {
+    @SerializedName(value = "doctor_name", alternate = {"docName"})
     private String doctor_name;
     private String hospital_name;
     private String doctor_job;
-    private int doctor_id;
+    @SerializedName(value = "doctor_id", alternate = {"id"})
+    private long doctor_id;
+    @SerializedName(value = "doctor_main_img", alternate = {"docPhoto", "main_img"})
     private String doctor_main_img;
     private List<String> doctor_img;
     private List<Subject> good_at_project_list;
     private String doctor_info;
-    private int hospital_id;
+    private long hospital_id;
     private int order_num;
+    private String typeName;
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
 
     public String getDoctor_name() {
         return doctor_name;
@@ -43,11 +57,11 @@ public class Doctor implements Serializable {
         this.doctor_job = doctor_job;
     }
 
-    public int getDoctor_id() {
+    public long getDoctor_id() {
         return doctor_id;
     }
 
-    public void setDoctor_id(int doctor_id) {
+    public void setDoctor_id(long doctor_id) {
         this.doctor_id = doctor_id;
     }
 
@@ -67,11 +81,11 @@ public class Doctor implements Serializable {
         this.doctor_info = doctor_info;
     }
 
-    public int getHospital_id() {
+    public long getHospital_id() {
         return hospital_id;
     }
 
-    public void setHospital_id(int hospital_id) {
+    public void setHospital_id(long hospital_id) {
         this.hospital_id = hospital_id;
     }
 

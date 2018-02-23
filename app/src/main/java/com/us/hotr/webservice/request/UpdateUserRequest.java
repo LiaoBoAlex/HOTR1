@@ -16,6 +16,15 @@ public class UpdateUserRequest implements Serializable {
     private int provinceCode;
     private String cityName;
     private int cityCode;
+    private String head_image_path;
+
+    public String getHead_image_path() {
+        return head_image_path;
+    }
+
+    public void setHead_image_path(String head_image_path) {
+        this.head_image_path = head_image_path;
+    }
 
     public String getNickname() {
         return nickname;

@@ -2,39 +2,85 @@ package com.us.hotr.webservice;
 
 
 import com.us.hotr.Constants;
+import com.us.hotr.R;
+import com.us.hotr.storage.bean.Address;
 import com.us.hotr.storage.bean.Adv;
+import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Doctor;
-import com.us.hotr.storage.bean.User;
-import com.us.hotr.webservice.request.UpdateUserRequest;
-import com.us.hotr.webservice.response.GetDoctorDetailResponse;
+import com.us.hotr.storage.bean.Group;
 import com.us.hotr.storage.bean.Hospital;
-import com.us.hotr.webservice.response.GetHospitalDetailResponse;
+import com.us.hotr.storage.bean.HotSearchTopic;
 import com.us.hotr.storage.bean.Massage;
-import com.us.hotr.webservice.response.GetLoginResponse;
-import com.us.hotr.webservice.response.GetMassageDetailResponse;
+import com.us.hotr.storage.bean.MassageOrder;
 import com.us.hotr.storage.bean.Masseur;
-import com.us.hotr.webservice.response.GetMasseurDetailResponse;
+import com.us.hotr.storage.bean.Party;
+import com.us.hotr.storage.bean.PartyOrder;
+import com.us.hotr.storage.bean.Post;
 import com.us.hotr.storage.bean.Product;
+import com.us.hotr.storage.bean.ProductOrder;
 import com.us.hotr.storage.bean.Provence;
 import com.us.hotr.storage.bean.Spa;
-import com.us.hotr.webservice.response.GetProductDetailResponse;
-import com.us.hotr.webservice.response.GetSpaDetailResponse;
 import com.us.hotr.storage.bean.Subject;
 import com.us.hotr.storage.bean.SubjectDetail;
-import com.us.hotr.storage.bean.TypeWithCount;
+import com.us.hotr.storage.bean.Theme;
+import com.us.hotr.storage.bean.Ticket;
+import com.us.hotr.storage.bean.Type;
+import com.us.hotr.storage.bean.User;
+import com.us.hotr.storage.bean.Voucher;
+import com.us.hotr.webservice.request.AvailableVoucherRequest;
+import com.us.hotr.webservice.request.BoundMobileRequest;
+import com.us.hotr.webservice.request.CancelOrderRequest;
+import com.us.hotr.webservice.request.ChangePasswordRequest;
+import com.us.hotr.webservice.request.CreateMassageOrderRequest;
+import com.us.hotr.webservice.request.CreatePartyOrderRequest;
+import com.us.hotr.webservice.request.CreateProductOrderRequest;
+import com.us.hotr.webservice.request.LoginAndRegisterRequest;
+import com.us.hotr.webservice.request.LoginWithWechatRequest;
+import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
+import com.us.hotr.webservice.request.UpdateUserRequest;
+import com.us.hotr.webservice.request.UploadCommentRequest;
+import com.us.hotr.webservice.request.UploadReplyRequest;
 import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.response.BaseResponse;
+import com.us.hotr.webservice.response.GetAllGroupResponse;
+import com.us.hotr.webservice.response.GetCaseDetailResponse;
+import com.us.hotr.webservice.response.GetDoctorDetailResponse;
+import com.us.hotr.webservice.response.GetGroupListbyUserResponse;
+import com.us.hotr.webservice.response.GetGroupMainPageResponse;
+import com.us.hotr.webservice.response.GetHomePageResponse;
+import com.us.hotr.webservice.response.GetHospitalDetailResponse;
+import com.us.hotr.webservice.response.GetLoginResponse;
+import com.us.hotr.webservice.response.GetMassageDetailResponse;
+import com.us.hotr.webservice.response.GetMasseurDetailResponse;
+import com.us.hotr.webservice.response.GetPartyDetailResponse;
+import com.us.hotr.webservice.response.GetPartyOrderDetailResponse;
+import com.us.hotr.webservice.response.GetPostDetailResponse;
+import com.us.hotr.webservice.response.GetProductDetailResponse;
+import com.us.hotr.webservice.response.GetReceiptListResponse;
+import com.us.hotr.webservice.response.GetSpaDetailResponse;
 import com.us.hotr.webservice.response.GetWechatAccessTokenResponse;
 import com.us.hotr.webservice.response.GetWechatUserInfo;
+import com.us.hotr.webservice.response.UpdateUserAvatarRespone;
+import com.us.hotr.webservice.response.UploadPostResponse;
 import com.us.hotr.webservice.rxjava.ApiException;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 /**
  * Created by liaobo on 4/27/2017.
@@ -56,26 +102,50 @@ public class ServiceClient {
         return SingletonHolder.INSTANCE;
     }
 
-    public void getWechatUserInfo(DisposableObserver subscriber, String appid, String secret, String code, String grant_type){
-        webService.getWechatAccessToken(Constants.WECHAT_LOGIN_URL, appid, secret, code, grant_type)
-                .observeOn(Schedulers.io())
-                .flatMap(new Function<GetWechatAccessTokenResponse, Observable<GetWechatUserInfo>>() {
-                    @Override
-                    public Observable<GetWechatUserInfo> apply(GetWechatAccessTokenResponse getWechatAccessTokenResponse) throws Exception {
-                        return webService.getWechatUserInfo(Constants.WECHAT_USER_INFO_URL,
-                                getWechatAccessTokenResponse.getAccess_token(),
-                                getWechatAccessTokenResponse.getOpenid());
-                    }
-                })
+    public void getAdvList(DisposableObserver subscriber, int width, int height, int type){
+        webService.getAdvList(width, height, type)
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Adv>>())
+                .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getAdvList(DisposableObserver subscriber, int width, int height, int type){
-        webService.getAdvList(width, height, type)
-                .map(new HttpResultFunc<List<Adv>>())
+    public void getHomePage(DisposableObserver subscriber, String jsessionid, long provinceCode, Long cityCode, int modelId){
+        webService.getHomePage(jsessionid, provinceCode, cityCode, modelId)
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetHomePageResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPostHomePage(DisposableObserver subscriber, final String jsessionid, final Long userId){
+        webService.getHomePage(jsessionid, 2, null, 2)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetHomePageResponse>())
+                .map(new Function<GetHomePageResponse, GetHomePageResponse>() {
+                    @Override
+                    public GetHomePageResponse apply(GetHomePageResponse result) throws Exception {
+                        GetGroupMainPageResponse response = webService.getGroupSession(jsessionid, userId).execute().body().getResult();
+                        List<Group> myGroup = new ArrayList<>();
+                        if(response.getMyCoshow()!=null)
+                            myGroup.addAll(response.getMyCoshow());
+                        if(response.getRestOfMyCoshow()!=null)
+                            myGroup.addAll(response.getRestOfMyCoshow());
+                        result.setMyGrouList(myGroup);
+                        return result;
+                    }
+                })
+                .map(new Function<GetHomePageResponse, GetHomePageResponse>() {
+                    @Override
+                    public GetHomePageResponse apply(GetHomePageResponse result) throws Exception {
+                        BaseListResponse<List<Post>> response = webService.getAllPost1(jsessionid, 1, Constants.MAX_PAGE_ITEM).execute().body().getResult();
+                        result.setRecommendHotTopicList(response.getRows());
+                        result.setTotal(response.getTotal());
+                        return result;
+                    }
+                })
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -83,8 +153,8 @@ public class ServiceClient {
 
     public void getSubjectList(DisposableObserver subscriber){
         webService.getSubjectList()
-                .map(new HttpResultFunc<List<Subject>>())
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Subject>>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -92,162 +162,213 @@ public class ServiceClient {
 
     public void getMassageTypeList(DisposableObserver subscriber){
         webService.getMassageTypeList()
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Subject>>>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getMassageTypeListBySpa(DisposableObserver subscriber, int spaId){
+    public void getPartyStatusList(DisposableObserver subscriber){
+        webService.getPartyStatusList()
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Integer>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getMassageTypeListBySpa(DisposableObserver subscriber, long spaId){
         webService.getMassageTypeListBySpa(spaId)
-                .map(new HttpResultFunc<List<TypeWithCount>>())
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Type>>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getCityList(DisposableObserver subscriber){
-        webService.getCityList()
+    public void getProductTypeListByHospital(DisposableObserver subscriber, long hospitalId){
+        webService.getProductTypeListByHospital(hospitalId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Type>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getProductTypeListByDoctor(DisposableObserver subscriber, long DoctorId){
+        webService.getProductTypeListByDoctor(DoctorId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Type>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCityList(DisposableObserver subscriber, int type){
+        webService.getCityList(type)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<List<Provence>>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getHospitalList(DisposableObserver subscriber, Integer city_code, Integer type, Integer type_id, Integer page_size, int page){
-        webService.getHospitalList(city_code, type, type_id, page_size, page)
+    public void getHospitalList(DisposableObserver subscriber, String keyword, Long city_code, Integer type, Long type_id, Integer page_size, int page){
+        webService.getHospitalList(keyword, city_code, type, type_id, page_size, page)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Hospital>>>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getSpaList(DisposableObserver subscriber, Integer city_code, Integer type, Integer type_id, Double latitude, Double longitude, Integer page_size, int page){
-        webService.getSpaList(city_code, type, type_id, latitude, longitude, page_size, page)
+    public void getSpaList(DisposableObserver subscriber, String keyword, Long city_code, Integer type, Long type_id, Double latitude, Double longitude, Integer page_size, int page){
+        webService.getSpaList(keyword, city_code, type, type_id, latitude, longitude, page_size, page)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Spa>>>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getSubjectDetail(DisposableObserver subscriber, int id){
+    public void getSubjectDetail(DisposableObserver subscriber, long id){
         webService.getSubjectDetail(id)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<SubjectDetail>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getProductList(DisposableObserver subscriber, Integer type, Integer hospitalId, Integer doctorId, Integer project_id, Integer city_id, Double pos_latitude, Double pos_longitude, Integer pageSize, int page){
-        webService.getProductList(type, hospitalId, doctorId, project_id, city_id, pos_latitude, pos_longitude, pageSize, page)
+    public void getProductList(DisposableObserver subscriber, String keyword, Integer type, Long hospitalId, Long doctorId, Long project_id, Long city_id, Double pos_latitude, Double pos_longitude, Integer pageSize, int page){
+        webService.getProductList(keyword, type, hospitalId, doctorId, project_id, city_id, pos_latitude, pos_longitude, pageSize, page)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Product>>>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getMassageList(DisposableObserver subscriber, Integer type, Integer type_id, Integer city_id, Double pos_latitude, Double pos_longitude, Integer pageSize, int page){
-        webService.getMassageList(type, type_id, city_id, pos_latitude, pos_longitude, pageSize, page)
+    public void getMassageList(DisposableObserver subscriber, String keyword, Integer type, Long type_id, Long city_id, Double pos_latitude, Double pos_longitude, Integer pageSize, int page){
+        webService.getMassageList(keyword, type, type_id, city_id, pos_latitude, pos_longitude, pageSize, page)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Massage>>>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getMassageListBySpa(DisposableObserver subscriber, Integer spaId, Integer subjectId, Integer pageSize, int page){
+    public void getMassageListBySpa(DisposableObserver subscriber, Long spaId, Long subjectId, Integer pageSize, int page){
         webService.getMassageListBySpa(spaId,  subjectId, page, pageSize)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Massage>>>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
-    public void getDoctorList(DisposableObserver subscriber, Integer type, Integer hospitalId, Integer project_id, Integer city_id, Integer pageSize, int page){
-        webService.getDoctorList(type, hospitalId, project_id, city_id, pageSize, page)
+    public void getDoctorList(DisposableObserver subscriber, String keyword, Integer type, Long hospitalId, Long project_id, Long city_id, Integer pageSize, int page){
+        webService.getDoctorList(keyword, type, hospitalId, project_id, city_id, pageSize, page)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Doctor>>>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getMasseurList(DisposableObserver subscriber, Integer spaId, Integer cityId, Integer typeId, Double latitude, Double longitude, Integer type, Integer pageSize, int page){
-        webService.getMasseurList(spaId, cityId,typeId, latitude, longitude, page, pageSize, type)
+    public void getMasseurList(DisposableObserver subscriber, String ssesionId, String keyword, Long spaId, Long cityId, Long typeId, Double latitude, Double longitude, Integer type, Integer pageSize, int page){
+        webService.getMasseurList(ssesionId, keyword, spaId, cityId,typeId, latitude, longitude, page, pageSize, type)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Masseur>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPartyList(DisposableObserver subscriber, String keyword, int type, List<Integer> status, Integer pageSize, int page){
+        webService.getPartyList(keyword, type, status, pageSize, page)
+                .map(new HttpResultFunc<BaseListResponse<List<Party>>>())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getMasseurListBySpa(DisposableObserver subscriber, Integer spaId, Integer pageSize, int page){
-        webService.getMasseurListBySpa(spaId,  page, pageSize)
+    public void getMasseurListBySpa(DisposableObserver subscriber, String ssesionId, Long spaId, Integer pageSize, int page){
+        webService.getMasseurListBySpa(ssesionId, spaId,  page, pageSize)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Masseur>>>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getHospitalDetail(DisposableObserver subscriber, final int hospitalId){
-        webService.getHospitalDetail(hospitalId)
+    public void getHospitalDetail(DisposableObserver subscriber, final long hospitalId, String ssesionId){
+        webService.getHospitalDetail(hospitalId, ssesionId)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<GetHospitalDetailResponse>())
-                .subscribeOn(Schedulers.io())
                 .map(new Function<GetHospitalDetailResponse, GetHospitalDetailResponse>() {
                     @Override
                     public GetHospitalDetailResponse apply(GetHospitalDetailResponse hospitalDetail) throws Exception {
-                        BaseListResponse<List<Product>> productResult = webService.getHospitalProductList1(hospitalId).execute().body().getResult();
-                        hospitalDetail.setProductList(productResult.getRows());
-                        hospitalDetail.setTotalProduct(productResult.getTotal());
-                        BaseListResponse<List<Doctor>> doctorResult = webService.getDoctorList1(hospitalId).execute().body().getResult();
-                        hospitalDetail.setDoctorList(doctorResult.getRows());
-                        hospitalDetail.setTotalDoctor(doctorResult.getTotal());
+                        BaseResponse<BaseListResponse<List<Product>>> response = webService.getHospitalProductList1(hospitalId).execute().body();
+                        if (response.getStatus() != Constants.SUCCESS) {
+                            throw new ApiException(response.getStatus(), response.getMemo());
+                        } else{
+                            hospitalDetail.setProductList(response.getResult().getRows());
+                            hospitalDetail.setTotalProduct(response.getResult().getTotal());
+                        }
+                        BaseResponse<BaseListResponse<List<Doctor>>> response1 = webService.getDoctorList1(hospitalId).execute().body();
+                        if (response1.getStatus() != Constants.SUCCESS) {
+                            throw new ApiException(response.getStatus(), response.getMemo());
+                        } else{
+                            hospitalDetail.setDoctorList(response1.getResult().getRows());
+                            hospitalDetail.setTotalDoctor(response1.getResult().getTotal());
+                        }
+
                         return hospitalDetail;
                     }
                 })
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getDoctorDetail(DisposableObserver subscriber, final int doctorId){
-        webService.getDoctorDetail(doctorId)
-                .map(new HttpResultFunc<GetDoctorDetailResponse>())
+    public void getDoctorDetail(DisposableObserver subscriber, final long doctorId, String ssesionId){
+        webService.getDoctorDetail(doctorId, ssesionId)
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetDoctorDetailResponse>())
                 .map(new Function<GetDoctorDetailResponse, GetDoctorDetailResponse>() {
                     @Override
                     public GetDoctorDetailResponse apply(GetDoctorDetailResponse doctorDetail) throws Exception {
-                        BaseListResponse<List<Product>> productResult = webService.getDoctorProductList1(doctorId).execute().body().getResult();
-                        doctorDetail.setProductList(productResult.getRows());
-                        doctorDetail.setTotalProduct(productResult.getTotal());
+                        BaseResponse<BaseListResponse<List<Product>>> response = webService.getDoctorProductList1(doctorId).execute().body();
+                        if (response.getStatus() != Constants.SUCCESS) {
+                            throw new ApiException(response.getStatus(), response.getMemo());
+                        } else{
+                            doctorDetail.setProductList(response.getResult().getRows());
+                            doctorDetail.setTotalProduct(response.getResult().getTotal());
+                        }
                         return doctorDetail;
                     }
                 })
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getMassageDetail(DisposableObserver subscriber, final int key){
-        webService.getMassageDetail(key)
-                .map(new HttpResultFunc<GetMassageDetailResponse>())
+    public void getMassageDetail(DisposableObserver subscriber, final long key, final String ssesionId){
+        webService.getMassageDetail(key, ssesionId)
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetMassageDetailResponse>())
                 .map(new Function<GetMassageDetailResponse, GetMassageDetailResponse>() {
                     @Override
                     public GetMassageDetailResponse apply(GetMassageDetailResponse massageDetail) throws Exception {
-                        BaseListResponse<List<Masseur>> masseurResult = webService.getMasseurListBySpa1(massageDetail.getMassage().getId()).execute().body().getResult();
-                        massageDetail.setMassageistList(masseurResult.getRows());
-                        massageDetail.setTotalMasseurCount(masseurResult.getTotal());
+                        BaseResponse<BaseListResponse<List<Masseur>>> response = webService.getMasseurListBySpa1(ssesionId, massageDetail.getMassage().getKey()).execute().body();
+                        if (response.getStatus() != Constants.SUCCESS) {
+                            throw new ApiException(response.getStatus(), response.getMemo());
+                        } else{
+                            massageDetail.setMassageistList(response.getResult().getRows());
+                            massageDetail.setTotalMasseurCount(response.getResult().getTotal());
+                        }
                         return massageDetail;
                     }
                 })
@@ -257,51 +378,687 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
-    public void getProductDetail(DisposableObserver subscriber, int id) {
-        webService.getProductDetail(id)
-                .map(new HttpResultFunc<GetProductDetailResponse>())
+    public void getProductDetail(DisposableObserver subscriber, long id, String ssesionId) {
+        webService.getProductDetail(id, ssesionId)
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetProductDetailResponse>())
                 .map(new Function<GetProductDetailResponse, GetProductDetailResponse>() {
                     @Override
                     public GetProductDetailResponse apply(GetProductDetailResponse productDetailResponse) throws Exception {
-                        BaseListResponse<List<Product>> productResult = webService.getHospitalProductList1(productDetailResponse.getHospital().getKey()).execute().body().getResult();
-                        productDetailResponse.setProposedProduct(productResult.getRows());
-                        productDetailResponse.setProposedProductCount(productResult.getTotal());
+                        BaseResponse<BaseListResponse<List<Product>>> response = webService.getHospitalProductList1(productDetailResponse.getHospital().getKey()).execute().body();
+                        if (response.getStatus() != Constants.SUCCESS) {
+                            throw new ApiException(response.getStatus(), response.getMemo());
+                        } else{
+                            productDetailResponse.setProposedProduct(response.getResult().getRows());
+                            productDetailResponse.setProposedProductCount(response.getResult().getTotal());
+                        }
                         return productDetailResponse;
                     }
                 })
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getMasseurDetail(DisposableObserver subscriber, int id) {
-        webService.getMasseurDetail(id)
+    public void getMasseurDetail(DisposableObserver subscriber, long id, String ssesionId) {
+        webService.getMasseurDetail(id, ssesionId)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<GetMasseurDetailResponse>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getSpaDetail(DisposableObserver subscriber, final int key){
-        webService.getSpaDetail(key)
-                .map(new HttpResultFunc<GetSpaDetailResponse>())
+    public void getSpaDetail(DisposableObserver subscriber, final long key, final String ssesionId){
+        webService.getSpaDetail(key, ssesionId)
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetSpaDetailResponse>())
                 .map(new Function<GetSpaDetailResponse, GetSpaDetailResponse>() {
                     @Override
                     public GetSpaDetailResponse apply(GetSpaDetailResponse spaDetail) throws Exception {
-                        BaseListResponse<List<Masseur>> masseurList = webService.getMasseurListBySpa1(spaDetail.getMassage().getKey()).execute().body().getResult();
-                        spaDetail.setMasseurList(masseurList.getRows());
-                        spaDetail.setTotalMasseurCount(masseurList.getTotal());
-                        BaseListResponse<List<Massage>> massageList = webService.getMassageListBySpa1(spaDetail.getMassage().getKey()).execute().body().getResult();
-                        spaDetail.setMassageList(massageList.getRows());
-                        spaDetail.setTotalMassageCount(massageList.getTotal());
+                        BaseResponse<BaseListResponse<List<Masseur>>> response = webService.getMasseurListBySpa1(ssesionId, spaDetail.getMassage().getKey()).execute().body();
+                        if (response.getStatus() != Constants.SUCCESS) {
+                            throw new ApiException(response.getStatus(), response.getMemo());
+                        } else{
+                            spaDetail.setMasseurList(response.getResult().getRows());
+                            spaDetail.setTotalMasseurCount(response.getResult().getTotal());
+                        }
+                        BaseResponse<BaseListResponse<List<Massage>>> response1 = webService.getMassageListBySpa1(spaDetail.getMassage().getKey()).execute().body();
+                        if (response1.getStatus() != Constants.SUCCESS) {
+                            throw new ApiException(response.getStatus(), response.getMemo());
+                        } else{
+                            spaDetail.setMassageList(response1.getResult().getRows());
+                            spaDetail.setTotalMassageCount(response1.getResult().getTotal());
+                        }
                         return spaDetail;
                     }
                 })
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPartyDetail(DisposableObserver subscriber, long id, String ssesionId){
+        webService.getPartyDetail(id, ssesionId)
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetPartyDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void increasePartyInterest(DisposableObserver subscriber, long id){
+        webService.increasePartyInterest(id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getAvaliableVoucher(DisposableObserver subscriber, String jsessionid, AvailableVoucherRequest request){
+        webService.getAvaliableVoucher(jsessionid, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Voucher>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getAllVoucher(DisposableObserver subscriber, String jsessionid, int status, int page_number, Integer page_size){
+        webService.getAllVoucher(jsessionid, status, page_number, page_size)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Voucher>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void checkOrderCount(DisposableObserver subscriber, long productId, int type){
+        webService.checkOrderCount(productId, type)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<Integer>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void checkPartyOrderCount(DisposableObserver subscriber, final List<Ticket> tickets){
+        Observable.create(new ObservableOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
+                Boolean result = true;
+                for(Ticket t:tickets){
+                    int count = webService.checkPartyOrderCount(t.getId()).execute().body().getResult();
+                    if(count<t.getCount())
+                        result = false;
+                }
+                emitter.onNext(result);
+                emitter.onComplete();
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void checkPersonalCountProduct(DisposableObserver subscriber, String jsessionid, long productId){
+        webService.checkPersonalCountProduct(jsessionid, productId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<Integer>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void checkPersonalCountMassage(DisposableObserver subscriber, String jsessionid, long productId){
+        webService.checkPersonalCountMassage(jsessionid, productId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<Integer>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void createOrderProduct(DisposableObserver subscriber, String jsessionid, CreateProductOrderRequest request){
+        webService.createOrderProduct(jsessionid, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<ProductOrder>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void createOrderMassage(DisposableObserver subscriber, String jsessionid, CreateMassageOrderRequest request){
+        webService.createOrderMassage(jsessionid, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<MassageOrder>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void createOrderParty(DisposableObserver subscriber, String jsessionid, CreatePartyOrderRequest request){
+        webService.createOrderParty(jsessionid, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<PartyOrder>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getGroupMainPage(DisposableObserver subscriber, String jsessionid){
+        webService.getGroupMainPage(jsessionid)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetGroupMainPageResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void favoriteGroup(DisposableObserver subscriber, String jsessionid, long coshowId, int isAttention){
+        webService.favoriteGroup(jsessionid, coshowId, isAttention)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getGroupTheme(DisposableObserver subscriber){
+        webService.getGroupTheme()
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Theme>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getGroup(DisposableObserver subscriber,  String ssesionId, long themeId, String keyword){
+        webService.getGroup(themeId, keyword, ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Group>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getGroupById(DisposableObserver subscriber, long groupId, String ssesionId){
+        webService.getGroupById(groupId, ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<Group>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getAllGroup(DisposableObserver subscriber, String ssesionId){
+        webService.getAllGroup(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetAllGroupResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPostByGroup(DisposableObserver subscriber, long coshow_id, Integer type, Integer pageSize, int page, String ssesionId){
+        webService.getPostByGroup(coshow_id, type, page, pageSize, ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Post>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getAllPost(DisposableObserver subscriber, String ssesionId, int page, Integer pageSize){
+        webService.getAllPost(ssesionId, page, pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Post>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getDiscoveryPost(DisposableObserver subscriber, String ssesionId, int page, Integer pageSize){
+        webService.getDiscoveryPost(ssesionId, page, pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Post>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getNearbyPeople(DisposableObserver subscriber, String currLon, String currLat){
+        webService.getNearbyPeople(currLon, currLat)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<User>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getNearbyPost(DisposableObserver subscriber, String ssesionId,String currLon, String currLat){
+        webService.getNearbyPost(ssesionId, currLon, currLat)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Post>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPostDetail(DisposableObserver subscriber, long hotTopicId, String ssesionId){
+        webService.getPostDetail(hotTopicId, ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetPostDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void uploadPost(DisposableObserver subscriber, final String ssesionId, List<String> filePaths, final Post request, final List<Long> coshowId){
+        Map<String, RequestBody> bodyMap = new HashMap<>();
+        for(int i=0;i<filePaths.size();i++){
+            File file = new File(filePaths.get(i));
+            bodyMap.put("file"+"\"; filename=\""+file.getName(), RequestBody.create(MediaType.parse("image/jpeg"), file));
+
+        }
+        webService.uploadMultiImage("hotTopic", ssesionId, bodyMap)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<String>>())
+                .flatMap(new Function<List<String>, ObservableSource<BaseResponse<UploadPostResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<UploadPostResponse>> apply(List<String> strings) throws Exception {
+                        String image = "";
+                        for(String s:strings)
+                            image = image + s + ",";
+                        request.setContentImg(image);
+                        return webService.uploadPost(ssesionId, request, coshowId);
+                    }
+                })
+                .map(new HttpResultFunc<UploadPostResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void likePost(DisposableObserver subscriber, String ssesionId, long hotTopicId){
+        webService.likePost(ssesionId, hotTopicId, 1)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void readPost(DisposableObserver subscriber, long hotTopicId){
+        webService.readPost(hotTopicId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void favoriteItem(DisposableObserver subscriber, String ssesionId, long hotTopicId, int type){
+        webService.favoriteItem(ssesionId, hotTopicId, type)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void removeFavoriteItem(DisposableObserver subscriber, String ssesionId, List<Long> hotTopicId, int type){
+        webService.removeFavoriteItem(ssesionId, hotTopicId, type)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void uploadPostComment(DisposableObserver subscriber, final String ssesionId, final long hotTopicId, String content){
+        UploadCommentRequest request = new UploadCommentRequest();
+        request.setContent(content);
+        request.setHotTopicId(hotTopicId);
+        webService.uploadPostComment(ssesionId, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .flatMap(new Function<String, ObservableSource<BaseResponse<GetPostDetailResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<GetPostDetailResponse>> apply(String respone) throws Exception {
+                        return webService.getPostDetail(hotTopicId, ssesionId);
+                    }
+                })
+                .map(new HttpResultFunc<GetPostDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void deletePostComment(DisposableObserver subscriber, final String ssesionId, long commentId, final long hotTopicId){
+        webService.deletePostComment(ssesionId, commentId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .flatMap(new Function<String, ObservableSource<BaseResponse<GetPostDetailResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<GetPostDetailResponse>> apply(String respone) throws Exception {
+                        return webService.getPostDetail(hotTopicId, ssesionId);
+                    }
+                })
+                .map(new HttpResultFunc<GetPostDetailResponse>())
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void likePostComment(DisposableObserver subscriber, final String ssesionId, long commentId){
+        webService.likePostComment(ssesionId, commentId, 1)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void uploadPostReply(DisposableObserver subscriber, final String ssesionId, final UploadReplyRequest replyRequest){
+        webService.uploadPostReply(ssesionId, replyRequest)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .flatMap(new Function<String, ObservableSource<BaseResponse<GetPostDetailResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<GetPostDetailResponse>> apply(String respone) throws Exception {
+                        return webService.getPostDetail(replyRequest.getHotTopicId(), ssesionId);
+                    }
+                })
+                .map(new HttpResultFunc<GetPostDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void deletePostReply(DisposableObserver subscriber, final String ssesionId, final long replyId, final long hotTopicId){
+        webService.deletePostReply(ssesionId, replyId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .flatMap(new Function<String, ObservableSource<BaseResponse<GetPostDetailResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<GetPostDetailResponse>> apply(String respone) throws Exception {
+                        return webService.getPostDetail(hotTopicId, ssesionId);
+                    }
+                })
+                .map(new HttpResultFunc<GetPostDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getAllCase(DisposableObserver subscriber, String ssesionId, int page, Integer pageSize){
+        webService.getAllCase(ssesionId, page, pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Case>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCaseDetail(DisposableObserver subscriber, long hotTopicId, String ssesionId){
+        webService.getCaseDetail(hotTopicId, ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetCaseDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void uploadCase(DisposableObserver subscriber, final String ssesionId, String filePathBefore, String filePathAfter, final Case request, final List<Long> coshowId){
+        Map<String, RequestBody> bodyMap = new HashMap<>();
+        File fileBefore = new File(filePathBefore);
+        bodyMap.put("file"+"\"; filename=\""+fileBefore.getName(), RequestBody.create(MediaType.parse("image/jpeg"), fileBefore));
+        File fileAfter = new File(filePathAfter);
+        bodyMap.put("file"+"\"; filename=\""+fileAfter.getName(), RequestBody.create(MediaType.parse("image/jpeg"), fileAfter));
+        webService.uploadMultiImage("hotTopic", ssesionId, bodyMap)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<String>>())
+                .flatMap(new Function<List<String>, ObservableSource<BaseResponse<UploadPostResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<UploadPostResponse>> apply(List<String> strings) throws Exception {
+                        request.setBeforeOperationPhoto(strings.get(0));
+                        request.setAfterOperationPhoto(strings.get(1));
+                        return webService.uploadCase(ssesionId, request, coshowId);
+                    }
+                })
+                .map(new HttpResultFunc<UploadPostResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void likeCase(DisposableObserver subscriber, String ssesionId, long hotTopicId){
+        webService.likeCase(ssesionId, hotTopicId, 1)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void readCase(DisposableObserver subscriber, long hotTopicId){
+        webService.readCase(hotTopicId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void uploadCaseComment(DisposableObserver subscriber, final String ssesionId, final long hotTopicId, String content){
+        UploadCommentRequest request = new UploadCommentRequest();
+        request.setContent(content);
+        request.setContrastPhotoId(hotTopicId);
+        webService.uploadCaseComment(ssesionId, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .flatMap(new Function<String, ObservableSource<BaseResponse<GetCaseDetailResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<GetCaseDetailResponse>> apply(String respone) throws Exception {
+                        return webService.getCaseDetail(hotTopicId, ssesionId);
+                    }
+                })
+                .map(new HttpResultFunc<GetCaseDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void deleteCaseComment(DisposableObserver subscriber, final String ssesionId, long commentId, final long hotTopicId){
+        webService.deleteCaseComment(ssesionId, commentId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .flatMap(new Function<String, ObservableSource<BaseResponse<GetCaseDetailResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<GetCaseDetailResponse>> apply(String respone) throws Exception {
+                        return webService.getCaseDetail(hotTopicId, ssesionId);
+                    }
+                })
+                .map(new HttpResultFunc<GetCaseDetailResponse>())
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void likeCaseComment(DisposableObserver subscriber, final String ssesionId, long commentId){
+        webService.likeCaseComment(ssesionId, commentId, 1)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void uploadCaseReply(DisposableObserver subscriber, final String ssesionId, final UploadReplyRequest replyRequest){
+        webService.uploadCaseReply(ssesionId, replyRequest)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .flatMap(new Function<String, ObservableSource<BaseResponse<GetCaseDetailResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<GetCaseDetailResponse>> apply(String respone) throws Exception {
+                        return webService.getCaseDetail(replyRequest.getContrastPhotoId(), ssesionId);
+                    }
+                })
+                .map(new HttpResultFunc<GetCaseDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void deleteCaseReply(DisposableObserver subscriber, final String ssesionId, final long replyId, final long hotTopicId){
+        webService.deleteCaseReply(ssesionId, replyId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .flatMap(new Function<String, ObservableSource<BaseResponse<GetCaseDetailResponse>>>() {
+                    @Override
+                    public ObservableSource<BaseResponse<GetCaseDetailResponse>> apply(String respone) throws Exception {
+                        return webService.getCaseDetail(hotTopicId, ssesionId);
+                    }
+                })
+                .map(new HttpResultFunc<GetCaseDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPurchasedProduct(DisposableObserver subscriber, String ssesionId){
+        webService.getPurchasedProduct(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Product>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getGroupListByUser(DisposableObserver subscriber, long userId){
+        webService.getGroupListbyUser(userId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetGroupListbyUserResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPostListbyUser(DisposableObserver subscriber, String ssesionId, long queryUserId, Integer pageSize, int page){
+        webService.getPostListbyUser(ssesionId, queryUserId, page, pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Post>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getReceiptList(DisposableObserver subscriber, String ssesionId, int state){
+        webService.getReceiptList(ssesionId, state)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetReceiptListResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCaseListbyUser(DisposableObserver subscriber, String ssesionId, long queryUserId, Integer pageSize, int page){
+        webService.getCaseListbyUser(ssesionId, queryUserId, page, pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Case>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void loginAndRegister(DisposableObserver subscriber, LoginAndRegisterRequest request) {
+        webService.loginAndRegister(request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetLoginResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void loginWithWechat(DisposableObserver subscriber, String appid, String secret, String code, String grant_type){
+        webService.getWechatAccessToken(Constants.WECHAT_LOGIN_URL, appid, secret, code, grant_type)
+                .subscribeOn(Schedulers.io())
+                .flatMap(new Function<GetWechatAccessTokenResponse, Observable<GetWechatUserInfo>>() {
+                    @Override
+                    public Observable<GetWechatUserInfo> apply(GetWechatAccessTokenResponse getWechatAccessTokenResponse) throws Exception {
+                        return webService.getWechatUserInfo(Constants.WECHAT_USER_INFO_URL,
+                                getWechatAccessTokenResponse.getAccess_token(),
+                                getWechatAccessTokenResponse.getOpenid());
+                    }
+                })
+                .flatMap(new Function<GetWechatUserInfo, Observable<BaseResponse<GetLoginResponse>>>() {
+                    @Override
+                    public Observable<BaseResponse<GetLoginResponse>> apply(GetWechatUserInfo getWechatUserInfo) throws Exception {
+                        int sex;
+                        if(getWechatUserInfo.getSex().equals("1"))
+                            sex = 0;
+                        else if (getWechatUserInfo.getSex().equals("2"))
+                            sex = 1;
+                        else
+                            sex = 2;
+                        return webService.loginWithWechat(new LoginWithWechatRequest(
+                                getWechatUserInfo.getNickname(),
+                                getWechatUserInfo.getHeadimgurl(),
+                                getWechatUserInfo.getOpenid(),
+                                sex));
+                    }
+                })
+                .map(new HttpResultFunc<GetLoginResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void requestForValidationCode(DisposableObserver subscriber, RequestForValidationCodeRequest request) {
+        webService.requestForValidationCode(request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void requestForValidationCodePassword(DisposableObserver subscriber, RequestForValidationCodeRequest request) {
+        webService.requestForValidationCodePassword(request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void changePassword(DisposableObserver subscriber, ChangePasswordRequest request) {
+        webService.changePassword(request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void requestForValidationCodePhone(DisposableObserver subscriber, RequestForValidationCodeRequest request) {
+        webService.requestForValidationCodePhone(request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void boundMobile(DisposableObserver subscriber, String ssesionId, BoundMobileRequest request) {
+        webService.boundMobile(ssesionId, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -309,26 +1066,356 @@ public class ServiceClient {
 
     public void login(DisposableObserver subscriber, String userName, String password) {
         webService.login(userName, password)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<GetLoginResponse>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void getUserDetail(DisposableObserver subscriber, String ssesionId) {
-        webService.getUserDetail(ssesionId)
+    public void getMyDetail(DisposableObserver subscriber, String ssesionId) {
+        webService.getMyDetail(ssesionId)
+                .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<User>())
-                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void updateUserDetail(DisposableObserver subscriber, String ssesionId, UpdateUserRequest request) {
-        webService.updateUserDetail(ssesionId, request.getNickname(), request)
-                .map(new HttpResultFunc<String>())
+    public void updateUserDetail(DisposableObserver subscriber, final String ssesionId, final String filePath, final UpdateUserRequest updateUserRequest){
+        if(filePath!=null && !filePath.isEmpty()){
+            final File file = new File(filePath);
+            RequestBody requestFile =
+                    RequestBody.create(MediaType.parse("image/jpeg"), file);
+            MultipartBody.Part body =
+                    MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+            webService.updateUserAvatar(ssesionId, body)
+                    .subscribeOn(Schedulers.io())
+                    .map(new HttpResultFunc<UpdateUserAvatarRespone>())
+                    .flatMap(new Function<UpdateUserAvatarRespone, ObservableSource<BaseResponse<String>>>() {
+                        @Override
+                        public ObservableSource<BaseResponse<String>> apply(UpdateUserAvatarRespone respone) throws Exception {
+                            updateUserRequest.setHead_image_path(respone.getResult());
+                            return webService.updateUserDetail(ssesionId, updateUserRequest.getNickname(), updateUserRequest);
+                        }
+                    })
+                    .map(new HttpResultFunc<String>())
+                    .flatMap(new Function<String, ObservableSource<BaseResponse<User>>>() {
+                        @Override
+                        public ObservableSource<BaseResponse<User>> apply(String s) throws Exception {
+                            return webService.getMyDetail(ssesionId);
+                        }
+                    })
+                    .map(new HttpResultFunc<User>())
+                    .unsubscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(subscriber);
+        }else{
+            webService.updateUserDetail(ssesionId, updateUserRequest.getNickname(), updateUserRequest)
+                    .subscribeOn(Schedulers.io())
+                    .map(new HttpResultFunc<String>())
+                    .flatMap(new Function<String, ObservableSource<BaseResponse<User>>>() {
+                        @Override
+                        public ObservableSource<BaseResponse<User>> apply(String s) throws Exception {
+                            return webService.getMyDetail(ssesionId);
+                        }
+                    })
+                    .map(new HttpResultFunc<User>())
+                    .unsubscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(subscriber);
+        }
+    }
+
+    public void favoritePeople(DisposableObserver subscriber, String ssesionId, long userId){
+        webService.favoritePeople(ssesionId, userId)
                 .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void deleteFavoritePeople(DisposableObserver subscriber, String ssesionId, long userId){
+        webService.removeFavoritePeople(ssesionId, userId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getFavoritePeople(DisposableObserver subscriber, String ssesionId, Integer pageSize, int page){
+        webService.getFavoritePeople(ssesionId, page, pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<User>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getFanPeople(DisposableObserver subscriber, String ssesionId, Integer pageSize, int page){
+        webService.getFansPeople(ssesionId, page, pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<User>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getUserList(DisposableObserver subscriber, String nick_name, Integer pageSize, int page){
+        webService.getUserList(nick_name, page, pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<User>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getUserDetail(DisposableObserver subscriber, String ssesionId, long userId){
+        webService.getUserDetail(ssesionId, userId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<User>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCollectionParty(DisposableObserver subscriber, String ssesionId){
+        webService.getCollectionParty(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Party>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCollectionDoctor(DisposableObserver subscriber, String ssesionId){
+        webService.getCollectionDoctor(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Doctor>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCollectionHospital(DisposableObserver subscriber, String ssesionId){
+        webService.getCollectionHospital(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Hospital>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCollectionProduct(DisposableObserver subscriber, String ssesionId){
+        webService.getCollectionProduct(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Product>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCollectionSpa(DisposableObserver subscriber, String ssesionId){
+        webService.getCollectionSpa(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Spa>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCollectionMasseur(DisposableObserver subscriber, String ssesionId){
+        webService.getCollectionMasseur(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Masseur>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCollectionMassage(DisposableObserver subscriber, String ssesionId){
+        webService.getCollectionMassage(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Massage>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCollectionCase(DisposableObserver subscriber, String ssesionId){
+        webService.getCollectionCase(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Case>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getCollectionPost(DisposableObserver subscriber, String ssesionId){
+        webService.getCollectionPost(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<Post>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getProductOrderList(DisposableObserver subscriber, String ssesionId, Integer payment_state, int page_number, Integer page_size){
+        webService.getProductOrderList(ssesionId, payment_state, page_number, page_size)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<ProductOrder>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getMassageOrderList(DisposableObserver subscriber, String ssesionId, Integer payment_state, int page_number, Integer page_size){
+        webService.getMassageOrderList(ssesionId, payment_state, page_number, page_size)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<MassageOrder>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPartyOrderList(DisposableObserver subscriber, String ssesionId, Integer payment_state, int page_number, Integer page_size){
+        webService.getPartyOrderList(ssesionId, payment_state, page_number, page_size)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<PartyOrder>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+    public void getMassageOrderDetail(DisposableObserver subscriber, String ssesionId, long id){
+        webService.getMassageOrderDetail(ssesionId, id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<MassageOrder>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getProductOrderDetail(DisposableObserver subscriber, String ssesionId, long id){
+        webService.getProductOrderDetail(ssesionId, id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<ProductOrder>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPartyOrderDetail(DisposableObserver subscriber, String ssesionId, long id){
+        webService.getPartyOrderDetail(ssesionId, id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetPartyOrderDetailResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void cancelProductOrder(DisposableObserver subscriber, String ssesionId, CancelOrderRequest request){
+        webService.cancelProductOrder(ssesionId, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<ProductOrder>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void cancelMassageOrder(DisposableObserver subscriber, String ssesionId, CancelOrderRequest request){
+        webService.cancelMassageOrder(ssesionId, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<MassageOrder>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void cancelPartyOrder(DisposableObserver subscriber, String ssesionId, CancelOrderRequest request){
+        webService.cancelPartyOrder(ssesionId, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<PartyOrder>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void userFeedback(DisposableObserver subscriber, String ssesionId, String phoneNumber, String Content){
+        webService.userFeedback(ssesionId, Content, phoneNumber)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getDeliveryAddressList(DisposableObserver subscriber, String ssesionId){
+        webService.getDeliveryAddressList(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Address>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void addDeliveryAddress(DisposableObserver subscriber, final String ssesionId, final Address request){
+        if(request.getDefaultAddress() == 1) {
+            webService.addDeliveryAddress(ssesionId, request)
+                    .subscribeOn(Schedulers.io())
+                    .map(new HttpResultFunc<String>())
+                    .flatMap(new Function<String, ObservableSource<BaseResponse<String>>>() {
+                        @Override
+                        public ObservableSource<BaseResponse<String>> apply(String response) throws Exception {
+                            return webService.setDefaultDeliveryAddress(ssesionId, response);
+                        }
+                    })
+                    .map(new HttpResultFunc<String>())
+                    .unsubscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(subscriber);
+        }else{
+            webService.addDeliveryAddress(ssesionId, request)
+                    .subscribeOn(Schedulers.io())
+                    .map(new HttpResultFunc<String>())
+                    .unsubscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(subscriber);
+        }
+    }
+
+    public void setDefaultDeliveryAddress(DisposableObserver subscriber, String ssesionId, long addressId){
+        webService.setDefaultDeliveryAddress(ssesionId, String.valueOf(addressId))
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void deleteDeliveryAddress(DisposableObserver subscriber, String ssesionId, long addressId){
+        webService.deleteDeliveryAddress(ssesionId, addressId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void editDeliveryAddress(DisposableObserver subscriber, final String ssesionId, final Address request){
+        webService.editDeliveryAddress(ssesionId, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getHotSearchTopic(DisposableObserver subscriber, final String ssesionId){
+        webService.getHotSearchTopic(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<BaseListResponse<List<HotSearchTopic>>>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -338,9 +1425,7 @@ public class ServiceClient {
 
         @Override
         public T apply(BaseResponse<T> tBaseResponse) throws Exception {
-            Thread.sleep(1000);
-            if ((tBaseResponse.getStatus() != Constants.SUCCESS
-                    && tBaseResponse.getStatus() != Constants.ERROR_WRONG_PASSWORD) || tBaseResponse.getResult() == null) {
+            if (tBaseResponse.getStatus() != Constants.SUCCESS) {
                 throw new ApiException(tBaseResponse.getStatus(), tBaseResponse.getMemo());
             }
             return tBaseResponse.getResult();

@@ -10,7 +10,7 @@
         android:layout_height="44dp">
 
         <View
-            android:id="@+id/view1"
+            android:id="@+id/v_divider1"
             android:layout_width="1dp"
             android:layout_height="19dp"
             android:background="@color/bg_grey"
@@ -31,7 +31,7 @@
             android:textColor="@color/text_grey2"
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/view1"
+            app:layout_constraintEnd_toStartOf="@+id/v_divider1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
@@ -49,7 +49,7 @@
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/view1"
+            app:layout_constraintStart_toEndOf="@+id/v_divider1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 

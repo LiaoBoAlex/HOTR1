@@ -39,13 +39,13 @@ public class AboutUsActivity extends BaseActivity {
         clComment = (ConstraintLayout) findViewById(R.id.cl_comment);
         clContract = (ConstraintLayout) findViewById(R.id.cl_contract);
 
-        try {
-            PackageInfo info = this.getPackageManager().getPackageInfo(
-                    this.getPackageName(), 0);
-            tvVersion.setText(info.versionName);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            PackageInfo info = this.getPackageManager().getPackageInfo(
+//                    this.getPackageName(), 0);
+//            tvVersion.setText(info.versionName);
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
         clComment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +58,9 @@ public class AboutUsActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(AboutUsActivity.this, WebViewActivity.class);
-                i.putExtra(Constants.PARAM_TITLE, getString(R.string.hotr_contract));
+                Bundle b = new Bundle();
+                b.putString(Constants.PARAM_TITLE, getString(R.string.hotr_contract));
+                i.putExtras(b);
                 startActivity(i);
             }
         });

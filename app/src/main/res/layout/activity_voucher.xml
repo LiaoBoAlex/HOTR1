@@ -18,7 +18,7 @@
             app:tabSelectedTextColor="@color/text_black"
             app:tabTextColor="@color/text_black"/>
         <View
-            android:id="@+id/view1"
+            android:id="@+id/v_divider1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider2"
@@ -29,7 +29,7 @@
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/view1"/>
+            android:layout_below="@+id/v_divider1"/>
     </RelativeLayout>
 
 </LinearLayout>

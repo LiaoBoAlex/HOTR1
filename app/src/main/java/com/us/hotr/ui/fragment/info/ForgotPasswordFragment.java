@@ -1,5 +1,6 @@
 package com.us.hotr.ui.fragment.info;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -11,15 +12,27 @@ import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.us.hotr.R;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.request.ChangePasswordRequest;
+import com.us.hotr.webservice.request.LoginAndRegisterRequest;
+import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
+import com.us.hotr.webservice.response.GetLoginResponse;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 /**
  * Created by Mloong on 2017/10/16.
@@ -34,13 +47,6 @@ public class ForgotPasswordFragment extends Fragment {
     private Boolean isShow = false;
     private CountDownTimer mCountDownTimer;
     private boolean isCountDownFinished = true;
-    private View.OnClickListener verifyListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            tvVerify.setOnClickListener(null);
-            startTimer();
-        }
-    };
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_forgot_password, container, false);
@@ -82,7 +88,12 @@ public class ForgotPasswordFragment extends Fragment {
                         tvVerify.setOnClickListener(null);
                     } else {
                         tvVerify.setTextColor(getResources().getColor(R.color.text_grey3));
-                        tvVerify.setOnClickListener(verifyListener);
+                        tvVerify.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                requestValidationCode();
+                            }
+                        });
                     }
                 }
             }
@@ -91,17 +102,7 @@ public class ForgotPasswordFragment extends Fragment {
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(etPhone.getText().toString().trim().isEmpty())
-                    Tools.Toast(getActivity(), getString(R.string.key_in_phone_number));
-                else if(etPhone.getText().toString().trim().length() != 11)
-                    Tools.Toast(getActivity(), getString(R.string.wrong_phone_number_format));
-                else if(etCode.getText().toString().trim().isEmpty())
-                    Tools.Toast(getActivity(), getString(R.string.key_in_code1));
-                else if(etPassword.getText().toString().trim().length()<6)
-                    Tools.Toast(getActivity(), getString(R.string.password_less_than_6));
-                else{
-                    getActivity().finish();
-                }
+                changePassword();
             }
         });
 
@@ -113,14 +114,24 @@ public class ForgotPasswordFragment extends Fragment {
             public void onFinish() {
                 isCountDownFinished = true;
                 tvVerify.setText(getString(R.string.send_code_again));
-                tvVerify.setOnClickListener(verifyListener);
+                tvVerify.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        requestValidationCode();
+                    }
+                });
                 if (etPhone.getText().toString().trim().isEmpty()
                         || etPhone.getText().toString().trim().length() != 11) {
                     tvVerify.setTextColor(getResources().getColor(R.color.text_grey4));
                     tvVerify.setOnClickListener(null);
                 } else {
                     tvVerify.setTextColor(getResources().getColor(R.color.text_grey3));
-                    tvVerify.setOnClickListener(verifyListener);
+                    tvVerify.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            requestValidationCode();
+                        }
+                    });
                 }
             }
         };
@@ -141,6 +152,58 @@ public class ForgotPasswordFragment extends Fragment {
                 }
             }
         });
+
+        etPassword.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        etPassword.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    InputMethodManager imm = (InputMethodManager)v.getContext()
+                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    changePassword();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void changePassword() {
+        if (etPhone.getText().toString().trim().isEmpty())
+            Tools.Toast(getActivity(), getString(R.string.key_in_phone_number));
+        else if (etPhone.getText().toString().trim().length() != 11)
+            Tools.Toast(getActivity(), getString(R.string.wrong_phone_number_format));
+        else if (etCode.getText().toString().trim().isEmpty())
+            Tools.Toast(getActivity(), getString(R.string.key_in_code1));
+        else if (etPassword.getText().toString().trim().length() < 6)
+            Tools.Toast(getActivity(), getString(R.string.password_less_than_6));
+        else {
+            SubscriberListener mListener = new SubscriberListener<String>() {
+                @Override
+                public void onNext(String result) {
+                    Tools.Toast(getActivity(), getString(R.string.password_changed));
+                    getActivity().finish();
+                }
+            };
+            ServiceClient.getInstance().changePassword(new ProgressSubscriber(mListener, getContext()),
+                    new ChangePasswordRequest(etPhone.getText().toString().trim(), etPassword.getText().toString().trim(), etCode.getText().toString().trim()));
+        }
+    }
+
+    private void requestValidationCode(){
+        SubscriberListener mListener = new SubscriberListener<String>() {
+            @Override
+            public void onNext(String result) {
+                Tools.Toast(getActivity(), getString(R.string.validation_code_sent));
+                tvVerify.setOnClickListener(null);
+                startTimer();
+            }
+        };
+        ServiceClient.getInstance().requestForValidationCodePassword(new ProgressSubscriber(mListener, getContext()),
+                new RequestForValidationCodeRequest(etPhone.getText().toString().trim()));
+
     }
 
     private void startTimer(){

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"/>
     <ProgressBar
+        android:layout_below="@id/toolbar"
         android:id="@+id/progressbar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="fill_parent"
@@ -11,8 +13,15 @@
         android:progress="0"
         android:progressDrawable="@drawable/progress_bar_webview" />
     <WebView
+        android:layout_below="@id/progressbar"
         android:id="@+id/wv_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
-</LinearLayout>
+    <ImageView
+        android:id="@+id/iv_back"
+        android:padding="12dp"
+        android:layout_alignTop="@+id/wv_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_back_dark"/>
+</RelativeLayout>

@@ -1,16 +1,11 @@
 package com.us.hotr.ui.dialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.us.hotr.R;
@@ -58,4 +53,5 @@ public class PriceQueryDialogFragment extends BottomSheetDialogFragment {
     {
         mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
+
 }

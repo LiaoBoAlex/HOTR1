@@ -12,7 +12,10 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.bean.Doctor;
+import com.us.hotr.storage.bean.Product;
 import com.us.hotr.ui.activity.BaseActivity;
+import com.us.hotr.ui.activity.beauty.ListActivity;
 import com.us.hotr.ui.activity.beauty.ListWithSearchActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.Tools;
@@ -31,6 +34,9 @@ public class UploadCompareActivity1 extends BaseActivity {
     private TextView tvNext, tvProduct, tvHospital, tvDoctor;
     private ConstraintLayout clProduct, clDoctor;
     private ImageView ivBefore, ivAfter, ivDeleteBefore, ivDeleteAfter;
+
+    private Product selectedProduct;
+    private Doctor selectedDoctor;
     @Override
     protected int getLayout() {
         return R.layout.activity_upload_compare1;
@@ -69,20 +75,26 @@ public class UploadCompareActivity1 extends BaseActivity {
         clProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(UploadCompareActivity1.this, ListWithSearchActivity.class);
-                i.putExtra(Constants.PARAM_TITLE, R.string.product_bought);
-                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MY_PRODUCT);
-                startActivity(i);
+                Intent i = new Intent(UploadCompareActivity1.this, ListActivity.class);
+                Bundle b = new Bundle();
+                b.putString(Constants.PARAM_TITLE, getString(R.string.product_bought));
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MY_PRODUCT);
+                i.putExtras(b);
+                startActivityForResult(i, 0);
             }
         });
 
         clDoctor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(UploadCompareActivity1.this, ListWithSearchActivity.class);
-                i.putExtra(Constants.PARAM_TITLE, R.string.choose_doctor_title);
-                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_DOCTOR);
-                startActivity(i);
+                Intent i = new Intent(UploadCompareActivity1.this, ListActivity.class);
+                Bundle b = new Bundle();
+                b.putString(Constants.PARAM_TITLE, getString(R.string.choose_doctor_title));
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MY_DOCTOR);
+//                b.putLong(Constants.PARAM_HOSPITAL_ID, selectedProduct.getHospital_id());
+                b.putLong(Constants.PARAM_HOSPITAL_ID, 10022);
+                i.putExtras(b);
+                startActivityForResult(i, 1);
             }
         });
 
@@ -154,19 +166,41 @@ public class UploadCompareActivity1 extends BaseActivity {
 //        new CancelPostDialogFragment().show(getSupportFragmentManager(), "dialog");
         TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(this);
         alertDialogBuilder.setMessage(getString(R.string.cancel_draft));
-        alertDialogBuilder.setPositiveButton(getString(R.string.no),
+        alertDialogBuilder.setPositiveButton(getString(R.string.yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         UploadCompareActivity1.super.onBackPressed();
                     }
                 });
-        alertDialogBuilder.setNegativeButton(getString(R.string.yes),
+        alertDialogBuilder.setNegativeButton(getString(R.string.no),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
         alertDialogBuilder.create().show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0){
+            if(resultCode == RESULT_OK){
+                selectedProduct = (Product) data.getExtras().getSerializable(Constants.PARAM_DATA);
+                tvProduct.setText(selectedProduct.getProduct_name());
+                selectedDoctor = new Doctor();
+//                selectedDoctor.setDoctor_id(selectedProduct.getDoctor_id());
+                selectedDoctor.setDoctor_id(53);
+                selectedDoctor.setDoctor_name(selectedProduct.getDoctor_name());
+                tvDoctor.setText(selectedDoctor.getDoctor_name());
+            }
+        }
+        if(requestCode == 1){
+            if(resultCode == RESULT_OK){
+                selectedDoctor = (Doctor)data.getExtras().getSerializable(Constants.PARAM_DATA);
+                tvDoctor.setText(selectedDoctor.getDoctor_name());
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.us.hotr.storage.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,17 +13,37 @@ public class Product implements Serializable {
 
     private String doctor_name;
     private String hospital_name;
-    private int online_price;
-    private int shop_price;
+    private double online_price;
+    private double shop_price;
     private int order_num;
     private String product_name;
-    private int productId;
+    @SerializedName(value = "productId", alternate = {"id"})
+    private long productId;
+    @SerializedName(value = "product_main_img", alternate = {"main_img"})
     private String product_main_img;
-    private List<String> product_img;
+    private String product_img;
     private String product_usp;
     private int product_type;
     private int amount;
     private int payment_type;
+    private long hospital_id;
+    private long doctor_id;
+
+    public long getDoctor_id() {
+        return doctor_id;
+    }
+
+    public void setDoctor_id(long doctor_id) {
+        this.doctor_id = doctor_id;
+    }
+
+    public long getHospital_id() {
+        return hospital_id;
+    }
+
+    public void setHospital_id(long hospital_id) {
+        this.hospital_id = hospital_id;
+    }
 
     public int getAmount() {
         return amount;
@@ -63,19 +85,19 @@ public class Product implements Serializable {
         this.hospital_name = hospital_name;
     }
 
-    public int getOnline_price() {
+    public double getOnline_price() {
         return online_price;
     }
 
-    public void setOnline_price(int online_price) {
+    public void setOnline_price(double online_price) {
         this.online_price = online_price;
     }
 
-    public int getShop_price() {
+    public double getShop_price() {
         return shop_price;
     }
 
-    public void setShop_price(int shop_price) {
+    public void setShop_price(double shop_price) {
         this.shop_price = shop_price;
     }
 
@@ -95,11 +117,11 @@ public class Product implements Serializable {
         this.product_name = product_name;
     }
 
-    public int getProductId() {
+    public long getProductId() {
         return productId;
     }
 
-    public void setProductId(int productId) {
+    public void setProductId(long productId) {
         this.productId = productId;
     }
 
@@ -111,11 +133,11 @@ public class Product implements Serializable {
         this.product_main_img = product_main_img;
     }
 
-    public List<String> getProduct_img() {
+    public String getProduct_img() {
         return product_img;
     }
 
-    public void setProduct_img(List<String> product_img) {
+    public void setProduct_img(String product_img) {
         this.product_img = product_img;
     }
 

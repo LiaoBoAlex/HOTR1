@@ -43,7 +43,7 @@ public class AdvFragment extends Fragment {
         ivImage = (ImageView) view.findViewById(R.id.iv_image);
         ivClose = (ImageView) view.findViewById(R.id.iv_close);
 
-        Glide.with(getContext()).load(mAdv.getImage()).into(ivImage);
+        Glide.with(this).load(mAdv.getImage()).into(ivImage);
         ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

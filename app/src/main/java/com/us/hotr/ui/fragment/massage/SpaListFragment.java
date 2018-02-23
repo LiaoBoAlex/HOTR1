@@ -4,27 +4,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
-import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
+import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Doctor;
 import com.us.hotr.storage.bean.Spa;
 import com.us.hotr.ui.activity.massage.SpaActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
+import com.us.hotr.ui.view.SpaView;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
@@ -32,7 +33,6 @@ import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,11 +47,11 @@ public class SpaListFragment extends BaseLoadingFragment {
     private int totalSize = 0;
     private int currentPage = 1;
 
-
-    public static SpaListFragment newInstance(int cityId) {
+    public static SpaListFragment newInstance(String keyword, long cityId) {
         SpaListFragment spaListFragment = new SpaListFragment();
         Bundle b = new Bundle();
-        b.putInt(Constants.PARAM_DATA, cityId);
+        b.putLong(Constants.PARAM_DATA, cityId);
+        b.putString(Constants.PARAM_KEYWORD, keyword);
         spaListFragment.setArguments(b);
         return spaListFragment;
     }
@@ -64,8 +64,9 @@ public class SpaListFragment extends BaseLoadingFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        cityCode = getArguments().getInt(Constants.PARAM_DATA);
-        if(cityCode<0)
+        cityCode = getArguments().getLong(Constants.PARAM_DATA);
+        keyword = getArguments().getString(Constants.PARAM_KEYWORD);
+        if(cityCode<=0)
             cityCode = null;
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
@@ -78,7 +79,7 @@ public class SpaListFragment extends BaseLoadingFragment {
     @Override
     protected void loadData(final int loadType) {
         SubscriberListener mListener;
-        if(loadType == Constants.LOAD_MORE){
+        if (loadType == Constants.LOAD_MORE) {
             mListener = new SubscriberListener<BaseListResponse<List<Spa>>>() {
                 @Override
                 public void onNext(BaseListResponse<List<Spa>> result) {
@@ -86,8 +87,10 @@ public class SpaListFragment extends BaseLoadingFragment {
                 }
             };
             ServiceClient.getInstance().getSpaList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                    cityCode, typeId, subjectId, null, null, Constants.MAX_PAGE_ITEM, currentPage);
-        }else{
+                    keyword, cityCode, typeId, subjectId,
+                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude(),
+                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude(),  Constants.MAX_PAGE_ITEM, currentPage);
+        } else {
             currentPage = 1;
             mListener = new SubscriberListener<BaseListResponse<List<Spa>>>() {
                 @Override
@@ -95,21 +98,28 @@ public class SpaListFragment extends BaseLoadingFragment {
                     updateList(loadType, result);
                 }
             };
-            if(loadType == Constants.LOAD_PAGE)
+            if (loadType == Constants.LOAD_PAGE)
                 ServiceClient.getInstance().getSpaList(new LoadingSubscriber(mListener, this),
-                        cityCode, typeId, subjectId, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                        keyword, cityCode, typeId, subjectId,
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude(),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude(),  Constants.MAX_PAGE_ITEM, currentPage);
             else if (loadType == Constants.LOAD_DIALOG)
                 ServiceClient.getInstance().getSpaList(new ProgressSubscriber(mListener, getContext()),
-                        cityCode, typeId, subjectId, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                        keyword, cityCode, typeId, subjectId,
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude(),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude(),  Constants.MAX_PAGE_ITEM, currentPage);
             else if (loadType == Constants.LOAD_PULL_REFRESH)
                 ServiceClient.getInstance().getSpaList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                        cityCode, typeId, subjectId,null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                        keyword, cityCode, typeId, subjectId,
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude(),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude(),  Constants.MAX_PAGE_ITEM, currentPage);
         }
-
     }
 
     private void updateList(int loadType, BaseListResponse<List<Spa>> result){
         totalSize = result.getTotal();
+        Events.GetSearchCount event = new Events.GetSearchCount(totalSize);
+        GlobalBus.getBus().post(event);
         if(loadType == Constants.LOAD_MORE){
             mAdapter.addItems(result.getRows());
         }else{
@@ -124,8 +134,10 @@ public class SpaListFragment extends BaseLoadingFragment {
         if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
                 ||totalSize == 0) {
             enableLoadMore(false);
-            View footer = LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false);
-            myBaseAdapter.setFooterView(footer);
+            if(totalSize>0)
+                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+            else
+                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_empty, mRecyclerView, false));
         }
         else
             enableLoadMore(true);
@@ -136,15 +148,10 @@ public class SpaListFragment extends BaseLoadingFragment {
         private List<Spa> spaList;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            TextView tvName, tvAddress, tvAppointment;
-            ImageView ivAvatar;
-
+            SpaView spaView;
             public MyViewHolder(View view) {
                 super(view);
-                tvName = (TextView) view.findViewById(R.id.tv_name);
-                tvAddress = (TextView) view.findViewById(R.id.tv_address);
-                tvAppointment = (TextView) view.findViewById(R.id.tv_number);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
+                spaView = (SpaView) view;
             }
         }
 
@@ -165,39 +172,14 @@ public class SpaListFragment extends BaseLoadingFragment {
 
         @Override
         public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_spa, parent, false);
-
-            return new MyViewHolder(itemView);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_spa, parent, false);
+            return new MyViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             final Spa spa = spaList.get(position);
-            if(position%2==0) {
-                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) holder.ivAvatar.getLayoutParams();
-                lp.setMargins(12, 0, 6, 0);
-                holder.ivAvatar.setLayoutParams(lp);
-            }
-            else {
-                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) holder.ivAvatar.getLayoutParams();
-                lp.setMargins(6, 0, 12, 0);
-                holder.ivAvatar.setLayoutParams(lp);
-            }
-            Glide.with(getContext()).load(spa.getMassage_main_img()).placeholder(R.drawable.holder_spa).error(R.drawable.holder_spa).into(holder.ivAvatar);
-            holder.tvAddress.setText(spa.getAddress());
-            holder.tvAppointment.setText(String.format(getString(R.string.masseur_appointment), spa.getOrder_num()));
-            holder.tvName.setText(spa.getMassage_name());
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(getActivity(), SpaActivity.class);
-                    Bundle b = new Bundle();
-                    b.putInt(Constants.PARAM_ID, spa.getId());
-                    i.putExtras(b);
-                    startActivity(i);
-                }
-            });
+            holder.spaView.setData(spa, position);
         }
 
         @Override

@@ -1,5 +1,7 @@
 package com.us.hotr.ui.activity;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -13,6 +15,7 @@ import com.tencent.stat.MtaSDkException;
 import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Adv;
 import com.us.hotr.storage.bean.Subject;
 import com.us.hotr.ui.fragment.beauty.SelectSubjectFragment;
@@ -38,16 +41,16 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         startActivity(new Intent(SplashActivity.this, MainActivity.class));
         finish();
-//        new CountDownTimer(1500, 1500) {
-//
-//            public void onTick(long millisUntilFinished) {
-//            }
-//
-//            public void onFinish() {
+        new CountDownTimer(1500, 1500) {
+
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
 //                next();
-//
-//            }
-//        }.start();
+
+            }
+        }.start();
     }
 
     private void next(){

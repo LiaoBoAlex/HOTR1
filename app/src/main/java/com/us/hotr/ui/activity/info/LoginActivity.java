@@ -1,22 +1,29 @@
 package com.us.hotr.ui.activity.info;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
+import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.DeactivatedViewPager;
@@ -31,6 +38,7 @@ import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.GetWechatAccessTokenResponse;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import retrofit2.Call;
@@ -48,17 +56,18 @@ public class LoginActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private DeactivatedViewPager viewPager;
     private PagerAdapter adapter;
-    private ImageView ivBack, ivTencent;
-//    private static LoginListener loginListener;
+    private ImageView ivBack, ivTencent, ivBackground;
+    private static LoginListener loginListener;
 
-//    public static void setLoginListener(LoginListener l){
-//        loginListener = l;
-//    }
+    public static void setLoginListener(LoginListener l){
+        loginListener = l;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        GlobalBus.getBus().register(this);
         initStaticView();
     }
 
@@ -77,7 +86,9 @@ public class LoginActivity extends AppCompatActivity {
         viewPager = (DeactivatedViewPager) findViewById(R.id.pager);
         ivBack = (ImageView) findViewById(R.id.iv_back);
         ivTencent = (ImageView) findViewById(R.id.iv_tencent);
+        ivBackground = (ImageView) findViewById(R.id.iv_background);
 
+        ivBackground.setImageBitmap(readBitMap(this, R.drawable.bg_login));
         adapter = new PagerAdapter(getSupportFragmentManager(), titleList, fragmentList);
         viewPager.setSwipeLocked(true);
         viewPager.setOffscreenPageLimit(2);
@@ -99,13 +110,22 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void loginSuccess(){
-//        if(loginListener!=null)
-//            loginListener.onLoginSuccess();
-//        loginListener = null;
+    public static Bitmap readBitMap(Context context, int resId){
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        opt.inPurgeable = true;
+        opt.inInputShareable = true;
+        InputStream is = context.getResources().openRawResource(resId);
+        return BitmapFactory.decodeStream(is,null,opt);
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public void loginSuccess(){
+        if(loginListener!=null)
+            loginListener.onLoginSuccess();
+        loginListener = null;
+    }
+
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> titleList;
         private ArrayList<Fragment> fragmentList;
@@ -134,5 +154,19 @@ public class LoginActivity extends AppCompatActivity {
 
     public interface LoginListener{
         void onLoginSuccess();
+    }
+
+    @Subscribe
+    public void getMessage(Events.WechatLogin wechatLogin){
+        HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(wechatLogin.getGetLoginResponse().getJsessionid());
+        HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(wechatLogin.getGetLoginResponse().getUser());
+        loginSuccess();
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        GlobalBus.getBus().unregister(this);
     }
 }

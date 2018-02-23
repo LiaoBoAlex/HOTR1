@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +21,8 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.ui.view.MasseurView;
+import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.response.GetMassageDetailResponse;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.ui.activity.beauty.ListActivity;
@@ -86,23 +89,20 @@ public class MassageIntroFragment extends Fragment {
         }
 
         public class MasseurHolder extends RecyclerView.ViewHolder {
-            TextView tvName, tvAddress, tvAppointment;
-            ImageView ivAvatar, ivLike;
-
+            MasseurView masseurView;
             public MasseurHolder(View view) {
                 super(view);
-                tvName = (TextView) view.findViewById(R.id.tv_name);
-                tvAddress = (TextView) view.findViewById(R.id.tv_address);
-                tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
-                ivLike = (ImageView) view.findViewById(R.id.iv_like);
+                masseurView = (MasseurView) view;
             }
         }
 
         public class WebHolder extends RecyclerView.ViewHolder {
+            WebView wvContent;
             public WebHolder(View itemView) {
                 super(itemView);
+                wvContent = (WebView) itemView.findViewById(R.id.wv_content);
             }
+
         }
 
         public class FooterHolder extends RecyclerView.ViewHolder {
@@ -131,15 +131,8 @@ public class MassageIntroFragment extends Fragment {
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_masseur, parent, false);
                     return new MasseurHolder(view);
                 case VIEW_TYPE_WEBVIEW:
-                    ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    WebView web = new WebView(parent.getContext());
-                    web.setLayoutParams(lp);
-                    WebSettings settings = web.getSettings();
-                    settings.setJavaScriptEnabled(true);
-                    settings.setDomStorageEnabled(true);
-//                    web.loadData(massageDetail.getProduct().getProductDetail(), "text/html", "UTF-8");
-                    web.loadData(massageDetail.getProduct().getProductDetail(), "text/html; charset=UTF-8", null);
-                    return new WebHolder(web);
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_web, parent, false);
+                    return new WebHolder(view);
                 case VIEW_TYPE_FOOTER:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_see_more, parent, false);
                     return new FooterHolder(view);
@@ -157,32 +150,10 @@ public class MassageIntroFragment extends Fragment {
                 case VIEW_TYPE_MASSEUR:
                     final Masseur masseur = (Masseur) itemList.get(position).getContent();
                     MasseurHolder masseurHolder = (MasseurHolder) holder;
-                    if(position%2==1) {
-                        ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) masseurHolder.ivAvatar.getLayoutParams();
-                        lp.setMargins(12, 0, 6, 0);
-                        masseurHolder.ivAvatar.setLayoutParams(lp);
-                    }
-                    else {
-                        ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) masseurHolder.ivAvatar.getLayoutParams();
-                        lp.setMargins(6, 0, 12, 0);
-                        masseurHolder.ivAvatar.setLayoutParams(lp);
-                    }
-                    Glide.with(getContext()).load(masseur.getMassagist_main_img()).placeholder(R.drawable.holder_masseur).error(R.drawable.holder_masseur).into(masseurHolder.ivAvatar);
-                    masseurHolder.tvAddress.setText(masseur.getAddress());
-                    masseurHolder.tvAppointment.setText(String.format(getString(R.string.masseur_appointment), masseur.getOrder_num()));
-                    masseurHolder.tvName.setText(masseur.getMassagist_name());
-                    masseurHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent i = new Intent(getActivity(), MasseurActivity.class);
-                            Bundle b = new Bundle();
-                            b.putInt(Constants.PARAM_ID, masseur.getId());
-                            i.putExtras(b);
-                            startActivity(i);
-                        }
-                    });
+                    masseurHolder.masseurView.setData(masseur, position);
                     break;
                 case VIEW_TYPE_WEBVIEW:
+                    ((WebHolder)holder).wvContent.loadData(Tools.getHtmlData(massageDetail.getProduct().getProductDetail()), "text/html; charset=UTF-8", null);
                     break;
                 case VIEW_TYPE_FOOTER:
                     FooterHolder footerHolder = (FooterHolder) holder;
@@ -192,7 +163,7 @@ public class MassageIntroFragment extends Fragment {
                         public void onClick(View v) {
                             Intent i = new Intent(getActivity(), ListActivity.class);
                             Bundle b = new Bundle();
-                            b.putInt(Constants.PARAM_SPA_ID, massageDetail.getMassage().getId());
+                            b.putLong(Constants.PARAM_SPA_ID, massageDetail.getMassage().getKey());
                             b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MASSEUR);
                             b.putString(Constants.PARAM_TITLE, getString(R.string.masseur_list));
                             i.putExtras(b);

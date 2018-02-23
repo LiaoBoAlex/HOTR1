@@ -2,6 +2,7 @@ package com.us.hotr.wxapi;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -10,13 +11,19 @@ import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.HOTRApplication;
+import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.response.GetWechatUserInfo;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by Mloong on 2017/11/2.
@@ -96,11 +103,10 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                     break;
                 case BaseResp.ErrCode.ERR_OK:
                     if (((SendAuth.Resp) resp).state != null && ((SendAuth.Resp) resp).state.equals(Constants.LOGIN_TO_WECHAT)) {
-                        SubscriberWithFinishListener subscriber = new SubscriberWithFinishListener<GetWechatUserInfo>() {
+                        SubscriberWithFinishListener subscriber = new SubscriberWithFinishListener<GetLoginResponse>() {
                             @Override
-                            public void onNext(GetWechatUserInfo result) {
-//                                Tools.Toast(WXEntryActivity.this, "Hello, " + result.getNickname());
-                                HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(result.getUnionid());
+                            public void onNext(GetLoginResponse result) {
+                                GlobalBus.getBus().post(new Events.WechatLogin(result));
                             }
 
                             @Override
@@ -113,7 +119,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                                 finish();
                             }
                         };
-                        ServiceClient.getInstance().getWechatUserInfo(new ProgressSubscriber(subscriber, WXEntryActivity.this),
+                        ServiceClient.getInstance().loginWithWechat(new ProgressSubscriber(subscriber, WXEntryActivity.this),
                                 Constants.WECHAT_APP_ID,
                                 Constants.WECHAT_APP_SECRET,
                                 ((SendAuth.Resp) resp).code,

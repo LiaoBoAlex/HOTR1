@@ -1,5 +1,8 @@
 package com.us.hotr.ui.fragment;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -39,6 +42,17 @@ public class ImageViewerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         url = getArguments().getString(Constants.PARAM_DATA);
         mPhotoView = (PhotoView) view.findViewById(R.id.photo_view);
-        Glide.with(getContext()).load(url).into(mPhotoView);
+        Glide.with(this).load(url).skipMemoryCache(true).into(mPhotoView);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Drawable drawable = mPhotoView.getDrawable();
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            bitmap.recycle();
+        }
     }
 }

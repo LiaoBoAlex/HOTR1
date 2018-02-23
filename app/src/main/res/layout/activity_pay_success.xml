@@ -100,7 +100,7 @@
                 android:textColor="@color/white"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_total" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_price" />
 
             <TextView
                 android:id="@+id/textView45"
@@ -143,7 +143,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView45" />
 
             <TextView
-                android:id="@+id/tv_total"
+                android:id="@+id/tv_price"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="64dp"

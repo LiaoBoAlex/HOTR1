@@ -10,17 +10,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.customview.ItemSelectedListener;
 import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Doctor;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.ui.activity.massage.MassageActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
+import com.us.hotr.ui.view.MassageView;
+import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
@@ -30,6 +37,7 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,15 +54,18 @@ public class MassageListFragment extends BaseLoadingFragment {
     private MyBaseAdapter myBaseAdapter;
     private int totalSize = 0;
     private int currentPage = 1;
+    private boolean isFav = false;
 
-    private Integer spalId = null;
+    private Long spalId = null;
 
-    public static MassageListFragment newInstance(int subjectId, int cityId, int spalId) {
+    public static MassageListFragment newInstance(String keyword, boolean isFav, long subjectId, long cityId, long spalId) {
         MassageListFragment massageListFragment = new MassageListFragment();
         Bundle b = new Bundle();
-        b.putInt(PARAM_SUBJECT, subjectId);
-        b.putInt(PARAM_CITY, cityId);
-        b.putInt(PARAM_SPA, spalId);
+        b.putLong(PARAM_SUBJECT, subjectId);
+        b.putLong(PARAM_CITY, cityId);
+        b.putLong(PARAM_SPA, spalId);
+        b.putBoolean(Constants.PARAM_IS_FAV, isFav);
+        b.putString(Constants.PARAM_KEYWORD, keyword);
         massageListFragment.setArguments(b);
         return massageListFragment;
     }
@@ -67,14 +78,16 @@ public class MassageListFragment extends BaseLoadingFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        subjectId = getArguments().getInt(PARAM_SUBJECT);
+        subjectId = getArguments().getLong(PARAM_SUBJECT);
+        isFav = getArguments().getBoolean(Constants.PARAM_IS_FAV);
+        keyword = getArguments().getString(Constants.PARAM_KEYWORD);
         if(subjectId<0)
             subjectId = null;
-        cityCode = getArguments().getInt(PARAM_CITY);
-        if(cityCode<0)
+        cityCode = getArguments().getLong(PARAM_CITY);
+        if(cityCode<=0)
             cityCode = null;
-        spalId = getArguments().getInt(PARAM_SPA);
-        if(spalId<0)
+        spalId = getArguments().getLong(PARAM_SPA);
+        if(spalId<=0)
             spalId = null;
         if(spalId!=null){
             typeId = 5;
@@ -90,51 +103,67 @@ public class MassageListFragment extends BaseLoadingFragment {
 
     @Override
     protected void loadData(final int loadType) {
-        if(loadType == Constants.LOAD_MORE){
-            SubscriberListener mListener = new SubscriberListener<BaseListResponse<List<Massage>>>() {
+        SubscriberListener mListener;
+        if(isFav){
+            mListener = new SubscriberListener<BaseListResponse<List<Massage>>>() {
                 @Override
                 public void onNext(BaseListResponse<List<Massage>> result) {
                     updateList(loadType, result);
                 }
             };
-            ServiceClient.getInstance().getMassageList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                    typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
-        }else{
-            currentPage = 1;
-            SubscriberListener mListener = new SubscriberListener<BaseListResponse<List<Massage>>>() {
-                @Override
-                public void onNext(BaseListResponse<List<Massage>> result) {
-                    updateList(loadType, result);
-                }
-            };
-            if(loadType == Constants.LOAD_PAGE){
-                if(spalId != null)
-                    ServiceClient.getInstance().getMassageListBySpa(new LoadingSubscriber(mListener,this),
-                            spalId, subjectId, Constants.MAX_PAGE_ITEM, currentPage);
-                else
-                    ServiceClient.getInstance().getMassageList(new LoadingSubscriber(mListener,this),
-                            typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+            if (loadType == Constants.LOAD_PAGE)
+                ServiceClient.getInstance().getCollectionMassage(new LoadingSubscriber(mListener, this),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+            else if (loadType == Constants.LOAD_PULL_REFRESH)
+                ServiceClient.getInstance().getCollectionMassage(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+        }else {
+            if (loadType == Constants.LOAD_MORE) {
+                mListener = new SubscriberListener<BaseListResponse<List<Massage>>>() {
+                    @Override
+                    public void onNext(BaseListResponse<List<Massage>> result) {
+                        updateList(loadType, result);
+                    }
+                };
+                ServiceClient.getInstance().getMassageList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                        keyword, typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+            } else {
+                currentPage = 1;
+                mListener = new SubscriberListener<BaseListResponse<List<Massage>>>() {
+                    @Override
+                    public void onNext(BaseListResponse<List<Massage>> result) {
+                        updateList(loadType, result);
+                    }
+                };
+                if (loadType == Constants.LOAD_PAGE) {
+                    if (spalId != null)
+                        ServiceClient.getInstance().getMassageListBySpa(new LoadingSubscriber(mListener, this),
+                                spalId, subjectId, Constants.MAX_PAGE_ITEM, currentPage);
+                    else
+                        ServiceClient.getInstance().getMassageList(new LoadingSubscriber(mListener, this),
+                                keyword, typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                } else if (loadType == Constants.LOAD_PULL_REFRESH)
+                    if (spalId != null)
+                        ServiceClient.getInstance().getMassageListBySpa(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                                spalId, subjectId, Constants.MAX_PAGE_ITEM, currentPage);
+                    else
+                        ServiceClient.getInstance().getMassageList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                                keyword, typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                else if (loadType == Constants.LOAD_DIALOG)
+                    if (spalId != null)
+                        ServiceClient.getInstance().getMassageListBySpa(new ProgressSubscriber(mListener, getContext()),
+                                spalId, subjectId, Constants.MAX_PAGE_ITEM, currentPage);
+                    else
+                        ServiceClient.getInstance().getMassageList(new ProgressSubscriber(mListener, getContext()),
+                                keyword, typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
             }
-
-            else if(loadType == Constants.LOAD_PULL_REFRESH)
-                if(spalId != null)
-                    ServiceClient.getInstance().getMassageListBySpa(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                            spalId, subjectId, Constants.MAX_PAGE_ITEM, currentPage);
-                else
-                    ServiceClient.getInstance().getMassageList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                            typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
-            else if(loadType == Constants.LOAD_DIALOG)
-                if(spalId != null)
-                    ServiceClient.getInstance().getMassageListBySpa(new ProgressSubscriber(mListener,getContext()),
-                            spalId, subjectId, Constants.MAX_PAGE_ITEM, currentPage);
-                else
-                    ServiceClient.getInstance().getMassageList(new ProgressSubscriber(mListener,getContext()),
-                            typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
         }
     }
 
     private void updateList(int loadType, BaseListResponse<List<Massage>> result){
         totalSize = result.getTotal();
+        Events.GetSearchCount event = new Events.GetSearchCount(totalSize);
+        GlobalBus.getBus().post(event);
         if(loadType == Constants.LOAD_MORE){
             mAdapter.addItems(result.getRows());
         }else{
@@ -149,8 +178,10 @@ public class MassageListFragment extends BaseLoadingFragment {
         if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
                 ||totalSize == 0) {
             enableLoadMore(false);
-            View footer = LayoutInflater.from(getActivity()).inflate(R.layout.footer_general, mRecyclerView, false);
-            myBaseAdapter.setFooterView(footer);
+            if(totalSize>0)
+                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+            else
+                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_empty, mRecyclerView, false));
         }
         else
             enableLoadMore(true);
@@ -158,114 +189,101 @@ public class MassageListFragment extends BaseLoadingFragment {
 
     @Subscribe
     public void getMessage(Events.EnableEdit enableEdit) {
-        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_DONE)
+        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_DONE) {
             mAdapter.setEnableEdit(false);
-        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_EDIT)
+            enablePullDownRefresh(true);
+        }
+        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_EDIT) {
             mAdapter.setEnableEdit(true);
-        mAdapter.notifyDataSetChanged();
+            enablePullDownRefresh(false);
+        }
+        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_DELETE) {
+            enablePullDownRefresh(true);
+            mAdapter.setEnableEdit(false);
+            final int length = mAdapter.checkList.size();
+            List<Long> removeIds = new ArrayList<>();
+            for (int i = length - 1; i >= 0; i--)
+                if(mAdapter.checkList.get(i))
+                    removeIds.add(mAdapter.massageList.get(i).getKey());
+            if(removeIds.size()>0) {
+                SubscriberListener mListener = new SubscriberListener<String>() {
+                    @Override
+                    public void onNext(String result) {
+                        Tools.Toast(getActivity(), getString(R.string.remove_fav_item_success));
+                        for (int i = length - 1; i >= 0; i--) {
+                            if (mAdapter.checkList.get(i)) {
+                                mAdapter.massageList.remove(i);
+                                mAdapter.checkList.remove(i);
+                                mAdapter.notifyItemRemoved(i);
+                                mAdapter.notifyItemRangeChanged(0, mAdapter.massageList.size());
+                            }
+                        }
+                        if (mAdapter.checkList.size() == 0) {
+                            Events.GetSearchCount event = new Events.GetSearchCount(0);
+                            GlobalBus.getBus().post(event);
+                        }
+                    }
+                };
+                ServiceClient.getInstance().removeFavoriteItem(new ProgressSubscriber(mListener, getActivity()),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), removeIds, 6);
+            }
+        }
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         private List<Massage> massageList;
+        public List<Boolean> checkList = new ArrayList<>();
         private boolean isEdit = false;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            TextView tvTitle, tvDoctor, tvHospital, tvAppointment, tvPriceBefore, tvPriceAfter, tvMin;
-            ImageView ivAvatar, ivGo, ivDelete, ivPromoPrice, ivOnePrice;
-
+            MassageView massageView;
             public MyViewHolder(View view) {
                 super(view);
-                tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvDoctor = (TextView) view.findViewById(R.id.tv_product_doctor);
-                tvHospital = (TextView) view.findViewById(R.id.tv_product_fav);
-                tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
-                tvPriceBefore = (TextView) view.findViewById(R.id.tv_price_before);
-                tvPriceAfter = (TextView) view.findViewById(R.id.tv_pay_amount);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_product_avatar);
-                ivGo = (ImageView) view.findViewById(R.id.iv_go);
-                ivDelete = (ImageView) view.findViewById(R.id.iv_delete);
-                tvMin = (TextView) view.findViewById(R.id.tv_min);
-                ivPromoPrice = (ImageView) view.findViewById(R.id.iv_promo_price);
-                ivOnePrice = (ImageView) view.findViewById(R.id.iv_one_price);
+                massageView = (MassageView) view;
             }
         }
 
         public void setEnableEdit(boolean enable) {
             isEdit = enable;
+            notifyDataSetChanged();
         }
 
         public MyAdapter(List<Massage> massageList) {
             this.massageList = massageList;
+            for(int i=0;i<massageList.size();i++)
+                checkList.add(false);
         }
 
         public void addItems(List<Massage> massageList){
-            for(Massage m:massageList)
-                this.massageList.add(m);
+            this.massageList.addAll(massageList);
+            for(int i=0;i<massageList.size();i++)
+                checkList.add(false);
             notifyDataSetChanged();
         }
 
         public void setItems(List<Massage> massageList) {
             this.massageList = massageList;
+            for(int i=0;i<massageList.size();i++)
+                checkList.add(false);
             notifyDataSetChanged();
         }
 
         @Override
         public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_product, parent, false);
-
-            return new MyAdapter.MyViewHolder(itemView);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_massage, parent, false);
+            return new MyViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(MyAdapter.MyViewHolder holder, final int position) {
             final Massage massage = massageList.get(position);
-            holder.tvTitle.setText(getString(R.string.bracket_left)+massage.getProduct_name()+getString(R.string.bracket_right)+massage.getProduct_usp());
-            holder.tvDoctor.setText(massage.getMassage_name());
-            holder.tvHospital.setText("");
-            holder.tvAppointment.setText(String.format(getString(R.string.num_of_appointment1), massage.getOrder_num()));
-            holder.tvPriceBefore.setText(String.format(getString(R.string.price), massage.getShop_price()));
-            if(massage.getProduct_type() == Constants.PROMOTION_PRODUCT) {
-                holder.tvPriceAfter.setText(massage.getActivity_price() + "/" + massage.getService_time());
-                holder.ivPromoPrice.setVisibility(View.VISIBLE);
-            }
-            else {
-                holder.tvPriceAfter.setText(massage.getOnline_price() + "/" + massage.getService_time());
-                holder.ivPromoPrice.setVisibility(View.GONE);
-            }
-            holder.tvPriceBefore.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.tvMin.setVisibility(View.VISIBLE);
-            holder.ivOnePrice.setVisibility(View.GONE);
-            Glide.with(getContext()).load(massage.getProduct_main_img()).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(holder.ivAvatar);
-            if (isEdit) {
-                holder.ivDelete.setVisibility(View.VISIBLE);
-                holder.ivDelete.setImageResource(R.mipmap.ic_delete_order);
-                holder.ivDelete.setTag(false);
-            } else
-                holder.ivDelete.setVisibility(View.GONE);
-
-            holder.ivDelete.setOnClickListener(new View.OnClickListener() {
+            holder.massageView.setData(massage);
+            holder.massageView.enableEdit(isEdit);
+            holder.massageView.setItemSelectedListener(new ItemSelectedListener() {
                 @Override
-                public void onClick(View view) {
-                    if ((boolean) view.getTag()) {
-                        ((ImageView) view).setImageResource(R.mipmap.ic_delete_order);
-                        view.setTag(false);
-                    } else {
-                        ((ImageView) view).setImageResource(R.mipmap.ic_delete_order_clicked);
-                        view.setTag(true);
-                    }
-                }
-            });
-
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(getActivity(), MassageActivity.class);
-                    Bundle b = new Bundle();
-                    b.putInt(Constants.PARAM_ID, massage.getId());
-                    i.putExtras(b);
-                    getActivity().startActivity(i);
+                public void onItemSelected(boolean isSelected) {
+                    checkList.set(position, isSelected);
                 }
             });
         }

@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.ui.activity.search.SearchHintActivity;
 
 import java.util.ArrayList;
 
@@ -65,6 +67,14 @@ public class FoundFragment extends Fragment{
 
         tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         viewPager = (ViewPager) view.findViewById(R.id.pager);
+        imgSearch = (ImageView) view.findViewById(R.id.img_search);
+
+        imgSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), SearchHintActivity.class));
+            }
+        });
 
         adapter = new PagerAdapter(getChildFragmentManager(), titleList, fragmentList);
         viewPager.setOffscreenPageLimit(2);
@@ -73,7 +83,7 @@ public class FoundFragment extends Fragment{
     }
 
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> titleList;
         private ArrayList<Fragment> fragmentList;

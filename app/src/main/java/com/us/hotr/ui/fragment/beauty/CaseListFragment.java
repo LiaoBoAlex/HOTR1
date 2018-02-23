@@ -1,6 +1,5 @@
 package com.us.hotr.ui.fragment.beauty;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,18 +9,29 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
 
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.customview.ItemSelectedListener;
+import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
-import com.us.hotr.storage.bean.Compare;
-import com.us.hotr.ui.activity.ImageViewerActivity;
-import com.us.hotr.ui.activity.beauty.CompareActivity;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Case;
+import com.us.hotr.storage.bean.Post;
+import com.us.hotr.ui.fragment.BaseLoadingFragment;
+import com.us.hotr.ui.view.CaseView;
+import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.BaseListResponse;
+import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -32,18 +42,33 @@ import java.util.List;
  * Created by Mloong on 2017/9/6.
  */
 
-public class CaseListFragment extends Fragment {
+public class CaseListFragment extends BaseLoadingFragment {
 
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
-    private List<Compare> compareList;
-    private RefreshLayout refreshLayout;
-    private boolean enableRefresh;
+    private MyBaseAdapter myBaseAdapter;
 
-    public static CaseListFragment newInstance(boolean enableRefresh) {
+    private boolean enableRefresh;
+    private int totalSize = 0;
+    private int currentPage = 1;
+    private boolean isLoaded = false;
+    private long userId = -1;
+    private boolean isFav = false;
+
+    public static CaseListFragment newInstance(String keyword, boolean enableRefresh, boolean isFav) {
         CaseListFragment caseListFragment = new CaseListFragment();
         Bundle b = new Bundle();
         b.putBoolean(Constants.PARAM_ENABLE_REFRESH, enableRefresh);
+        b.putString(Constants.PARAM_KEYWORD, keyword);
+        b.putBoolean(Constants.PARAM_IS_FAV, isFav);
+        caseListFragment.setArguments(b);
+        return caseListFragment;
+    }
+
+    public static CaseListFragment newInstance(long userId) {
+        CaseListFragment caseListFragment = new CaseListFragment();
+        Bundle b = new Bundle();
+        b.putLong(Constants.PARAM_DOCTOR_ID, userId);
         caseListFragment.setArguments(b);
         return caseListFragment;
     }
@@ -56,152 +81,205 @@ public class CaseListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        userId = getArguments().getLong(Constants.PARAM_DOCTOR_ID);
+        isFav = getArguments().getBoolean(Constants.PARAM_IS_FAV);
         enableRefresh = getArguments().getBoolean(Constants.PARAM_ENABLE_REFRESH);
+        keyword = getArguments().getString(Constants.PARAM_KEYWORD);
+        if(userId>0)
+            enableRefresh = false;
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
-        refreshLayout = (RefreshLayout)view.findViewById(R.id.refreshLayout);
-
-        compareList = new ArrayList<>();
-        for(int i=0;i<5;i++){
-            Compare c = new Compare();
-            compareList.add(c);
-        }
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mAdapter = new MyAdapter(compareList);
-        mRecyclerView.setAdapter(mAdapter);
+        enablePullDownRefresh(enableRefresh);
 
-        if(enableRefresh){
-            refreshLayout.setOnRefreshListener(new OnRefreshListener() {
-                @Override
-                public void onRefresh(RefreshLayout refreshlayout) {
-                    refreshlayout.finishRefresh(2000);
-                }
-            });
-        }else
-            refreshLayout.setEnableRefresh(false);
-        refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
+        if(getUserVisibleHint() && !isLoaded){
+            loadData(Constants.LOAD_PAGE);
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isResumed() && !isLoaded) {
+            loadData(Constants.LOAD_PAGE);
+        }
+    }
+
+    @Override
+    protected void loadData(final int loadType) {
+        SubscriberListener mListener = new SubscriberListener<BaseListResponse<List<Case>>>() {
             @Override
-            public void onLoadmore(RefreshLayout refreshlayout) {
-                refreshlayout.finishLoadmore(2000);
-                for(int i=0;i<2;i++){
-                    Compare c = new Compare();
-                    compareList.add(c);
-                }
+            public void onNext(BaseListResponse<List<Case>> result) {
+                updateList(loadType, result);
             }
-        });
+        };
+        if(userId>0){
+            if (loadType == Constants.LOAD_MORE) {
+                ServiceClient.getInstance().getCaseListbyUser(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), userId, Constants.MAX_PAGE_ITEM, currentPage);
+            } else {
+                currentPage = 1;
+                ServiceClient.getInstance().getCaseListbyUser(new SilentSubscriber(mListener, getActivity(), null),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), userId, Constants.MAX_PAGE_ITEM, currentPage);
+            }
+        }else if(isFav){
+            if (loadType == Constants.LOAD_PAGE)
+                ServiceClient.getInstance().getCollectionCase(new LoadingSubscriber(mListener, this),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+            else if (loadType == Constants.LOAD_PULL_REFRESH)
+                ServiceClient.getInstance().getCollectionCase(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+        }else {
+            if (loadType == Constants.LOAD_MORE) {
+                ServiceClient.getInstance().getAllCase(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM);
+            } else {
+                currentPage = 1;
+                if (loadType == Constants.LOAD_PAGE)
+                    ServiceClient.getInstance().getAllCase(new LoadingSubscriber(mListener, this),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM);
+                else if (loadType == Constants.LOAD_DIALOG)
+                    ServiceClient.getInstance().getAllCase(new ProgressSubscriber(mListener, getContext()),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM);
+                else if (loadType == Constants.LOAD_PULL_REFRESH)
+                    ServiceClient.getInstance().getAllCase(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM);
+            }
+        }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        GlobalBus.getBus().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        GlobalBus.getBus().unregister(this);
+    private void updateList(int loadType, BaseListResponse<List<Case>> result){
+        isLoaded = true;
+        totalSize = result.getTotal();
+        Events.GetSearchCount event = new Events.GetSearchCount(totalSize);
+        GlobalBus.getBus().post(event);
+        if(loadType == Constants.LOAD_MORE){
+            mAdapter.addItems(result.getRows());
+        }else{
+            if(mAdapter == null)
+                mAdapter = new MyAdapter(result.getRows());
+            else
+                mAdapter.setItems(result.getRows());
+            myBaseAdapter = new MyBaseAdapter(mAdapter);
+            mRecyclerView.setAdapter(myBaseAdapter);
+        }
+        currentPage ++;
+        if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
+                ||totalSize == 0) {
+            enableLoadMore(false);
+            if(totalSize>0)
+                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+            else
+                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_empty, mRecyclerView, false));
+        }
+        else
+            enableLoadMore(true);
     }
 
     @Subscribe
     public void getMessage(Events.EnableEdit enableEdit) {
-        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_DONE)
+        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_DONE) {
             mAdapter.setEnableEdit(false);
-        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_EDIT)
+            enablePullDownRefresh(enableRefresh);
+        }
+        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_EDIT) {
             mAdapter.setEnableEdit(true);
-        mAdapter.notifyDataSetChanged();
+            enablePullDownRefresh(false);
+        }
+        if(enableEdit.getEnableEdit() == Events.EnableEdit.ACTION_DELETE) {
+            enablePullDownRefresh(enableRefresh);
+            mAdapter.setEnableEdit(false);
+            final int length = mAdapter.checkList.size();
+            List<Long> removeIds = new ArrayList<>();
+            for (int i = length - 1; i >= 0; i--)
+                if(mAdapter.checkList.get(i))
+                    removeIds.add(mAdapter.caseList.get(i).getKey());
+            if(removeIds.size()>0) {
+                SubscriberListener mListener = new SubscriberListener<String>() {
+                    @Override
+                    public void onNext(String result) {
+                        Tools.Toast(getActivity(), getString(R.string.remove_fav_item_success));
+                        for (int i = length - 1; i >= 0; i--) {
+                            if (mAdapter.checkList.get(i)) {
+                                mAdapter.caseList.remove(i);
+                                mAdapter.checkList.remove(i);
+                                mAdapter.notifyItemRemoved(i);
+                                mAdapter.notifyItemRangeChanged(0, mAdapter.caseList.size());
+                            }
+                        }
+                    }
+                };
+                ServiceClient.getInstance().removeFavoriteItem(new ProgressSubscriber(mListener, getActivity()),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), removeIds, 8);
+            }
+        }
     }
 
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-
-        private List<Compare> compareList;
+        public List<Case> caseList;
+        public List<Boolean> checkList = new ArrayList<>();
         private boolean isEdit = false;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            ImageView imgBefore, imgAfter, ivDelete;
-            public MyViewHolder(View view){
+            CaseView caseView;
+            public MyViewHolder(View view) {
                 super(view);
-                imgBefore = (ImageView) view.findViewById(R.id.img_before);
-                imgAfter = (ImageView) view.findViewById(R.id.imge_after);
-                ivDelete = (ImageView) view.findViewById(R.id.iv_delete);
+                caseView = (CaseView) view;
             }
         }
 
-        public MyAdapter(List<Compare> compareList) {
-            this.compareList = compareList;
+        public MyAdapter(List<Case> caseList) {
+            this.caseList = caseList;
+            for(int i=0;i<caseList.size();i++)
+                checkList.add(false);
         }
 
-        public void setItems(List<Compare> compareList){
-            this.compareList = compareList;
+        public void setItems(List<Case> caseList){
+            this.caseList = caseList;
+            checkList = new ArrayList<>();
+            for(int i=0;i<caseList.size();i++)
+                checkList.add(false);
+            notifyDataSetChanged();
+        }
+
+        public void addItems(List<Case> caseList){
+            this.caseList.addAll(caseList);
+            for(int i=0;i<caseList.size();i++)
+                checkList.add(false);
             notifyDataSetChanged();
         }
 
         public void setEnableEdit(boolean enable){
             isEdit = enable;
+            notifyDataSetChanged();
         }
 
         @Override
         public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_compare, parent, false);
-
-            return new MyViewHolder(itemView);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_case, parent, false);
+            return new MyViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
-            final Compare compare = compareList.get(position);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
+            final Case c = caseList.get(position);
+            holder.caseView.setData(c);
+            holder.caseView.enableEdit(isEdit);
+            holder.caseView.setItemSelectedListener(new ItemSelectedListener() {
                 @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(getActivity(), CompareActivity.class);
-                    i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_CASE);
-                    startActivity(i);
-                }
-            });
-            holder.imgBefore.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(getActivity(), ImageViewerActivity.class));
-                }
-            });
-            holder.imgAfter.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(getActivity(), ImageViewerActivity.class));
-                }
-            });
-
-            if(isEdit) {
-                holder.ivDelete.setVisibility(View.VISIBLE);
-                holder.ivDelete.setImageResource(R.mipmap.ic_delete_order);
-                holder.ivDelete.setTag(false);
-            }else
-                holder.ivDelete.setVisibility(View.GONE);
-
-            holder.ivDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if((boolean)view.getTag()){
-                        ((ImageView)view).setImageResource(R.mipmap.ic_delete_order);
-                        view.setTag(false);
-                    }else{
-                        ((ImageView)view).setImageResource(R.mipmap.ic_delete_order_clicked);
-                        view.setTag(true);
-                    }
+                public void onItemSelected(boolean isSelected) {
+                    checkList.set(position, isSelected);
                 }
             });
         }
 
         @Override
         public int getItemCount() {
-            if(compareList == null)
+            if(caseList == null)
                 return 0;
-            return compareList.size();
+            return caseList.size();
         }
     }
 }

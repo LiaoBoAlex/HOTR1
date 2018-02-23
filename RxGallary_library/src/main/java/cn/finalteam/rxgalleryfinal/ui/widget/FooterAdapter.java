@@ -57,7 +57,7 @@ public class FooterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemCount() {
-        return mAdapter.getItemCount() + 1;
+        return mAdapter.getItemCount();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class FooterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public boolean isFooter(int position) {
-        return position == getItemCount() - 1;
+        return false;
     }
 
     public interface OnItemClickListener {

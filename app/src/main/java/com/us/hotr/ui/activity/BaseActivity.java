@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,7 +12,6 @@ import android.widget.TextView;
 import com.us.hotr.R;
 import com.us.hotr.ui.activity.search.SearchHintActivity;
 import com.us.hotr.ui.dialog.ShareDialogFragment;
-import com.us.hotr.util.Tools;
 
 /**
  * Created by Mloong on 2017/9/19.
@@ -20,11 +20,13 @@ import com.us.hotr.util.Tools;
 public abstract class BaseActivity extends AppCompatActivity {
     protected TextView tvTitle, tvBack;
     protected ImageView ivBack, ivSearch, ivShare;
+    protected Toolbar mToolBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayout());
+        mToolBar = (Toolbar) findViewById(R.id.toolbar);
         tvTitle = (TextView) findViewById(R.id.tb_title);
         ivBack = (ImageView) findViewById(R.id.img_back);
         tvBack = (TextView) findViewById(R.id.tv_back);
@@ -58,6 +60,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                     new ShareDialogFragment().show(getSupportFragmentManager(), "dialog");
                 }
             });
+    }
+
+    protected void showToolBar(boolean value){
+        if(value)
+            mToolBar.setVisibility(View.VISIBLE);
+        else
+            mToolBar.setVisibility(View.GONE);
     }
 
     protected void setBackButtonListener(View.OnClickListener listener){

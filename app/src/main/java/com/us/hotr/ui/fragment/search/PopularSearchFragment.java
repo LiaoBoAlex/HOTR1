@@ -15,9 +15,19 @@ import android.widget.TextView;
 import com.us.hotr.Data;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.HotSearchTopic;
 import com.us.hotr.storage.greendao.DataBaseHelper;
 import com.us.hotr.ui.activity.search.SearchHintActivity;
+import com.us.hotr.ui.dialog.TwoButtonDialog;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.BaseListResponse;
+import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,38 +62,50 @@ public class PopularSearchFragment extends Fragment{
         flKeyword.setHorizontalSpacing(6);
         flKeyword.setTextPaddingH(14);
 
-        flKeyword.setFlowLayout(Data.getSearchPopular(), new FlowLayout.OnItemClickListener() {
-            @Override
-            public void onItemClick(String content, int position) {
-                ((SearchHintActivity)getActivity()).setSearchText(content);
-            }
-        });
-
         tvClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
-                            case DialogInterface.BUTTON_POSITIVE:
-                                DataBaseHelper.clearSearchHistory();
+                TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(getActivity());
+                alertDialogBuilder.setMessage(getString(R.string.delete_search_history));
+                alertDialogBuilder.setPositiveButton(getString(R.string.yes),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                DataBaseHelper.getInstance(getActivity().getApplicationContext()).clearSearchHistory();
                                 updateSearchHistory();
-                                break;
-
-                            case DialogInterface.BUTTON_NEGATIVE:
-                                break;
-                        }
-                    }
-                };
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(getString(R.string.delete_search_history)).setPositiveButton(getString(R.string.yes), dialogClickListener)
-                        .setNegativeButton(getString(R.string.no), dialogClickListener).show();
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialogBuilder.setNegativeButton(getString(R.string.no),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialogBuilder.create().show();
             }
         });
 
         updateSearchHistory();
+        loadData();
+    }
+
+    private void loadData(){
+        SubscriberListener mListener = new SubscriberListener<BaseListResponse<List<HotSearchTopic>>>() {
+            @Override
+            public void onNext(BaseListResponse<List<HotSearchTopic>> result) {
+                List<String> list = new ArrayList<>();
+                for(HotSearchTopic h:result.getRows())
+                    list.add(h.getProject_name());
+                flKeyword.setFlowLayout(list, new FlowLayout.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(String content, int position) {
+                        ((SearchHintActivity)getActivity()).setSearchText(content);
+                    }
+                });
+            }
+        };
+        ServiceClient.getInstance().getHotSearchTopic(new ProgressSubscriber(mListener, getContext()),
+                HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
     }
 
     @Override
@@ -96,7 +118,7 @@ public class PopularSearchFragment extends Fragment{
 
     private void updateSearchHistory() {
         if (clSearchHistory != null){
-            List<String> searchHistory = DataBaseHelper.getAllSearchHistory();
+            List<String> searchHistory = DataBaseHelper.getInstance(getActivity().getApplicationContext()).getAllSearchHistory();
             if (searchHistory != null && searchHistory.size() > 0) {
                 clSearchHistory.setVisibility(View.VISIBLE);
                 llSearchHistory.removeAllViews();

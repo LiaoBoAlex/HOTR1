@@ -1,7 +1,5 @@
 package com.us.hotr.ui.activity;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -10,19 +8,26 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.util.Tools;
 
 /**
  * Created by Mloong on 2017/10/13.
  */
 
 public class WebViewActivity extends BaseActivity {
+    public static final int TYPE_DATA = 1;
+    public static final int TYPE_URL = 2;
 
     private WebView mWebview;
     private ProgressBar mProgressBar;
+    private ImageView ivBack1;
+    private String content;
+    private int type = 1;
 
     @Override
     protected int getLayout() {
@@ -32,13 +37,28 @@ public class WebViewActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMyTitle(getIntent().getStringExtra(Constants.PARAM_TITLE));
+        type = getIntent().getExtras().getInt(Constants.PARAM_TYPE);
+        content = getIntent().getExtras().getString(Constants.PARAM_DATA);
         initStaticView();
     }
 
     private void initStaticView(){
         mWebview = (WebView) findViewById(R.id.wv_content);
         mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
+        ivBack1 = (ImageView) findViewById(R.id.iv_back);
+        String title = getIntent().getExtras().getString(Constants.PARAM_TITLE);
+        if(title!=null) {
+            setMyTitle(title);
+            ivBack1.setVisibility(View.GONE);
+        }
+        else
+            showToolBar(false);
+        ivBack1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         mProgressBar.setMax(100);
         mWebview.getSettings().setJavaScriptEnabled(true);
         mWebview.getSettings().setDomStorageEnabled(true);
@@ -63,8 +83,10 @@ public class WebViewActivity extends BaseActivity {
         });
         mWebview.clearFormData();
         mWebview.clearCache(true);
-        String url="https://mp.weixin.qq.com/s?__biz=MjM5MDczMjM2MA==&mid=2652388593&idx=1&sn=7c08949e42d61de2f022ffcee552738a&chksm=bdacc5d68adb4cc0a038f92efca95acf17ef1facbc86553441e8f47dbb0316104b80b6379485&scene=0&key=bda634fb2c7300a3b6c583ff2fe7827c6ddb195c74ff4c744b765cd8a48e9f4e67360531050b8b7addce3f97d0b9440e5a0b6bc1948c635320267447fc4b8075deffdf61ea7ecc241bf9a9f120f378cd&ascene=0&uin=OTYwOTY3Njgw&devicetype=iMac+MacBookPro11%2C4+OSX+OSX+10.11.6+build(15G31)&version=12010210&nettype=WIFI&fontScale=100&pass_ticket=kCRObwEpa%2BTF24xhAVuiq%2FBQ2Ki1t8IcSMer1q5hQg2vFO41c4RQRrTB236TDGFU";
-        mWebview.loadUrl(url);
+        if(type == TYPE_DATA)
+            mWebview.loadData(Tools.getHtmlData(content), "text/html; charset=UTF-8", null);
+        if(type == TYPE_URL)
+            mWebview.loadUrl(content);
     }
 
     private class CustomWebViewClient extends WebViewClient {

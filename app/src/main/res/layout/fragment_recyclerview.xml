@@ -6,6 +6,7 @@ android:layout_height="match_parent"
     android:id="@+id/ll_container">
 <android.support.v7.widget.RecyclerView
     android:id="@+id/recyclerview"
+    android:background="@color/divider2"
     android:overScrollMode="never"
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>

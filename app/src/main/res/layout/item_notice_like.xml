@@ -54,7 +54,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
-        android:src="@mipmap/image_holder_1"
+        android:src="@drawable/placeholder_post3"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

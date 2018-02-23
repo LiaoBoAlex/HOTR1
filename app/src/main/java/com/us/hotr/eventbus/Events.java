@@ -1,6 +1,11 @@
 package com.us.hotr.eventbus;
 
 
+import com.us.hotr.storage.bean.Voucher;
+import com.us.hotr.webservice.response.GetLoginResponse;
+
+import java.util.List;
+
 /**
  * Created by Mloong on 2017/9/5.
  */
@@ -8,9 +13,9 @@ package com.us.hotr.eventbus;
 public class Events {
     public static class CitySelected{
         private String city;
-        private int cityId;
+        private long cityId;
 
-        public CitySelected(String city, int cityId){
+        public CitySelected(String city, long cityId){
             this.city = city;
             this.cityId = cityId;
         }
@@ -19,22 +24,28 @@ public class Events {
             return city;
         }
 
-        public int getSelectedCityId(){
+        public long getSelectedCityId(){
             return cityId;
         }
     }
 
     public static class SubjectSelected{
         private String subject;
-        private int subjectId;
+        private long subjectId;
+        private long ftId;
 
-        public int getSubjectId() {
+        public long getSubjectId() {
             return subjectId;
         }
 
-        public SubjectSelected(String subject, int subjectId){
+        public long getFtId(){
+            return  ftId;
+        }
+
+        public SubjectSelected(String subject, long subjectId, long ftId){
             this.subject = subject;
             this.subjectId = subjectId;
+            this.ftId = ftId;
         }
 
         public String getSelectedSubject() {
@@ -60,9 +71,54 @@ public class Events {
         }
     }
 
+    public static class MassageTypeSelected{
+        private long typeId;
+        private String type;
+
+        public String getType() {
+            return type;
+        }
+
+        public long getTypeId() {
+            return typeId;
+        }
+
+        public MassageTypeSelected(long typeId, String type){
+            this.typeId = typeId;
+            this.type = type;
+        }
+    }
+
     public static class Refresh{
         public Refresh(){
 
+        }
+    }
+
+    public static class WechatLogin{
+        private GetLoginResponse getLoginResponse;
+        public WechatLogin(GetLoginResponse response){
+            getLoginResponse = response;
+        }
+
+        public GetLoginResponse getGetLoginResponse() {
+            return getLoginResponse;
+        }
+    }
+
+    public static class VoucherSelected{
+        private Voucher voucher;
+
+        public Voucher getVoucher() {
+            return voucher;
+        }
+
+        public void setVoucher(Voucher voucher) {
+            this.voucher = voucher;
+        }
+
+        public VoucherSelected(Voucher voucher){
+            this.voucher = voucher;
         }
     }
 
@@ -94,6 +150,29 @@ public class Events {
         public int getSearchTypeChosen(){
             return type;
         }
+    }
+
+    public static class GetSearchCount{
+        private int count;
+        public GetSearchCount(int count){
+            this.count = count;
+        }
+        public int getSearchCount(){
+            return count;
+        }
+    }
+
+    public static class GetVoucherCount{
+        private int count, type;
+        public GetVoucherCount(int count, int type){
+            this.count = count;
+            this.type = type;
+        }
+        public int getVoucherCount(){
+            return count;
+        }
+
+        public int getVoucherType(){return type;}
     }
 
     public static class EnableEdit{

@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -65,7 +66,7 @@ public class ReceiptFragment extends BaseFragment{
         fragmentList = new ArrayList<Fragment>() {{
             add(ReceiptTypeFragment.newInstance(Constants.RECEIPT_STATUS_UNUSED));
             add(ReceiptTypeFragment.newInstance(Constants.RECEIPT_STATUS_USED));
-            add(ReceiptTypeFragment.newInstance(Constants.RECEIPT_STATUS_EXPITED));
+            add(ReceiptTypeFragment.newInstance(Constants.RECEIPT_STATUS_EXPIRED));
             add(ReceiptTypeFragment.newInstance(Constants.RECEIPT_STATUS_REFUNDING));
             add(ReceiptTypeFragment.newInstance(Constants.RECEIPT_STATUS_REFUNDED));
         }};
@@ -80,7 +81,7 @@ public class ReceiptFragment extends BaseFragment{
 
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> titleList;
         private ArrayList<Fragment> fragmentList;

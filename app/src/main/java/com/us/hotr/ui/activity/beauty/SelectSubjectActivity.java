@@ -56,7 +56,7 @@ public class SelectSubjectActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Fragment fragment = new SelectSubjectFragment().newInstance(false);
+        Fragment fragment = new SelectSubjectFragment().newInstance(false, -1);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.container, fragment).commit();
     }
@@ -66,7 +66,7 @@ public class SelectSubjectActivity extends BaseActivity {
         Intent i = new Intent(SelectSubjectActivity.this, SubjectActivity.class);
         Bundle b = new Bundle();
         b.putString(Constants.PARAM_NAME, subjectSelected.getSelectedSubject());
-        b.putInt(Constants.PARAM_ID, subjectSelected.getSubjectId());
+        b.putLong(Constants.PARAM_ID, subjectSelected.getSubjectId());
         i.putExtras(b);
         startActivity(i);
 

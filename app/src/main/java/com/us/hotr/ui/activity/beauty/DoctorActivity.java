@@ -2,7 +2,6 @@ package com.us.hotr.ui.activity.beauty;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -21,13 +20,21 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
 import com.us.hotr.customview.MyBaseAdapter;
-import com.us.hotr.webservice.response.GetDoctorDetailResponse;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Product;
+import com.us.hotr.storage.bean.Type;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
+import com.us.hotr.ui.view.CaseView;
+import com.us.hotr.ui.view.ProductView;
+import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.GetDoctorDetailResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,13 +49,13 @@ public class DoctorActivity extends BaseLoadingActivity {
     private RecyclerView mRecyclerView;
     private DoctorAdapter mAdapter;
 
-    private int mDoctorId;
+    private long mDoctorId;
+    private boolean isCollected = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMyTitle(R.string.doctor_title);
-        mDoctorId = getIntent().getExtras().getInt(Constants.PARAM_ID);
+        mDoctorId = getIntent().getExtras().getLong(Constants.PARAM_ID);
 
         initStaticView();
         loadData(Constants.LOAD_PAGE);
@@ -64,6 +71,7 @@ public class DoctorActivity extends BaseLoadingActivity {
                     showErrorPage();
                     return;
                 }
+                isCollected = result.getIs_collected()==1?true:false;
                 mAdapter = new DoctorAdapter(DoctorActivity.this, result);
                 mRecyclerView.setAdapter(mAdapter);
                 MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
@@ -73,10 +81,13 @@ public class DoctorActivity extends BaseLoadingActivity {
         };
         if(type == Constants.LOAD_PAGE)
             ServiceClient.getInstance().getDoctorDetail(new LoadingSubscriber(mListener, this),
-                    mDoctorId);
+                    mDoctorId, HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
         else if (type == Constants.LOAD_PULL_REFRESH)
             ServiceClient.getInstance().getDoctorDetail(new SilentSubscriber(mListener, this, refreshLayout),
-                    mDoctorId);
+                    mDoctorId, HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+        else if (type == Constants.LOAD_DIALOG)
+            ServiceClient.getInstance().getDoctorDetail(new ProgressSubscriber(mListener, this),
+                    mDoctorId, HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
     }
 
     @Override
@@ -130,16 +141,11 @@ public class DoctorActivity extends BaseLoadingActivity {
 
 
         public class CaseHolder extends RecyclerView.ViewHolder {
-            ImageView imgBefore, imgAfter;
-            TextView tvSeeMore;
-            RelativeLayout rlSeeMore;
+            CaseView caseView;
 
             public CaseHolder(View view) {
                 super(view);
-                imgBefore = (ImageView) view.findViewById(R.id.img_before);
-                imgAfter = (ImageView) view.findViewById(R.id.imge_after);
-                rlSeeMore = (RelativeLayout) view.findViewById(R.id.rl_see_more);
-                tvSeeMore = (TextView) view.findViewById(R.id.tv_see_more);
+                caseView = (CaseView) view;
             }
         }
 
@@ -162,7 +168,7 @@ public class DoctorActivity extends BaseLoadingActivity {
 
             public DoctorHeaderHolder(View view) {
                 super(view);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_product_avatar);
+                ivAvatar = (ImageView) view.findViewById(R.id.iv_user_avatar);
                 ivAdd = (ImageView) view.findViewById(R.id.iv_add);
                 ivMsg = (ImageView) view.findViewById(R.id.iv_msg);
                 ivCertified = (ImageView) view.findViewById(R.id.iv_certified);
@@ -171,7 +177,7 @@ public class DoctorActivity extends BaseLoadingActivity {
                 tvNumPointment = (TextView) view.findViewById(R.id.tv_num_appointment);
                 tvName = (TextView) view.findViewById(R.id.tv_name);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvHospital = (TextView) view.findViewById(R.id.tv_product_fav);
+                tvHospital = (TextView) view.findViewById(R.id.tv_address);
                 tvHospitalInfo = (TextView) view.findViewById(R.id.tv_hospital_info);
                 flSubject = (FlowLayout) view.findViewById(R.id.fl_subject);
                 rlDoctor = (RelativeLayout) view.findViewById(R.id.rl_doctor_info);
@@ -199,24 +205,10 @@ public class DoctorActivity extends BaseLoadingActivity {
         }
 
         public class ProductHolder extends RecyclerView.ViewHolder {
-            TextView tvTitle, tvDoctor, tvHospital, tvAppointment, tvPriceBefore, tvPriceAfter, tvSoldOut;
-            ImageView ivAvatar, ivGo, ivOnePrice, ivPromoPrice;
-            View vDivider;
-
+            ProductView productView;
             public ProductHolder(View view) {
                 super(view);
-                tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvDoctor = (TextView) view.findViewById(R.id.tv_product_doctor);
-                tvHospital = (TextView) view.findViewById(R.id.tv_product_fav);
-                tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
-                tvPriceBefore = (TextView) view.findViewById(R.id.tv_price_before);
-                tvPriceAfter = (TextView) view.findViewById(R.id.tv_pay_amount);
-                ivAvatar = (ImageView) view.findViewById(R.id.iv_product_avatar);
-                ivGo = (ImageView) view.findViewById(R.id.iv_go);
-                vDivider = view.findViewById(R.id.v_divider);
-                ivOnePrice = (ImageView) view.findViewById(R.id.iv_one_price);
-                ivPromoPrice = (ImageView) view.findViewById(R.id.iv_promo_price);
-                tvSoldOut = (TextView) view.findViewById(R.id.tv_sold_out);
+                productView = (ProductView) view;
             }
         }
 
@@ -231,7 +223,7 @@ public class DoctorActivity extends BaseLoadingActivity {
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
                     return new ProductHolder(view);
                 case TYPE_CASE:
-                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_compare, parent, false);
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_case, parent, false);
                     return new CaseHolder(view);
                 case TYPE_CASE_HEADER:
                 case TYPE_PRODUCT_HEADER:
@@ -268,13 +260,13 @@ public class DoctorActivity extends BaseLoadingActivity {
                     ((FooterHolder) holder).textView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-//                            Intent i = new Intent(DoctorActivity.this, ListActivity.class);
-//                            Bundle b = new Bundle();
-//                            b.putString(Constants.PARAM_TITLE, getString(R.string.product_list));
-//                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
-//                            b.putInt(Constants.PARAM_DOCTOR_ID, doctorDetail.getDetail().getDoctor_id());
-//                            i.putExtras(b);
-//                            startActivity(i);
+                            Intent i = new Intent(DoctorActivity.this, ListWithCategoryActivity.class);
+                            Bundle b = new Bundle();
+                            b.putString(Constants.PARAM_TITLE, getString(R.string.hospital_appointment));
+                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
+                            b.putLong(Constants.PARAM_DOCTOR_ID, doctorDetail.getDetail().getDoctor_id());
+                            i.putExtras(b);
+                            startActivity(i);
                         }
                     });
 
@@ -286,21 +278,7 @@ public class DoctorActivity extends BaseLoadingActivity {
 
                 case TYPE_CASE:
                     CaseHolder caseHolder = (CaseHolder) holder;
-                    caseHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
-                    caseHolder.imgBefore.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
-                    caseHolder.imgAfter.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
+//                    caseHolder.caseView.setData(new Case());
                     break;
 
                 case TYPE_HEADER:
@@ -317,12 +295,11 @@ public class DoctorActivity extends BaseLoadingActivity {
                     List<String> subjects = new ArrayList<>();
                     if(doctorDetail.getTypeList()!=null && doctorDetail.getTypeList().size()>0) {
                         doctorHeaderHolder.clSubject.setVisibility(View.VISIBLE);
-                        for (GetDoctorDetailResponse.SubjectCount s : doctorDetail.getTypeList())
-                            subjects.add(s.getType_name() + " " + s.getOrder_num());
+                        for (Type s : doctorDetail.getTypeList())
+                            subjects.add(s.getTypeName() + " " + s.getProduct_num()+getString(R.string.appointment));
                         doctorHeaderHolder.flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
                             @Override
                             public void onItemClick(String content, int position) {
-
                             }
                         });
                     }else{
@@ -334,7 +311,7 @@ public class DoctorActivity extends BaseLoadingActivity {
                         public void onClick(View view) {
                             Intent i = new Intent(mContext, HospitalActivity.class);
                             Bundle b = new Bundle();
-                            b.putInt(Constants.PARAM_ID, doctorDetail.getDetail().getHospital_id());
+                            b.putLong(Constants.PARAM_ID, doctorDetail.getDetail().getHospital_id());
                             i.putExtras(b);
                             mContext.startActivity(i);
                         }
@@ -349,45 +326,52 @@ public class DoctorActivity extends BaseLoadingActivity {
                             mContext.startActivity(i);
                         }
                     });
+                    if(isCollected)
+                        doctorHeaderHolder.ivAdd.setImageResource(R.mipmap.ic_click);
+                    else
+                        doctorHeaderHolder.ivAdd.setImageResource(R.mipmap.ic_add);
+                    doctorHeaderHolder.ivAdd.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(!isCollected) {
+                                SubscriberWithReloadListener mListener = new SubscriberWithReloadListener<String>() {
+                                    @Override
+                                    public void onNext(String result) {
+                                        isCollected = true;
+                                        Tools.Toast(DoctorActivity.this, getString(R.string.fav_item_success));
+                                        notifyItemChanged(position);
+                                    }
+                                    @Override
+                                    public void reload() {
+                                        loadData(Constants.LOAD_DIALOG);
+                                    }
+                                };
+                                ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, DoctorActivity.this),
+                                        HOTRSharePreference.getInstance(DoctorActivity.this.getApplicationContext()).getUserID(), doctorDetail.getDetail().getDoctor_id(), 2);
+                            }else{
+                                SubscriberListener mListener = new SubscriberListener<String>() {
+                                    @Override
+                                    public void onNext(String result) {
+                                        isCollected = false;
+                                        Tools.Toast(DoctorActivity.this, getString(R.string.remove_fav_item_success));
+                                        notifyItemChanged(position);
+                                    }
+                                };
+                                ServiceClient.getInstance().removeFavoriteItem(new ProgressSubscriber(mListener, DoctorActivity.this),
+                                        HOTRSharePreference.getInstance(DoctorActivity.this.getApplicationContext()).getUserID(), Arrays.asList(doctorDetail.getDetail().getDoctor_id()), 2);
+                            }
+                        }
+                    });
                     break;
 
                 case TYPE_PRODUCT:
                     final Product product = (Product)itemList.get(position).getContent();
                     ProductHolder productHolder = (ProductHolder) holder;
-                    productHolder.tvTitle.setText(product.getProduct_name() + product.getProduct_usp());
-                    productHolder.tvDoctor.setText(product.getDoctor_name());
-                    productHolder.tvHospital.setText(product.getHospital_name());
-                    productHolder.tvAppointment.setText(String.format(getString(R.string.num_of_appointment1), product.getOrder_num()));
-                    productHolder.tvPriceBefore.setText(String.format(getString(R.string.price), product.getShop_price()));
-                    productHolder.tvPriceAfter.setText(product.getOnline_price()+"");
-                    productHolder.tvPriceBefore.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
-                    Glide.with(mContext).load(product.getProduct_main_img()).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(productHolder.ivAvatar);
-                    if(product.getPayment_type() == Constants.FULL_PAYMENT)
-                        productHolder.ivOnePrice.setVisibility(View.VISIBLE);
-                    else
-                        productHolder.ivOnePrice.setVisibility(View.GONE);
-                    if(product.getProduct_type() == Constants.PROMOTION_PRODUCT){
-                        productHolder.ivPromoPrice.setVisibility(View.VISIBLE);
-                        if(product.getAmount()>0)
-                            productHolder.tvSoldOut.setVisibility(View.GONE);
-                        else
-                            productHolder.tvSoldOut.setVisibility(View.GONE);
-                    }else
-                        productHolder.ivPromoPrice.setVisibility(View.GONE);
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent i = new Intent(DoctorActivity.this, ProductActivity.class);
-                            Bundle b= new Bundle();
-                            b.putInt(Constants.PARAM_ID, product.getProductId());
-                            i.putExtras(b);
-                            startActivity(i);
-                        }
-                    });
+                    productHolder.productView.setData(product);
                     if(position < getItemCount()-1 && !(itemList.get(position+1).getContent() instanceof Product))
-                        productHolder.vDivider.setVisibility(View.GONE);
+                        productHolder.productView.showDivider(false);
                     else
-                        productHolder.vDivider.setVisibility(View.VISIBLE);
+                        productHolder.productView.showDivider(true);
                     break;
 
 

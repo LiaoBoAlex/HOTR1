@@ -25,6 +25,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:maxLines="1"
+                android:maxLength="20"
                 android:gravity="center|left"
                 android:textColorHint="@color/text_grey"
                 android:hint="@string/hint_title"/>
@@ -43,11 +44,13 @@
                 android:textSize="15sp"
                 android:minLines="5"
                 android:maxLines="5"
+                android:maxLength="500"
                 android:gravity="top|left"
                 android:textColorHint="@color/text_grey"
                 android:hint="@string/post_hint"/>
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerview"
+                android:overScrollMode="never"
                 android:padding="3dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -56,6 +59,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_bar"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="49dp"
         android:layout_gravity="bottom"

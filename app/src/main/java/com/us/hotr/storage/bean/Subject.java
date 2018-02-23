@@ -11,7 +11,7 @@ public class Subject implements Serializable {
 
     private List<SubjectL2> children;
     private String typeName;
-    private int key;
+    private long key;
 
     public List<SubjectL2> getChildren() {
         return children;
@@ -29,11 +29,11 @@ public class Subject implements Serializable {
         this.typeName = typeName;
     }
 
-    public int getKey() {
+    public long getKey() {
         return key;
     }
 
-    public void setKey(int key) {
+    public void setKey(long key) {
         this.key = key;
     }
 
@@ -61,7 +61,8 @@ public class Subject implements Serializable {
         public class SubjectL3 implements Serializable {
 
             private String projectName;
-            private int key;
+            private long key;
+            private long ftId;
 
             public String getProjectName() {
                 return projectName;
@@ -71,12 +72,20 @@ public class Subject implements Serializable {
                 this.projectName = projectName;
             }
 
-            public int getKey() {
+            public long getKey() {
                 return key;
             }
 
-            public void setKey(int key) {
+            public void setKey(long key) {
                 this.key = key;
+            }
+
+            public long getFtId() {
+                return ftId;
+            }
+
+            public void setFtId(long ftId) {
+                this.ftId = ftId;
             }
         }
     }

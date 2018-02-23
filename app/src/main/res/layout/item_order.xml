@@ -10,10 +10,9 @@
         android:layout_height="44dp">
 
         <TextView
-            android:id="@+id/tv_time"
+            android:id="@+id/tv_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
             android:textColor="@color/text_grey2"
             android:textSize="12sp"
             android:layout_marginRight="12dp"
@@ -50,7 +49,7 @@
         <com.us.hotr.customview.ShapedImageView
             android:scaleType="centerCrop"
             app:shape_mode="circle"
-            android:id="@+id/iv_product_avatar"
+            android:id="@+id/iv_avatar"
             android:layout_width="98dp"
             android:layout_height="98dp"
             android:layout_marginBottom="10dp"
@@ -75,12 +74,12 @@
             android:text="TextView"
             android:textColor="@color/text_black"
             android:textSize="14dp"
-            app:layout_constraintLeft_toRightOf="@+id/iv_product_avatar"
+            app:layout_constraintLeft_toRightOf="@+id/iv_avatar"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_product_doctor"
+            android:id="@+id/tv_sub_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
@@ -92,7 +91,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
         <TextView
-            android:id="@+id/tv_pay_amount"
+            android:id="@+id/tv_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
@@ -106,13 +105,13 @@
             android:id="@+id/tv_money"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/total_price"
+            android:text="@string/total_price1"
             android:textColor="@color/text_grey2"
             android:textSize="11sp"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="12dp"
             android:layout_marginLeft="0dp"
-            app:layout_constraintLeft_toLeftOf="@+id/tv_product_doctor" />
+            app:layout_constraintLeft_toLeftOf="@+id/tv_sub_title" />
     </android.support.constraint.ConstraintLayout>
     <View
         android:layout_width="match_parent"

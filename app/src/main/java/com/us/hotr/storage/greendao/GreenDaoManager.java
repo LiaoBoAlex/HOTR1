@@ -1,5 +1,7 @@
 package com.us.hotr.storage.greendao;
 
+import android.content.Context;
+
 import com.us.hotr.ui.HOTRApplication;
 
 /**
@@ -12,21 +14,21 @@ public class GreenDaoManager {
     private DaoSession mDaoSession;
     private static GreenDaoManager mInstance; //单例
 
-    private GreenDaoManager(){
+    private GreenDaoManager(Context mContext){
         if (mInstance == null) {
             DaoMaster.DevOpenHelper devOpenHelper = new
-                    DaoMaster.DevOpenHelper(HOTRApplication.getContext(), "user1-db", null);//此处为自己需要处理的表
+                    DaoMaster.DevOpenHelper(mContext, "user1-db", null);//此处为自己需要处理的表
             mDaoMaster = new DaoMaster(devOpenHelper.getWritableDatabase());
             mDaoSession = mDaoMaster.newSession();
         }
     }
 
-    public static GreenDaoManager getInstance() {
+    public static GreenDaoManager getInstance(Context mContext) {
         if (mInstance == null) {
             synchronized (GreenDaoManager.class) {//保证异步处理安全操作
 
                 if (mInstance == null) {
-                    mInstance = new GreenDaoManager();
+                    mInstance = new GreenDaoManager(mContext);
                 }
             }
         }

@@ -22,6 +22,7 @@
                 android:minLines="2"
                 android:textColorHint="@color/text_grey"
                 android:gravity="top"
+                android:maxLength="500"
                 android:hint="@string/compare_hint"/>
         </LinearLayout>
     </ScrollView>

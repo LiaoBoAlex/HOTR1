@@ -1,11 +1,14 @@
 package com.us.hotr.webservice.response;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by liaobo on 2017/12/6.
  */
 
 public class BaseListResponse<T> {
     private int total;
+    @SerializedName(value = "rows", alternate = {"row"})
     private T rows;
 
     public int getTotal() {

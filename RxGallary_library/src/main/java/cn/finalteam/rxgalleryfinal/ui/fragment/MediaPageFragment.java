@@ -91,7 +91,7 @@ public class MediaPageFragment extends BaseFragment implements ViewPager.OnPageC
                 mMediaBeanList.addAll(mediaList);
             }
         }
-        mMediaPreviewAdapter = new MediaPreviewAdapter(mMediaBeanList,
+        mMediaPreviewAdapter = new MediaPreviewAdapter((MediaActivity)getActivity(), mMediaBeanList,
                 mScreenSize.widthPixels, mScreenSize.heightPixels, mConfiguration
                 , ThemeUtils.resolveColor(getActivity(), R.attr.gallery_page_bg, R.color.gallery_default_page_bg),
                 ContextCompat.getDrawable(getActivity(), ThemeUtils.resolveDrawableRes(getActivity(), R.attr.gallery_default_image, R.drawable.gallery_default_image)));

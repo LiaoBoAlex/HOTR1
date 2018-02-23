@@ -47,6 +47,7 @@ public class SelectMassageSubjectFragment extends BaseLoadingFragment {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        recyclerView.setBackground(null);
         llContainer = (LinearLayout) view.findViewById(R.id.ll_container);
         llContainer.setBackgroundResource(R.color.dim_bg);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -60,9 +61,16 @@ public class SelectMassageSubjectFragment extends BaseLoadingFragment {
         SubscriberListener mListener = new SubscriberListener<BaseListResponse<List<Subject>>>() {
             @Override
             public void onNext(BaseListResponse<List<Subject>> result) {
-                if(result != null && result.getRows()!=null && result.getRows().size()>0)
-                myAdapter = new MyAdapter(result.getRows());
-                recyclerView.setAdapter(myAdapter);
+                if(isAdded()) {
+                    if (result != null && result.getRows() != null && result.getRows().size() > 0) {
+                        Subject subject = new Subject();
+                        subject.setTypeName(getString(R.string.filter_subject));
+                        subject.setKey(-1);
+                        result.getRows().add(0, subject);
+                        myAdapter = new MyAdapter(result.getRows());
+                        recyclerView.setAdapter(myAdapter);
+                    }
+                }
             }
         };
         ServiceClient.getInstance().getMassageTypeList(new LoadingSubscriber(mListener, this));
@@ -98,7 +106,7 @@ public class SelectMassageSubjectFragment extends BaseLoadingFragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                        Events.SubjectSelected subjectSelected = new Events.SubjectSelected(subject.getTypeName(), subject.getKey());
+                        Events.SubjectSelected subjectSelected = new Events.SubjectSelected(subject.getTypeName(), 0, subject.getKey());
                         GlobalBus.getBus().post(subjectSelected);
 
                 }

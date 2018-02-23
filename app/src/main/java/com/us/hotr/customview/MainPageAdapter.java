@@ -2,8 +2,8 @@ package com.us.hotr.customview;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
-import android.support.constraint.ConstraintLayout;
+import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,24 +12,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
-import com.us.hotr.storage.bean.BeautyItem;
-import com.us.hotr.ui.activity.beauty.ListWithCategoryActivity;
-import com.us.hotr.ui.activity.beauty.DoctorInfoActivity;
-import com.us.hotr.ui.activity.beauty.HospitalActivity;
+import com.us.hotr.storage.bean.Case;
+import com.us.hotr.storage.bean.Group;
+import com.us.hotr.storage.bean.Hospital;
+import com.us.hotr.storage.bean.Masseur;
+import com.us.hotr.storage.bean.Module;
+import com.us.hotr.storage.bean.Post;
+import com.us.hotr.storage.bean.Spa;
+import com.us.hotr.ui.activity.WebViewActivity;
+import com.us.hotr.ui.activity.beauty.CaseActivity;
+import com.us.hotr.ui.activity.beauty.DoctorActivity;
+import com.us.hotr.ui.activity.beauty.ListActivity;
 import com.us.hotr.ui.activity.beauty.ListWithSearchActivity;
+import com.us.hotr.ui.activity.beauty.ProductActivity;
 import com.us.hotr.ui.activity.beauty.SelectSubjectActivity;
+import com.us.hotr.ui.activity.beauty.SubjectActivity;
+import com.us.hotr.ui.activity.found.AllGroupActivity;
+import com.us.hotr.ui.activity.found.GroupDetailActivity;
 import com.us.hotr.ui.activity.found.NearbyActivity;
+import com.us.hotr.ui.activity.massage.MassageActivity;
+import com.us.hotr.ui.activity.massage.MasseurActivity;
+import com.us.hotr.ui.activity.massage.SpaActivity;
+import com.us.hotr.ui.view.CaseView;
+import com.us.hotr.ui.view.MasseurView;
+import com.us.hotr.ui.view.PostView;
+import com.us.hotr.ui.view.SpaView;
+import com.us.hotr.webservice.response.GetHomePageResponse;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Mloong on 2017/9/7.
@@ -37,52 +53,77 @@ import java.util.Random;
 
 public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<BeautyItem> itemList;
+    public class Item{
+        private int id;
+        private Object content;
 
-    private final int TYPE_BANNER = 101;
-    private final int TYPE_MODULE = 102;
-    private final int TYPE_NEWS = 103;
-    private final int TYPE_DIVIDER = 104;
-    private final int TYPE_AD1 = 105;
-    private final int TYPE_AD3 = 106;
-    private final int TYPE_TITLE_IMAGE = 107;
-    private final int TYPE_COMPARE = 108;
-    private final int TYPE_POST = 109;
-    private final int TYPE_MASSEUR = 117;
-    private final int TYPE_INTERVIEW_LIST = 118;
-    private final int TYPE_SPA = 119;
-    private final int TYPE_GROUP = 123;
+        public Item(int id){
+            this.id = id;
+        }
 
-    int postPhotoCount;
-    int postColumn;
-    int masseurPosition, spaPosition;
+        public Item(int id, Object content){
+            this.id = id;
+            this.content = content;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public Object getContent() {
+            return content;
+        }
+
+        public void setContent(Object content) {
+            this.content = content;
+        }
+    }
+
+    private final int TYPE_BANNER = 1;
+    private final int TYPE_BUTTON = 2;
+    private final int TYPE_NEWS = 3;
+    private final int TYPE_AD1 = 4;
+    private final int TYPE_AD3 = 5;
+    private final int TYPE_TITLE = 6;
+    private final int TYPE_CASE = 7;
+    public static final int TYPE_POST = 8;
+    private final int TYPE_DIVIDER = 9;
+    private final int TYPE_MASSEUR = 10;
+    private final int TYPE_SPA = 11;
+    public static final int TYPE_GROUP = 12;
 
     Context mContext;
+    private List<Item> itemList;
 
-
-    public MainPageAdapter(Context mContext, List<BeautyItem> itemList) {
-
-        this.itemList = itemList;
+    public MainPageAdapter(Context mContext, GetHomePageResponse response) {
         this.mContext = mContext;
-
-        Random rand = new Random();
-        postPhotoCount = rand.nextInt(9) + 1;
-        if (postPhotoCount == 1)
-            postColumn = 1;
-        else if (postPhotoCount == 2 || postPhotoCount == 4)
-            postColumn = 2;
-        else
-            postColumn = 3;
-        for(int i=0;i<itemList.size();i++){
-            if(itemList.get(i).getId().equals(Constants.MASSEUR_ID)){
-                masseurPosition = i%2;
-                break;
-            }
-        }
-        for(int i=0;i<itemList.size();i++){
-            if(itemList.get(i).getId().equals(Constants.SPA_ID)){
-                spaPosition = i%2;
-                break;
+        itemList = new ArrayList<>();
+        if(response.getListHomePageModule()!=null && response.getListHomePageModule().size()>0) {
+            for(Module module:response.getListHomePageModule()) {
+                if (module.getModuleTypeId() == TYPE_CASE) {
+                    if (response.getRecommendContrastPhotoList() != null && response.getRecommendContrastPhotoList().size() > 0)
+                        for (Case c : response.getRecommendContrastPhotoList())
+                            itemList.add(new Item(TYPE_CASE, c));
+                }else if(module.getModuleTypeId() == TYPE_POST){
+                    if (response.getRecommendHotTopicList() != null && response.getRecommendHotTopicList().size() > 0)
+                        for (Post c : response.getRecommendHotTopicList())
+                            itemList.add(new Item(TYPE_POST, c));
+                }else if(module.getModuleTypeId() == TYPE_MASSEUR){
+                    if (response.getRecommendMassagistList() != null && response.getRecommendMassagistList().size() > 0)
+                        for (Masseur c : response.getRecommendMassagistList())
+                            itemList.add(new Item(TYPE_MASSEUR, c));
+                }else if(module.getModuleTypeId() == TYPE_SPA){
+                    if (response.getRecommendMassageList() != null && response.getRecommendMassageList().size() > 0)
+                        for (Spa c : response.getRecommendMassageList())
+                            itemList.add(new Item(TYPE_SPA, c));
+                }else if (module.getModuleTypeId() == TYPE_GROUP) {
+                    itemList.add(new Item(TYPE_GROUP, response.getMyGrouList()));
+                }else
+                    itemList.add(new Item(module.getModuleTypeId(), module));
             }
         }
     }
@@ -96,10 +137,10 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public class ModuleHolder extends RecyclerView.ViewHolder {
+    public class ButtonHolder extends RecyclerView.ViewHolder {
         ScrollThroughRecyclerView recyclerView;
 
-        public ModuleHolder(View view) {
+        public ButtonHolder(View view) {
             super(view);
             recyclerView = (ScrollThroughRecyclerView) view.findViewById(R.id.recyclerview);
         }
@@ -143,72 +184,56 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public class TitleImageHolder extends RecyclerView.ViewHolder {
+    public class TitleHolder extends RecyclerView.ViewHolder {
         ImageView mIv;
 
-        public TitleImageHolder(View view) {
+        public TitleHolder(View view) {
             super(view);
             mIv = (ImageView) view.findViewById(R.id.imageView);
         }
     }
 
-    public class CompareHolder extends RecyclerView.ViewHolder {
-        ImageView imgBefore, imgAfter;
-        TextView tvSeeMore;
-        RelativeLayout rlSeeMore;
+    public class CaseHolder extends RecyclerView.ViewHolder {
+        CaseView caseView;
 
-        public CompareHolder(View view) {
+        public CaseHolder(View view) {
             super(view);
-            imgBefore = (ImageView) view.findViewById(R.id.img_before);
-            imgAfter = (ImageView) view.findViewById(R.id.imge_after);
-            rlSeeMore = (RelativeLayout) view.findViewById(R.id.rl_see_more);
-            tvSeeMore = (TextView) view.findViewById(R.id.tv_see_more);
+            caseView = (CaseView) view;
         }
     }
 
     public class PostHolder extends RecyclerView.ViewHolder {
-        ScrollThroughRecyclerView recyclerView;
+        PostView postView;
 
         public PostHolder(View view) {
             super(view);
-            recyclerView = (ScrollThroughRecyclerView) view.findViewById(R.id.recyclerview);
+            postView = (PostView) view;
         }
     }
 
     public class MasseurHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvAddress, tvAppointment;
-        ImageView ivAvatar, ivLike;
-
+        MasseurView masseurView;
         public MasseurHolder(View view) {
             super(view);
-            tvName = (TextView) view.findViewById(R.id.tv_name);
-            tvAddress = (TextView) view.findViewById(R.id.tv_address);
-            tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
-            ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
-            ivLike = (ImageView) view.findViewById(R.id.iv_like);
+            masseurView = (MasseurView) view;
         }
     }
 
-    public class InterViewListHolder extends RecyclerView.ViewHolder {
-        RecyclerView mRecyclerView;
-
-        public InterViewListHolder(View view) {
-            super(view);
-            mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
-        }
-    }
+//    public class InterViewListHolder extends RecyclerView.ViewHolder {
+//        RecyclerView mRecyclerView;
+//
+//        public InterViewListHolder(View view) {
+//            super(view);
+//            mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+//        }
+//    }
 
 
     public class SPAHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvAddress, tvAppointment;
-        ImageView ivAvatar;
-
+        SpaView spaView;
         public SPAHolder(View view) {
             super(view);
-            tvName = (TextView) view.findViewById(R.id.tv_name);
-            tvAddress = (TextView) view.findViewById(R.id.tv_address);
-            tvAppointment = (TextView) view.findViewById(R.id.tv_number);
-            ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
+            spaView = (SpaView) view;
         }
     }
 
@@ -231,9 +256,9 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_BANNER:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_banner, parent, false);
                 return new BannerHolder(view);
-            case TYPE_MODULE:
+            case TYPE_BUTTON:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_module, parent, false);
-                return new ModuleHolder(view);
+                return new ButtonHolder(view);
             case TYPE_NEWS:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_news, parent, false);
                 return new NewsHolder(view);
@@ -246,23 +271,21 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_AD3:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ad3, parent, false);
                 return new Ad3Holder(view);
-            case TYPE_TITLE_IMAGE:
+            case TYPE_TITLE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_title_image, parent, false);
-                return new TitleImageHolder(view);
-            case TYPE_COMPARE:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_compare, parent, false);
-                return new CompareHolder(view);
+                return new TitleHolder(view);
+            case TYPE_CASE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_case, parent, false);
+                return new CaseHolder(view);
             case TYPE_POST:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent, false);
-                PostHolder p = new PostHolder(view);
-                p.recyclerView.addItemDecoration(new ItemDecorationAlbumColumns(12, postColumn));
-                return p;
+                return new PostHolder(view);
             case TYPE_MASSEUR:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_masseur, parent, false);
                 return new MasseurHolder(view);
-            case TYPE_INTERVIEW_LIST:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recycle_interview_list, parent, false);
-                return new InterViewListHolder(view);
+//            case TYPE_INTERVIEW_LIST:
+//                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recycle_interview_list, parent, false);
+//                return new InterViewListHolder(view);
             case TYPE_SPA:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_spa, parent, false);
                 return new SPAHolder(view);
@@ -276,189 +299,132 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemViewType(int position) {
-        switch (itemList.get(position).getId()) {
-            case Constants.BANNER_ID:
-                return TYPE_BANNER;
-            case Constants.MODULE_ID:
-                return TYPE_MODULE;
-            case Constants.NEWS_ID:
-                return TYPE_NEWS;
-            case Constants.DIVIDER_ID:
-                return TYPE_DIVIDER;
-            case Constants.AD1_ID:
-                return TYPE_AD1;
-            case Constants.AD3_ID:
-                return TYPE_AD3;
-            case Constants.TITLE_IMGE_ID:
-                return TYPE_TITLE_IMAGE;
-            case Constants.COMPARE_ID:
-                return TYPE_COMPARE;
-            case Constants.POST_ID:
-                return TYPE_POST;
-            case Constants.MASSEUR_ID:
-                return TYPE_MASSEUR;
-            case Constants.INTERVIEW_LIST_ID:
-                return TYPE_INTERVIEW_LIST;
-            case Constants.SPA_ID:
-                return TYPE_SPA;
-            case Constants.GROUP_ID:
-                return TYPE_GROUP;
-            default:
-                return -1;
-        }
+        return itemList.get(position).getId();
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         switch (holder.getItemViewType()) {
             case TYPE_BANNER:
-                List<String> urls = new ArrayList<>(Arrays.asList(
-                        "http://img.zcool.cn/community/01fca557a7f5f90000012e7e9feea8.jpg",
-                        "http://img.zcool.cn/community/01996b57a7f6020000018c1bedef97.jpg",
-                        "http://img.zcool.cn/community/01sdfsdfsdf.jpg"));
+                final Module bannerModule = (Module) itemList.get(position).getContent();
+                List<String> urls = new ArrayList<>();
+                for(Module.ModuleContent m:bannerModule.getBannerList())
+                    urls.add(m.getBannerImg());
 
                 BannerHolder bannerHolder = (BannerHolder) holder;
                 bannerHolder.mBanner.setRatio(0.419);
                 bannerHolder.mBanner.setSource(urls);
                 bannerHolder.mBanner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
                     @Override
-                    public void onBannerItemClicked(int position) {
-                        Toast.makeText(mContext, "Banner " + position + " clicked!", Toast.LENGTH_SHORT).show();
+                    public void onBannerItemClicked(int p) {
+                        handleClickEvent(bannerModule.getBannerList().get(p), null);
                     }
                 });
                 bannerHolder.mBanner.startScroll();
                 break;
 
-
-            case TYPE_MODULE:
-                ModuleHolder moduleHolder = (ModuleHolder) holder;
-                moduleHolder.recyclerView.setLayoutManager(new GridLayoutManager(mContext, 5));
-                ModuleAdapter mAdapter = new ModuleAdapter(5, position);
+            case TYPE_BUTTON:
+                ButtonHolder moduleHolder = (ButtonHolder) holder;
+                final Module buttonModule = (Module) itemList.get(position).getContent();
+                moduleHolder.recyclerView.setLayoutManager(new GridLayoutManager(mContext, buttonModule.getBannerList().size()));
+                ModuleAdapter mAdapter = new ModuleAdapter(buttonModule.getBannerList());
                 moduleHolder.recyclerView.setAdapter(mAdapter);
                 break;
 
-
             case TYPE_NEWS:
-                List<String> data = new ArrayList<>();
-                data.add("家人给2岁孩子喝这个，孩子智力倒退10岁!!!");
-                data.add("iPhone8最感人变化成真，必须买买买买!!!!");
-                data.add("简直是白菜价！日本玩家33万甩卖15万张游戏王卡");
-
                 NewsHolder newsHolder = (NewsHolder) holder;
+                final Module newsModule = (Module) itemList.get(position).getContent();
                 List<View> views = new ArrayList<>();
-                for (int i = 0; i < data.size(); i++) {
+                for (Module.ModuleContent moduleContent:newsModule.getBannerList()) {
                     LinearLayout moreView = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.item_news_item, null);
                     TextView tv = (TextView) moreView.findViewById(R.id.tv_code);
-                    tv.setText(data.get(i).toString());
+                    tv.setText(moduleContent.getBannerName());
                     views.add(moreView);
                 }
                 newsHolder.mUMView.setViews(views);
                 newsHolder.mUMView.setOnItemClickListener(new UPMarqueeView.OnItemClickListener() {
                     @Override
-                    public void onItemClick(int position, View view) {
-                        Toast.makeText(mContext, "你点击了第几个items" + position, Toast.LENGTH_SHORT).show();
+                    public void onItemClick(int p, View view) {
+                        handleClickEvent(newsModule.getBannerList().get(p), null);
                     }
                 });
                 break;
-
 
             case TYPE_DIVIDER:
                 DividerHolder dividerHolder = (DividerHolder) holder;
-                dividerHolder.mView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 24));
-                dividerHolder.mView.setBackgroundResource(R.color.bg_grey);
+                final Module dividerModule = (Module) itemList.get(position).getContent();
+                dividerHolder.mView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dividerModule.getModuleHeight()));
+                dividerHolder.mView.setBackgroundColor(Color.parseColor(dividerModule.getModuleBackgroundColor()));
                 break;
-
 
             case TYPE_AD1:
                 Ad1Holder ad1Holder = (Ad1Holder) holder;
+                final Module ad1Module = (Module) itemList.get(position).getContent();
+                Glide.with(mContext).load(ad1Module.getBannerList().get(0).getBannerImg()).dontAnimate().placeholder(R.drawable.placeholder_ad1).error(R.drawable.placeholder_ad1).into(ad1Holder.mIv);
                 ad1Holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(mContext, "Ad1 Clicked", Toast.LENGTH_SHORT).show();
+                        handleClickEvent(ad1Module.getBannerList().get(0), null);
                     }
                 });
                 break;
 
-
             case TYPE_AD3:
                 Ad3Holder ad3Holder = (Ad3Holder) holder;
+                final Module ad3Module = (Module) itemList.get(position).getContent();
                 for (int i = 0; i < ad3Holder.mImageViewList.size(); i++) {
                     final int finalI = i;
+                    Glide.with(mContext).load(ad3Module.getBannerList().get(i).getBannerImg()).dontAnimate().placeholder(R.drawable.placeholder_ad1).error(R.drawable.placeholder_ad1).into(ad3Holder.mImageViewList.get(i));
                     ad3Holder.mImageViewList.get(i).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(mContext, "Ad number " + finalI + " Clicked", Toast.LENGTH_SHORT).show();
+                            handleClickEvent(ad3Module.getBannerList().get(finalI), null);
                         }
                     });
                 }
                 break;
 
-
-            case TYPE_TITLE_IMAGE:
-                TitleImageHolder titleHolder = (TitleImageHolder) holder;
+            case TYPE_TITLE:
+                TitleHolder titleHolder = (TitleHolder) holder;
+                final Module titleModule = (Module) itemList.get(position).getContent();
+                Glide.with(mContext).load(titleModule.getBannerList().get(0).getBannerImg()).dontAnimate().placeholder(R.drawable.placeholder_title).error(R.drawable.placeholder_title).into(titleHolder.mIv);
                 titleHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(mContext, "Title Clicked", Toast.LENGTH_SHORT).show();
+                        handleClickEvent(titleModule.getBannerList().get(0), null);
                     }
                 });
                 break;
-
-
 
             case TYPE_POST:
                 PostHolder postHolder = (PostHolder) holder;
-                postHolder.recyclerView.setLayoutManager(new GridLayoutManager(mContext, postColumn));
-                PicGridAdapter adapter = new PicGridAdapter(postPhotoCount, mContext);
-                postHolder.recyclerView.setAdapter(adapter);
-
-                postHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Toast.makeText(mContext, "Post Clicked", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                postHolder.postView.setData((Post)itemList.get(position).getContent());
+                postHolder.postView.enableEdit(false);
                 break;
 
-
+            case TYPE_CASE:
+                CaseHolder caseHolder = (CaseHolder) holder;
+//                caseHolder.caseView.setData((Case)itemList.get(position).getContent());
+                break;
 
             case TYPE_MASSEUR:
                 MasseurHolder masseurHolder = (MasseurHolder) holder;
-
-                if(position%2==masseurPosition) {
-                    ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) masseurHolder.ivAvatar.getLayoutParams();
-                    lp.setMargins(12, 0, 6, 0);
-                    masseurHolder.ivAvatar.setLayoutParams(lp);
-                }
-                else {
-                    ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) masseurHolder.ivAvatar.getLayoutParams();
-                    lp.setMargins(6, 0, 12, 0);
-                    masseurHolder.ivAvatar.setLayoutParams(lp);
-                }
+                masseurHolder.masseurView.setData((Masseur)itemList.get(position).getContent(), position);
                 break;
 
 
-            case TYPE_INTERVIEW_LIST:
-                final InterViewListHolder interViewListHolder = (InterViewListHolder) holder;
-
-                interViewListHolder.mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-                HorizontalHInterviewAdapter hInterviewAdapter = new HorizontalHInterviewAdapter();
-                interViewListHolder.mRecyclerView.setAdapter(hInterviewAdapter);
-                break;
+//            case TYPE_INTERVIEW_LIST:
+//                final InterViewListHolder interViewListHolder = (InterViewListHolder) holder;
+//
+//                interViewListHolder.mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+//                HorizontalHInterviewAdapter hInterviewAdapter = new HorizontalHInterviewAdapter();
+//                interViewListHolder.mRecyclerView.setAdapter(hInterviewAdapter);
+//                break;
 
 
             case TYPE_SPA:
                 SPAHolder spaHolder = (SPAHolder) holder;
-                if(position%2==spaPosition) {
-                    ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) spaHolder.ivAvatar.getLayoutParams();
-                    lp.setMargins(12, 0, 6, 0);
-                    spaHolder.ivAvatar.setLayoutParams(lp);
-                }
-                else {
-                    ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) spaHolder.ivAvatar.getLayoutParams();
-                    lp.setMargins(6, 0, 12, 0);
-                    spaHolder.ivAvatar.setLayoutParams(lp);
-                }
+                spaHolder.spaView.setData((Spa)itemList.get(position).getContent(), position);
                 break;
 
 
@@ -466,13 +432,12 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 final GroupListHolder groupListHolder = (GroupListHolder) holder;
 
                 groupListHolder.mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-                HorizontalGroupListAdapter groupListAdapter = new HorizontalGroupListAdapter();
+                HorizontalGroupListAdapter groupListAdapter = new HorizontalGroupListAdapter((List<Group>)itemList.get(position).getContent());
                 groupListHolder.mRecyclerView.setAdapter(groupListAdapter);
-
                 groupListHolder.llAllGroup.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        mContext.startActivity(new Intent(mContext, AllGroupActivity.class));
                     }
                 });
                 break;
@@ -486,8 +451,6 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             return 0;
         return itemList.size();
     }
-
-
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -503,15 +466,15 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         case TYPE_MASSEUR:
                         case TYPE_SPA:
                             return 1;
-                        case TYPE_MODULE:
-                        case TYPE_INTERVIEW_LIST:
+                        case TYPE_BUTTON:
+//                        case TYPE_INTERVIEW_LIST:
                         case TYPE_BANNER:
                         case TYPE_NEWS:
                         case TYPE_DIVIDER:
                         case TYPE_AD1:
                         case TYPE_AD3:
-                        case TYPE_TITLE_IMAGE:
-                        case TYPE_COMPARE:
+                        case TYPE_TITLE:
+                        case TYPE_CASE:
                         case TYPE_POST:
                         case TYPE_GROUP:
                             return 2;
@@ -523,51 +486,209 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public class HorizontalHInterviewAdapter extends RecyclerView.Adapter<HorizontalHInterviewAdapter.ViewHolder> {
+    public int getPostCount(){
+        int count = 0;
+        for(Item item:itemList)
+            if(item.getId() == TYPE_POST)
+                count ++;
+        return count;
+    }
 
-        public HorizontalHInterviewAdapter() {
+    public void addPost(List<Post> postList){
+        for(Post post:postList)
+            itemList.add(new Item(TYPE_POST, post));
+        notifyDataSetChanged();;
+    }
 
-        }
-
-        // inflates the cell layout from xml when needed
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_interview_listitem, parent, false);
-            ViewHolder viewHolder = new ViewHolder(view);
-            return viewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            if(position == 6)
-                holder.itemView.setPadding(0,0,0,0);
-            else
-                holder.itemView.setPadding(0,0,12,0);
-        }
-
-        @Override
-        public int getItemCount() {
-            return 4;
-        }
-
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public ImageView ivAvatar;
-            public TextView tvName, tvNumber;
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-                ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
-                tvName = (TextView) itemView.findViewById(R.id.tv_name);
-                tvNumber = (TextView) itemView.findViewById(R.id.tv_number);
-            }
+    private void handleClickEvent(Module.ModuleContent content, String title){
+        switch (content.getLinkTypeId()){
+            case 1:
+                Intent i = new Intent(mContext, SelectSubjectActivity.class);
+                mContext.startActivity(i);
+                break;
+            case 2:
+                i = new Intent(mContext, ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.doctor_list_title):title);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_DOCTOR);
+                mContext.startActivity(i);
+                break;
+            case 3:
+                i = new Intent(mContext, ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.hospital_list_title):title);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_HOSPITAL);
+                mContext.startActivity(i);
+                break;
+            case 4:
+                i = new Intent(mContext, SubjectActivity.class);
+                Bundle b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 5:
+                i = new Intent(mContext, ProductActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 6:
+                i = new Intent(mContext, DoctorActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 7:
+                i = new Intent(mContext, Hospital.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 8:
+                i = new Intent(mContext, ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.massage_list_title):title);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                mContext.startActivity(i);
+                break;
+            case 9:
+                i = new Intent(mContext, ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.masseur_list_title):title);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSEUR);
+                mContext.startActivity(i);
+                break;
+            case 10:
+                i = new Intent(mContext, ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.spa_list_title):title);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_SPA);
+                mContext.startActivity(i);
+                break;
+            case 11:
+                i = new Intent(mContext, MasseurActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 12:
+                i = new Intent(mContext, SpaActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 13:
+                i = new Intent(mContext, MassageActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 14:
+                i = new Intent(mContext, ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.massage_list_title):title);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                i.putExtra(Constants.PARAM_ID, Integer.parseInt(content.getLinkUrl()));
+                mContext.startActivity(i);
+                break;
+            case 15:
+                i = new Intent(mContext, ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.case_list_title):title);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                mContext.startActivity(i);
+                break;
+            case 16:
+                i = new Intent(mContext, CaseActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 17:
+                i = new Intent(mContext, GroupDetailActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 18:
+                i = new Intent(mContext, CaseActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 19:
+                i = new Intent(mContext, WebViewActivity.class);
+                b = new Bundle();
+                b.putString(Constants.PARAM_DATA, content.getLinkUrl());
+                b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_URL);
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 20:
+                i = new Intent(mContext, NearbyActivity.class);
+                mContext.startActivity(i);
+                break;
+            case 21:
+                i = new Intent(mContext, ListActivity.class);
+                b = new Bundle();
+                b.putString(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.discovery_title):title);
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_OFFICIAL_POST);
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
         }
     }
 
+//    public class HorizontalHInterviewAdapter extends RecyclerView.Adapter<HorizontalHInterviewAdapter.ViewHolder> {
+//
+//        public HorizontalHInterviewAdapter() {
+//
+//        }
+//
+//        // inflates the cell layout from xml when needed
+//        @Override
+//        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_interview_listitem, parent, false);
+//            ViewHolder viewHolder = new ViewHolder(view);
+//            return viewHolder;
+//        }
+//
+//        @Override
+//        public void onBindViewHolder(ViewHolder holder, int position) {
+//            if(position == 6)
+//                holder.itemView.setPadding(0,0,0,0);
+//            else
+//                holder.itemView.setPadding(0,0,12,0);
+//        }
+//
+//        @Override
+//        public int getItemCount() {
+//            return 4;
+//        }
+//
+//
+//        public class ViewHolder extends RecyclerView.ViewHolder {
+//            public ImageView ivAvatar;
+//            public TextView tvName, tvNumber;
+//
+//            public ViewHolder(View itemView) {
+//                super(itemView);
+//                ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
+//                tvName = (TextView) itemView.findViewById(R.id.tv_name);
+//                tvNumber = (TextView) itemView.findViewById(R.id.tv_number);
+//            }
+//        }
+//    }
+
     public class HorizontalGroupListAdapter extends RecyclerView.Adapter<HorizontalGroupListAdapter.ViewHolder> {
-
-        public HorizontalGroupListAdapter() {
-
+        private List<Group> groupList;
+        public HorizontalGroupListAdapter(List<Group> groupList) {
+            this.groupList = groupList;
         }
 
         // inflates the cell layout from xml when needed
@@ -580,37 +701,51 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            if(position == 4)
-                holder.itemView.setPadding(0,0,0,0);
+            final Group group = groupList.get(position);
+            Glide.with(mContext).load(group.getSmall_img()).dontAnimate().placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(holder.ivAvatar);
+            if(group.getIs_recommend() == 1)
+                holder.tvRecommand.setVisibility(View.VISIBLE);
             else
-                holder.itemView.setPadding(0,0,12,0);
+                holder.tvRecommand.setVisibility(View.GONE);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(mContext, GroupDetailActivity.class);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, group);
+                    i.putExtras(b);
+                    mContext.startActivity(i);
+                }
+            });
         }
 
         @Override
         public int getItemCount() {
-            return 4;
+            if(groupList == null)
+                return 0;
+            else
+                return groupList.size();
         }
 
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public ImageView ivAvatar;
-
+            ImageView ivAvatar;
+            TextView tvRecommand;
             public ViewHolder(View itemView) {
                 super(itemView);
                 ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
+                tvRecommand = (TextView) itemView.findViewById(R.id.tv_recommanded);
             }
         }
     }
 
 
-
     public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder> {
 
-        private int picCount, position;
+        private List<Module.ModuleContent> moduleContentList;
 
-        public ModuleAdapter(int picCount, int position) {
-            this.picCount = picCount;
-            this.position = position;
+        public ModuleAdapter(List<Module.ModuleContent> moduleContentList) {
+            this.moduleContentList = moduleContentList;
         }
 
         // inflates the cell layout from xml when needed
@@ -623,86 +758,24 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Override
         public void onBindViewHolder(ViewHolder holder, final int p) {
-            if(position==1) {
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        if (p == 0) {
-                            Intent i = new Intent(mContext, SelectSubjectActivity.class);
-                            mContext.startActivity(i);
-                        }
-                        if (p == 1) {
-                            Intent i = new Intent(mContext, ListWithSearchActivity.class);
-                            i.putExtra(Constants.PARAM_TITLE, "项目报点");
-                            i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_DOCTOR);
-                            mContext.startActivity(i);
-                        }
-                        if (p == 2) {
-                            Intent i = new Intent(mContext, ListWithSearchActivity.class);
-                            i.putExtra(Constants.PARAM_TITLE, "项目报点");
-                            i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_HOSPITAL);
-                            mContext.startActivity(i);
-                        }
-                        if (p == 3) {
-                            Intent i = new Intent(mContext, ListWithSearchActivity.class);
-                            i.putExtra(Constants.PARAM_TITLE, "医美日记");
-                            i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_CASE);
-                            mContext.startActivity(i);
-                        }
-                        if (p == 4) {
-                            Intent i = new Intent(mContext, ListWithSearchActivity.class);
-                            i.putExtra(Constants.PARAM_TITLE, "医美日记");
-                            i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_OFFICIAL_POST);
-                            mContext.startActivity(i);
-                        }
-                    }
-                });
-            }
-            if(position==2){
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        Toast.makeText(mContext, "Subject " + p + " clicked!", Toast.LENGTH_SHORT).show();
-                        if (p == 0) {
-                            Intent i = new Intent(mContext, ListWithSearchActivity.class);
-                            i.putExtra(Constants.PARAM_TITLE, "项目报点");
-                            i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
-                            mContext.startActivity(i);
-                        }
-                        if (p == 1) {
-                            Intent i = new Intent(mContext, ListWithSearchActivity.class);
-                            i.putExtra(Constants.PARAM_TITLE, "项目报点");
-                            i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSEUR);
-                            mContext.startActivity(i);
-                        }
-                        if (p == 2) {
-                            Intent i = new Intent(mContext, ListWithSearchActivity.class);
-                            i.putExtra(Constants.PARAM_TITLE, "项目报点");
-                            i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_SPA);
-                            mContext.startActivity(i);
-                        }
-                        if (p == 3) {
-                            Intent i = new Intent(mContext, ListWithSearchActivity.class);
-                            i.putExtra(Constants.PARAM_TITLE, "医美日记");
-                            i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_INTERVIEW);
-                            mContext.startActivity(i);
-                        }
-                        if (p == 4) {
-                            Intent i = new Intent(mContext, NearbyActivity.class);
-                            mContext.startActivity(i);
-                        }
-                    }
-                });
-            }
+            final Module.ModuleContent moduleContent = moduleContentList.get(p);
+            Glide.with(mContext).load(moduleContent.getBannerImg()).dontAnimate().placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(holder.mImageView);
+            holder.mTextView.setText(moduleContent.getBannerName());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    handleClickEvent(moduleContent, moduleContent.getBannerName());
+                }
+            });
         }
 
         @Override
         public int getItemCount() {
-            return picCount;
+            if(moduleContentList == null)
+                return 0;
+            else
+                return moduleContentList.size();
         }
-
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public ImageView mImageView;
@@ -716,4 +789,5 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
     }
+
 }

@@ -33,19 +33,26 @@ public class CommentDialogFragment extends Dialog {
         TextView tvPost;
         EditText etPost;
         ImageView ivCancel;
-        private DialogInterface.OnClickListener positiveButtonClickListener, negativeButtonClickListener;
+        private DialogInterface.OnClickListener negativeButtonClickListener;
+        private PostListener postListener;
+        private String userName;
 
         public Builder(Context context) {
             this.context = context;
         }
 
-        public CommentDialogFragment.Builder setPositiveButton(DialogInterface.OnClickListener listener) {
-            this.positiveButtonClickListener = listener;
+        public Builder(Context context, String userName) {
+            this.context = context;
+            this.userName = userName;
+        }
+
+        public CommentDialogFragment.Builder setCancelButton(DialogInterface.OnClickListener listener) {
+            this.negativeButtonClickListener = listener;
             return this;
         }
 
-        public CommentDialogFragment.Builder setNegativeButton(DialogInterface.OnClickListener listener) {
-            this.negativeButtonClickListener = listener;
+        public CommentDialogFragment.Builder setPostButton(PostListener listener){
+            this.postListener = listener;
             return this;
         }
 
@@ -58,14 +65,17 @@ public class CommentDialogFragment extends Dialog {
             tvPost = (TextView) layout.findViewById(R.id.tv_post);
             etPost = (EditText) layout.findViewById(R.id.et_comment);
             ivCancel = (ImageView) layout.findViewById(R.id.iv_cancel);
+            if(userName != null)
+                etPost.setHint(String.format(context.getString(R.string.reply2), userName));
             dialog.addContentView(layout, new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            dialog.setCanceledOnTouchOutside(true);
 
             tvPost.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if (positiveButtonClickListener != null) {
-                        positiveButtonClickListener.onClick(dialog,
-                                DialogInterface.BUTTON_POSITIVE);
+                    if (postListener != null) {
+                        postListener.onClick(dialog,
+                               etPost.getText().toString().trim());
                     }
 
                 }
@@ -87,5 +97,9 @@ public class CommentDialogFragment extends Dialog {
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             return dialog;
         }
+    }
+
+    public interface PostListener{
+        void onClick(DialogInterface dialog, String content);
     }
 }

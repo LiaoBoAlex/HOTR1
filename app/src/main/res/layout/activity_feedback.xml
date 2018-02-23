@@ -18,6 +18,7 @@
             android:hint="@string/key_in_feedback"
             android:inputType="textMultiLine"
             android:padding="12dp"
+            android:maxLength="500"
             android:textColor="@color/text_black"
             android:textCursorDrawable="@drawable/cursor_black"
             android:textColorHint="@color/text_grey"

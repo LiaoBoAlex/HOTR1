@@ -2,20 +2,17 @@ package com.us.hotr.ui.activity.post;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CancellationSignal;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.activity.beauty.CompareActivity;
+import com.us.hotr.ui.activity.beauty.CaseActivity;
 import com.us.hotr.util.Tools;
 
 /**
@@ -33,7 +30,7 @@ public class UploadCompareActivity2 extends BaseActivity {
             if(etContent.getText().toString().trim().length()<50)
                 Tools.Toast(getBaseContext(), getString(R.string.min_50));
             else {
-                Intent i = new Intent(UploadCompareActivity2.this, CompareActivity.class);
+                Intent i = new Intent(UploadCompareActivity2.this, CaseActivity.class);
                 i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_CASE);
                 startActivity(i);
             }

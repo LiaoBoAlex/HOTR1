@@ -222,7 +222,7 @@ public class MediaUtils {
         long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
         String originalPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
         if (TextUtils.isEmpty(originalPath) || size <= 0 || !new File(originalPath).exists()) {
-            return null;
+            return new MediaBean();
         }
 
         long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID));

@@ -17,12 +17,18 @@
             app:tabIndicatorColor="@color/red"
             app:tabSelectedTextColor="@color/red"
             app:tabTextColor="@color/text_black"/>
+        <View
+            android:layout_below="@+id/tab_layout"
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider2"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/tab_layout"/>
+            android:layout_below="@+id/divider"/>
     </RelativeLayout>
     <ImageView
         android:id="@+id/img_back"

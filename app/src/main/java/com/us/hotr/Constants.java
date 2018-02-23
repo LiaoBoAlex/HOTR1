@@ -1,7 +1,5 @@
 package com.us.hotr;
 
-import java.util.HashMap;
-
 /**
  * Created by Mloong on 2017/8/31.
  */
@@ -25,50 +23,29 @@ public class Constants {
     public static final String LOGIN_TO_WECHAT = "LOGIN_TO_WECHAT";
     public static final String LOGIN_TO_WECHAT_SCOPE = "snsapi_userinfo";
 
-    public static final String BANNER_ID = "BANNER_ID";
-    public static final String MODULE_ID = "MODULE_ID";
-    public static final String NEWS_ID = "NEWS_ID";
-    public static final String DIVIDER_ID = "DIVIDER_ID";
-    public static final String AD1_ID = "AD1_ID";
-    public static final String AD3_ID = "AD3_ID";
-    public static final String TITLE_IMGE_ID = "TITLE_IMGE_ID";
-    public static final String TITLE_TEXT_ID = "TITLE_TEXT_ID";
-    public static final String COMPARE_ID = "COMPARE_ID";
-    public static final String POST_ID = "POST_ID";
-    public static final String DOCTOR_ID = "DOCTOR_ID";
-    public static final String DOCTOR_HEADER_ID = "DOCTOR_HEADER_ID";
-    public static final String HOSPITAL_ID = "HOSPITAL_ID";
-    public static final String HOSPITAL_HEADER_ID = "HOSPITAL_HEADER_ID";
-    public static final String PRODUCT_ID = "PRODUCT_ID";
-    public static final String SUBJECT_ID = "SUBJECT_ID";
-    public static final String MASSEUR_ID = "MASSEUR_ID";
-    public static final String INTERVIEW_LIST_ID = "INTERVIEW_LIST_ID";
-    public static final String SPA_ID = "SPA_ID";
-    public static final String MASSEUR_HEADER_ID = "MASSEUR_HEADER_ID";
-    public static final String SPA_HEADER_ID = "SPA_HEADER_ID";
-    public static final String INTERVIEW_ID = "INTERVIEW_ID";
-    public static final String GROUP_ID = "GROUP_ID";
-
-    public static final int RECEIPT_STATUS_UNUSED = 200;
-    public static final int RECEIPT_STATUS_USED = 201;
-    public static final int RECEIPT_STATUS_EXPITED = 202;
-    public static final int RECEIPT_STATUS_REFUNDING = 203;
-    public static final int RECEIPT_STATUS_REFUNDED = 204;
+    public static final String BAIDU_MAP_PACKAGE_NAME = "com.baidu.BaiduMap";
+    public static final String AUTONAVI_MAP_PACKAGE_NAME = "com.autonavi.minimap";
+    public static final String TENCENT_MAP_PACKAGE_NAME = "com.tencent.map";
 
     public static final int TYPE_DOCTOR = 101;
     public static final int TYPE_CASE = 102;
     public static final int TYPE_HOSPITAL = 103;
     public static final int TYPE_PRODUCT = 104;
-    public static final int TYPE_FRIEND = 105;
+    public static final int TYPE_SEARCH_PEOPLE = 105;
     public static final int TYPE_MASSAGE = 106;
     public static final int TYPE_MASSEUR = 107;
     public static final int TYPE_SPA = 108;
     public static final int TYPE_POST = 109;
     public static final int TYPE_PARTY = 110;
-    public static final int TYPE_INTERVIEW = 120;
-    public static final int TYPE_MY_PRODUCT = 130;
-    public static final int TYPE_NEARBY_PEOPLE = 140;
-    public static final int TYPE_OFFICIAL_POST = 141;
+    public static final int TYPE_INTERVIEW = 111;
+    public static final int TYPE_MY_PRODUCT = 120;
+    public static final int TYPE_MY_DOCTOR = 121;
+    public static final int TYPE_FAVORITE = 130;
+    public static final int TYPE_FANS = 131;
+    public static final int TYPE_NEARBY_PEOPLE = 132;
+    public static final int TYPE_OFFICIAL_POST = 140;
+    public static final int TYPE_FAVORITE_POST = 141;
+    public static final int TYPE_NEARBY_POST = 142;
 
     public static final String PARAM_TITLE = "PARAM_TITLE";
     public static final String PARAM_NAME = "PARAM_NAME";
@@ -76,30 +53,42 @@ public class Constants {
     public static final String PARAM_TYPE = "PARAM_TYPE";
     public static final String PARAM_SEARCH_STRING = "PARAM_SEARCH_STRING";
     public static final String PARAM_ENABLE_REFRESH = "PARAM_ENABLE_REFRESH";
+    public static final String PARAM_IS_FAV = "PARAM_IS_FAV";
     public static final String PARAM_DATA = "PARAM_DATA";
     public static final String PARAM_HOSPITAL_ID = "PARAM_HOSPITAL_ID";
     public static final String PARAM_DOCTOR_ID = "PARAM_DOCTOR_ID";
     public static final String PARAM_SPA_ID = "PARAM_SPA_ID";
     public static final String PARAM_MASSEUR_ID = "PARAM_MASSEUR_ID";
+    public static final String PARAM_MASSAGE_ID = "PARAM_MASSAGE_ID";
+    public static final String PARAM_KEYWORD = "PARAM_KEYWORD";
+    public static final String PARAM_CATEGORY= "PARAM_CATEGORY";
 
-    public static final int SORT_BY_DEFAULT = 0;
-    public static final int SORT_BY_APPOINTMENT_ASC = 1;
-    public static final int SORT_BY_APPOINTMENT_DESC = 2;
+    public static final int SORT_BY_DEFAULT = 6;
+    public static final int SORT_BY_APPOINTMENT_ASC = 11;
+    public static final int SORT_BY_APPOINTMENT_DESC = 12;
     public static final int SORT_BY_PRICE_ASC = 3;
     public static final int SORT_BY_PRICE_DESC = 4;
-    public static final int SORT_BY_CASE_ASC = 5;
-    public static final int SORT_BY_CASE_DESC = 6;
-    public static final int SORT_BY_AMOUNT_ASC = 7;
-    public static final int SORT_BY_AMOUNT_DESC = 8;
-    public static final int SORT_BY_DISTANCE = 9;
+    public static final int SORT_BY_CASE_ASC = 9;
+    public static final int SORT_BY_CASE_DESC = 10;
+    public static final int SORT_BY_AMOUNT_ASC = 0;
+    public static final int SORT_BY_AMOUNT_DESC = 1;
+    public static final int SORT_BY_DISTANCE = 2;
+//type 本周最热 7 时间最新 8
 
     public static final int LOAD_MORE = 500;
     public static final int LOAD_PULL_REFRESH = 501;
     public static final int LOAD_DIALOG = 502;
     public static final int LOAD_PAGE = 503;
 
+    public static final int RECEIPT_STATUS_UNUSED = 0;
+    public static final int RECEIPT_STATUS_USED = 1;
+    public static final int RECEIPT_STATUS_EXPIRED = 5;
+    public static final int RECEIPT_STATUS_REFUNDING = 2;
+    public static final int RECEIPT_STATUS_REFUNDED = 4;
 
-    public static final int MAX_PAGE_ITEM = 20;
+    public static final int MAX_PAGE_ITEM = 10;
+    public static final long ORDER_VALID_TIME_IN_MINISEC = 24*60*60*1000;
+    public static final String SUPPORT_LINE = "01058455202";
 
     public static final int ALL_CITY_ID = 5000;
 
@@ -109,8 +98,15 @@ public class Constants {
     public static final int PRE_PAYMENT = 1;
     public static final int FULL_PAYMENT = 2;
 
+    public static final int ORDER_UNPAID = 0;
+    public static final int ORDER_PAID = 1;
+
+    public static final int NO_ID_REQUIRED = 0;
+    public static final int REQUIRE_HK_PASS = 1;
+    public static final int REQUIRE_PASSPORT = 2;
+
+
     public static final int SUCCESS = 200;
     public static final int ERROR_WRONG_PASSWORD = 500;
     public static final int ERROR_INVALID_SESSIONID = 501;
-
 }

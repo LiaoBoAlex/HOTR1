@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -19,6 +20,7 @@ import com.us.hotr.customview.DeactivatedViewPager;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.info.LoginActivity;
+import com.us.hotr.ui.activity.info.SettingActivity;
 import com.us.hotr.ui.activity.post.UploadCompareActivity1;
 import com.us.hotr.ui.activity.post.UploadPostActivity1;
 import com.us.hotr.ui.fragment.HomeFragment;
@@ -30,7 +32,6 @@ import java.util.ArrayList;
 
 public class
 MainActivity extends AppCompatActivity implements View.OnClickListener{
-    public static final int LOGOUT = 102;
 
     private ImageView tabHome, tabFound, tabAll, tabVoucher, tabInfo, ivPost, ivCompare, ivAll1;
     private ArrayList<Fragment> fragmentList;
@@ -81,7 +82,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
 
         adapter = new PagerAdapter(getSupportFragmentManager(), fragmentList);
         viewPager.setSwipeLocked(true);
-//        viewPager.setOffscreenPageLimit(4);
+        viewPager.setOffscreenPageLimit(4);
         viewPager.setAdapter(adapter);
 
         setupButton(currentPage);
@@ -117,12 +118,12 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 setupButton(1);
                 break;
             case R.id.tab_all:
-//                if(HOTRSharePreference.newInstance(this).isUserLogin())
-//                    buttonRollOut();
-//                else{
+                if(HOTRSharePreference.getInstance(getApplicationContext()).isUserLogin())
+                    buttonRollOut();
+                else{
                     Intent i = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(i);
-//                }
+                }
                 break;
             case R.id.tab_voucher:
                 currentPage = 2;
@@ -130,16 +131,16 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 break;
             case R.id.tab_info:
                 if(!HOTRSharePreference.getInstance(getApplicationContext()).isUserLogin()) {
-//                    LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
-//                        @Override
-//                        public void onLoginSuccess() {
-//                            infoFragment.loadData(0);
-//                            currentPage = 3;
-//                            setupButton(currentPage);
-//                        }
-//                    });
-//                    Intent i = new Intent(MainActivity.this, LoginActivity.class);
-//                    startActivity(i);
+                    LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                        @Override
+                        public void onLoginSuccess() {
+                            currentPage = 3;
+                            setupButton(currentPage);
+                            infoFragment.loadData(Constants.LOAD_PAGE);
+                        }
+                    });
+                    Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(i);
                 }
                 else {
                     currentPage = 3;
@@ -191,11 +192,12 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == Activity.RESULT_OK){
-            if(requestCode == LOGOUT){
+            if(resultCode == SettingActivity.CODE_LOGOUT){
                 currentPage = 0;
                 setupButton(currentPage);
             }
+            if(resultCode == SettingActivity.CODE_BACK){
+                infoFragment.updateUserInfo();
         }
     }
 
@@ -254,7 +256,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<Fragment> fragmentList;
 

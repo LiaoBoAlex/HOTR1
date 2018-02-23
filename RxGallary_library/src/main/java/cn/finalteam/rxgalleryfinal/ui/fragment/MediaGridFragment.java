@@ -103,7 +103,7 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
     private final int CROP_IMAGE_REQUEST_CODE = 1011;
     private final String TAKE_URL_STORAGE_KEY = "take_url_storage_key";
     private final String BUCKET_ID_KEY = "bucket_id_key";
-    private final int LIMIT = 23;
+    private final int LIMIT = 999;
     MediaGridPresenterImpl mMediaGridPresenter;
     DisplayMetrics mScreenSize;
     private List<MediaBean> mMediaBeanList;
@@ -506,6 +506,8 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
                 openCamera(mMediaActivity);
             }
         } else {
+            if(mediaBean.getOriginalPath() == null || mediaBean.getThumbnailSmallPath() == null || mediaBean.getThumbnailBigPath() == null)
+                return;
             if (mConfiguration.isRadio()) {
                 if (mConfiguration.isImage()) {
                     radioNext(mediaBean);
@@ -672,9 +674,10 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
         if (requestCode == TAKE_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Logger.i(String.format("拍照成功,图片存储路径:%s", mImagePath));
             mMediaScanner.scanFile(mImagePath, mConfiguration.isImage() ? IMAGE_TYPE : "", this);
-//            cropPic(mImagePath);
+            if(mConfiguration.isCrop())
+                cropPic(mImagePath);
         } else if (requestCode == 222) {
-            Toast.makeText(getActivity(), "摄像成功", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "摄像成功", Toast.LENGTH_SHORT).show();
         } else if (requestCode == CROP_IMAGE_REQUEST_CODE && data != null) {
             Logger.i("裁剪成功");
             refreshUI();
@@ -724,6 +727,8 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
         bundle.putInt(UCrop.EXTRA_MAX_SIZE_Y, mConfiguration.getMaxResultHeight());
         bundle.putInt(UCrop.Options.EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT, mConfiguration.getSelectedByDefault());
         bundle.putBoolean(UCrop.Options.EXTRA_FREE_STYLE_CROP, mConfiguration.isFreestyleCropEnabled());
+        bundle.putBoolean(UCrop.Options.EXTRA_CIRCLE_DIMMED_LAYER, mConfiguration.isOvalDimmedLayer());
+        bundle.putBoolean(UCrop.Options.EXTRA_SHOW_CROP_FRAME, !mConfiguration.isOvalDimmedLayer());
         bundle.putParcelable(UCrop.EXTRA_INPUT_URI, inputUri);
         // UCrop 参数 end
 

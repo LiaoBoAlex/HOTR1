@@ -1,42 +1,36 @@
 package com.us.hotr.ui.activity.info;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
-import com.us.hotr.eventbus.Events;
-import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.WebViewActivity;
-import com.us.hotr.ui.activity.beauty.ProductActivity;
+import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.DataCleanManager;
+import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.util.Tools;
-
-import java.io.File;
 
 /**
  * Created by Mloong on 2017/10/10.
  */
 
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
+    public static final int CODE_LOGOUT = 1;
+    public static final int CODE_BACK = 2;
 
     private ConstraintLayout clUpdateInfo, clUpdatePhone, clChangePassword, clCleanCache, clFeedBack, clAboutUs, clBusiness, clCustomer, clCheckForUpdate;
-    private TextView tvLogout, tvCache;
-    private final int CALL_REQUEST = 100;
+    private TextView tvLogout, tvCache, tvPhoneNumber;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +51,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         clCheckForUpdate = (ConstraintLayout) findViewById(R.id.cl_check_for_update);
         tvLogout = (TextView) findViewById(R.id.tv_logout);
         tvCache = (TextView) findViewById(R.id.tv_cache);
+        tvPhoneNumber = (TextView) findViewById(R.id.tv_phone);
 
         clUpdateInfo.setOnClickListener(this);
         clUpdatePhone.setOnClickListener(this);
@@ -69,6 +64,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         clCheckForUpdate.setOnClickListener(this);
         tvLogout.setOnClickListener(this);
         tvCache.setText(DataCleanManager.getTotalCacheSize(getBaseContext()));
+        tvPhoneNumber.setText(Constants.SUPPORT_LINE);
     }
 
     @Override
@@ -103,22 +99,46 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.cl_business:
                 Intent i = new Intent(SettingActivity.this, WebViewActivity.class);
-                i.putExtra(Constants.PARAM_TITLE, getString(R.string.business_partner));
+                Bundle b = new Bundle();
+                b.putString(Constants.PARAM_TITLE, getString(R.string.business_partner));
+                i.putExtras(b);
                 startActivity(i);
                 break;
             case R.id.cl_customer:
-                callPhoneNumber();
+                if (PermissionUtil.hasCallPermission(this)) {
+                    callPhoneNumber();
+                } else {
+                    PermissionUtil.requestCallPermission(this);
+                }
                 break;
             case R.id.cl_check_for_update:
                 break;
             case R.id.tv_logout:
-                HOTRSharePreference.getInstance(getApplicationContext()).storeUserID("");
-//                Intent intent = new Intent(SettingActivity.this, MainActivity.class);
-//                intent.putExtra(LoginActivity.PARAM_FROM_PAGE, 0);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(intent);
-                setResult(Activity.RESULT_OK);
-                finish();
+                TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(this);
+                alertDialogBuilder.setMessage(getString(R.string.confirm_logout));
+                alertDialogBuilder.setPositiveButton(getString(R.string.yes),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                HOTRSharePreference.getInstance(getApplicationContext()).storeUserID("");
+                                HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(null);
+                                HOTRSharePreference.getInstance(getApplicationContext()).storeDefaultAddress(null);
+                                HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedMassageCityID(-1);
+                                HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedProductCityID(-1);
+                                HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedCityName("");
+                                setResult(CODE_LOGOUT);
+                                finish();
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialogBuilder.setNegativeButton(getString(R.string.no),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialogBuilder.create().show();
+
+
         }
 
     }
@@ -126,38 +146,39 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
-        if (requestCode == CALL_REQUEST) {
+        if (requestCode == PermissionUtil.PERMISSIONS_REQUEST_CALL) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    callPhoneNumber();
-                }
-
-            } else {
-                Tools.Toast(SettingActivity.this, "Call failed");
+                callPhoneNumber();
             }
         }
     }
 
+    @SuppressLint("MissingPermission")
     private void callPhoneNumber()
     {
-        try
-        {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(SettingActivity.this, new String[]{Manifest.permission.CALL_PHONE}, CALL_REQUEST);
-                    return;
-                }
-            }
+        TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(this);
+        alertDialogBuilder.setMessage(Constants.SUPPORT_LINE);
+        alertDialogBuilder.setPositiveButton(getString(R.string.call),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent callIntent = new Intent(Intent.ACTION_CALL);
+                        callIntent.setData(Uri.parse("tel:" + Constants.SUPPORT_LINE));
+                        startActivity(callIntent);
+                        dialog.dismiss();
+                    }
+                });
+        alertDialogBuilder.setNegativeButton(getString(R.string.no),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialogBuilder.create().show();
+    }
 
-            Intent callIntent = new Intent(Intent.ACTION_CALL);
-            callIntent.setData(Uri.parse("tel:" + "123456"));
-            startActivity(callIntent);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setResult(CODE_BACK);
     }
 }

@@ -58,14 +58,14 @@ public class TypeSearchFragment extends Fragment {
 
 
         mRecycleView = (RecyclerView) view.findViewById(R.id.recyclerview);
-        tvTotal = (TextView) view.findViewById(R.id.tv_total);
+        tvTotal = (TextView) view.findViewById(R.id.tv_price);
 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecycleView.setLayoutManager(mLayoutManager);
         mRecycleView.setItemAnimator(new DefaultItemAnimator());
 
         if(getArguments()!=null) {
-            DataBaseHelper.insertSearchHistory(getArguments().getString(Constants.PARAM_SEARCH_STRING));
+            DataBaseHelper.getInstance(getActivity().getApplicationContext()).insertSearchHistory(getArguments().getString(Constants.PARAM_SEARCH_STRING));
             mAdapter = new MyAdapter(Data.getSearchTypeResult());
             mRecycleView.setAdapter(mAdapter);
             tvTotal.setText(String.format(getString(R.string.total), 1254));
@@ -83,7 +83,7 @@ public class TypeSearchFragment extends Fragment {
             public MyViewHolder(View view) {
                 super(view);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvTotal = (TextView) view.findViewById(R.id.tv_total);
+                tvTotal = (TextView) view.findViewById(R.id.tv_price);
             }
         }
 
@@ -141,7 +141,7 @@ public class TypeSearchFragment extends Fragment {
 
     @Subscribe
     public void getMessage(Events.SearchKeywordSearch searchKeywordSearch) {
-        DataBaseHelper.insertSearchHistory(searchKeywordSearch.getSearchKeywordSearch());
+        DataBaseHelper.getInstance(getActivity().getApplicationContext()).insertSearchHistory(searchKeywordSearch.getSearchKeywordSearch());
         mAdapter = new MyAdapter(Data.getSearchTypeResult());
         mRecycleView.setAdapter(mAdapter);
         tvTotal.setText(String.format(getString(R.string.total), 1254));

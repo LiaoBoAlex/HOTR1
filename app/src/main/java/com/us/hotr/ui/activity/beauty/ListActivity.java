@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.bean.Party;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.fragment.beauty.CaseListFragment;
 import com.us.hotr.ui.fragment.beauty.DoctorListFragment;
@@ -18,6 +19,9 @@ import com.us.hotr.ui.fragment.found.OfficialPostListFragment;
 import com.us.hotr.ui.fragment.info.FriendListFragment;
 import com.us.hotr.ui.fragment.massage.InterviewListFragment;
 import com.us.hotr.ui.fragment.massage.MasseurListFragment;
+import com.us.hotr.ui.fragment.party.PartyListFragment;
+
+import java.util.List;
 
 /**
  * Created by liaobo on 2017/12/11.
@@ -26,16 +30,16 @@ import com.us.hotr.ui.fragment.massage.MasseurListFragment;
 public class ListActivity extends BaseActivity {
     private int type;
     private Fragment listFragment;
-    private int hospitalId = -1, doctorId = -1, spaId = -1;
+    private long hospitalId = -1, doctorId = -1, spaId = -1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String title = getIntent().getStringExtra(Constants.PARAM_TITLE);
+        String title = getIntent().getExtras().getString(Constants.PARAM_TITLE);
         type = getIntent().getExtras().getInt(Constants.PARAM_TYPE, -1);
-        hospitalId = getIntent().getExtras().getInt(Constants.PARAM_HOSPITAL_ID, -1);
-        doctorId = getIntent().getExtras().getInt(Constants.PARAM_DOCTOR_ID, -1);
-        spaId = getIntent().getExtras().getInt(Constants.PARAM_SPA_ID, -1);
+        hospitalId = getIntent().getExtras().getLong(Constants.PARAM_HOSPITAL_ID, -1);
+        doctorId = getIntent().getExtras().getLong(Constants.PARAM_DOCTOR_ID, -1);
+        spaId = getIntent().getExtras().getLong(Constants.PARAM_SPA_ID, -1);
         setMyTitle(title);
         initStaticView();
     }
@@ -49,22 +53,22 @@ public class ListActivity extends BaseActivity {
         ivSearch = (ImageView) findViewById(R.id.img_search);
         switch (type){
             case Constants.TYPE_DOCTOR:
-                listFragment = new DoctorListFragment().newInstance(-1, hospitalId);
+            case Constants.TYPE_MY_DOCTOR:
+                listFragment = new DoctorListFragment().newInstance(null, type, -1, hospitalId);
                 break;
             case Constants.TYPE_PRODUCT:
-                listFragment = new ProductListFragment().newInstance(true, -1,-1, hospitalId, doctorId);
+            case Constants.TYPE_MY_PRODUCT:
+                listFragment = new ProductListFragment().newInstance(null, true, type, -1,-1, hospitalId, doctorId);
                 break;
             case Constants.TYPE_MASSEUR:
-                listFragment = new MasseurListFragment().newInstance(-1, spaId);
+                listFragment = new MasseurListFragment().newInstance(null, -1, spaId);
                 break;
-            case Constants.TYPE_SPA:
-            case Constants.TYPE_MASSAGE:
-            case Constants.TYPE_FRIEND:
-            case Constants.TYPE_MY_PRODUCT:
-            case Constants.TYPE_CASE:
-            case Constants.TYPE_INTERVIEW:
-            case Constants.TYPE_POST:
+            case Constants.TYPE_PARTY:
+                listFragment = new PartyListFragment().newInstance((List<Party>)getIntent().getExtras().getSerializable(Constants.PARAM_DATA));
+                break;
             case Constants.TYPE_OFFICIAL_POST:
+                listFragment = new OfficialPostListFragment().newInstance();
+                break;
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
     }

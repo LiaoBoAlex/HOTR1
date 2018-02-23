@@ -5,15 +5,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 
+import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.fragment.info.OrderBeautyFragment;
-import com.us.hotr.ui.fragment.info.OrderMasasgeFragment;
-import com.us.hotr.ui.fragment.info.OrderPartyFragment;
+import com.us.hotr.ui.fragment.info.OrderCategoryFragment;
 
 import java.util.ArrayList;
 
@@ -47,9 +45,9 @@ public class OrderListActivity extends BaseActivity {
         }};
 
         fragmentList = new ArrayList<Fragment>() {{
-            add(OrderBeautyFragment.newInstance());
-            add(OrderMasasgeFragment.newInstance());
-            add(OrderPartyFragment.newInstance());
+            add(OrderCategoryFragment.newInstance(Constants.TYPE_PRODUCT));
+            add(OrderCategoryFragment.newInstance(Constants.TYPE_MASSAGE));
+            add(OrderCategoryFragment.newInstance(Constants.TYPE_PARTY));
         }};
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -62,7 +60,7 @@ public class OrderListActivity extends BaseActivity {
 
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> titleList;
         private ArrayList<Fragment> fragmentList;

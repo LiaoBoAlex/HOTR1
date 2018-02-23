@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
 import com.us.hotr.eventbus.Events;
@@ -34,16 +35,19 @@ public class SelectSubjectFragment extends BaseLoadingFragment {
     RecyclerView rvTitle, rvSubTitle;
     TitleAdapter titleAdapter;
     SubTitleAdapter subTitleAdapter;
+    LinearLayoutManager linearLayoutManager;
 
     private int row_index = 0;
 
     private static final String PARAM = "PARAM";
     private boolean haveAll = true;
+    private long selectedId;
 
-    public static SelectSubjectFragment newInstance(boolean haveAll) {
+    public static SelectSubjectFragment newInstance(boolean haveAll, long selectedId) {
         SelectSubjectFragment seleteSubjectFragment = new SelectSubjectFragment();
         Bundle b = new Bundle();
         b.putBoolean(PARAM, haveAll);
+        b.putLong(Constants.PARAM_ID, selectedId);
         seleteSubjectFragment.setArguments(b);
         return seleteSubjectFragment;
     }
@@ -57,17 +61,18 @@ public class SelectSubjectFragment extends BaseLoadingFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if(getArguments()!=null)
+        if(getArguments()!=null) {
             haveAll = getArguments().getBoolean(PARAM, true);
+            selectedId = getArguments().getLong(Constants.PARAM_ID);
+        }
 
-        enableLoadMore(false);
-        enablePullDownRefresh(false);
         rvTitle = (RecyclerView) view.findViewById(R.id.rv_title);
         rvSubTitle = (RecyclerView) view.findViewById(R.id.rv_sub_title);
 
         rvTitle.setLayoutManager(new LinearLayoutManager(getContext()));
         rvTitle.setItemAnimator(new DefaultItemAnimator());
-        rvSubTitle.setLayoutManager(new LinearLayoutManager(getContext()));
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        rvSubTitle.setLayoutManager(linearLayoutManager);
         rvSubTitle.setItemAnimator(new DefaultItemAnimator());
 
         loadData(0);
@@ -79,16 +84,32 @@ public class SelectSubjectFragment extends BaseLoadingFragment {
             @Override
             public void onNext(List<Subject> result) {
                 if (result != null && result.size() > 0) {
-                    if (haveAll) {
-                        Subject s = new Subject();
-                        s.setTypeName(getString(R.string.filter_subject));
-                        result.add(0, s);
+                    if (selectedId >= 0) {
+                        for (int i = 0; i < result.size(); i++) {
+                            for (Subject.SubjectL2 s : result.get(i).getChildren()) {
+                                if (s.getProductChild() != null && s.getProductChild().size() > 0) {
+                                    for (Subject.SubjectL2.SubjectL3 s3 : s.getProductChild()) {
+                                        if (s3.getKey() == selectedId) {
+                                            row_index = i;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                    titleAdapter = new TitleAdapter(result);
-                    rvTitle.setAdapter(titleAdapter);
-                    if (!haveAll) {
-                        subTitleAdapter = new SubTitleAdapter(result.get(0).getChildren());
-                        rvSubTitle.setAdapter(subTitleAdapter);
+                    if (isAdded()) {
+                        if (haveAll) {
+                            Subject s = new Subject();
+                            s.setTypeName(getString(R.string.filter_subject));
+                            result.add(0, s);
+                        }
+                        titleAdapter = new TitleAdapter(result);
+                        rvTitle.setAdapter(titleAdapter);
+                        if (!haveAll) {
+                            subTitleAdapter = new SubTitleAdapter(result.get(row_index).getChildren());
+                            rvSubTitle.setAdapter(subTitleAdapter);
+                        }
                     }
                 }
             }
@@ -145,13 +166,16 @@ public class SelectSubjectFragment extends BaseLoadingFragment {
                 public void onClick(View view) {
                     if(getString(R.string.filter_subject).equals(subject.getTypeName())){
                         Events.SubjectSelected event = new Events.SubjectSelected(getString(R.string.filter_subject),
-                                -1);
+                                -1, -1);
                         GlobalBus.getBus().post(event);
                     }
                     row_index = position;
                     notifyDataSetChanged();
-                    if(subTitleAdapter!=null)
+
+                    if(subTitleAdapter!=null) {
                         subTitleAdapter.setItem(subject.getChildren());
+                        linearLayoutManager.scrollToPosition(0);
+                    }
                     else {
                         subTitleAdapter = new SubTitleAdapter(subject.getChildren());
                         rvSubTitle.setAdapter(subTitleAdapter);
@@ -209,23 +233,30 @@ public class SelectSubjectFragment extends BaseLoadingFragment {
         }
 
         @Override
-        public void onBindViewHolder(MyViewHolder holder, final int position) {
+        public void onBindViewHolder(final MyViewHolder holder, final int position) {
             final Subject.SubjectL2 subjectL2 = subjectL2List.get(position);
+            int p = -1;
             holder.tvSubTitle.setText(subjectL2.getTypeName());
             List<String> nameList = new ArrayList<>();
             if(subjectL2.getProductChild()!=null && subjectL2.getProductChild().size()>0) {
-
-                for (Subject.SubjectL2.SubjectL3 s : subjectL2.getProductChild())
-                    nameList.add(s.getProjectName());
+                for (int i = 0; i < subjectL2.getProductChild().size(); i++){
+                    nameList.add(subjectL2.getProductChild().get(i).getProjectName());
+                    if (subjectL2.getProductChild().get(i).getKey() == selectedId)
+                        p = i;
+                }
             }
             holder.flSubSubTitle.setFlowLayout(nameList, new FlowLayout.OnItemClickListener() {
                 @Override
                 public void onItemClick(String content, int position) {
+                    selectedId = subjectL2.getProductChild().get(position).getKey();
+                    notifyDataSetChanged();
                     Events.SubjectSelected event = new Events.SubjectSelected(subjectL2.getProductChild().get(position).getProjectName(),
-                            subjectL2.getProductChild().get(position).getKey());
+                            subjectL2.getProductChild().get(position).getKey(),
+                            subjectL2.getProductChild().get(position).getFtId());
                     GlobalBus.getBus().post(event);
                 }
             });
+            holder.flSubSubTitle.setHighlightedItem(p);
         }
 
         @Override
