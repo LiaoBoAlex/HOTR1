@@ -4,8 +4,6 @@ package com.us.hotr.webservice;
  * Created by liaobo on 4/27/2017.
  */
 
-import android.content.Intent;
-
 import com.us.hotr.storage.bean.Address;
 import com.us.hotr.storage.bean.Adv;
 import com.us.hotr.storage.bean.Case;
@@ -15,12 +13,14 @@ import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.storage.bean.HotSearchTopic;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.MassageOrder;
+import com.us.hotr.storage.bean.MassageReceipt;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.storage.bean.Party;
 import com.us.hotr.storage.bean.PartyOrder;
 import com.us.hotr.storage.bean.Post;
 import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.ProductOrder;
+import com.us.hotr.storage.bean.ProductReceipt;
 import com.us.hotr.storage.bean.Provence;
 import com.us.hotr.storage.bean.Spa;
 import com.us.hotr.storage.bean.Subject;
@@ -29,7 +29,7 @@ import com.us.hotr.storage.bean.Theme;
 import com.us.hotr.storage.bean.Type;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.storage.bean.Voucher;
-import com.us.hotr.webservice.request.AvailableVoucherRequest;
+import com.us.hotr.storage.bean.WechatBill;
 import com.us.hotr.webservice.request.BoundMobileRequest;
 import com.us.hotr.webservice.request.CancelOrderRequest;
 import com.us.hotr.webservice.request.ChangePasswordRequest;
@@ -58,13 +58,13 @@ import com.us.hotr.webservice.response.GetPartyDetailResponse;
 import com.us.hotr.webservice.response.GetPartyOrderDetailResponse;
 import com.us.hotr.webservice.response.GetPostDetailResponse;
 import com.us.hotr.webservice.response.GetProductDetailResponse;
-import com.us.hotr.webservice.response.GetReceiptListResponse;
 import com.us.hotr.webservice.response.GetSpaDetailResponse;
 import com.us.hotr.webservice.response.GetWechatAccessTokenResponse;
 import com.us.hotr.webservice.response.GetWechatUserInfo;
 import com.us.hotr.webservice.response.UpdateUserAvatarRespone;
 import com.us.hotr.webservice.response.UploadPostResponse;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +73,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -129,14 +130,14 @@ public interface WebService {
     @POST("hospital/list.do?")
     Observable<BaseResponse<BaseListResponse<List<Hospital>>>> getHospitalList(@Query("hospital_name") String hospital_name,
                                                                                @Query("city_code") Long city_code,
-                                                                               @Query("type") Integer type,
+                                                                               @Query("type") Long type,
                                                                                @Query("type_id") Long type_id,
                                                                                @Query("page_size") Integer page_size,
                                                                                @Query("page_number") int page_number);
     @POST("massage/list.do?")
     Observable<BaseResponse<BaseListResponse<List<Spa>>>> getSpaList(@Query("massage_name") String massage_name,
                                                                      @Query("city_code") Long city_code,
-                                                                     @Query("type") Integer type,
+                                                                     @Query("type") Long type,
                                                                      @Query("type_id") Long type_id,
                                                                      @Query("pos_latitude") Double pos_latitude,
                                                                      @Query("pos_longitude") Double pos_longitude,
@@ -145,10 +146,10 @@ public interface WebService {
 
     @POST("product/list.do?")
     Observable<BaseResponse<BaseListResponse<List<Product>>>> getProductList(@Query("product_name") String product_name,
-                                                                             @Query("type") Integer type,
+                                                                             @Query("type") Long type,
                                                                              @Query("hospitalId") Long hospitalId,
                                                                              @Query("doctorId") Long doctorId,
-                                                                             @Query("projectId") Long project_id,
+                                                                             @Query("typeId") Long typeId,
                                                                              @Query("city_code") Long city_id,
                                                                              @Query("pos_latitude") Double pos_latitude,
                                                                              @Query("pos_longitude") Double pos_longitude,
@@ -157,7 +158,7 @@ public interface WebService {
 
     @POST("massage_product/list.do?")
     Observable<BaseResponse<BaseListResponse<List<Massage>>>> getMassageList(@Query("product_name") String product_name,
-                                                                             @Query("type") Integer type,
+                                                                             @Query("type") Long type,
                                                                              @Query("type_id") Long type_id,
                                                                              @Query("city_code") Long city_code,
                                                                              @Query("pos_latitude") Double pos_latitude,
@@ -189,7 +190,7 @@ public interface WebService {
 
     @POST("doctor/list.do?")
     Observable<BaseResponse<BaseListResponse<List<Doctor>>>> getDoctorList(@Query("doctor_name") String doctor_name,
-                                                                           @Query("type") Integer type,
+                                                                           @Query("type") Long type,
                                                                            @Query("hospitalId") Long hospitalId,
                                                                            @Query("type_id") Long type_id,
                                                                            @Query("city_code") Long city_code,
@@ -210,7 +211,7 @@ public interface WebService {
                                                                              @Query("pos_longitude") Double pos_longitude,
                                                                              @Query("page_number") int page_number,
                                                                              @Query("page_size") Integer page_size,
-                                                                             @Query("type") Integer type);
+                                                                             @Query("type") Long type);
 
     @POST("massage/massagist_list_by_massageId.do?page_number=1&page_size=4")
     Call<BaseResponse<BaseListResponse<List<Masseur>>>> getMasseurListBySpa1(@Header("jsessionid") String jsessionid,
@@ -258,9 +259,10 @@ public interface WebService {
 
     @POST("user_method/coupon/list.do?")
     Observable<BaseResponse<BaseListResponse<List<Voucher>>>> getAvaliableVoucher(@Header("jsessionid") String jsessionid,
-                                                                                  @Body AvailableVoucherRequest request);
+                                                                                  @Query("product_price") double product_price,
+                                                                                  @Query("type") int type);
 
-    @POST("user_method/coupon/list.do?")
+    @POST("user_method/coupon/getUserCoupon.do?")
     Observable<BaseResponse<BaseListResponse<List<Voucher>>>> getAllVoucher(@Header("jsessionid") String jsessionid,
                                                                             @Query("status") int status,
                                                                             @Query("page_number") int page_number,
@@ -293,6 +295,11 @@ public interface WebService {
     Observable<BaseResponse<PartyOrder>> createOrderParty(@Header("jsessionid") String jsessionid,
                                                           @Body CreatePartyOrderRequest request);
 
+    @GET("user_method/order/payment/getWXPayNumber.do?")
+    Observable<BaseResponse<WechatBill>> createWechatBill(@Header("jsessionid") String jsessionid,
+                                                          @Query("order_id") long order_id,
+                                                          @Query("spbill_create_ip") String spbill_create_ip);
+
     @POST("apiCoshow/recommendCoshowList.do?")
     Observable<BaseResponse<GetGroupMainPageResponse>> getGroupMainPage(@Header("jsessionid") String jsessionid);
 
@@ -309,7 +316,7 @@ public interface WebService {
     Observable<BaseResponse<List<Theme>>> getGroupTheme();
 
     @POST("apiCoshow/getCoshowList.do?")
-    Observable<BaseResponse<List<Group>>> getGroup(@Query("themeId") long themeId,
+    Observable<BaseResponse<List<Group>>> getGroup(@Query("themeId") Long themeId,
                                                    @Query("coshowName") String coshowName,
                                                    @Header("jsessionid") String jsessionid);
 
@@ -323,7 +330,7 @@ public interface WebService {
 
     @POST("apiTopic/findTopicByCoshowId.do")
     Observable<BaseResponse<BaseListResponse<List<Post>>>> getPostByGroup(@Query("coshow_id") long coshow_id,
-                                                                          @Query("type") int type,
+                                                                          @Query("type") long type,
                                                                           @Query("page_number") int page_number,
                                                                           @Query("page_size") int page_size,
                                                                           @Header("jsessionid") String jsessionid);
@@ -331,7 +338,8 @@ public interface WebService {
     @POST("apiTopic/appTopicList.do")
     Observable<BaseResponse<BaseListResponse<List<Post>>>> getAllPost(@Header("jsessionid") String jsessionid,
                                                                       @Query("page_number") int page_number,
-                                                                      @Query("page_size") int page_size);
+                                                                      @Query("page_size") int page_size,
+                                                                      @Query("title") String title);
 
     @POST("apiTopic/appTopicList.do")
     Call<BaseResponse<BaseListResponse<List<Post>>>> getAllPost1(@Header("jsessionid") String jsessionid,
@@ -359,8 +367,8 @@ public interface WebService {
     @Multipart
     @POST("image/user_method/upload_image_to_server.do?")
     Observable<BaseResponse<List<String>>> uploadMultiImage(@Query("targetPath") String targetPath,
-                                                           @Header("jsessionid") String jsessionid,
-                                                           @PartMap Map<String, RequestBody> images);
+                                                            @Header("jsessionid") String jsessionid,
+                                                            @PartMap Map<String, RequestBody> images);
 
     @POST("apiTopic/user_method/addHotTopic.do?")
     Observable<BaseResponse<UploadPostResponse>> uploadPost(@Header("jsessionid") String jsessionid,
@@ -400,16 +408,33 @@ public interface WebService {
     @POST("apiYmContrastPhoto/appList.do")
     Observable<BaseResponse<BaseListResponse<List<Case>>>> getAllCase(@Header("jsessionid") String jsessionid,
                                                                       @Query("page_number") int page_number,
-                                                                      @Query("page_size") int page_size);
+                                                                      @Query("page_size") int page_size,
+                                                                      @Query("title") String title);
+
+    @POST("apiYmContrastPhoto/findContrastPhotoListByParam.do")
+    Observable<BaseResponse<BaseListResponse<List<Case>>>> getCaseByType(@Header("jsessionid") String jsessionid,
+                                                                         @Query("type") int type,
+                                                                         @Query("id") long id,
+                                                                         @Query("first_type_id") Long first_type_id,
+                                                                         @Query("page_number") int page_number,
+                                                                         @Query("page_size") int page_size);
+
+    @POST("apiYmContrastPhoto/findContrastPhotoListByParam.do?page_size=3")
+    Call<BaseResponse<BaseListResponse<List<Case>>>> getCaseByType1(@Header("jsessionid") String jsessionid,
+                                                                    @Query("type") int type,
+                                                                    @Query("id") long id);
+
+    @POST("apiYmContrastPhoto/findfirstTypeList.do")
+    Call<BaseResponse<List<Type>>> getCaseTypeCount(@Query("type") int type,
+                                                    @Query("id") long id);
 
     @POST("apiYmContrastPhoto/ymContrastPhotoDetail.do")
     Observable<BaseResponse<GetCaseDetailResponse>> getCaseDetail(@Query("ymContrastPhotoId") long ymContrastPhotoId,
                                                                   @Header("jsessionid") String jsessionid);
 
     @POST("apiYmContrastPhoto/user_method/addContrastPhoto.do?")
-    Observable<BaseResponse<UploadPostResponse>> uploadCase(@Header("jsessionid") String jsessionid,
-                                                            @Body Case hotTopic,
-                                                            @Query("coshowId") List<Long> coshowId);
+    Observable<BaseResponse<Long>> uploadCase(@Header("jsessionid") String jsessionid,
+                                              @Body Case aCase);
 
     @POST("apiYmContrastPhoto/user_method/userLikeContrastPhoto.do?")
     Observable<BaseResponse<String>> likeCase(@Header("jsessionid") String jsessionid,
@@ -442,7 +467,7 @@ public interface WebService {
                                                      @Query("contrastPhotoReplyId") long contrastPhotoReplyId);
 
     @POST("apiYmContrastPhoto/purchasedProduct.do?")
-    Observable<BaseResponse<BaseListResponse<List<Product>>>> getPurchasedProduct(@Header("jsessionid") String jsessionid);
+    Observable<BaseResponse<List<Product>>> getPurchasedProduct(@Header("jsessionid") String jsessionid);
 
     @POST("apiCoshow/myCoshowList.do?")
     Observable<BaseResponse<GetGroupListbyUserResponse>> getGroupListbyUser(@Query("userId") long userId);
@@ -459,9 +484,49 @@ public interface WebService {
                                                                              @Query("page_number") int page_number,
                                                                              @Query("page_size") int page_size);
 
-    @POST("user_method/verification/list.do?")
-    Observable<BaseResponse<GetReceiptListResponse>> getReceiptList(@Header("jsessionid") String jsessionid,
-                                                                    @Query("state") int state);
+    @POST("user_method/verification/list.do?type=0")
+    Observable<BaseResponse<BaseListResponse<List<ProductReceipt>>>> getProductReceiptList(@Header("jsessionid") String jsessionid,
+                                                                                           @Query("state") int state,
+                                                                                           @Query("page_number") int page_number,
+                                                                                           @Query("page_size") int page_size);
+
+    @POST("user_method/verification/list.do?type=1")
+    Observable<BaseResponse<BaseListResponse<List<MassageReceipt>>>> getMassageReceiptList(@Header("jsessionid") String jsessionid,
+                                                                                           @Query("state") int state,
+                                                                                           @Query("page_number") int page_number,
+                                                                                           @Query("page_size") int page_size);
+
+    @POST("user_method/verification/ymDetail.do?")
+    Observable<BaseResponse<ProductReceipt>> getProductReceiptDetailbyId(@Header("jsessionid") String jsessionid,
+                                                                         @Query("verificationId") long verificationId);
+
+    @POST("user_method/verification/amDetail.do?")
+    Observable<BaseResponse<MassageReceipt>> getMassageReceiptDetailbyId(@Header("jsessionid") String jsessionid,
+                                                                         @Query("verificationId") long verificationId);
+
+    @POST("user_method/verification/ymDetailByOrderDetailId.do?")
+    Observable<BaseResponse<ProductReceipt>> getProductReceiptDetailbyOrderId(@Header("jsessionid") String jsessionid,
+                                                                              @Query("orderDetailId") long orderDetailId);
+
+    @POST("user_method/verification/amDetailByOrderDetailId.do?")
+    Observable<BaseResponse<MassageReceipt>> getMassageReceiptDetailbyOrderId(@Header("jsessionid") String jsessionid,
+                                                                              @Query("orderDetailId") long orderDetailId);
+
+    @POST("user_method/verification/deleYmVerificationById.do?")
+    Observable<BaseResponse<String>> deleteProductReceipt(@Header("jsessionid") String jsessionid,
+                                                                  @Query("verification_id") long verification_id);
+
+    @POST("user_method/verification/deleAmVerificationById.do?")
+    Observable<BaseResponse<String>> deleteMassageReceipt(@Header("jsessionid") String jsessionid,
+                                                                  @Query("verification_id") long verification_id);
+
+    @POST("user_method/verification/amRefundActionById.do?")
+    Observable<BaseResponse<String>> refundProductReceipt(@Header("jsessionid") String jsessionid,
+                                                                  @Query("verification_id") long verification_id);
+
+    @POST("user_method/verification/ymRefundActionById.do?")
+    Observable<BaseResponse<String>> refundMassageReceipt(@Header("jsessionid") String jsessionid,
+                                                                  @Query("verification_id") long verification_id);
 
     @POST("user/login.do?")
     Observable<BaseResponse<GetLoginResponse>> login(@Query("username") String username,
@@ -634,4 +699,7 @@ public interface WebService {
 
     @POST("project/isHotList.do?")
     Observable<BaseResponse<BaseListResponse<List<HotSearchTopic>>>> getHotSearchTopic(@Header("jsessionid") String jsessionid);
+
+    @POST("search/mainSearch.do?")
+    Observable<BaseResponse<HashMap<String, Integer>>> getSearchCount(@Query("search_keyword") String search_keyword);
 }

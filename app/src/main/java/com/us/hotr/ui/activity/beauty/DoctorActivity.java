@@ -36,6 +36,7 @@ import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +57,7 @@ public class DoctorActivity extends BaseLoadingActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDoctorId = getIntent().getExtras().getLong(Constants.PARAM_ID);
-
+        ivShare.setVisibility(View.GONE);
         initStaticView();
         loadData(Constants.LOAD_PAGE);
 
@@ -122,6 +123,12 @@ public class DoctorActivity extends BaseLoadingActivity {
             this.doctorDetail = doctorDetail;
             this.mContext = mContext;
             itemList.add(new Item(TYPE_HEADER));
+            if(doctorDetail.getCaseTypeList()!=null && doctorDetail.getCaseTypeList().size()>0){
+                int count = 0;
+                for(Type type:doctorDetail.getCaseTypeList())
+                    count = count + type.getProduct_num();
+                doctorDetail.getCaseTypeList().add(0, new Type(-1, count, getString(R.string.all)));
+            }
             if(doctorDetail.getProductList()!=null && doctorDetail.getProductList().size()>0){
                 itemList.add(new Item(TYPE_PRODUCT_HEADER));
                 for(int i=0;i<doctorDetail.getProductList().size();i++)
@@ -131,14 +138,13 @@ public class DoctorActivity extends BaseLoadingActivity {
             }
             if(doctorDetail.getCaseList()!=null && doctorDetail.getCaseList().size()>0){
                 itemList.add(new Item(TYPE_CASE_HEADER));
-                itemList.add(new Item(TYPE_CASE_SUBJECT));
+                itemList.add(new Item(TYPE_CASE_SUBJECT, doctorDetail.getCaseTypeList()));
                 for(int i=0;i<doctorDetail.getCaseList().size();i++)
                     itemList.add(new Item(TYPE_CASE, doctorDetail.getCaseList().get(i)));
                 if(doctorDetail.getTotalCase()>3)
                     itemList.add(new Item(TYPE_CASE_FOOTER));
             }
         }
-
 
         public class CaseHolder extends RecyclerView.ViewHolder {
             CaseView caseView;
@@ -262,8 +268,8 @@ public class DoctorActivity extends BaseLoadingActivity {
                         public void onClick(View v) {
                             Intent i = new Intent(DoctorActivity.this, ListWithCategoryActivity.class);
                             Bundle b = new Bundle();
-                            b.putString(Constants.PARAM_TITLE, getString(R.string.hospital_appointment));
-                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
+                            b.putString(Constants.PARAM_TITLE, getString(R.string.case_title));
+                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
                             b.putLong(Constants.PARAM_DOCTOR_ID, doctorDetail.getDetail().getDoctor_id());
                             i.putExtras(b);
                             startActivity(i);
@@ -273,12 +279,26 @@ public class DoctorActivity extends BaseLoadingActivity {
                     break;
                 case TYPE_CASE_FOOTER:
                     ((FooterHolder) holder).textView.setText(String.format(getString(R.string.check_case), doctorDetail.getTotalCase()));
+                    ((FooterHolder) holder).textView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent i = new Intent(mContext, ListWithCategoryActivity.class);
+                            Bundle b = new Bundle();
+                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                            b.putLong(Constants.PARAM_SUBJECT_ID, -1);
+                            b.putLong(Constants.PARAM_DOCTOR_ID, doctorDetail.getDetail().getDoctor_id());
+                            b.putString(Constants.PARAM_TITLE, getString(R.string.case_title));
+                            b.putSerializable(Constants.PARAM_DATA, (Serializable) doctorDetail.getCaseTypeList());
+                            i.putExtras(b);
+                            mContext.startActivity(i);
+                        }
+                    });
                     break;
 
 
                 case TYPE_CASE:
                     CaseHolder caseHolder = (CaseHolder) holder;
-//                    caseHolder.caseView.setData(new Case());
+                    caseHolder.caseView.setData((Case)itemList.get(position).getContent());
                     break;
 
                 case TYPE_HEADER:
@@ -377,11 +397,22 @@ public class DoctorActivity extends BaseLoadingActivity {
 
                 case TYPE_CASE_SUBJECT:
                     SubjectHolder subjectHolder = (SubjectHolder) holder;
-                    subjects = new ArrayList<>(Arrays.asList("鼻部 23", "面部轮廓 5", "胸部 7", "鼻部 23", "面部轮廓 5", "胸部 7"));
-                    subjectHolder.flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
+                    List<String> list = new ArrayList<>();
+                    final List<Type> typeList = (List<Type>)itemList.get(position).getContent();
+                    for(Type type:typeList)
+                        list.add(type.getTypeName() + " " + type.getProduct_num());
+                    subjectHolder.flSubject.setFlowLayout(list, new FlowLayout.OnItemClickListener() {
                         @Override
-                        public void onItemClick(String content, int position) {
-                            mContext.startActivity(new Intent(mContext, ListWithCategoryActivity.class));
+                        public void onItemClick(String content, int p) {
+                            Intent i = new Intent(mContext, ListWithCategoryActivity.class);
+                            Bundle b = new Bundle();
+                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                            b.putString(Constants.PARAM_TITLE, getString(R.string.case_title));
+                            b.putLong(Constants.PARAM_DOCTOR_ID, doctorDetail.getDetail().getDoctor_id());
+                            b.putLong(Constants.PARAM_SUBJECT_ID, typeList.get(p).getTypeId());
+                            b.putSerializable(Constants.PARAM_DATA, (Serializable) typeList);
+                            i.putExtras(b);
+                            mContext.startActivity(i);
                         }
                     });
                     break;

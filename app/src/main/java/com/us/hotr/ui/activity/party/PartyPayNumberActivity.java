@@ -60,7 +60,7 @@ public class PartyPayNumberActivity extends BaseActivity {
     private void initStaticView() {
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        tvAmount = (TextView) findViewById(R.id.tv_price);
+        tvAmount = (TextView) findViewById(R.id.tv_amount);
         tvConfirm = (TextView) findViewById(R.id.tv_confirm);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -101,7 +101,7 @@ public class PartyPayNumberActivity extends BaseActivity {
                 super(view);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
                 tvSubTitle = (TextView) view.findViewById(R.id.tv_subtitle);
-                tvPrice = (TextView) view.findViewById(R.id.tv_price);
+                tvPrice = (TextView) view.findViewById(R.id.tv_amount);
                 tvNumber = (TextView) view.findViewById(R.id.tv_number);
                 tvTicket = (TextView) view.findViewById(R.id.tv_ticket);
                 ivDeduct = (ImageView) view.findViewById(R.id.iv_deduct);

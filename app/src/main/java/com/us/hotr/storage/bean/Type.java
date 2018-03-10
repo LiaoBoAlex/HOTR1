@@ -10,12 +10,12 @@ import java.io.Serializable;
 
 public class Type implements Serializable {
 
-    public Type(int typeId, String typeName){
+    public Type(long typeId, String typeName){
         this.typeName = typeName;
         this. typeId = typeId;
     }
 
-    public Type(int typeId, int num, String typeName){
+    public Type(long typeId, int num, String typeName){
         this.typeName = typeName;
         this. typeId = typeId;
         this.product_num = num;
@@ -23,8 +23,8 @@ public class Type implements Serializable {
     @SerializedName(value = "typeName", alternate = {"type_name"})
     private String typeName;
     @SerializedName(value = "typeId", alternate = {"type_id", "id"})
-    private int typeId;
-    @SerializedName(value = "product_num", alternate = {"productNum", "order_num"})
+    private long typeId;
+    @SerializedName(value = "product_num", alternate = {"productNum", "order_num", "amount"})
     private int product_num;
 
     public String getTypeName() {
@@ -35,11 +35,11 @@ public class Type implements Serializable {
         this.typeName = typeName;
     }
 
-    public int getTypeId() {
+    public long getTypeId() {
         return typeId;
     }
 
-    public void setTypeId(int typeId) {
+    public void setTypeId(long typeId) {
         this.typeId = typeId;
     }
 

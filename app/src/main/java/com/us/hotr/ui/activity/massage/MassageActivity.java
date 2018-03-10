@@ -98,7 +98,7 @@ public class MassageActivity extends BaseLoadingActivity {
         rvMasseur = (RecyclerView) findViewById(R.id.recyclerview);
         mBanner = (ImageBanner) findViewById(R.id.banner);
         tvTitle = (TextView) findViewById(R.id.tv_title);
-        tvPriceAfter = (TextView) findViewById(R.id.tv_price);
+        tvPriceAfter = (TextView) findViewById(R.id.tv_amount);
         tvPriceBefore = (TextView) findViewById(R.id.tv_price_before);
         tvAppointment = (TextView) findViewById(R.id.tv_appointment);
         tvAddress = (TextView) findViewById(R.id.tv_place);
@@ -197,7 +197,7 @@ public class MassageActivity extends BaseLoadingActivity {
                         });
                     }
                 }else {
-                    tvPriceAfter.setText(new DecimalFormat("0.00").format(result.getProduct().getShopPrice()) + "/" + result.getProduct().getServiceTime());
+                    tvPriceAfter.setText(new DecimalFormat("0.00").format(result.getProduct().getOnlinePrice()) + "/" + result.getProduct().getServiceTime());
                     ivPromo.setVisibility(View.GONE);
                     tvPurchase.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -208,7 +208,7 @@ public class MassageActivity extends BaseLoadingActivity {
                 }
                 TextPaint tp = tvPriceAfter.getPaint();
                 tp.setFakeBoldText(true);
-                tvPriceBefore.setText(String.format(getString(R.string.price), new DecimalFormat("0.00").format(result.getProduct().getOnlinePrice())));
+                tvPriceBefore.setText(String.format(getString(R.string.price), new DecimalFormat("0.00").format(result.getProduct().getShopPrice())));
                 tvPriceBefore.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
                 tvAppointment.setText(String.format(getString(R.string.massage_appointment), result.getProductOrderNum()));
                 tvAddress.setText(result.getMassage().getLandmarkName());

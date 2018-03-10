@@ -150,12 +150,12 @@
                     android:layout_marginRight="0dp"
                     android:textSize="12sp"
                     android:textColor="@color/red"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/tv_price"
-                    app:layout_constraintRight_toLeftOf="@+id/tv_price"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/tv_amount"
+                    app:layout_constraintRight_toLeftOf="@+id/tv_amount"
                     android:text="@string/money" />
 
                 <TextView
-                    android:id="@+id/tv_price"
+                    android:id="@+id/tv_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TextView"

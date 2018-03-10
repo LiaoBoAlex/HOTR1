@@ -40,6 +40,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     private RelativeLayout mFrameLayout;
 
     private InfoFragment infoFragment;
+    private ReceiptFragment receiptFragment;
 
     private int currentPage;
 
@@ -73,10 +74,11 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
         mFrameLayout.setOnClickListener(this);
 
         infoFragment = InfoFragment.newInstance();
+        receiptFragment = ReceiptFragment.newInstance();
         fragmentList = new ArrayList<Fragment>() {{
             add(HomeFragment.newInstance());
             add(FoundFragment.newInstance());
-            add(ReceiptFragment.newInstance());
+            add(receiptFragment);
             add(infoFragment);
         }};
 
@@ -126,8 +128,22 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 }
                 break;
             case R.id.tab_voucher:
-                currentPage = 2;
-                setupButton(2);
+                if(HOTRSharePreference.getInstance(getApplicationContext()).isUserLogin()) {
+                    currentPage = 2;
+                    setupButton(2);
+                }
+                else{
+                    LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                        @Override
+                        public void onLoginSuccess() {
+                            currentPage = 2;
+                            setupButton(currentPage);
+                            receiptFragment.loadData();
+                        }
+                    });
+                    Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(i);
+                }
                 break;
             case R.id.tab_info:
                 if(!HOTRSharePreference.getInstance(getApplicationContext()).isUserLogin()) {

@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,6 +52,8 @@ public class FriendListFragment extends BaseLoadingFragment {
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private MyBaseAdapter myBaseAdapter;
+    private ConstraintLayout clEmpty;
+    private TextView tvEmpty;
     private int type;
     private int totalSize = 0;
     private int currentPage = 1;
@@ -66,7 +69,7 @@ public class FriendListFragment extends BaseLoadingFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_refresh_recyclerview, container, false);
+        return inflater.inflate(R.layout.fragment_friend_list, container, false);
     }
 
     @Override
@@ -76,6 +79,8 @@ public class FriendListFragment extends BaseLoadingFragment {
         keyword = getArguments().getString(Constants.PARAM_KEYWORD);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        clEmpty = (ConstraintLayout) view.findViewById(R.id.cl_empty);
+        tvEmpty = (TextView) view.findViewById(R.id.tv_empty);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -177,10 +182,22 @@ public class FriendListFragment extends BaseLoadingFragment {
         if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
                 ||totalSize == 0) {
             enableLoadMore(false);
-            if(totalSize>0)
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
-            else
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_empty, mRecyclerView, false));
+            if(totalSize>0) {
+                View view = LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false);
+                if(type == Constants.TYPE_FAVORITE)
+                    ((TextView) view.findViewById(R.id.tv_footer)).setText(R.string.end_of_fav);
+                if(type == Constants.TYPE_FANS)
+                    ((TextView) view.findViewById(R.id.tv_footer)).setText(R.string.end_of_fan);
+                myBaseAdapter.setFooterView(view);
+            }
+            else {
+                mRecyclerView.setVisibility(View.GONE);
+                clEmpty.setVisibility(View.VISIBLE);
+                if(type == Constants.TYPE_FAVORITE)
+                    tvEmpty.setText(R.string.end_of_fav);
+                if(type == Constants.TYPE_FANS)
+                    tvEmpty.setText(R.string.end_of_fan);
+            }
         }
         else
             enableLoadMore(true);
@@ -211,20 +228,20 @@ public class FriendListFragment extends BaseLoadingFragment {
         public MyAdapter(List<User> userList) {
             this.userList = userList;
             for(int i=0;i<userList.size();i++)
-                followList.add(true);
+                followList.add(userList.get(i).getIs_attention()==1?true:false);
         }
 
         public void setItems(List<User> userList){
             this.userList = userList;
             for(int i=0;i<userList.size();i++)
-                followList.add(true);
+                followList.add(userList.get(i).getIs_attention()==1?true:false);
             notifyDataSetChanged();
         }
 
         public void addItems(List<User> userList){
             for(User h:userList) {
                 this.userList.add(h);
-                followList.add(true);
+                followList.add(h.getIs_attention()==1?true:false);
             }
             notifyDataSetChanged();
         }

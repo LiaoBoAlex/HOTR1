@@ -13,6 +13,7 @@ import com.us.hotr.util.Tools;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
+import cn.jpush.im.android.api.JMessageClient;
 import io.reactivex.observers.DisposableObserver;
 
 /**
@@ -81,6 +82,7 @@ public class LoadingSubscriber<T> extends DisposableObserver<T>{
                 if(((ApiException) e).getErrorCode() == Constants.ERROR_INVALID_SESSIONID){
                     Tools.Toast(mFragment.getActivity(), ((ApiException) e).getErrorMsg());
                     HOTRSharePreference.getInstance(mFragment.getActivity().getApplicationContext()).storeUserID("");
+                    JMessageClient.logout();
                     LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
                         @Override
                         public void onLoginSuccess() {
@@ -107,6 +109,7 @@ public class LoadingSubscriber<T> extends DisposableObserver<T>{
                 if(((ApiException) e).getErrorCode() == Constants.ERROR_INVALID_SESSIONID){
                     Tools.Toast(mFragment.getActivity(), ((ApiException) e).getErrorMsg());
                     HOTRSharePreference.getInstance(mActivity.getApplicationContext()).storeUserID("");
+                    JMessageClient.logout();
                     LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
                         @Override
                         public void onLoginSuccess() {

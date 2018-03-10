@@ -1,20 +1,149 @@
 package com.us.hotr.ui.activity.receipt;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.baidu.mapapi.model.LatLng;
+import com.us.hotr.Constants;
 import com.us.hotr.R;
-import com.us.hotr.ui.activity.BaseActivity;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.MassageReceipt;
+import com.us.hotr.storage.bean.ProductReceipt;
+import com.us.hotr.ui.activity.BaseLoadingActivity;
+import com.us.hotr.ui.activity.MapViewActivity;
+import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by Mloong on 2017/9/15.
  */
 
-public class ReceiptDetailActivity extends BaseActivity {
+public class ReceiptDetailActivity extends BaseLoadingActivity {
+    public static final int TYPE_PRODUCT_ORDER = 991;
+    public static final int TYPE_MASSAGE_ORDER = 992;
 
+    private TextView tvMarchent, tvId, tvTitle, tvAmount, tvCode, tvSubTitle, tvMap;
+    private ImageView ivCode;
+
+    private int type;
+    private long id;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        type = getIntent().getExtras().getInt(Constants.PARAM_TYPE);
+        id = getIntent().getExtras().getLong(Constants.PARAM_ID);
+        initStaticView();
+        loadData(Constants.LOAD_PAGE);
+    }
+
+    private void initStaticView(){
+        tvMarchent = (TextView) findViewById(R.id.tv_marchent);
+        tvId = (TextView) findViewById(R.id.tv_id);
+        tvTitle = (TextView) findViewById(R.id.tv_title);
+        tvAmount = (TextView) findViewById(R.id.tv_amount);
+        tvCode = (TextView) findViewById(R.id.tv_code);
+        tvSubTitle = (TextView) findViewById(R.id.tv_sub_title);
+        ivCode = (ImageView) findViewById(R.id.iv_code);
+        tvMap = (TextView) findViewById(R.id.tv_map);
+    }
+
+    @Override
+    protected void loadData(int loadType) {
+        if(type == Constants.TYPE_PRODUCT || type ==TYPE_PRODUCT_ORDER) {
+            SubscriberListener mListener = new SubscriberListener<ProductReceipt>() {
+                @Override
+                public void onNext(final ProductReceipt result) {
+                    tvMarchent.setText(result.getHospital_name());
+                    tvId.setText(getString(R.string.pay_id)+result.getOrder_code());
+                    tvTitle.setText(result.getProduct_name_usp());
+                    String money1;
+                    if(result.getPayment_type() == Constants.PRE_PAYMENT)
+                        money1 = getString(R.string.money) + new DecimalFormat("0.00").format(result.getPrepayment());
+                    else
+                        money1 = getString(R.string.money) + new DecimalFormat("0.00").format(result.getFixed_price());
+                    String money2 = getString(R.string.receipt_title);
+                    SpannableString msp = new SpannableString(money1+money2);
+                    msp.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red)), 0, money1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    tvAmount.setText(msp);
+                    tvCode.setText(getString(R.string.receipt_code)+result.getEncryption_QR_code());
+                    if(result.getPayment_type() == Constants.PRE_PAYMENT){
+                        money1 = getString(R.string.money) + new DecimalFormat("0.00").format(result.getPay_at_shop());
+                        money2 = getString(R.string.pay_at_shop1);
+                        msp = new SpannableString(money2+money1);
+                        msp.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red)), money2.length(), money2.length() + money1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        tvSubTitle.setText(msp);
+                    }else
+                        tvSubTitle.setText(getString(R.string.no_need_to_pay_at_shop));
+                    ivCode.setImageBitmap(Tools.createQRCodeBitmap(result.getEncryption_QR_code(), 100, 100));
+                    tvMap.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent i = new Intent(ReceiptDetailActivity.this, MapViewActivity.class);
+                            Bundle b= new Bundle();
+                            b.putParcelable(Constants.PARAM_DATA, new LatLng(result.getLat(),result.getLon()));
+                            b.putString(Constants.PARAM_TITLE, result.getHospital_name());
+                            b.putString(Constants.PARAM_HOSPITAL_ID, result.getAddress());
+                            i.putExtras(b);
+                            startActivity(i);
+                        }
+                    });
+
+                }
+            };
+            if(type == Constants.TYPE_PRODUCT)
+                ServiceClient.getInstance().getProductReceiptDetailbyId(new LoadingSubscriber(mListener, this),
+                        HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), id);
+            if(type == TYPE_PRODUCT_ORDER)
+                ServiceClient.getInstance().getProductReceiptDetailbyOrderId(new LoadingSubscriber(mListener, this),
+                        HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), id);
+        }
+        if(type == Constants.TYPE_MASSAGE || type ==TYPE_MASSAGE_ORDER) {
+            SubscriberListener mListener = new SubscriberListener<MassageReceipt>() {
+                @Override
+                public void onNext(final MassageReceipt result) {
+                    tvMarchent.setText(result.getMassage_name());
+                    tvId.setText(getString(R.string.pay_id)+result.getOrder_code());
+                    tvTitle.setText(result.getProduct_name_usp());
+                    String money1 = getString(R.string.money) + new DecimalFormat("0.00").format(result.getReal_payment());
+                    String money2 = getString(R.string.receipt_title);
+                    SpannableString msp = new SpannableString(money1+money2);
+                    msp.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red)), 0, money1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    tvAmount.setText(msp);
+                    tvCode.setText(getString(R.string.receipt_code)+result.getEncryption_QR_code());
+                    tvSubTitle.setText(String.format(getString(R.string.masseur3), result.getMassagist_name()));
+                    ivCode.setImageBitmap(Tools.createQRCodeBitmap(result.getEncryption_QR_code(), 100, 100));
+                    tvMap.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent i = new Intent(ReceiptDetailActivity.this, MapViewActivity.class);
+                            Bundle b= new Bundle();
+                            b.putParcelable(Constants.PARAM_DATA, new LatLng(result.getLat(),result.getLon()));
+                            b.putString(Constants.PARAM_TITLE, result.getMassage_name());
+                            b.putString(Constants.PARAM_HOSPITAL_ID, result.getAddress());
+                            i.putExtras(b);
+                            startActivity(i);
+                        }
+                    });
+                }
+            };
+            if(type == Constants.TYPE_MASSAGE)
+                ServiceClient.getInstance().getMassageReceiptDetailbyId(new LoadingSubscriber(mListener, this),
+                        HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), id);
+            if(type == TYPE_MASSAGE_ORDER)
+                ServiceClient.getInstance().getMassageReceiptDetailbyOrderId(new LoadingSubscriber(mListener, this),
+                        HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), id);
+        }
     }
 
     @Override

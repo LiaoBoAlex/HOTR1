@@ -192,6 +192,7 @@
                 app:srcCompat="@mipmap/ic_warranty" />
 
             <TextView
+                android:id="@+id/tv_promise1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -217,6 +218,7 @@
                 app:srcCompat="@mipmap/ic_warranty" />
 
             <TextView
+                android:id="@+id/tv_promise4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -242,6 +244,7 @@
                 app:srcCompat="@mipmap/ic_warranty" />
 
             <TextView
+                android:id="@+id/tv_promise3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -267,6 +270,7 @@
                 app:srcCompat="@mipmap/ic_warranty" />
 
             <TextView
+                android:id="@+id/tv_promise2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -471,7 +475,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_sub_title" />
 
         <TextView
-            android:id="@+id/tv_price"
+            android:id="@+id/tv_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
@@ -488,8 +492,8 @@
             android:text="TextView"
             android:textColor="@color/text_grey2"
             android:textSize="11sp"
-            app:layout_constraintLeft_toRightOf="@+id/tv_price"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_price"
+            app:layout_constraintLeft_toRightOf="@+id/tv_amount"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_amount"
             android:layout_marginStart="8dp" />
 
         <ImageView
@@ -525,7 +529,7 @@
 
 
     <TextView
-        android:id="@+id/textView40"
+        android:id="@+id/tv_case_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/photo_before_after"
@@ -544,8 +548,8 @@
         android:text="TextView"
         android:textSize="12sp"
         android:textColor="@color/text_grey2"
-        app:layout_constraintTop_toBottomOf="@+id/textView40"
-        app:layout_constraintLeft_toLeftOf="@+id/textView40"
+        app:layout_constraintTop_toBottomOf="@+id/tv_case_title"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_case_title"
         android:layout_marginTop="3dp" />
 
     <android.support.constraint.Guideline
@@ -582,7 +586,7 @@
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="@string/all_case"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="8dp"

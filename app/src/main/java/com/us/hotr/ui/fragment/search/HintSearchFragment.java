@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.us.hotr.Data;
 import com.us.hotr.R;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
@@ -116,8 +115,8 @@ public class HintSearchFragment extends Fragment{
 
     @Subscribe
     public void getMessage(Events.SearchKeywordHint searchKeywordHint) {
-        mAdapte = new HintAdapter(Data.getSearchHint());
-        mRecyclerView.setAdapter(mAdapte);
+//        mAdapte = new HintAdapter(Data.getSearchHint());
+//        mRecyclerView.setAdapter(mAdapte);
 
     }
 }

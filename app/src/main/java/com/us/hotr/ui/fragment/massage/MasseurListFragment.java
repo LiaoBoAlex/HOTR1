@@ -66,7 +66,7 @@ public class MasseurListFragment extends BaseLoadingFragment {
         if(SpaId<0)
             SpaId = null;
         if(SpaId!=null){
-            typeId = 0;
+            typeId = 0l;
             subjectId = null;
             cityCode = null;
         }

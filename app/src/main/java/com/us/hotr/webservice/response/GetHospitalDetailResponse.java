@@ -19,10 +19,19 @@ public class GetHospitalDetailResponse implements Serializable {
     private List<Product> productList;
     private List<Doctor> doctorList;
     private List<Case> caseList;
+    private List<Type> caseTypeList;
     private int totalProduct;
     private int totalDoctor;
     private int totalCase;
     private int is_collected;
+
+    public List<Type> getCaseTypeList() {
+        return caseTypeList;
+    }
+
+    public void setCaseTypeList(List<Type> caseTypeList) {
+        this.caseTypeList = caseTypeList;
+    }
 
     public int getIs_collected() {
         return is_collected;

@@ -2,7 +2,6 @@ package com.us.hotr.ui.fragment.massage;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,17 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.us.hotr.Constants;
-import com.us.hotr.Data;
 import com.us.hotr.R;
 import com.us.hotr.customview.MainPageAdapter;
 import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
@@ -124,6 +119,14 @@ public class MassageFragment extends BaseLoadingFragment {
 
     @Subscribe
     public void getMessage(Events.CitySelected citySelectedEvent) {
+    }
+
+    @Subscribe
+    public void getMessage(Events.TypeSelected typeSelected) {
+    }
+
+    @Subscribe
+    public void getMessage(Events.SubjectSelected subjectSelected) {
     }
 
     @Override

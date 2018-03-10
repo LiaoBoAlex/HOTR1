@@ -49,7 +49,7 @@ public class MassageView extends FrameLayout{
         tvHospital = (TextView) findViewById(R.id.tv_address);
         tvAppointment = (TextView) findViewById(R.id.tv_appointment);
         tvPriceBefore = (TextView) findViewById(R.id.tv_price_before);
-        tvPriceAfter = (TextView) findViewById(R.id.tv_price);
+        tvPriceAfter = (TextView) findViewById(R.id.tv_amount);
         ivAvatar = (ImageView) findViewById(R.id.iv_user_avatar);
         ivGo = (ImageView) findViewById(R.id.iv_go);
         ivDelete = (ImageView) findViewById(R.id.iv_delete);

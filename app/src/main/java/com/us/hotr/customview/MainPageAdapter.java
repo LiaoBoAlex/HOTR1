@@ -354,7 +354,12 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 DividerHolder dividerHolder = (DividerHolder) holder;
                 final Module dividerModule = (Module) itemList.get(position).getContent();
                 dividerHolder.mView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dividerModule.getModuleHeight()));
-                dividerHolder.mView.setBackgroundColor(Color.parseColor(dividerModule.getModuleBackgroundColor()));
+                try{
+                    dividerHolder.mView.setBackgroundColor(Color.parseColor(dividerModule.getModuleBackgroundColor()));
+                }catch (Throwable th){
+                    dividerHolder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.divider2));
+                }
+
                 break;
 
             case TYPE_AD1:
@@ -404,7 +409,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             case TYPE_CASE:
                 CaseHolder caseHolder = (CaseHolder) holder;
-//                caseHolder.caseView.setData((Case)itemList.get(position).getContent());
+                caseHolder.caseView.setData((Case)itemList.get(position).getContent());
                 break;
 
             case TYPE_MASSEUR:
@@ -504,6 +509,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         switch (content.getLinkTypeId()){
             case 1:
                 Intent i = new Intent(mContext, SelectSubjectActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.product1):title);
                 mContext.startActivity(i);
                 break;
             case 2:
@@ -540,9 +546,10 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 mContext.startActivity(i);
                 break;
             case 7:
-                i = new Intent(mContext, Hospital.class);
+                i = new Intent(mContext, ListWithSearchActivity.class);
                 b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.case_list_title):title);
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;

@@ -113,10 +113,10 @@ public class VoucherActivity extends BaseActivity {
                 titleList.set(0,String.format(getString(R.string.not_used), getVoucherCount.getVoucherCount()));
                 break;
             case VoucherListFragment.TYPE_USED:
-                titleList.set(0,String.format(getString(R.string.used), getVoucherCount.getVoucherCount()));
+                titleList.set(1,String.format(getString(R.string.used), getVoucherCount.getVoucherCount()));
                 break;
             case VoucherListFragment.TYPE_EXPIRED:
-                titleList.set(0,String.format(getString(R.string.expired), getVoucherCount.getVoucherCount()));
+                titleList.set(2,String.format(getString(R.string.expired), getVoucherCount.getVoucherCount()));
                 break;
         }
         adapter.notifyDataSetChanged();

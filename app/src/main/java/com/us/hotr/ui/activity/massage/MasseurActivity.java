@@ -132,7 +132,8 @@ public class MasseurActivity extends BaseLoadingActivity {
                 }
                 isCollected = result.getIs_collected()==1?true:false;
                 spa = result.getMassage();
-                selectedMassage = result.getProductList().get(0);
+                if(result.getProductList()!=null && result.getProductList().size()>0)
+                    selectedMassage = result.getProductList().get(0);
                 if(isCollected)
                     ivFav.setImageResource(R.mipmap.ic_fav_text_ed);
                 else

@@ -60,7 +60,7 @@ public class ListWithSearchActivity extends BaseActivity {
                 ivSearch.setVisibility(View.GONE);
                 break;
             case Constants.TYPE_CASE:
-                listFragment = new CaseListFragment().newInstance(null, true, false);
+                listFragment = new CaseListFragment().newInstance(null, true, false, -1, -1, -1);
                 break;
             case Constants.TYPE_INTERVIEW:
                 listFragment = new InterviewListFragment().newInstance();

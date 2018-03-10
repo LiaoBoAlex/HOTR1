@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Doctor;
 import com.us.hotr.storage.bean.Product;
 import com.us.hotr.ui.activity.BaseActivity;
@@ -21,6 +22,7 @@ import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.Tools;
 
 import cn.finalteam.rxgalleryfinal.RxGalleryFinal;
+import cn.finalteam.rxgalleryfinal.RxGalleryFinalApi;
 import cn.finalteam.rxgalleryfinal.imageloader.ImageLoaderType;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageRadioResultEvent;
@@ -37,6 +39,7 @@ public class UploadCompareActivity1 extends BaseActivity {
 
     private Product selectedProduct;
     private Doctor selectedDoctor;
+    private String photoBeforeFilePath, photoAfterFilePath;
     @Override
     protected int getLayout() {
         return R.layout.activity_upload_compare1;
@@ -68,7 +71,29 @@ public class UploadCompareActivity1 extends BaseActivity {
         tvNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(UploadCompareActivity1.this, UploadCompareActivity2.class));
+                if(selectedProduct == null)
+                    Tools.Toast(UploadCompareActivity1.this, getString(R.string.choose_product));
+                else if(selectedDoctor == null)
+                    Tools.Toast(UploadCompareActivity1.this, getString(R.string.choose_doctor));
+                else{
+                    Case aCase = new Case();
+                    aCase.setProductId(selectedProduct.getProductId());
+                    aCase.setProductName(selectedProduct.getProduct_name());
+                    aCase.setDoctorId(selectedDoctor.getDoctor_id());
+                    aCase.setDoctorName(selectedDoctor.getDoctor_name());
+                    aCase.setHospitalId(selectedProduct.getHospital_id());
+                    aCase.setHospitalName(selectedProduct.getHospital_name());
+                    aCase.setProjectId(selectedProduct.getProject_id());
+                    aCase.setProjectName(selectedProduct.getProject_name());
+                    aCase.setContrastPhotoTitle(selectedProduct.getProduct_name()+getString(R.string.photo_before_after));
+                    aCase.setFilePathBefore(photoBeforeFilePath);
+                    aCase.setFilePathAfter(photoAfterFilePath);
+                    Intent i = new Intent(UploadCompareActivity1.this, UploadCompareActivity2.class);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, aCase);
+                    i.putExtras(b);
+                    startActivity(i);
+                }
             }
         });
 
@@ -91,8 +116,7 @@ public class UploadCompareActivity1 extends BaseActivity {
                 Bundle b = new Bundle();
                 b.putString(Constants.PARAM_TITLE, getString(R.string.choose_doctor_title));
                 b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MY_DOCTOR);
-//                b.putLong(Constants.PARAM_HOSPITAL_ID, selectedProduct.getHospital_id());
-                b.putLong(Constants.PARAM_HOSPITAL_ID, 10022);
+                b.putLong(Constants.PARAM_HOSPITAL_ID, selectedProduct.getHospital_id());
                 i.putExtras(b);
                 startActivityForResult(i, 1);
             }
@@ -128,6 +152,7 @@ public class UploadCompareActivity1 extends BaseActivity {
                         .subscribe(new RxBusResultDisposable<ImageRadioResultEvent>() {
                             @Override
                             protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
+                                photoBeforeFilePath = imageRadioResultEvent.getResult().getOriginalPath();
                                 Bitmap bitmap = Tools.decodeFile(imageRadioResultEvent.getResult().getOriginalPath(), ivBefore.getWidth(), ivBefore.getHeight());
                                 ivBefore.setScaleType(ImageView.ScaleType.CENTER_CROP);
                                 ivBefore.setImageBitmap(bitmap);
@@ -135,6 +160,7 @@ public class UploadCompareActivity1 extends BaseActivity {
                             }
                         })
                         .openGallery();
+                RxGalleryFinalApi.setImgSaveRxSDCard("HOTR");
             }
         });
 
@@ -150,6 +176,7 @@ public class UploadCompareActivity1 extends BaseActivity {
                         .subscribe(new RxBusResultDisposable<ImageRadioResultEvent>() {
                             @Override
                             protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
+                                photoAfterFilePath = imageRadioResultEvent.getResult().getOriginalPath();
                                 Bitmap bitmap = Tools.decodeFile(imageRadioResultEvent.getResult().getOriginalPath(), ivAfter.getWidth(), ivAfter.getHeight());
                                 ivAfter.setScaleType(ImageView.ScaleType.CENTER_CROP);
                                 ivAfter.setImageBitmap(bitmap);
@@ -157,6 +184,7 @@ public class UploadCompareActivity1 extends BaseActivity {
                             }
                         })
                         .openGallery();
+                RxGalleryFinalApi.setImgSaveRxSDCard("HOTR");
             }
         });
     }
@@ -188,10 +216,9 @@ public class UploadCompareActivity1 extends BaseActivity {
         if(requestCode == 0){
             if(resultCode == RESULT_OK){
                 selectedProduct = (Product) data.getExtras().getSerializable(Constants.PARAM_DATA);
-                tvProduct.setText(selectedProduct.getProduct_name());
+                tvProduct.setText(getString(R.string.bracket_left)+selectedProduct.getProduct_name()+getString(R.string.bracket_right)+selectedProduct.getProduct_usp());
                 selectedDoctor = new Doctor();
-//                selectedDoctor.setDoctor_id(selectedProduct.getDoctor_id());
-                selectedDoctor.setDoctor_id(53);
+                selectedDoctor.setDoctor_id(selectedProduct.getDoctor_id());
                 selectedDoctor.setDoctor_name(selectedProduct.getDoctor_name());
                 tvDoctor.setText(selectedDoctor.getDoctor_name());
             }

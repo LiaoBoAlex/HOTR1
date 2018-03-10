@@ -99,7 +99,7 @@ public class ProductActivity extends BaseLoadingActivity {
         ivHospitalAvatar = (ImageView) findViewById(R.id.iv_hospital_avatar);
         ivFav = (ImageView) findViewById(R.id.iv_fav);
         tvTitle = (TextView) findViewById(R.id.tv_title);
-        tvPriceAfter = (TextView) findViewById(R.id.tv_price);
+        tvPriceAfter = (TextView) findViewById(R.id.tv_amount);
         tvPriceBefore = (TextView) findViewById(R.id.tv_price_before);
         tvAppointment = (TextView) findViewById(R.id.tv_appointment);
         tvPromiseList.add((TextView) findViewById(R.id.tv_promise1));
@@ -348,7 +348,7 @@ public class ProductActivity extends BaseLoadingActivity {
 
                 fragmentList = new ArrayList<Fragment>() {{
                     add(ProductIntroFragment.newInstance(result));
-                    add(CaseListFragment.newInstance(null, false, false));
+                    add(CaseListFragment.newInstance(null, false, false, 2, productId, -1));
                     add(ProductHospitalFragment.newInstance(result));
                 }};
 

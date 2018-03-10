@@ -79,7 +79,7 @@ public class GroupDetailFragment extends BaseLoadingFragment {
                 }
             };
             ServiceClient.getInstance().getPostByGroup(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                    mGroup.getId(), 1, Constants.MAX_PAGE_ITEM, currentPage,
+                    mGroup.getId(), 1l, Constants.MAX_PAGE_ITEM, currentPage,
                     HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
         }else{
             currentPage = 1;
@@ -91,15 +91,15 @@ public class GroupDetailFragment extends BaseLoadingFragment {
             };
             if(loadType == Constants.LOAD_PAGE)
                 ServiceClient.getInstance().getPostByGroup(new LoadingSubscriber(mListener, this),
-                        mGroup.getId(), 1, Constants.MAX_PAGE_ITEM, currentPage,
+                        mGroup.getId(), 1l, Constants.MAX_PAGE_ITEM, currentPage,
                         HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
             else if (loadType == Constants.LOAD_DIALOG)
                 ServiceClient.getInstance().getPostByGroup(new ProgressSubscriber(mListener, getContext()),
-                        mGroup.getId(), 1, Constants.MAX_PAGE_ITEM, currentPage,
+                        mGroup.getId(), 1l, Constants.MAX_PAGE_ITEM, currentPage,
                         HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
             else if (loadType == Constants.LOAD_PULL_REFRESH)
                 ServiceClient.getInstance().getPostByGroup(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                        mGroup.getId(), 1, Constants.MAX_PAGE_ITEM, currentPage,
+                        mGroup.getId(), 1l, Constants.MAX_PAGE_ITEM, currentPage,
                         HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
         }
     }

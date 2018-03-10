@@ -271,7 +271,7 @@ public class ProductOrder implements Serializable {
         this.product_name_usp = product_name_usp;
     }
 
-    public class Promise{
+    public class Promise implements Serializable{
         private String promise_title;
 
         public String getPromise_title() {

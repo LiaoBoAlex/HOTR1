@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,19 +16,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.baidu.mapapi.model.LatLng;
 import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.storage.bean.MassageOrder;
 import com.us.hotr.storage.bean.PartyOrder;
 import com.us.hotr.storage.bean.Ticket;
-import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
-import com.us.hotr.ui.activity.MapViewActivity;
+import com.us.hotr.ui.activity.PayOrderActivity;
 import com.us.hotr.ui.activity.party.PartyActivity;
-import com.us.hotr.ui.activity.party.PartyOrderActivity;
+import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.util.Tools;
@@ -40,7 +36,6 @@ import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -131,29 +126,39 @@ public class PartyOrderDetailActivity extends BaseLoadingActivity {
             tvBuyAgain.setVisibility(View.VISIBLE);
             tvBuyNow.setVisibility(View.GONE);
             tvBuyAgain.setVisibility(View.GONE);
-            tvBuyAgain.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(PartyOrderDetailActivity.this, PartyActivity.class);
-                    Bundle b = new Bundle();
-                    b.putLong(Constants.PARAM_ID, result.getOrder().getTravel_id());
-                    i.putExtras(b);
-                    startActivity(i);
-                }
-            });
-            tvBuyNow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
+//            tvBuyAgain.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Intent i = new Intent(PartyOrderDetailActivity.this, PartyActivity.class);
+//                    Bundle b = new Bundle();
+//                    b.putLong(Constants.PARAM_ID, result.getOrder().getTravel_id());
+//                    i.putExtras(b);
+//                    startActivity(i);
+//                }
+//            });
+//            tvBuyNow.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Intent i = new Intent(PartyOrderDetailActivity.this, ReceiptDetailActivity.class);
+//                    Bundle b = new Bundle();
+//                    b.putSerializable(Constants.PARAM_DATA, result.getOrder().getId());
+//                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
+//                    i.putExtras(b);
+//                    startActivity(i);
+//                }
+//            });
         }else{
             tvBuyAgain.setVisibility(View.GONE);
             tvBuyNow.setText(R.string.pay);
             tvBuyNow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent i = new Intent(PartyOrderDetailActivity.this, PayOrderActivity.class);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, result.getOrder());
+                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PARTY);
+                    i.putExtras(b);
+                    startActivity(i);
                 }
             });
         }
@@ -253,8 +258,8 @@ public class PartyOrderDetailActivity extends BaseLoadingActivity {
             public MyViewHolder(View view){
                 super(view);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvAmount = (TextView) view.findViewById(R.id.tv_amount);
-                tvTotal = (TextView) view.findViewById(R.id.tv_price);
+                tvAmount = (TextView) view.findViewById(R.id.tv_number);
+                tvTotal = (TextView) view.findViewById(R.id.tv_amount);
             }
         }
 

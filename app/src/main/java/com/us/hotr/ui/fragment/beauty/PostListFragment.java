@@ -56,7 +56,7 @@ public class PostListFragment extends BaseLoadingFragment{
         b.putString(Constants.PARAM_KEYWORD, keyword);
         b.putInt(Constants.PARAM_IS_FAV, type);
         b.putLong(Constants.PARAM_ID, groupId);
-        b.putInt(Constants.PARAM_TYPE, typeId);
+        b.putLong(Constants.PARAM_TYPE, typeId);
         postListFragment.setArguments(b);
         return postListFragment;
     }
@@ -82,7 +82,7 @@ public class PostListFragment extends BaseLoadingFragment{
         enableRefresh = getArguments().getBoolean(Constants.PARAM_ENABLE_REFRESH);
         keyword = getArguments().getString(Constants.PARAM_KEYWORD);
         subjectId = getArguments().getLong(Constants.PARAM_ID);
-        typeId = getArguments().getInt(Constants.PARAM_TYPE);
+        typeId = getArguments().getLong(Constants.PARAM_TYPE);
         type = getArguments().getInt(Constants.PARAM_IS_FAV);
         if(userId>0)
             enableRefresh = false;
@@ -146,6 +146,22 @@ public class PostListFragment extends BaseLoadingFragment{
                         HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
                         String.valueOf(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude()),
                         String.valueOf(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude()));
+        }else if(type == Constants.TYPE_SEARCH_POST) {
+            if (loadType == Constants.LOAD_MORE) {
+                ServiceClient.getInstance().getAllPost(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM, keyword);
+            } else {
+                currentPage = 1;
+                if (loadType == Constants.LOAD_PAGE)
+                    ServiceClient.getInstance().getAllPost(new LoadingSubscriber(mListener, this),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM, keyword);
+                else if (loadType == Constants.LOAD_DIALOG)
+                    ServiceClient.getInstance().getAllPost(new ProgressSubscriber(mListener, getContext()),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM, keyword);
+                else if (loadType == Constants.LOAD_PULL_REFRESH)
+                    ServiceClient.getInstance().getAllPost(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM, keyword);
+            }
         }else{
             if (loadType == Constants.LOAD_MORE) {
                 ServiceClient.getInstance().getPostByGroup(new SilentSubscriber(mListener, getActivity(), refreshLayout),
@@ -227,6 +243,10 @@ public class PostListFragment extends BaseLoadingFragment{
                                 mAdapter.notifyItemRemoved(i);
                                 mAdapter.notifyItemRangeChanged(0, mAdapter.postList.size());
                             }
+                        }
+                        if (mAdapter.checkList.size() == 0) {
+                            Events.GetSearchCount event = new Events.GetSearchCount(0);
+                            GlobalBus.getBus().post(event);
                         }
                     }
                 };

@@ -25,7 +25,7 @@ public abstract class BaseLoadingFragment extends BaseFragment {
     protected RefreshLayout refreshLayout;
     protected Long cityCode = null;
     protected Long subjectId = null;
-    protected Integer typeId = null;
+    protected Long typeId = null;
     protected String keyword = null;
 
     @Override
@@ -127,7 +127,6 @@ public abstract class BaseLoadingFragment extends BaseFragment {
     public void getMessage(Events.TypeSelected typeSelected) {
         typeId = typeSelected.getTypeId();
         loadData(Constants.LOAD_DIALOG);
-
     }
 
     protected abstract void loadData(final int type);

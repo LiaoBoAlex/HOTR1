@@ -23,6 +23,7 @@ import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Post;
+import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
 import com.us.hotr.ui.view.CaseView;
 import com.us.hotr.util.Tools;
@@ -54,13 +55,19 @@ public class CaseListFragment extends BaseLoadingFragment {
     private boolean isLoaded = false;
     private long userId = -1;
     private boolean isFav = false;
+    private int catagory = 0;
+    private long id;
+    private Long subjectId;
 
-    public static CaseListFragment newInstance(String keyword, boolean enableRefresh, boolean isFav) {
+    public static CaseListFragment newInstance(String keyword, boolean enableRefresh, boolean isFav, int catagory, long id, long subjectId) {
         CaseListFragment caseListFragment = new CaseListFragment();
         Bundle b = new Bundle();
         b.putBoolean(Constants.PARAM_ENABLE_REFRESH, enableRefresh);
         b.putString(Constants.PARAM_KEYWORD, keyword);
         b.putBoolean(Constants.PARAM_IS_FAV, isFav);
+        b.putInt(Constants.PARAM_CATEGORY, catagory);
+        b.putLong(Constants.PARAM_ID, id);
+        b.putLong(Constants.PARAM_SUBJECT_ID, subjectId);
         caseListFragment.setArguments(b);
         return caseListFragment;
     }
@@ -85,8 +92,13 @@ public class CaseListFragment extends BaseLoadingFragment {
         isFav = getArguments().getBoolean(Constants.PARAM_IS_FAV);
         enableRefresh = getArguments().getBoolean(Constants.PARAM_ENABLE_REFRESH);
         keyword = getArguments().getString(Constants.PARAM_KEYWORD);
+        catagory = getArguments().getInt(Constants.PARAM_CATEGORY);
+        subjectId = getArguments().getLong(Constants.PARAM_SUBJECT_ID, -1);
+        id = getArguments().getLong(Constants.PARAM_ID);
         if(userId>0)
             enableRefresh = false;
+        if(subjectId < 0)
+            subjectId = null;
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -130,21 +142,42 @@ public class CaseListFragment extends BaseLoadingFragment {
             else if (loadType == Constants.LOAD_PULL_REFRESH)
                 ServiceClient.getInstance().getCollectionCase(new SilentSubscriber(mListener, getActivity(), refreshLayout),
                         HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+        }else if (catagory > 0) {
+            if (loadType == Constants.LOAD_MORE) {
+                ServiceClient.getInstance().getCaseByType(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), catagory, id, null, currentPage, Constants.MAX_PAGE_ITEM);
+            } else {
+                currentPage = 1;
+                if (loadType == Constants.LOAD_PAGE) {
+                    if (getActivity() instanceof BaseLoadingActivity)
+                        ServiceClient.getInstance().getCaseByType(new LoadingSubscriber(mListener, (BaseLoadingActivity) getActivity()),
+                                HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), catagory, id, subjectId, currentPage, Constants.MAX_PAGE_ITEM);
+                    else
+                        ServiceClient.getInstance().getCaseByType(new LoadingSubscriber(mListener, this),
+                                HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), catagory, id, subjectId, currentPage, Constants.MAX_PAGE_ITEM);
+                }
+                else if (loadType == Constants.LOAD_DIALOG)
+                    ServiceClient.getInstance().getCaseByType(new ProgressSubscriber(mListener, getContext()),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), catagory, id, subjectId, currentPage, Constants.MAX_PAGE_ITEM);
+                else if (loadType == Constants.LOAD_PULL_REFRESH)
+                    ServiceClient.getInstance().getCaseByType(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), catagory, id, subjectId, currentPage, Constants.MAX_PAGE_ITEM);
+            }
         }else {
             if (loadType == Constants.LOAD_MORE) {
                 ServiceClient.getInstance().getAllCase(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM);
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM, keyword);
             } else {
                 currentPage = 1;
                 if (loadType == Constants.LOAD_PAGE)
                     ServiceClient.getInstance().getAllCase(new LoadingSubscriber(mListener, this),
-                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM);
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM, keyword);
                 else if (loadType == Constants.LOAD_DIALOG)
                     ServiceClient.getInstance().getAllCase(new ProgressSubscriber(mListener, getContext()),
-                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM);
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM, keyword);
                 else if (loadType == Constants.LOAD_PULL_REFRESH)
                     ServiceClient.getInstance().getAllCase(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM);
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM, keyword);
             }
         }
     }
@@ -208,10 +241,14 @@ public class CaseListFragment extends BaseLoadingFragment {
                                 mAdapter.notifyItemRangeChanged(0, mAdapter.caseList.size());
                             }
                         }
+                        if (mAdapter.checkList.size() == 0) {
+                            Events.GetSearchCount event = new Events.GetSearchCount(0);
+                            GlobalBus.getBus().post(event);
+                        }
                     }
                 };
                 ServiceClient.getInstance().removeFavoriteItem(new ProgressSubscriber(mListener, getActivity()),
-                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), removeIds, 8);
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), removeIds, 7);
             }
         }
     }

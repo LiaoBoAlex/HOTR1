@@ -17,6 +17,7 @@ public class MassageOrder implements Serializable {
     private double coupon_price;
     private String order_code;
     private long id;
+    @SerializedName(value = "order_product_sum", alternate = {"orderProductSum"})
     private int order_product_sum;
     private String numerical_order;
     private String area_name;
@@ -25,6 +26,7 @@ public class MassageOrder implements Serializable {
     private String massage_name;
     private String order_cancel_time;
     private int order_account_type;
+    @SerializedName(value = "sum_price", alternate = {"sumPrice"})
     private double sum_price;
     private String order_create_time;
     private long massage_id;

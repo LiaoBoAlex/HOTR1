@@ -29,6 +29,7 @@ import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.UploadPostResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.finalteam.rxgalleryfinal.RxGalleryFinal;
+import cn.finalteam.rxgalleryfinal.RxGalleryFinalApi;
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import cn.finalteam.rxgalleryfinal.imageloader.ImageLoaderType;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
@@ -106,7 +108,7 @@ public class UploadPostActivity1 extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-            SubscriberListener mListener = new SubscriberListener<UploadPostResponse>() {
+            SubscriberWithFinishListener mListener = new SubscriberWithFinishListener<UploadPostResponse>() {
                 @Override
                 public void onNext(UploadPostResponse result) {
                     for(String s:list){
@@ -121,6 +123,19 @@ public class UploadPostActivity1 extends BaseActivity {
                     i.putExtras(b);
                     startActivity(i);
                     finish();
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    for(String s:list){
+                        File file = new File(s);
+                        file.delete();
+                    }
                 }
             };
             Post post = new Post();
@@ -203,24 +218,31 @@ public class UploadPostActivity1 extends BaseActivity {
     }
 
     private void openMulti(){
-        RxGalleryFinal rxGalleryFinal = RxGalleryFinal
-                .with(UploadPostActivity1.this)
+        //        if (photoList != null && !photoList.isEmpty()) {
+//            rxGalleryFinal
+//                    .selected(photoList);
+//        }
+        int count =0;
+        if (photoList != null && !photoList.isEmpty())
+            count = photoList.size();
+
+        RxGalleryFinal.with(UploadPostActivity1.this)
                 .image()
                 .crop(false)
-                .multiple();
-        if (photoList != null && !photoList.isEmpty()) {
-            rxGalleryFinal
-                    .selected(photoList);
-        }
-        rxGalleryFinal.maxSize(9)
+                .multiple()
+                .maxSize(9-count)
                 .imageLoader(ImageLoaderType.GLIDE)
                 .subscribe(new RxBusResultDisposable<ImageMultipleResultEvent>() {
 
                     @Override
                     protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
-                        photoList = imageMultipleResultEvent.getResult();
-                        mAdapter = new MyAdapter(photoList);
-                        mRecyclerView.setAdapter(mAdapter);
+
+                        photoList.addAll(imageMultipleResultEvent.getResult());
+                        if(mAdapter==null) {
+                            mAdapter = new MyAdapter(photoList);
+                            mRecyclerView.setAdapter(mAdapter);
+                        }else
+                            mAdapter.notifyDataSetChanged();
 //                        if(photoList.size() == 9){
 //                            clBar.setVisibility(View.GONE);
 //                        }else{
@@ -234,6 +256,7 @@ public class UploadPostActivity1 extends BaseActivity {
                     }
                 })
                 .openGallery();
+        RxGalleryFinalApi.setImgSaveRxSDCard("HOTR");
     }
 
     private void validateSubmitButton(){

@@ -2,9 +2,7 @@ package com.us.hotr.storage.greendao;
 
 import android.content.Context;
 
-import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.SearchHistory;
-import com.us.hotr.storage.bean.SearchTypeResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +37,8 @@ public class DataBaseHelper {
     }
 
     public static void insertSearchHistory(String s){
+        if(s == null || s.isEmpty())
+            return;
         SearchHistoryDao dao = GreenDaoManager.getInstance(mContext).getSession().getSearchHistoryDao();
         SearchHistory sh = new SearchHistory(s);
         dao.delete(sh);

@@ -128,8 +128,12 @@ public class CaseView extends FrameLayout {
         setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                readCase();
                 Intent i = new Intent(getContext(), CaseActivity.class);
-                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                Bundle b = new Bundle();
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                b.putLong(Constants.PARAM_ID, aCase.getKey());
+                i.putExtras(b);
                 getContext().startActivity(i);
             }
         });

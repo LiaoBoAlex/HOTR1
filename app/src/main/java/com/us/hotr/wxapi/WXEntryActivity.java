@@ -53,14 +53,6 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
     //app发送消息给微信，微信返回的消息回调函数,根据不同的返回码来判断操作是否成功
     @Override
     public void onResp(BaseResp resp) {
-        if(resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX){
-            if(resp.errCode == 0){
-                Tools.Toast(this, getString(R.string.wechat_pay_success2));
-            }else{
-                Tools.Toast(this, getString(R.string.wechat_pay_fail));
-            }
-            finish();
-        }
         if (resp.transaction != null && resp.transaction.equals(Constants.SHARE_TO_WECHAT_FRIEND)) {
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_AUTH_DENIED:

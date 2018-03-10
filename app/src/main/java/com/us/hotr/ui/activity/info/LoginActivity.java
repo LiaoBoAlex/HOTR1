@@ -41,6 +41,9 @@ import com.us.hotr.webservice.response.GetWechatAccessTokenResponse;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.model.UserInfo;
+import cn.jpush.im.api.BasicCallback;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -157,7 +160,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void getMessage(Events.WechatLogin wechatLogin){
+    public void getMessage(final Events.WechatLogin wechatLogin){
+        JMessageClient.register("user" + wechatLogin.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
+            @Override
+            public void gotResult(int i, String s) {
+                if(i == 0 || i ==898001){
+                    JMessageClient.login("user" + wechatLogin.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+                            if(i == 0){
+                                UserInfo userInfo = JMessageClient.getMyInfo();
+                                userInfo.setNickname(wechatLogin.getGetLoginResponse().getUser().getNickname());
+                                JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+                                    @Override
+                                    public void gotResult(int i, String s) {
+
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
         HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(wechatLogin.getGetLoginResponse().getJsessionid());
         HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(wechatLogin.getGetLoginResponse().getUser());
         loginSuccess();

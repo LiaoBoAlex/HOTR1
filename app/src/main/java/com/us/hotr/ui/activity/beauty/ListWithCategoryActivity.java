@@ -25,12 +25,13 @@ import java.util.List;
  */
 
 public class ListWithCategoryActivity extends BaseActivity {
-    private long hospitalId = -1, doctorId = -1, spaId = -1;
+    private long hospitalId = -1, doctorId = -1, spaId = -1, subjectId = -1, productId = -1;
 
     private FlowLayout flSubject;
     private int type;
     private Fragment listFragment;
     private long selectedSubjectID = 0;
+    private List<Type> typeList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +41,12 @@ public class ListWithCategoryActivity extends BaseActivity {
         hospitalId = getIntent().getExtras().getLong(Constants.PARAM_HOSPITAL_ID, -1);
         doctorId = getIntent().getExtras().getLong(Constants.PARAM_DOCTOR_ID, -1);
         spaId = getIntent().getExtras().getLong(Constants.PARAM_SPA_ID, -1);
+        subjectId = getIntent().getExtras().getLong(Constants.PARAM_SUBJECT_ID, -1);
+        productId = getIntent().getExtras().getLong(Constants.PARAM_PRODUCT_ID, -1);
+        typeList = (List<Type>)getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
         flSubject = (FlowLayout) findViewById(R.id.fl_subject);
+        if(subjectId>=0)
+            selectedSubjectID = subjectId;
         setMyTitle(title);
         loadData();
         loadPage();
@@ -54,7 +60,12 @@ public class ListWithCategoryActivity extends BaseActivity {
     private void loadPage(){
         switch (type){
             case Constants.TYPE_CASE:
-                listFragment = new CaseListFragment().newInstance(null, true, false);
+                if(hospitalId>=0)
+                listFragment = new CaseListFragment().newInstance(null, true, false, 3, hospitalId, subjectId);
+                if(doctorId>=0)
+                    listFragment = new CaseListFragment().newInstance(null, true, false, 4, doctorId, subjectId);
+                if(productId>=0)
+                    listFragment = new CaseListFragment().newInstance(null, true, false, 2, productId, subjectId);
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
                 break;
             case Constants.TYPE_PRODUCT:
@@ -68,56 +79,63 @@ public class ListWithCategoryActivity extends BaseActivity {
     }
 
     private void loadData(){
-        SubscriberListener mListener = new SubscriberListener<List<Type>>() {
+        if(type==Constants.TYPE_CASE && typeList!=null){
+            setupPage(typeList);
+        }else {
+            SubscriberListener mListener = new SubscriberListener<List<Type>>() {
+                @Override
+                public void onNext(final List<Type> result) {
+                    if (result != null && result.size() > 0) {
+                        flSubject.setVisibility(View.VISIBLE);
+                        int count = 0;
+                        for (Type t : result)
+                            count = count + t.getProduct_num();
+                        result.add(0, new Type(-1, count, getString(R.string.all)));
+                        setupPage(result);
+                    }
+                }
+            };
+            switch (type) {
+                case Constants.TYPE_CASE:
+                    break;
+                case Constants.TYPE_PRODUCT:
+                    if (doctorId != -1)
+                        ServiceClient.getInstance().getProductTypeListByDoctor(new SilentSubscriber(mListener, this, null), doctorId);
+                    if (hospitalId != -1)
+                        ServiceClient.getInstance().getProductTypeListByHospital(new SilentSubscriber(mListener, this, null), hospitalId);
+                    break;
+                case Constants.TYPE_MASSAGE:
+                    ServiceClient.getInstance().getMassageTypeListBySpa(new SilentSubscriber(mListener, this, null), spaId);
+                    break;
+            }
+        }
+    }
+    private void setupPage(final List<Type> result){
+        List<String> subjects = new ArrayList<>();
+        int index = 0;
+        for(int i=0;i<result.size();i++) {
+            subjects.add(result.get(i).getTypeName() + " " + result.get(i).getProduct_num());
+            if(selectedSubjectID == result.get(i).getTypeId())
+                index = i;
+        }
+        flSubject.setVisibility(View.VISIBLE);
+        flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
             @Override
-            public void onNext(final List<Type> result) {
-                if(result != null && result.size()>0){
-                    flSubject.setVisibility(View.VISIBLE);
-                    int count = 0;
-                    for(Type t:result)
-                        count = count + t.getProduct_num();
-
-                    //TODO:typeId = -1 or 0?
-                    result.add(0, new Type(0, count, getString(R.string.all)));
-
-                    List<String> subjects = new ArrayList<>();
-                    for(Type t:result)
-                        subjects.add(t.getTypeName() + " " + t.getProduct_num());
-
-                    flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(String content, int position) {
-                            selectedSubjectID = result.get(position).getTypeId();
-                            loadPage();
-                            for(int i=0;i<flSubject.getTextViewList().size();i++){
-                                if(i == position){
-                                    flSubject.getTextViewList().get(i).setTextColor(getResources().getColor(R.color.white));
-                                    flSubject.getTextViewList().get(i).setBackgroundResource(R.drawable.bg_search_pressed);
-                                }else{
-                                    flSubject.getTextViewList().get(i).setTextColor(getResources().getColor(R.color.text_black));
-                                    flSubject.getTextViewList().get(i).setBackgroundResource(R.drawable.bg_search);
-                                }
-                            }
-                        }
-                    });
-                    flSubject.getTextViewList().get(0).setTextColor(getResources().getColor(R.color.white));
-                    flSubject.getTextViewList().get(0).setBackgroundResource(R.drawable.bg_search_pressed);
+            public void onItemClick(String content, int position) {
+                selectedSubjectID = result.get(position).getTypeId();
+                loadPage();
+                for(int i=0;i<flSubject.getTextViewList().size();i++){
+                    if(i == position){
+                        flSubject.getTextViewList().get(i).setTextColor(getResources().getColor(R.color.white));
+                        flSubject.getTextViewList().get(i).setBackgroundResource(R.drawable.bg_search_pressed);
+                    }else{
+                        flSubject.getTextViewList().get(i).setTextColor(getResources().getColor(R.color.text_black));
+                        flSubject.getTextViewList().get(i).setBackgroundResource(R.drawable.bg_search);
+                    }
                 }
             }
-        };
-        switch (type){
-            case Constants.TYPE_CASE:
-                break;
-            case Constants.TYPE_PRODUCT:
-                if(doctorId!=-1)
-                    ServiceClient.getInstance().getProductTypeListByDoctor(new SilentSubscriber(mListener, this, null), doctorId);
-                if(hospitalId!=-1)
-                    ServiceClient.getInstance().getProductTypeListByHospital(new SilentSubscriber(mListener, this, null), hospitalId);
-                break;
-            case Constants.TYPE_MASSAGE:
-                ServiceClient.getInstance().getMassageTypeListBySpa(new SilentSubscriber(mListener, this, null), spaId);
-                break;
-        }
-
+        });
+        flSubject.getTextViewList().get(index).setTextColor(getResources().getColor(R.color.white));
+        flSubject.getTextViewList().get(index).setBackgroundResource(R.drawable.bg_search_pressed);
     }
 }

@@ -28,6 +28,7 @@ import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
@@ -45,6 +46,7 @@ import com.us.hotr.storage.bean.Reply;
 import com.us.hotr.storage.bean.Spa;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
+import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
 import com.us.hotr.ui.dialog.CommentDialogFragment;
 import com.us.hotr.ui.view.CaseDetailView;
@@ -66,6 +68,7 @@ import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +79,7 @@ import java.util.List;
  */
 
 public class CaseActivity extends BaseLoadingActivity {
-
+    public static final String PARAM_IS_NEW = "PARAM_IS_NEW";
     private int PRODUCT_OFFSET;
 
     private RecyclerView mRecyclerView;
@@ -89,7 +92,7 @@ public class CaseActivity extends BaseLoadingActivity {
     private long id;
     private boolean isBannerShown = false;
     private int offset = 0;
-    private boolean isFav;
+    private boolean isFav, isNew = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,9 +100,12 @@ public class CaseActivity extends BaseLoadingActivity {
         type = getIntent().getExtras().getInt(Constants.PARAM_TYPE);
         if(type == Constants.TYPE_POST)
             setMyTitle(R.string.content_title);
-        else
+        else {
             setMyTitle(R.string.compare_title);
+            ivShare.setVisibility(View.GONE);
+        }
         id = getIntent().getExtras().getLong(Constants.PARAM_ID);
+        isNew = getIntent().getExtras().getBoolean(PARAM_IS_NEW, false);
         PRODUCT_OFFSET = (int)Tools.dpToPx(this, 365);
         initStaticView();
         loadData(Constants.LOAD_PAGE);
@@ -225,7 +231,7 @@ public class CaseActivity extends BaseLoadingActivity {
         clBanner = (ConstraintLayout) findViewById(R.id.cl_banner);
         ivFav = (ImageView) findViewById(R.id.iv_fav);
         tvTitle = (TextView) findViewById(R.id.tv_title);
-        tvPrice = (TextView) findViewById(R.id.tv_price);
+        tvPrice = (TextView) findViewById(R.id.tv_amount);
         tvPriceBefore = (TextView) findViewById(R.id.tv_price_before);
         ivAvatar = (ImageView) findViewById(R.id.iv_user_avatar);
 
@@ -489,6 +495,16 @@ public class CaseActivity extends BaseLoadingActivity {
             clBanner.startAnimation(animOut);
         }
         clBanner.setAlpha(0.94F);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(type == Constants.TYPE_CASE && isNew){
+            Intent intent = new Intent(CaseActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }else
+            super.onBackPressed();
     }
 
     public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

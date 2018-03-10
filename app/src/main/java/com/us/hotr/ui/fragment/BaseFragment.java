@@ -16,7 +16,7 @@ import com.us.hotr.R;
 public class BaseFragment extends Fragment {
 
     private TextView tvTitle;
-    private ImageView ivBack;
+    protected ImageView ivBack;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {

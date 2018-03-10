@@ -21,6 +21,8 @@ import com.us.hotr.util.DataCleanManager;
 import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.util.Tools;
 
+import cn.jpush.im.android.api.JMessageClient;
+
 /**
  * Created by Mloong on 2017/10/10.
  */
@@ -119,6 +121,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 alertDialogBuilder.setPositiveButton(getString(R.string.yes),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                JMessageClient.logout();
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeUserID("");
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(null);
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeDefaultAddress(null);

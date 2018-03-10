@@ -10,7 +10,7 @@ public class WechatBill implements Serializable {
     private String appid;
     private String partnerid;
     private String prepayid;
-    private String Package;
+    private String packages;
     private String noncestr;
     private String timestamp;
     private String sign;
@@ -39,12 +39,12 @@ public class WechatBill implements Serializable {
         this.prepayid = prepayid;
     }
 
-    public String getPackage() {
-        return Package;
+    public String getPackages() {
+        return packages;
     }
 
-    public void setPackage(String aPackage) {
-        Package = aPackage;
+    public void setPackages(String packages) {
+        this.packages = packages;
     }
 
     public String getNoncestr() {

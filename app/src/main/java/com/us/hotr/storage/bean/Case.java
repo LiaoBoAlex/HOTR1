@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 public class Case implements Serializable {
     @SerializedName(value = "key", alternate = {"id"})
-    private long key;
+    private Long key;
     @SerializedName(value = "contrastPhotoTitle", alternate = {"contrast_photo_title"})
     private String contrastPhotoTitle;
     @SerializedName(value = "beforeOperationPhoto", alternate = {"before_operation_photo"})
@@ -38,19 +38,37 @@ public class Case implements Serializable {
     @SerializedName(value = "productName", alternate = {"product_name"})
     private String productName;
     @SerializedName(value = "userId", alternate = {"user_id"})
-    private long userId;
+    private Long userId;
     @SerializedName(value = "commentCnt", alternate = {"comment_cnt"})
-    private int commentCnt;
+    private Integer commentCnt;
     @SerializedName(value = "readCnt", alternate = {"read_cnt"})
-    private int readCnt;
+    private Integer readCnt;
     @SerializedName(value = "likeCnt", alternate = {"like_cnt"})
-    private int likeCnt;
+    private Integer likeCnt;
     @SerializedName(value = "isComment", alternate = {"is_comment"})
-    private int isComment;
-    private int is_like;
+    private Integer isComment;
+    private Integer is_like;
     private String nick_name;
     private String head_portrait;
-    private int is_attention;
+    private Integer is_attention;
+    private String filePathBefore;
+    private String filePathAfter;
+
+    public String getFilePathBefore() {
+        return filePathBefore;
+    }
+
+    public void setFilePathBefore(String filePathBefore) {
+        this.filePathBefore = filePathBefore;
+    }
+
+    public String getFilePathAfter() {
+        return filePathAfter;
+    }
+
+    public void setFilePathAfter(String filePathAfter) {
+        this.filePathAfter = filePathAfter;
+    }
 
     public int getIs_like() {
         return is_like;

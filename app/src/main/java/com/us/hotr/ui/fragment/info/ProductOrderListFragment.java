@@ -21,6 +21,8 @@ import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.ProductOrder;
+import com.us.hotr.ui.activity.PayNumberActivity;
+import com.us.hotr.ui.activity.PayOrderActivity;
 import com.us.hotr.ui.activity.beauty.ProductActivity;
 import com.us.hotr.ui.activity.info.ProductOrderDetailActivity;
 import com.us.hotr.ui.dialog.CancelOrderDialogFragment;
@@ -202,7 +204,7 @@ public class ProductOrderListFragment extends BaseLoadingFragment {
                 tvTime = (TextView) view.findViewById(R.id.tv_info);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
                 tvSubTitle = (TextView) view.findViewById(R.id.tv_sub_title);
-                tvPrice = (TextView) view.findViewById(R.id.tv_price);
+                tvPrice = (TextView) view.findViewById(R.id.tv_amount);
                 tvMoney = (TextView) view.findViewById(R.id.tv_money);
                 ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
             }
@@ -264,7 +266,12 @@ public class ProductOrderListFragment extends BaseLoadingFragment {
                     holder.tvBuy.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
+                            Intent i = new Intent(getActivity(), PayOrderActivity.class);
+                            Bundle b = new Bundle();
+                            b.putSerializable(Constants.PARAM_DATA, order);
+                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
+                            i.putExtras(b);
+                            startActivity(i);
                         }
                     });
                     break;

@@ -18,10 +18,14 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.ProductOrder;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MapViewActivity;
+import com.us.hotr.ui.activity.PayOrderActivity;
+import com.us.hotr.ui.activity.beauty.ProductActivity;
 import com.us.hotr.ui.activity.massage.MassageActivity;
+import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.webservice.ServiceClient;
@@ -127,9 +131,9 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
             tvBuyAgain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(ProductOrderDetailActivity.this, MassageActivity.class);
+                    Intent i = new Intent(ProductOrderDetailActivity.this, ProductActivity.class);
                     Bundle b = new Bundle();
-                    b.putLong(Constants.PARAM_ID, result.getHospital_id());
+                    b.putLong(Constants.PARAM_ID, result.getProduct_id());
                     i.putExtras(b);
                     startActivity(i);
                 }
@@ -137,6 +141,12 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
             tvBuyNow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Intent i = new Intent(ProductOrderDetailActivity.this, ReceiptDetailActivity.class);
+                    Bundle b = new Bundle();
+                    b.putLong(Constants.PARAM_ID, result.getId());
+                    b.putInt(Constants.PARAM_TYPE, ReceiptDetailActivity.TYPE_PRODUCT_ORDER);
+                    i.putExtras(b);
+                    startActivity(i);
 
                 }
             });
@@ -146,7 +156,12 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
             tvBuyNow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent i = new Intent(ProductOrderDetailActivity.this, PayOrderActivity.class);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, result);
+                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
+                    i.putExtras(b);
+                    startActivity(i);
                 }
             });
         }

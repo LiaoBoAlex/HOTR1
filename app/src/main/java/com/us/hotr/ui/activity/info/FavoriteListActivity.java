@@ -106,7 +106,7 @@ public class FavoriteListActivity extends BaseActivity {
                 listFragment = new PostListFragment().newInstance(null, true, Constants.TYPE_FAVORITE_POST, -1, -1);
                 break;
             case Constants.TYPE_CASE:
-                listFragment = new CaseListFragment().newInstance(null, true, true);
+                listFragment = new CaseListFragment().newInstance(null, true, true, -1 ,-1, -1);
                 break;
             case Constants.TYPE_PRODUCT:
                 listFragment = new ProductListFragment().newInstance(null, true, Constants.TYPE_FAVORITE, -1, -1, -1,-1);

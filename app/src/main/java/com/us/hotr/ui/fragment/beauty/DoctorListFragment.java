@@ -79,7 +79,7 @@ public class DoctorListFragment extends BaseLoadingFragment {
         if(hospitalId<=0)
             hospitalId = null;
         if(hospitalId!=null){
-            typeId = 5;
+            typeId = 5l;
             subjectId = null;
             cityCode = null;
         }

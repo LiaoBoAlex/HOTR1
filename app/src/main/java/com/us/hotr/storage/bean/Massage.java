@@ -13,7 +13,7 @@ public class Massage implements Serializable {
     private long key;
     private int activityCount;
     @SerializedName(value = "activityPrice", alternate = {"activity_price"})
-    private double activityPrice;
+    private Double activityPrice;
     private String beginTime;
     private String endTime;
     //        private int massageId;

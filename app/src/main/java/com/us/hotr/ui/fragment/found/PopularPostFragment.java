@@ -14,6 +14,7 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MainPageAdapter;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.eventbus.Events;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Module;
 import com.us.hotr.storage.bean.Post;
@@ -25,6 +26,8 @@ import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
@@ -80,7 +83,7 @@ public class PopularPostFragment extends BaseLoadingFragment {
                 }
             };
             ServiceClient.getInstance().getAllPost(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM);
+                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), currentPage, Constants.MAX_PAGE_ITEM, keyword);
         } else {
             currentPage = 1;
             mListener = new SubscriberListener<GetHomePageResponse>() {
@@ -89,7 +92,7 @@ public class PopularPostFragment extends BaseLoadingFragment {
                     updateList(result);
                 }
             };
-            Long userId = null;
+            Long userId = 0l;
             if(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserInfo()!=null)
                 userId = HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserInfo().getUserId();
             if (loadType == Constants.LOAD_PAGE)
@@ -142,6 +145,10 @@ public class PopularPostFragment extends BaseLoadingFragment {
         }
         else
             enableLoadMore(true);
+    }
+
+    @Subscribe
+    public void getMessage(Events.TypeSelected typeSelected) {
     }
 
     @Override

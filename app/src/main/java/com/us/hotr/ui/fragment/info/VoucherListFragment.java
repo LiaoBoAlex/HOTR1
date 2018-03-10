@@ -49,6 +49,7 @@ public class VoucherListFragment extends BaseLoadingFragment {
 
     private int totalSize = 0;
     private int currentPage = 1;
+    private boolean isLoaded = false;
 
     private int type;
     private AvailableVoucherRequest request;
@@ -87,8 +88,19 @@ public class VoucherListFragment extends BaseLoadingFragment {
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         enableLoadMore(false);
-        enablePullDownRefresh(false);
-        loadData(Constants.LOAD_PAGE);
+        if(type == TYPE_AVAILABLE)
+            enablePullDownRefresh(false);
+        if(getUserVisibleHint() && !isLoaded){
+            loadData(Constants.LOAD_PAGE);
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isResumed() && !isLoaded) {
+            loadData(Constants.LOAD_PAGE);
+        }
     }
 
     @Override
@@ -96,6 +108,7 @@ public class VoucherListFragment extends BaseLoadingFragment {
         SubscriberListener mListener = new SubscriberListener<BaseListResponse<List<Voucher>>>() {
             @Override
             public void onNext(BaseListResponse<List<Voucher>> result) {
+                isLoaded = true;
                 Events.GetVoucherCount event = new Events.GetVoucherCount(result.getTotal(), type);
                 GlobalBus.getBus().post(event);
                 if(result!=null && result.getRows()!=null && result.getRows().size()>0){
@@ -173,7 +186,7 @@ public class VoucherListFragment extends BaseLoadingFragment {
                 super(view);
                 ivExpired = (ImageView) view.findViewById(R.id.iv_expired);
                 ivSelected = (ImageView) view.findViewById(R.id.iv_select);
-                tvTotal = (TextView) view.findViewById(R.id.tv_price);
+                tvTotal = (TextView) view.findViewById(R.id.tv_amount);
                 tvName = (TextView) view.findViewById(R.id.tv_title);
                 tvCondition = (TextView) view.findViewById(R.id.tv_condition);
                 tvTime = (TextView) view.findViewById(R.id.tv_info);
@@ -223,6 +236,7 @@ public class VoucherListFragment extends BaseLoadingFragment {
                     holder.ivExpired.setVisibility(View.VISIBLE);
                     holder.ivExpired.setImageResource(R.mipmap.ic_expired);
                     holder.ivSelected.setVisibility(View.GONE);
+                    break;
                 case TYPE_AVAILABLE:
                     holder.ivExpired.setVisibility(View.GONE);
                     holder.ivSelected.setVisibility(View.VISIBLE);

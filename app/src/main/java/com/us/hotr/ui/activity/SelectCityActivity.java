@@ -27,6 +27,7 @@ import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.fragment.HomeFragment;
 import com.us.hotr.ui.fragment.SelectCityFragment;
 import com.us.hotr.util.PermissionUtil;
+import com.us.hotr.util.Tools;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -99,11 +100,11 @@ public class SelectCityActivity extends BaseActivity {
 
         @Override
         public void onReceiveLocation(BDLocation location) {
-            HOTRSharePreference.getInstance(getApplicationContext()).storeCurrentProvinceName(location.getProvince());
-            HOTRSharePreference.getInstance(getApplicationContext()).storeCurrentCityID(location.getCityCode());
-            HOTRSharePreference.getInstance(getApplicationContext()).storeCurrrentCityName(location.getCity());
-            HOTRSharePreference.getInstance(getApplicationContext()).storeLatitude(location.getLatitude());
-            HOTRSharePreference.getInstance(getApplicationContext()).storeLongitude(location.getLongitude());
+            p.storeCurrentProvinceName(location.getProvince());
+            p.storeCurrentCityID(location.getCityCode());
+            p.storeCurrrentCityName(location.getCity());
+            p.storeLatitude(location.getLatitude());
+            p.storeLongitude(location.getLongitude());
             tvCurrentCity.setText(location.getCity());
             mLocationClient.stop();
         }
@@ -145,9 +146,9 @@ public class SelectCityActivity extends BaseActivity {
         tvCurrentCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                p.storeSelectedCityName("");
-                p.storeSelectedMassageCityID(-1);
-                p.storeSelectedProductCityID(-1);
+                p.storeSelectedCityName(p.getCurrentCityName());
+                p.storeSelectedMassageCityID(Tools.getCityCodeFromBaidu(p.getCurrentCityName()).getMassageCityCode());
+                p.storeSelectedProductCityID(Tools.getCityCodeFromBaidu(p.getCurrentCityName()).getProductCityCode());
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra(Constants.PARAM_NAME, tvCurrentCity.getText().toString().trim());
                 setResult(Activity.RESULT_OK, resultIntent);

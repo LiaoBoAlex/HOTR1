@@ -79,7 +79,7 @@ public class AllGroupActivity extends BaseLoadingActivity {
                 if(result!=null && result.size()>0) {
                     for (Theme t:result) {
                         titleList.add(t.getThemeName());
-                        fragmentList.add(GroupListFragment.newInstance(t.getKey()));
+                        fragmentList.add(GroupListFragment.newInstance(t.getKey(), null));
                         adapter = new PagerAdapter(getSupportFragmentManager(), titleList, fragmentList);
                         viewPager.setAdapter(adapter);
                         viewPager.setOffscreenPageLimit(result.size());

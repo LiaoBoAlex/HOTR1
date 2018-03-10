@@ -32,8 +32,8 @@
                 android:text="@string/mins"
                 android:textColor="@color/red"
                 android:textSize="11sp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/tv_price"
-                app:layout_constraintLeft_toRightOf="@+id/tv_price"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tv_amount"
+                app:layout_constraintLeft_toRightOf="@+id/tv_amount"
                 android:layout_marginLeft="0dp" />
 
             <com.us.hotr.customview.ShapedImageView
@@ -128,7 +128,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_sub_title" />
 
             <TextView
-                android:id="@+id/tv_price"
+                android:id="@+id/tv_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView"

@@ -18,11 +18,11 @@ import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Address;
 import com.us.hotr.storage.bean.Contact;
-import com.us.hotr.storage.bean.Party;
 import com.us.hotr.storage.bean.PartyOrder;
 import com.us.hotr.storage.bean.Ticket;
 import com.us.hotr.ui.activity.AvailableVoucherActivity;
 import com.us.hotr.ui.activity.BaseActivity;
+import com.us.hotr.ui.activity.PayNumberActivity;
 import com.us.hotr.ui.activity.PayOrderActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
@@ -103,7 +103,7 @@ public class PartyOrderActivity extends BaseActivity {
         ivAvatar = (ImageView) findViewById(R.id.iv_avatar);
         tvTitle = (TextView) findViewById(R.id.tv_title);
         tvDate = (TextView) findViewById(R.id.tv_date);
-        tvTotal = (TextView) findViewById(R.id.tv_price);
+        tvTotal = (TextView) findViewById(R.id.tv_amount);
 
         Glide.with(PartyOrderActivity.this).load(data.getTravel().getPartyDetailImg()).error(R.drawable.holder_party_order)
                 .placeholder(R.drawable.holder_party_order).into(ivAvatar);
@@ -230,7 +230,12 @@ public class PartyOrderActivity extends BaseActivity {
         SubscriberListener mListener = new SubscriberListener<PartyOrder>() {
             @Override
             public void onNext(PartyOrder result) {
-                startActivity(new Intent(PartyOrderActivity.this, PayOrderActivity.class));
+                Intent i = new Intent(PartyOrderActivity.this, PayOrderActivity.class);
+                Bundle b = new Bundle();
+                b.putSerializable(Constants.PARAM_DATA, result);
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PARTY);
+                i.putExtras(b);
+                startActivity(i);
             }
         };
         ServiceClient.getInstance().createOrderParty(new ProgressSubscriber(mListener, this),
@@ -250,7 +255,7 @@ public class PartyOrderActivity extends BaseActivity {
                 super(view);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
                 tvAmount = (TextView) view.findViewById(R.id.tv_amount);
-                tvTotal = (TextView) view.findViewById(R.id.tv_price);
+                tvTotal = (TextView) view.findViewById(R.id.tv_amount);
             }
         }
 

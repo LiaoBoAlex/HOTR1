@@ -2,6 +2,8 @@ package com.us.hotr.ui;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.baidu.mapapi.SDKInitializer;
@@ -21,11 +23,13 @@ import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 
+import cn.jpush.im.android.api.JMessageClient;
+
 /**
  * Created by Mloong on 2017/8/30.
  */
 
-public class HOTRApplication extends Application {
+public class HOTRApplication extends MultiDexApplication {
 
     private static IWXAPI iwxApi;
 
@@ -69,7 +73,17 @@ public class HOTRApplication extends Application {
 
         SDKInitializer.initialize(getApplicationContext());
 
+        JMessageClient.setDebugMode(true);
+        JMessageClient.init(getApplicationContext(), true);
+        JMessageClient.setNotificationFlag(JMessageClient.FLAG_NOTIFY_WITH_SOUND | JMessageClient.FLAG_NOTIFY_WITH_LED | JMessageClient.FLAG_NOTIFY_WITH_VIBRATE);
+        new NotificationClickEventReceiver(getApplicationContext());
+
     }
 
     public static IWXAPI getIwxApi(){return iwxApi;}
+
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 }

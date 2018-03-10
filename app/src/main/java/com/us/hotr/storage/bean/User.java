@@ -31,6 +31,33 @@ public class User implements Serializable {
     private String nickname;
     private Integer age;
     private int is_attention;
+    private int hotTopicCount;
+    private int contrastPhotoCount;
+    private String openid;
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    public int getHotTopicCount() {
+        return hotTopicCount;
+    }
+
+    public void setHotTopicCount(int hotTopicCount) {
+        this.hotTopicCount = hotTopicCount;
+    }
+
+    public int getContrastPhotoCount() {
+        return contrastPhotoCount;
+    }
+
+    public void setContrastPhotoCount(int contrastPhotoCount) {
+        this.contrastPhotoCount = contrastPhotoCount;
+    }
 
     public int getIs_attention() {
         return is_attention;

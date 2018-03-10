@@ -17,6 +17,69 @@ public class MassageReceipt implements Serializable {
     private String refund_time;
     private String massage_name;
     private int verification_state;
+    private String order_code;
+    private String product_name_usp;
+    private String encryption_QR_code;
+    private String verification_code;
+    private double lat;
+    private double lon;
+    private String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
+
+    public String getVerification_code() {
+        return verification_code;
+    }
+
+    public void setVerification_code(String verification_code) {
+        this.verification_code = verification_code;
+    }
+
+    public String getEncryption_QR_code() {
+        return encryption_QR_code;
+    }
+
+    public void setEncryption_QR_code(String encryption_QR_code) {
+        this.encryption_QR_code = encryption_QR_code;
+    }
+
+    public String getProduct_name_usp() {
+        return product_name_usp;
+    }
+
+    public void setProduct_name_usp(String product_name_usp) {
+        this.product_name_usp = product_name_usp;
+    }
+
+    public String getOrder_code() {
+        return order_code;
+    }
+
+    public void setOrder_code(String order_code) {
+        this.order_code = order_code;
+    }
 
     public String getVerification_time() {
         return verification_time;

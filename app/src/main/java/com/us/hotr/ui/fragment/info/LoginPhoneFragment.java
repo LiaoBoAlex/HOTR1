@@ -32,6 +32,10 @@ import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.model.UserInfo;
+import cn.jpush.im.api.BasicCallback;
+
 /**
  * Created by Mloong on 2017/10/13.
  */
@@ -158,7 +162,29 @@ public class LoginPhoneFragment extends Fragment {
         else {
             SubscriberListener mListener = new SubscriberListener<GetLoginResponse>() {
                 @Override
-                public void onNext(GetLoginResponse result) {
+                public void onNext(final GetLoginResponse result) {
+                    JMessageClient.register("user" + result.getUser().getUserId(), "123456", new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+                            if(i == 0 || i ==898001){
+                                JMessageClient.login("user" + result.getUser().getUserId(), "123456", new BasicCallback() {
+                                    @Override
+                                    public void gotResult(int i, String s) {
+                                        if(i == 0){
+                                            UserInfo userInfo = JMessageClient.getMyInfo();
+                                            userInfo.setNickname(result.getUser().getNickname());
+                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+                                                @Override
+                                                public void gotResult(int i, String s) {
+
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
                     HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserID(result.getJsessionid());
                     HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserInfo(result.getUser());
                     ((LoginActivity) getActivity()).loginSuccess();

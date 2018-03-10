@@ -1,5 +1,7 @@
 package com.us.hotr.storage.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -12,6 +14,7 @@ public class PartyOrder implements Serializable{
     private int order_state;
     private int purchaser_sex;
     private String addressee_name;
+    @SerializedName(value = "total_number", alternate = {"totalNumber"})
     private int total_number;
     private String order_update_time;
     private String term_of_validity;
@@ -30,6 +33,7 @@ public class PartyOrder implements Serializable{
     private String travel_end_time;
     private String cancel_time;
     private String purchaser_name;
+    @SerializedName(value = "rel_order_price", alternate = {"relOrderPrice"})
     private double rel_order_price;
     private String address;
     private String create_time;

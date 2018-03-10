@@ -41,13 +41,14 @@ public class GroupListFragment extends BaseLoadingFragment {
     private RecyclerView mRecyclerView;
     private MyGroupAdapter mAdapter;
 
-    private long themeId;
+    private Long themeId;
     private boolean isLogin;
 
-    public static GroupListFragment newInstance(long id) {
+    public static GroupListFragment newInstance(long id, String keyword) {
         GroupListFragment groupListFragment = new GroupListFragment();
         Bundle b = new Bundle();
         b.putLong(Constants.PARAM_ID, id);
+        b.putString(Constants.PARAM_DATA, keyword);
         groupListFragment.setArguments(b);
         return groupListFragment;
     }
@@ -70,7 +71,10 @@ public class GroupListFragment extends BaseLoadingFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         themeId = getArguments().getLong(Constants.PARAM_ID);
+        keyword = getArguments().getString(Constants.PARAM_DATA);
         isLogin = Tools.isUserLogin(getActivity().getApplicationContext());
+        if(themeId == -1)
+            themeId = null;
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -85,6 +89,10 @@ public class GroupListFragment extends BaseLoadingFragment {
         mListener = new SubscriberListener<List<Group>>() {
             @Override
             public void onNext(List<Group> result) {
+                if(result == null)
+                    return;
+                Events.GetSearchCount event = new Events.GetSearchCount(result.size());
+                GlobalBus.getBus().post(event);
                 mAdapter = new MyGroupAdapter(result);
                 MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
                 if(result == null ||result.size()==0)
@@ -92,15 +100,15 @@ public class GroupListFragment extends BaseLoadingFragment {
                 mRecyclerView.setAdapter(myBaseAdapter);
             }
         };
-        if (loadType == Constants.LOAD_PAGE)
-            ServiceClient.getInstance().getGroup(new LoadingSubscriber(mListener, this),
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), themeId, null);
-        else if (loadType == Constants.LOAD_DIALOG)
-            ServiceClient.getInstance().getGroup(new ProgressSubscriber(mListener, getContext()),
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), themeId, null);
-        else if (loadType == Constants.LOAD_PULL_REFRESH)
-            ServiceClient.getInstance().getGroup(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), themeId, null);
+            if (loadType == Constants.LOAD_PAGE)
+                ServiceClient.getInstance().getGroup(new LoadingSubscriber(mListener, this),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), themeId, keyword);
+            else if (loadType == Constants.LOAD_DIALOG)
+                ServiceClient.getInstance().getGroup(new ProgressSubscriber(mListener, getContext()),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), themeId, keyword);
+            else if (loadType == Constants.LOAD_PULL_REFRESH)
+                ServiceClient.getInstance().getGroup(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), themeId, keyword);
     }
 
     public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.MyViewHolder> {

@@ -2,6 +2,7 @@ package com.us.hotr.ui.activity.info;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -35,6 +36,9 @@ import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageRadioResultEvent;
 import cn.finalteam.rxgalleryfinal.ui.RxGalleryListener;
 import cn.finalteam.rxgalleryfinal.ui.base.IRadioImageCheckedListener;
+import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.model.UserInfo;
+import cn.jpush.im.api.BasicCallback;
 import id.zelory.compressor.Compressor;
 
 /**
@@ -138,20 +142,10 @@ public class EditInfoActivity extends BaseActivity {
                         new IRadioImageCheckedListener() {
                             @Override
                             public void cropAfter(Object t){
-
                                 File fromPic = (File)t;
-                                File toFile = null;
-                                try {
-                                    toFile = new Compressor(EditInfoActivity.this)
-                                            .setMaxWidth(100)
-                                            .setMaxHeight(100)
-                                            .setDestinationDirectoryPath(Tools.getZipFileName(fromPic.getName()))
-                                            .compressToFile(fromPic);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                Glide.with(EditInfoActivity.this).load(toFile.getAbsolutePath()).into(ivAvatar);
-                                avatarPath = toFile.getAbsolutePath();
+                                Bitmap bitmap = Tools.decodeFile(fromPic.getAbsolutePath(), ivAvatar.getWidth(), ivAvatar.getHeight());
+                                ivAvatar.setImageBitmap(bitmap);
+                                avatarPath = fromPic.getAbsolutePath();
                             }
                             @Override
                             public boolean isActivityFinish() {
@@ -309,6 +303,29 @@ public class EditInfoActivity extends BaseActivity {
         updateUserRequest.setOrientation(sex);
         updateUserRequest.setProvinceName(province);
         updateUserRequest.setSignature(etIntro.getText().toString().trim());
+        File toFile = null;
+        if(avatarPath!=null) {
+            File fromPic = new File(avatarPath);
+            try {
+                toFile = new Compressor(EditInfoActivity.this)
+                        .setMaxWidth(100)
+                        .setMaxHeight(100)
+                        .setDestinationDirectoryPath(Tools.getZipFileName(fromPic.getName()))
+                        .compressToFile(fromPic);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        UserInfo userInfo = JMessageClient.getMyInfo();
+        if(userInfo!=null)
+        userInfo.setNickname(etName.getText().toString().trim());
+        JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+            @Override
+            public void gotResult(int i, String s) {
+
+            }
+        });
 
         SubscriberListener mListener = new SubscriberListener<User>() {
             @Override
@@ -316,10 +333,7 @@ public class EditInfoActivity extends BaseActivity {
                 HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(result);
                 setResult(Activity.RESULT_OK);
                 if(avatarPath!=null && !avatarPath.isEmpty()) {
-                    File file = new File(avatarPath);
-                    file.delete();
-                    avatarPath = avatarPath.replace("ZIP", "crop");
-                    file = new File(avatarPath);
+                    File file = new File(avatarPath.replace("ZIP", "crop"));
                     file.delete();
                 }
                 finish();
@@ -327,7 +341,7 @@ public class EditInfoActivity extends BaseActivity {
         };
 
         ServiceClient.getInstance().updateUserDetail(new ProgressSubscriber(mListener, EditInfoActivity.this),
-                HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), avatarPath, updateUserRequest);
+                HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), toFile==null?avatarPath:toFile.getAbsolutePath(), updateUserRequest);
     }
     @Override
     protected int getLayout() {
@@ -337,5 +351,14 @@ public class EditInfoActivity extends BaseActivity {
     private void hideKeyBoard(){
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(etName.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(avatarPath!=null && !avatarPath.isEmpty()) {
+            File file = new File(avatarPath);
+            file.delete();
+        }
+        super.onBackPressed();
     }
 }

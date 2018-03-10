@@ -1,5 +1,6 @@
 package com.us.hotr.ui.activity.party;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -17,6 +18,7 @@ import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Address;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
+import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
@@ -213,17 +215,33 @@ public class DeliverAddressListActivity extends BaseLoadingActivity {
             holder.tvDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SubscriberListener mListener = new SubscriberListener<String>() {
-                        @Override
-                        public void onNext(String result) {
-                            addressList.remove(position);
-                            notifyItemRemoved(position);
-                            if(address.getDefaultAddress() == 1)
-                                HOTRSharePreference.getInstance(getApplicationContext()).storeDefaultAddress(null);
-                        }
-                    };
-                    ServiceClient.getInstance().deleteDeliveryAddress(new ProgressSubscriber(mListener, DeliverAddressListActivity.this),
-                            HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), address.getId());
+                    TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(DeliverAddressListActivity.this);
+                    alertDialogBuilder.setMessage(getString(R.string.delete_address));
+                    alertDialogBuilder.setPositiveButton(getString(R.string.yes),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    SubscriberListener mListener = new SubscriberListener<String>() {
+                                        @Override
+                                        public void onNext(String result) {
+                                            addressList.remove(position);
+                                            notifyItemRemoved(position);
+                                            if(address.getDefaultAddress() == 1)
+                                                HOTRSharePreference.getInstance(getApplicationContext()).storeDefaultAddress(null);
+                                        }
+                                    };
+                                    ServiceClient.getInstance().deleteDeliveryAddress(new ProgressSubscriber(mListener, DeliverAddressListActivity.this),
+                                            HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), address.getId());
+                                }
+                            });
+                    alertDialogBuilder.setNegativeButton(getString(R.string.no),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+
+                                }
+                            });
+                    alertDialogBuilder.create().show();
                 }
             });
             if(type == TYPE_SELECT_ADDRESS){

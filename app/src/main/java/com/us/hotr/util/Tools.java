@@ -4,21 +4,32 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.media.ExifInterface;
 import android.os.Environment;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
+import com.baidu.mapapi.http.AsyncHttpClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
@@ -28,21 +39,31 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.CityCode;
-import com.us.hotr.storage.bean.Provence;
 import com.us.hotr.storage.bean.Type;
 import com.us.hotr.storage.bean.WechatBill;
 import com.us.hotr.ui.HOTRApplication;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -507,10 +528,51 @@ public class Tools {
                 return String.format(mContext.getString(R.string.mins_ago), (calNow.getTimeInMillis()-calCreate.getTimeInMillis())/60000);
             else
                 return mContext.getString(R.string.now);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } catch (Throwable tr) {
             return "";
         }
+    }
+
+    public static String getReceiptTime(Context mContext, String date){
+        try {
+            Calendar calCreate=Calendar.getInstance();
+            calCreate.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date));
+            return String.format(mContext.getString(R.string.date3), calCreate.get(Calendar.YEAR), (calCreate.get(Calendar.MONTH)+1), calCreate.get(Calendar.DATE));
+        } catch (Throwable tr) {
+            return "";
+        }
+    }
+
+    public static String getReceiptRefundTime(Context mContext, String date){
+        try {
+            Calendar calCreate=Calendar.getInstance();
+            calCreate.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date));
+            return String.format(mContext.getString(R.string.receipt_refund_time), calCreate.get(Calendar.YEAR), (calCreate.get(Calendar.MONTH)+1), calCreate.get(Calendar.DATE));
+        } catch (Throwable th) {
+            return "";
+        }
+    }
+
+    public static String getReceiptRefundedTime(Context mContext, String date){
+        try {
+            Calendar calCreate=Calendar.getInstance();
+            calCreate.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date));
+            return String.format(mContext.getString(R.string.receipt_refunded_time), calCreate.get(Calendar.YEAR), (calCreate.get(Calendar.MONTH)+1), calCreate.get(Calendar.DATE));
+        } catch (Throwable tr) {
+            return "";
+        }
+    }
+
+    public static String getChatTime(Context mContext, long minisec){
+        Calendar c = new GregorianCalendar();
+        c.setTimeInMillis(minisec);
+        Calendar calnow=Calendar.getInstance();
+        if(calnow.get(Calendar.YEAR) == c.get(Calendar.YEAR))
+            return (c.get(Calendar.MONTH)+1) + mContext.getString(R.string.month)+c.get(Calendar.DATE) + mContext.getString(R.string.day) + " "
+            + String.format("%02d", c.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", c.get(Calendar.MINUTE));
+        else
+            return c.get(Calendar.YEAR) + mContext.getString(R.string.year) + (c.get(Calendar.MONTH)+1) + mContext.getString(R.string.month)
+                    + c.get(Calendar.DATE) + mContext.getString(R.string.day) + " " + String.format("%02d", c.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", c.get(Calendar.MINUTE));
     }
 
     public static long getOrderTimeInMinSec(String date){
@@ -522,8 +584,7 @@ public class Tools {
                 return Constants.ORDER_VALID_TIME_IN_MINISEC -(calNow.getTimeInMillis()-calCreate.getTimeInMillis());
             else
                 return 0;
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } catch (Throwable tr) {
             return 0;
         }
     }
@@ -574,4 +635,151 @@ public class Tools {
 //        return new File("/data/data/" + packageName).exists();
         return true;
     }
+
+    public static String GetNetIp()
+    {
+        URL infoUrl = null;
+        InputStream inStream = null;
+        try
+        {
+            infoUrl = new URL("http://1212.ip138.com/ic.asp");
+            URLConnection connection = infoUrl.openConnection();
+            HttpURLConnection httpConnection = (HttpURLConnection)connection;
+            int responseCode = httpConnection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK)
+            {
+                inStream = httpConnection.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"utf-8"));
+                StringBuilder strber = new StringBuilder();
+                String line = null;
+                while ((line = reader.readLine()) != null)
+                    strber.append(line + "\n");
+                inStream.close();
+                //从反馈的结果中提取出IP地址
+                int start = strber.indexOf("[");
+                int end = strber.indexOf("]", start + 1);
+                line = strber.substring(start + 1, end);
+                return line;
+            }
+        }
+        catch(MalformedURLException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static Bitmap createQRCodeBitmap(String content, int width, int height){
+        return createQRCodeBitmap(content, width, height, "UTF-8", "H", "2", Color.BLACK, Color.WHITE);
+    }
+    @Nullable
+    public static Bitmap createQRCodeBitmap(String content, int width, int height,
+                                            @Nullable String character_set, @Nullable String error_correction, @Nullable String margin,
+                                            @ColorInt int color_black, @ColorInt int color_white){
+
+        /** 1.参数合法性判断 */
+        if(TextUtils.isEmpty(content)){ // 字符串内容判空
+            return null;
+        }
+
+        if(width < 0 || height < 0){ // 宽和高都需要>=0
+            return null;
+        }
+
+        try {
+            /** 2.设置二维码相关配置,生成BitMatrix(位矩阵)对象 */
+            Hashtable<EncodeHintType, String> hints = new Hashtable<>();
+
+            if(!TextUtils.isEmpty(character_set)) {
+                hints.put(EncodeHintType.CHARACTER_SET, character_set); // 字符转码格式设置
+            }
+
+            if(!TextUtils.isEmpty(error_correction)){
+                hints.put(EncodeHintType.ERROR_CORRECTION, error_correction); // 容错级别设置
+            }
+
+            if(!TextUtils.isEmpty(margin)){
+                hints.put(EncodeHintType.MARGIN, margin); // 空白边距设置
+            }
+            BitMatrix bitMatrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, width, height, hints);
+
+            /** 3.创建像素数组,并根据BitMatrix(位矩阵)对象为数组元素赋颜色值 */
+            int[] pixels = new int[width * height];
+            for(int y = 0; y < height; y++){
+                for(int x = 0; x < width; x++){
+                    if(bitMatrix.get(x, y)){
+                        pixels[y * width + x] = color_black; // 黑色色块像素设置
+                    } else {
+                        pixels[y * width + x] = color_white; // 白色色块像素设置
+                    }
+                }
+            }
+
+            /** 4.创建Bitmap对象,根据像素数组设置Bitmap每个像素点的颜色值,之后返回Bitmap对象 */
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+            return bitmap;
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static int readPictureDegree(String path) {
+        int degree  = 0;
+        try {
+            ExifInterface exifInterface = new ExifInterface(path);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    degree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    degree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return degree;
+    }
+    /*
+     * 旋转图片
+     * @param angle
+     * @param bitmap
+     * @return Bitmap
+     */
+    public static Bitmap rotaingImageView(int angle , Bitmap bitmap) {
+        //旋转图片 动作
+        Matrix matrix = new Matrix();;
+        matrix.postRotate(angle);
+        System.out.println("angle2=" + angle);
+        // 创建新的图片
+        Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        return resizedBitmap;
+    }
+
+//    public static String convertUnicodeToUTF8(String unicode){
+//        try {
+//            return unicode.getBytes("UTF-8").toString();
+//        } catch (UnsupportedEncodingException e) {
+//            return "";
+//        }
+//    }
+//
+//    public static String convertUTF8toUnicode(String utf8){
+//        try {
+//            return new String(utf8.getBytes(), "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            return "";
+//        }
+//    }
 }

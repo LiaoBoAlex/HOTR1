@@ -90,7 +90,7 @@ public class MassageListFragment extends BaseLoadingFragment {
         if(spalId<=0)
             spalId = null;
         if(spalId!=null){
-            typeId = 5;
+            typeId = 5l;
             cityCode = null;
         }
 

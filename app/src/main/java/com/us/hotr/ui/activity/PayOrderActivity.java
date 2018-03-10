@@ -11,8 +11,20 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.MassageOrder;
+import com.us.hotr.storage.bean.PartyOrder;
+import com.us.hotr.storage.bean.ProductOrder;
+import com.us.hotr.storage.bean.WechatBill;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
+import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by Mloong on 2017/9/13.
@@ -22,14 +34,17 @@ public class PayOrderActivity extends BaseActivity {
 
     private ConstraintLayout clZfb, clWx;
     private ImageView ivZfb, ivWx;
-    private TextView tvPay, tvTitle;
+    private TextView tvPay, tvNumber, tvAmount;
 
     boolean isZfb = true;
+    int type;
+    long orderId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setMyTitle(R.string.pay_order_title);
+        type = getIntent().getExtras().getInt(Constants.PARAM_TYPE);
         initStaticView();
     }
 
@@ -44,7 +59,26 @@ public class PayOrderActivity extends BaseActivity {
         ivZfb = (ImageView) findViewById(R.id.iv_zfb);
         ivWx = (ImageView) findViewById(R.id.iv_wx);
         tvPay = (TextView) findViewById(R.id.tv_pay);
-        tvTitle = (TextView) findViewById(R.id.tb_title);
+        tvNumber = (TextView) findViewById(R.id.tv_number);
+        tvAmount = (TextView) findViewById(R.id.tv_amount);
+
+        switch (type) {
+            case Constants.TYPE_PRODUCT:
+                tvNumber.setText("x" + ((ProductOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getOrder_product_sum());
+                tvAmount.setText(getString(R.string.money)+new DecimalFormat("0.00").format(((ProductOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getSum_price()));
+                orderId = ((ProductOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getId();
+                break;
+            case Constants.TYPE_MASSAGE:
+                tvNumber.setText("x" + ((MassageOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getOrder_product_sum());
+                tvAmount.setText(getString(R.string.money)+new DecimalFormat("0.00").format(((MassageOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getSum_price()));
+                orderId = ((MassageOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getId();
+                break;
+            case Constants.TYPE_PARTY:
+                tvNumber.setText("x" + ((PartyOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getTotal_number());
+                tvAmount.setText(getString(R.string.money)+new DecimalFormat("0.00").format(((PartyOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getRel_order_price()));
+                orderId = ((PartyOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getId();
+                break;
+        }
 
         clZfb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +92,7 @@ public class PayOrderActivity extends BaseActivity {
         clWx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isZfb = true;
+                isZfb = false;
                 ivZfb.setImageResource(R.mipmap.ic_pay_click);
                 ivWx.setImageResource(R.mipmap.ic_pay_clicked);
             }
@@ -67,9 +101,25 @@ public class PayOrderActivity extends BaseActivity {
         tvPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(PayOrderActivity.this, PaySuccessActivity.class));
+                pay();
             }
         });
+    }
+
+    private void pay(){
+        if(isZfb){
+
+        }else {
+            SubscriberListener mListener = new SubscriberListener<WechatBill>() {
+                @Override
+                public void onNext(WechatBill result) {
+                    Tools.wechatPay(PayOrderActivity.this, result);
+                }
+            };
+            ServiceClient.getInstance().createWechatBill(new ProgressSubscriber(mListener, PayOrderActivity.this),
+                    HOTRSharePreference.getInstance(PayOrderActivity.this.getApplicationContext()).getUserID(), orderId, this);
+        }
+
     }
 
     @Override

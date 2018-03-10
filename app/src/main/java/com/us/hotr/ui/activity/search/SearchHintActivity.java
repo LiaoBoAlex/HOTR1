@@ -19,6 +19,7 @@ import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.ui.fragment.search.HintSearchFragment;
 import com.us.hotr.ui.fragment.search.PopularSearchFragment;
 import com.us.hotr.ui.fragment.search.TypeSearchFragment;
+import com.us.hotr.util.Tools;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -52,7 +53,7 @@ public class SearchHintActivity extends AppCompatActivity implements SearchView.
         fragmentList = new ArrayList<Fragment>() {{
             add(PopularSearchFragment.newInstance());
             add(HintSearchFragment.newInstance());
-            add(TypeSearchFragment.newInstance());
+            add(TypeSearchFragment.newInstance(""));
         }};
 
         adapter = new PagerAdapter(getSupportFragmentManager(), fragmentList);
@@ -98,9 +99,13 @@ public class SearchHintActivity extends AppCompatActivity implements SearchView.
 
     @Override
     public void onSearch(String text) {
-        viewPager.setCurrentItem(2, false);
-        Events.SearchKeywordSearch event = new Events.SearchKeywordSearch(text);
-        GlobalBus.getBus().post(event);
+        if(text.isEmpty())
+            Tools.Toast(this, getString(R.string.search_keyword));
+        else {
+            viewPager.setCurrentItem(2, false);
+            Events.SearchKeywordSearch event = new Events.SearchKeywordSearch(text);
+            GlobalBus.getBus().post(event);
+        }
 
     }
 

@@ -27,6 +27,10 @@ import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.model.UserInfo;
+import cn.jpush.im.api.BasicCallback;
+
 /**
  * Created by Mloong on 2017/10/13.
  */
@@ -119,6 +123,11 @@ public class LoginPasswordFragment extends Fragment {
             SubscriberListener mListener = new SubscriberListener<GetLoginResponse>() {
                 @Override
                 public void onNext(GetLoginResponse result) {
+                    JMessageClient.login("user" + result.getUser().getUserId(), "123456", new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+                        }
+                    });
                     HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserID(result.getJsessionid());
                     HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserInfo(result.getUser());
                     ((LoginActivity) getActivity()).loginSuccess();

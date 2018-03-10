@@ -40,7 +40,7 @@ import q.rorbin.badgeview.QBadgeView;
 
 public class InfoFragment extends BaseLoadingFragment {
     private ImageView ivAvatar, ivFav, ivFollow, ivSetting;
-    private TextView tvTitle, tvCertified, tvCompare, tvPost;
+    private TextView tvTitle, tvCertified, tvCase, tvPost;
     private TextView tvMyOrder, tvAnnouncment, tvVoucher, tvDraft, tvFav, tvFriend;
     private ConstraintLayout clMyOrder, clAnnouncment, clVoucher, clDraft, clFav, clFriend, clAddress;
     private HOTRSharePreference p;
@@ -67,7 +67,7 @@ public class InfoFragment extends BaseLoadingFragment {
         ivSetting = (ImageView) view.findViewById(R.id.iv_setting);
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
         tvCertified = (TextView) view.findViewById(R.id.tv_certified);
-        tvCompare = (TextView) view.findViewById(R.id.tv_compare);
+        tvCase = (TextView) view.findViewById(R.id.tv_case);
         tvPost = (TextView) view.findViewById(R.id.tv_post);
 
         tvMyOrder = (TextView) view.findViewById(R.id.badge_my_order);
@@ -207,6 +207,8 @@ public class InfoFragment extends BaseLoadingFragment {
         }
         tvTitle.setText(p.getUserInfo().getNickname());
         Glide.with(InfoFragment.this).load(p.getUserInfo().getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
+        tvCase.setText(p.getUserInfo().getContrastPhotoCount()+"");
+        tvPost.setText(p.getUserInfo().getHotTopicCount()+"");
     }
 
     @Override

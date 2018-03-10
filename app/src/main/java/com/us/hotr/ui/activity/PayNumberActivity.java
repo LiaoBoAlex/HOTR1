@@ -76,7 +76,7 @@ public class PayNumberActivity extends BaseActivity{
         tvTitle = (TextView) findViewById(R.id.tv_title);
         tvSubTitle = (TextView) findViewById(R.id.tv_sub_title);
         tvPayTitle = (TextView) findViewById(R.id.tv_price_title);
-        tvPayAmount = (TextView) findViewById(R.id.tv_price);
+        tvPayAmount = (TextView) findViewById(R.id.tv_amount);
         tvPayTotal = (TextView) findViewById(R.id.tv_pay_total);
         tvPayOther = (TextView) findViewById(R.id.tv_pay_other);
         tvTotal = (TextView) findViewById(R.id.tv_total);
@@ -98,8 +98,8 @@ public class PayNumberActivity extends BaseActivity{
                 price = massage.getActivityPrice();
             }
             else {
-                tvPayAmount.setText(new DecimalFormat("0.00").format(massage.getShopPrice()) + "/" + massage.getServiceTime());
-                price = massage.getShopPrice();
+                tvPayAmount.setText(new DecimalFormat("0.00").format(massage.getOnlinePrice()) + "/" + massage.getServiceTime());
+                price = massage.getOnlinePrice();
             }
         }
         if(type == Constants.TYPE_PRODUCT){
@@ -213,7 +213,12 @@ public class PayNumberActivity extends BaseActivity{
             SubscriberListener mListener = new SubscriberListener<ProductOrder>() {
                 @Override
                 public void onNext(ProductOrder result) {
-                    startActivity(new Intent(PayNumberActivity.this, PayOrderActivity.class));
+                    Intent i = new Intent(PayNumberActivity.this, PayOrderActivity.class);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, result);
+                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
+                    i.putExtras(b);
+                    startActivity(i);
                 }
             };
             ServiceClient.getInstance().createOrderProduct(new ProgressSubscriber(mListener, this),
@@ -233,8 +238,13 @@ public class PayNumberActivity extends BaseActivity{
             SubscriberListener mListener = new SubscriberListener<MassageOrder>() {
                 @Override
                 public void onNext(MassageOrder result) {
-                    startActivity(new Intent(PayNumberActivity.this, PayOrderActivity.class));
-                }
+                    Intent i = new Intent(PayNumberActivity.this, PayOrderActivity.class);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, result);
+                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                    i.putExtras(b);
+                    startActivity(i);
+            }
             };
             ServiceClient.getInstance().createOrderMassage(new ProgressSubscriber(mListener, this),
                     HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), request);

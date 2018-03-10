@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:id="@+id/tv_date"
+            android:layout_width="97dp"
+            android:layout_height="23dp"
+            android:background="@drawable/bg_button_gray"
+            android:textColor="@color/white"
+            android:text="may 1"
+            android:gravity="center"
+            android:textSize="13dp"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.us.hotr.customview.ShapedImageView
+            android:id="@+id/iv_user_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_chat"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shape_mode="circle" />
+
+        <com.us.hotr.customview.ShapedImageView
+            android:id="@+id/iv_content"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_chat"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_user_avatar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:round_radius="8dp"
+            app:shape_mode="round_rect" />
+
+        <com.us.hotr.customview.ShapedImageView
+            android:id="@+id/iv_dim"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="centerCrop"
+            android:src="@color/dim_bg1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_user_avatar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:round_radius="8dp"
+            app:shape_mode="round_rect" />
+
+        <ImageView
+            android:id="@+id/tv_content"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_chat"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_user_avatar"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/progressBar"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_marginBottom="8dp"
+            app:cpv_animAutostart="true"
+            app:cpv_color="@color/red"
+            app:cpv_indeterminate="true"
+            app:cpv_thickness="2dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_content"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dim"
+            app:layout_constraintHorizontal_bias="0.488"
+            app:layout_constraintStart_toStartOf="@+id/iv_dim"
+            app:layout_constraintTop_toTopOf="@+id/tv_content" />
+
+        <TextView
+            android:id="@+id/tv_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:text="0%"
+            android:textColor="@color/white"
+            android:textSize="12dp"
+            app:layout_constraintEnd_toEndOf="@+id/progressBar"
+            app:layout_constraintStart_toStartOf="@+id/progressBar"
+            app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+
+        <ImageView
+            android:id="@+id/iv_error"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/ic_error" />
+
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

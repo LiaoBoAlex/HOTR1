@@ -14,12 +14,21 @@ import java.util.List;
 
 public class GetDoctorDetailResponse implements Serializable {
     private Doctor detail;
-    private List<Type> typeList;
     private List<Product> productList;
     private List<Case> caseList;
+    private List<Type> typeList;
+    private List<Type> caseTypeList;
     private int totalProduct;
     private int totalCase;
     private int is_collected;
+
+    public List<Type> getCaseTypeList() {
+        return caseTypeList;
+    }
+
+    public void setCaseTypeList(List<Type> caseTypeList) {
+        this.caseTypeList = caseTypeList;
+    }
 
     public int getIs_collected() {
         return is_collected;

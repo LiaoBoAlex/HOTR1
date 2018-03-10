@@ -61,7 +61,7 @@ public class ImageBannerCrop extends BaseIndicatorBanner<String, ImageBanner> {
         if (imgUrl != null && !imgUrl.isEmpty()) {
             if(placehoderResource == 0)
                 placehoderResource = R.drawable.placeholder_banner;
-            Glide.with(mContext).load(imgUrl).placeholder(placehoderResource).error(placehoderResource).fitCenter().into(iv);
+            Glide.with(mContext).load(imgUrl).dontAnimate().placeholder(placehoderResource).error(placehoderResource).fitCenter().into(iv);
         }
         if(mListener!=null){
             iv.setOnClickListener(new OnClickListener() {

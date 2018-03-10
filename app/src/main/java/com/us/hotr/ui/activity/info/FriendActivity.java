@@ -57,6 +57,7 @@ public class FriendActivity extends BaseLoadingActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUser = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo();
+        ivShare.setVisibility(View.GONE);
         initStaticView();
         loadData(Constants.LOAD_PAGE);
     }
@@ -190,7 +191,11 @@ public class FriendActivity extends BaseLoadingActivity {
             ivMsg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    Intent i = new Intent(FriendActivity.this, ChatActivity.class);
+                    Bundle b = new Bundle();
+                    b.putLong(Constants.PARAM_DATA, mUser.getUserId());
+                    i.putExtras(b);
+                    startActivity(i);
                 }
             });
         }

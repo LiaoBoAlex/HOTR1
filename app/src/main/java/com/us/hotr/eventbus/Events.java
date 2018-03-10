@@ -54,18 +54,18 @@ public class Events {
     }
 
     public static class TypeSelected{
-        private int typeId;
+        private long typeId;
         private String type;
 
         public String getType() {
             return type;
         }
 
-        public int getTypeId() {
+        public long getTypeId() {
             return typeId;
         }
 
-        public TypeSelected(int typeId, String type){
+        public TypeSelected(long typeId, String type){
             this.typeId = typeId;
             this.type = type;
         }

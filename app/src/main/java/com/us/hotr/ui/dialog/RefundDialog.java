@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -99,10 +100,8 @@ public class RefundDialog extends Dialog{
                 }
             }
             if (negativeButtonText != null) {
-                ((TextView) layout.findViewById(R.id.tv_nagetive))
-                        .setText(negativeButtonText);
                 if (negativeButtonClickListener != null) {
-                    ((TextView) layout.findViewById(R.id.tv_nagetive))
+                    ((ImageView) layout.findViewById(R.id.iv_close))
                             .setOnClickListener(new View.OnClickListener() {
                                 public void onClick(View v) {
                                     negativeButtonClickListener.onClick(dialog,
@@ -112,7 +111,7 @@ public class RefundDialog extends Dialog{
                 }
             }
             if (message != null) {
-                ((TextView) layout.findViewById(R.id.tv_price)).setText(message);
+                ((TextView) layout.findViewById(R.id.tv_amount)).setText(message);
             }
             dialog.setContentView(layout);
             return dialog;

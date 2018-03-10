@@ -101,8 +101,7 @@ public class ProductListFragment extends BaseLoadingFragment {
         if(doctorId<=0)
             doctorId = null;
         if(hospitalId!=null || doctorId!=null){
-            typeId = 5;
-//            subjectId = null;
+            typeId = 5l;
             cityCode = null;
         }
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
@@ -129,17 +128,22 @@ public class ProductListFragment extends BaseLoadingFragment {
                 ServiceClient.getInstance().getCollectionProduct(new SilentSubscriber(mListener, getActivity(), refreshLayout),
                         HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
         }else if (type == Constants.TYPE_MY_PRODUCT) {
-//            if (loadType == Constants.LOAD_PAGE)
-//                ServiceClient.getInstance().getPurchasedProduct(new LoadingSubscriber(mListener, this),
-//                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
-//            else if (loadType == Constants.LOAD_PULL_REFRESH)
-//                ServiceClient.getInstance().getPurchasedProduct(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-//                        HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+            mListener= new SubscriberListener<List<Product>>() {
+                @Override
+                public void onNext(List<Product> result) {
+                    if(mAdapter == null)
+                        mAdapter = new MyAdapter(result);
+                    else
+                        mAdapter.setItems(result);
+                    myBaseAdapter = new MyBaseAdapter(mAdapter);
+                    mRecyclerView.setAdapter(myBaseAdapter);
+                }
+            };
             if (loadType == Constants.LOAD_PAGE)
-                ServiceClient.getInstance().getCollectionProduct(new LoadingSubscriber(mListener, this),
+                ServiceClient.getInstance().getPurchasedProduct(new LoadingSubscriber(mListener, this),
                         HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
             else if (loadType == Constants.LOAD_PULL_REFRESH)
-                ServiceClient.getInstance().getCollectionProduct(new SilentSubscriber(mListener, getActivity(), refreshLayout),
+                ServiceClient.getInstance().getPurchasedProduct(new SilentSubscriber(mListener, getActivity(), refreshLayout),
                         HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
         }else{
             if (loadType == Constants.LOAD_MORE) {

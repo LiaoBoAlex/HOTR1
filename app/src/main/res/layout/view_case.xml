@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:background="@color/white"
@@ -23,27 +24,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <View
-                android:id="@+id/view6"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="@color/divider2"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-
             <com.us.hotr.customview.ShapedImageView
-                android:scaleType="centerCrop"
                 android:id="@+id/iv_user_avatar"
-                app:shape_mode="circle"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginLeft="12dp"
-                android:layout_marginStart="12dp"
                 android:layout_marginTop="12dp"
+                android:scaleType="centerCrop"
                 android:src="@drawable/placeholder_post3"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view6" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:shape_mode="circle" />
 
             <TextView
                 android:id="@+id/tv_name"
@@ -189,17 +180,6 @@
                 app:layout_constraintRight_toLeftOf="@+id/tv_like"
                 app:layout_constraintTop_toTopOf="@+id/tv_read" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="@color/divider2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_comment"
-                app:layout_constraintVertical_bias="0.502" />
-
             <android.support.constraint.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="24dp"
@@ -271,7 +251,7 @@
         </android.support.constraint.ConstraintLayout>
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="6dp"
             android:background="@color/divider2"/>
     </LinearLayout>
 </LinearLayout>

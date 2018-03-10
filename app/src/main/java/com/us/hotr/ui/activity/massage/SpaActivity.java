@@ -66,6 +66,7 @@ public class SpaActivity extends BaseLoadingActivity {
 
         initStaticView();
         setMyTitle(R.string.spa_detail);
+        ivShare.setVisibility(View.GONE);
         loadData(Constants.LOAD_PAGE);
 
     }

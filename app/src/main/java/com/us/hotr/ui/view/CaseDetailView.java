@@ -18,12 +18,11 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.storage.bean.Case;
-import com.us.hotr.storage.bean.Post;
 import com.us.hotr.ui.activity.ImageViewerActivity;
 import com.us.hotr.ui.activity.beauty.DoctorActivity;
 import com.us.hotr.ui.activity.beauty.HospitalActivity;
 import com.us.hotr.ui.activity.beauty.ProductActivity;
+import com.us.hotr.ui.activity.beauty.SubjectActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
@@ -42,7 +41,7 @@ import java.util.List;
 
 public class CaseDetailView extends FrameLayout {
     private ImageView ivAvatar, ivProductAvatar, ivBefore, ivAfter;
-    private TextView tvName, tvInfo, tvFollow, tvHospital, tvDoctor, tvProductName, tvProductHospital, tvProductDoctor, tvAppointment,
+    private TextView tvName, tvInfo, tvFollow, tvHospital, tvDoctor, tvProductName, tvProductHospital, tvProductDoctor, tvAppointment, tvTitle,
             tvPriceBefore, tvPriceAfter, tvTime, tvContent, tvRead, tvLike, tvComment, tvSeeMore;
     private ConstraintLayout clHospital, clDoctor, clProduct, clPromise, clUser;
     private List<LinearLayout> llPromiseList = new ArrayList<>();
@@ -76,7 +75,7 @@ public class CaseDetailView extends FrameLayout {
         tvProductDoctor = (TextView) findViewById(R.id.tv_sub_title);
         tvAppointment = (TextView) findViewById(R.id.tv_appointment);
         tvPriceBefore = (TextView) findViewById(R.id.tv_price_before);
-        tvPriceAfter = (TextView) findViewById(R.id.tv_price);
+        tvPriceAfter = (TextView) findViewById(R.id.tv_amount);
         clProduct = (ConstraintLayout) findViewById(R.id.cl_product);
         clPromise = (ConstraintLayout) findViewById(R.id.cl_promise);
         tvPromiseList.add((TextView) findViewById(R.id.tv_promise1));
@@ -96,6 +95,7 @@ public class CaseDetailView extends FrameLayout {
         ivBefore = (ImageView) findViewById(R.id.iv_before);
         ivAfter = (ImageView) findViewById(R.id.iv_after);
         clUser = (ConstraintLayout) findViewById(R.id.cl_user);
+        tvTitle = (TextView) findViewById(R.id.tv_case_title);
     }
 
     public void setData(final GetCaseDetailResponse response) {
@@ -104,6 +104,7 @@ public class CaseDetailView extends FrameLayout {
         Glide.with(getContext()).load(response.getProduct().getProduct_main_img()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivProductAvatar);
         Glide.with(getContext()).load(response.getYmContrastPhoto().getBeforeOperationPhoto()).error(R.drawable.image_holder_1).placeholder(R.drawable.image_holder_1).into(ivBefore);
         Glide.with(getContext()).load(response.getYmContrastPhoto().getAfterOperationPhoto()).error(R.drawable.image_holder_1).placeholder(R.drawable.image_holder_1).into(ivAfter);
+        tvTitle.setText(response.getYmContrastPhoto().getContrastPhotoTitle());
         tvName.setText(response.getUser().getNickname());
         if (response.getUser().getGender() != null && response.getUser().getAge() != null)
             tvInfo.setText(getResources().getStringArray(R.array.gender)[response.getUser().getGender()] + " | " + String.format(getContext().getString(R.string.age_number), response.getUser().getAge()) + " | " + response.getUser().getProvince_name());
@@ -177,19 +178,14 @@ public class CaseDetailView extends FrameLayout {
         });
         for (LinearLayout l : llPromiseList)
             l.setVisibility(View.GONE);
-//        if (result.getPromiseList() != null && result.getPromiseList().size() > 0) {
-//            clPromise.setVisibility(View.VISIBLE);
-//            clPromise.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                }
-//            });
-//            for (int i = 0; i < (Math.min(4, result.getPromiseList().size())); i++) {
-//                llPromiseList.get(i).setVisibility(View.VISIBLE);
-//                tvPromiseList.get(i).setText(result.getPromiseList().get(i).getPromise_title());
-//            }
-//        } else
-//            clPromise.setVisibility(View.GONE);
+        if (response.getProduct().getPromiseList() != null && response.getProduct().getPromiseList().size() > 0) {
+            clPromise.setVisibility(View.VISIBLE);
+            for (int i = 0; i < (Math.min(4, response.getProduct().getPromiseList().size())); i++) {
+                llPromiseList.get(i).setVisibility(View.VISIBLE);
+                tvPromiseList.get(i).setText(response.getProduct().getPromiseList().get(i).getPromise_title());
+            }
+        } else
+            clPromise.setVisibility(View.GONE);
         tvTime.setText(Tools.getPostTime(getContext(), response.getYmContrastPhoto().getCreateTime()));
         tvContent.setText(response.getYmContrastPhoto().getContrastPhotoContent());
         tvRead.setText(response.getYmContrastPhoto().getReadCnt()+"");
@@ -239,6 +235,17 @@ public class CaseDetailView extends FrameLayout {
                 b.putSerializable(Constants.PARAM_DATA, (Serializable) photoes);
                 b.putInt(Constants.PARAM_ID, 1);
                 b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                i.putExtras(b);
+                getContext().startActivity(i);
+            }
+        });
+        tvSeeMore.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), SubjectActivity.class);
+                Bundle b = new Bundle();
+                b.putLong(Constants.PARAM_ID, response.getYmContrastPhoto().getProjectId());
+                b.putBoolean(SubjectActivity.PARAM_CASE, true);
                 i.putExtras(b);
                 getContext().startActivity(i);
             }

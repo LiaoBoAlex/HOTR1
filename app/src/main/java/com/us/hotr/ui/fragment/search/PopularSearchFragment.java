@@ -5,14 +5,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.us.hotr.Data;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
 import com.us.hotr.storage.HOTRSharePreference;
@@ -22,9 +20,7 @@ import com.us.hotr.ui.activity.search.SearchHintActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.BaseListResponse;
-import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
-import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import java.util.ArrayList;

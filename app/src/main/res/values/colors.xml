@@ -5,6 +5,7 @@
     <color name="colorAccent">#5ac9c2</color>
 
     <color name="red">#fb0721</color>
+    <color name="pink">#ffebea</color>
     <color name="divider">#CED2E2</color>
     <color name="divider2">#f1f1f1</color>
     <color name="divider1">#e8eae9</color>
@@ -20,8 +21,10 @@
     <color name="bg_grey2">#eaeaea</color>
     <color name="bg_dark">#282a36</color>
     <color name="dim_bg">#a0000000</color>
+    <color name="dim_bg1">#50000000</color>
     <color name="cyan">#5ac9c2</color>
     <color name="cyan1">#CD5ac9c2</color>
     <color name="blue">#006aff</color>
+    <color name="blue1">#2f87e0</color>
     <color name="black">#000000</color>
 </resources>

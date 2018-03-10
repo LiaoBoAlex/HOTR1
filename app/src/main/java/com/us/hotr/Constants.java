@@ -6,7 +6,7 @@ package com.us.hotr;
 
 public class Constants {
 
-    public static final String SERVER_URL = "http://192.168.0.125:8080/hotr-api-web/";
+    public static final String SERVER_URL = "http://101.200.170.15:8080/hotr-api-web/";
     public static final int SERVER_TIMEOUT = 30;
     public static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?";
     public static final String WECHAT_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?";
@@ -27,25 +27,29 @@ public class Constants {
     public static final String AUTONAVI_MAP_PACKAGE_NAME = "com.autonavi.minimap";
     public static final String TENCENT_MAP_PACKAGE_NAME = "com.tencent.map";
 
-    public static final int TYPE_DOCTOR = 101;
-    public static final int TYPE_CASE = 102;
-    public static final int TYPE_HOSPITAL = 103;
-    public static final int TYPE_PRODUCT = 104;
-    public static final int TYPE_SEARCH_PEOPLE = 105;
-    public static final int TYPE_MASSAGE = 106;
-    public static final int TYPE_MASSEUR = 107;
-    public static final int TYPE_SPA = 108;
-    public static final int TYPE_POST = 109;
+    public static final int TYPE_PRODUCT = 101;
+    public static final int TYPE_HOSPITAL = 102;
+    public static final int TYPE_DOCTOR = 103;
+    public static final int TYPE_MASSAGE = 104;
+    public static final int TYPE_SPA = 105;
+    public static final int TYPE_MASSEUR = 106;
+    public static final int TYPE_CASE = 107;
+    public static final int TYPE_SEARCH_POST = 108;
+    public static final int TYPE_GROUP = 109;
     public static final int TYPE_PARTY = 110;
-    public static final int TYPE_INTERVIEW = 111;
+    public static final int TYPE_SEARCH_PEOPLE = 111;
+    public static final int TYPE_INTERVIEW = 112;
+
     public static final int TYPE_MY_PRODUCT = 120;
     public static final int TYPE_MY_DOCTOR = 121;
+    public static final int TYPE_POST = 122;
     public static final int TYPE_FAVORITE = 130;
     public static final int TYPE_FANS = 131;
     public static final int TYPE_NEARBY_PEOPLE = 132;
     public static final int TYPE_OFFICIAL_POST = 140;
     public static final int TYPE_FAVORITE_POST = 141;
     public static final int TYPE_NEARBY_POST = 142;
+    public static final int TYPE_CHAT = 150;
 
     public static final String PARAM_TITLE = "PARAM_TITLE";
     public static final String PARAM_NAME = "PARAM_NAME";
@@ -58,6 +62,8 @@ public class Constants {
     public static final String PARAM_HOSPITAL_ID = "PARAM_HOSPITAL_ID";
     public static final String PARAM_DOCTOR_ID = "PARAM_DOCTOR_ID";
     public static final String PARAM_SPA_ID = "PARAM_SPA_ID";
+    public static final String PARAM_SUBJECT_ID = "PARAM_SUBJECT_ID";
+    public static final String PARAM_PRODUCT_ID = "PARAM_PRODUCT_ID";
     public static final String PARAM_MASSEUR_ID = "PARAM_MASSEUR_ID";
     public static final String PARAM_MASSAGE_ID = "PARAM_MASSAGE_ID";
     public static final String PARAM_KEYWORD = "PARAM_KEYWORD";

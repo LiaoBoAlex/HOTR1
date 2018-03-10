@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.us.hotr.Constants;
-import com.us.hotr.Data;
 import com.us.hotr.R;
 import com.us.hotr.customview.MainPageAdapter;
 import com.us.hotr.customview.MyBaseAdapter;
@@ -122,6 +121,14 @@ public class BeautyFragment extends BaseLoadingFragment {
 
     @Subscribe
     public void getMessage(Events.CitySelected citySelectedEvent) {
+    }
+
+    @Subscribe
+    public void getMessage(Events.TypeSelected typeSelected) {
+    }
+
+    @Subscribe
+    public void getMessage(Events.SubjectSelected subjectSelected) {
     }
 
     @Override

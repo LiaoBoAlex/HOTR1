@@ -45,7 +45,9 @@ import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import cn.finalteam.rxgalleryfinal.presenter.impl.MediaGridPresenterImpl;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBus;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBusDisposable;
+import cn.finalteam.rxgalleryfinal.rxbus.event.BaseResultEvent;
 import cn.finalteam.rxgalleryfinal.rxbus.event.CloseMediaViewPageFragmentEvent;
+import cn.finalteam.rxgalleryfinal.rxbus.event.ImageMultipleResultEvent;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageRadioResultEvent;
 import cn.finalteam.rxgalleryfinal.rxbus.event.MediaCheckChangeEvent;
 import cn.finalteam.rxgalleryfinal.rxbus.event.OpenMediaPageFragmentEvent;
@@ -653,7 +655,10 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
         Logger.i("openCamera：" + mImageStoreDir.getAbsolutePath());
         File fileImagePath = new File(mImageStoreDir, filename);
         mImagePath = fileImagePath.getAbsolutePath();
-
+        if(!fileImagePath.exists()){
+            File vDirPath = fileImagePath.getParentFile();
+            vDirPath.mkdirs();
+        }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagePath));
         } else {
@@ -676,6 +681,20 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
             mMediaScanner.scanFile(mImagePath, mConfiguration.isImage() ? IMAGE_TYPE : "", this);
             if(mConfiguration.isCrop())
                 cropPic(mImagePath);
+            else{
+                if(mConfiguration.isRadio()) {
+                    ImageCropBean takePhotoBean = new ImageCropBean();
+                    takePhotoBean.setOriginalPath(mImagePath);
+                    BaseResultEvent event = new ImageRadioResultEvent(takePhotoBean);
+                    RxBus.getDefault().post(event);
+                }else{
+                    MediaBean takePhotoBean = new ImageCropBean();
+                    takePhotoBean.setOriginalPath(mImagePath);
+                    BaseResultEvent event = new ImageMultipleResultEvent(new ArrayList<MediaBean>(){{add(takePhotoBean);}});
+                    RxBus.getDefault().post(event);
+                }
+                getActivity().finish();
+            }
         } else if (requestCode == 222) {
 //            Toast.makeText(getActivity(), "摄像成功", Toast.LENGTH_SHORT).show();
         } else if (requestCode == CROP_IMAGE_REQUEST_CODE && data != null) {

@@ -28,6 +28,33 @@ public class Product implements Serializable {
     private int payment_type;
     private long hospital_id;
     private long doctor_id;
+    private List<Promise> promiseList;
+    private long project_id;
+    private String project_name;
+
+    public long getProject_id() {
+        return project_id;
+    }
+
+    public void setProject_id(long project_id) {
+        this.project_id = project_id;
+    }
+
+    public String getProject_name() {
+        return project_name;
+    }
+
+    public void setProject_name(String project_name) {
+        this.project_name = project_name;
+    }
+
+    public List<Promise> getPromiseList() {
+        return promiseList;
+    }
+
+    public void setPromiseList(List<Promise> promiseList) {
+        this.promiseList = promiseList;
+    }
 
     public long getDoctor_id() {
         return doctor_id;
@@ -147,5 +174,17 @@ public class Product implements Serializable {
 
     public void setProduct_usp(String product_usp) {
         this.product_usp = product_usp;
+    }
+
+    public class Promise implements Serializable{
+        private String promise_title;
+
+        public String getPromise_title() {
+            return promise_title;
+        }
+
+        public void setPromise_title(String promise_title) {
+            this.promise_title = promise_title;
+        }
     }
 }

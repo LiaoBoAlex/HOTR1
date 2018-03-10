@@ -322,13 +322,12 @@ public class PartyActivity extends BaseLoadingActivity{
 
             public MyHeaderHolder(View view) {
                 super(view);
-                recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
                 ivCity = (ImageView) view.findViewById(R.id.iv_city);
                 ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
                 tvPeople = (TextView) view.findViewById(R.id.tv_people);
                 tvAddress = (TextView) view.findViewById(R.id.tv_address);
-                tvPrice = (TextView) view.findViewById(R.id.tv_price);
+                tvPrice = (TextView) view.findViewById(R.id.tv_amount);
                 tvMoney = (TextView) view.findViewById(R.id.tv_money);
                 tvNoPrice = (TextView) view.findViewById(R.id.tv_no_price);
                 tvShare = (TextView) view.findViewById(R.id.tv_share);

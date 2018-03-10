@@ -103,6 +103,7 @@
     <string name="deposit">预约金：</string>
     <string name="full_amount">全款：</string>
     <string name="pay_at_shop">到店再付：¥%1$s</string>
+    <string name="pay_at_shop1">还需到店支付：</string>
     <string name="no_need_to_pay_at_shop">无需到店支付</string>
     <string name="voucher">优惠券</string>
     <string name="remaining_total2">（到店支付）</string>
@@ -349,6 +350,12 @@
     <string name="date">%1$d年%2$d月</string>
     <string name="date1">%1$s年%2$s月%3$s日</string>
     <string name="date2">%1$d月%2$d日</string>
+    <string name="date3">%1$d/%2$d/%3$d前使用</string>
+    <string name="receipt_used_time">核销时间：</string>
+    <string name="used_receipt">已使用</string>
+    <string name="receipt_used_code">已核销券号：</string>
+    <string name="receipt_refund_time">申请退款时间：%1$d/%2$d/%3$d     退款金额：</string>
+    <string name="receipt_refunded_time">退款时间：%1$d/%2$d/%3$d     退款金额：</string>
     <string name="one_day_ago">一天前</string>
     <string name="hours_ago">%1$d小时前</string>
     <string name="mins_ago">%1$d分钟前</string>
@@ -531,6 +538,8 @@
     <string name="like_success">点赞成功</string>
     <string name="already_liked">你已经赞过了</string>
     <string name="post_success">发帖成功</string>
+    <string name="case_success">对比照发布成功</string>
+    <string name="all_case">查看更多同类对比照</string>
     <string name="comment_success">回帖成功</string>
     <string name="delete_success">删除成功</string>
     <string name="voucher_condition">订单满%1$s元可用</string>
@@ -540,6 +549,8 @@
     <string name="buy_limit">该商品限购%1$d个，不要太贪心哦！</string>
     <string name="search_total">在“%1$s”下共%2$d条搜索信息</string>
     <string name="empty_list">没有找到相应的内容，再看看别的吧</string>
+    <string name="end_of_fav">没有更多关注了</string>
+    <string name="end_of_fan">没有更多粉丝了</string>
     <string name="map_autonavi">开启高德地图导航</string>
     <string name="map_baidu">开启百度地图导航</string>
     <string name="map_tencent">开启腾讯地图导航</string>
@@ -553,6 +564,17 @@
     <string name="confirm_logout">确认要退出当前账号？</string>
     <string name="call">呼叫</string>
     <string name="end_info">HOTR提示：本页面内信息由医院/医生发布并对信息的真实性及合法性负责，如您对信息真实性和合法性有质疑，请拨打客服热线：4000800051</string>
+    <string name="delete_address">确认要删除此收货地址吗？</string>
+    <string name="search_keyword">请输入搜索关键词</string>
+    <string name="available_receipt">%1$d张可用</string>
+    <string name="expired_receipt">%1$d张已过期</string>
+    <string name="apply_refund">申请退款</string>
+    <string name="refund_applied">申请已提交</string>
+    <string name="no_receipt">还没有核销券</string>
+    <string name="receipt_code">核销码:</string>
+    <string name="send">发送</string>
+    <string name="photo">相册</string>
+    <string name="camera">拍摄</string>
 
     <string-array name="gender">
         <item>男</item>
@@ -579,5 +601,8 @@
     <string name="sina_share_cancel">微博分享取消</string>
     <string name="wechat_pay_success2">微信支付成功</string>
     <string name="wechat_pay_fail">微信支付失败</string>
+
+    <string name="connection_failed">连接失败</string>
+    <string name="download_image_failed">下载图片失败</string>
 
 </resources>

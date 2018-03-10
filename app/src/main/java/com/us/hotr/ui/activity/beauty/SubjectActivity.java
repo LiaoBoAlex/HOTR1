@@ -7,7 +7,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -40,7 +39,7 @@ import java.util.ArrayList;
  */
 
 public class SubjectActivity extends BaseLoadingActivity {
-
+    public static final String PARAM_CASE = "PARAM_CASE";
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private PagerAdapter adapter;
@@ -55,6 +54,7 @@ public class SubjectActivity extends BaseLoadingActivity {
     private long subjectId;
 
     public boolean isSubjectListOpen = false;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,7 +89,7 @@ public class SubjectActivity extends BaseLoadingActivity {
         tvTitle = (TextView) findViewById(R.id.tb_title);
         tvDescption = (TextView) findViewById(R.id.tv_description);
         tvTreatment = (TextView) findViewById(R.id.tv_treatment);
-        tvPrice = (TextView) findViewById(R.id.tv_price);
+        tvPrice = (TextView) findViewById(R.id.tv_amount);
         tvPeroid = (TextView) findViewById(R.id.tv_peroid);
         tvTimes = (TextView) findViewById(R.id.tv_times);
         tvKnowMore = (TextView) findViewById(R.id.tv_know_more);
@@ -149,7 +149,7 @@ public class SubjectActivity extends BaseLoadingActivity {
             productListFragment = ProductListWithFilterFragment.newInstance(null, Constants.TYPE_PRODUCT, false, subjectId);
             fragmentList = new ArrayList<Fragment>() {{
                 add(productListFragment);
-                add(CaseListFragment.newInstance(null, false, false));
+                add(CaseListFragment.newInstance(null, false, false, 1, subjectId, -1));
             }};
             adapter = new PagerAdapter(getSupportFragmentManager(), titleList, fragmentList);
             viewPager.setAdapter(adapter);
@@ -158,6 +158,9 @@ public class SubjectActivity extends BaseLoadingActivity {
             GlobalBus.getBus().post(new Events.Refresh());
             viewPager.setCurrentItem(0);
         }
+
+        if(getIntent().getExtras().getBoolean(PARAM_CASE, false))
+            viewPager.setCurrentItem(1);
 
         SubscriberListener mListener = new SubscriberListener<SubjectDetail>() {
             @Override

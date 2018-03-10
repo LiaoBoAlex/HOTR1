@@ -1,5 +1,6 @@
 package com.us.hotr.ui.fragment.info;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,7 +16,10 @@ import android.widget.ImageView;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.bean.User;
+import com.us.hotr.ui.activity.info.ChatActivity;
 
 import q.rorbin.badgeview.QBadgeView;
 
@@ -98,6 +102,18 @@ public class NoticeMessageFragment extends Fragment {
                     .setBadgeBackgroundColor(getResources().getColor(R.color.red))
                     .setShowShadow(false)
                     .setBadgeNumber(5);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                        User user = new User();
+                        user.setNickname("HOTR君");
+                        Intent i = new Intent(getActivity(), ChatActivity.class);
+                        Bundle b = new Bundle();
+                        b.putSerializable(Constants.PARAM_DATA, user);
+                        i.putExtras(b);
+                        startActivity(i);
+                }
+            });
         }
 
         @Override

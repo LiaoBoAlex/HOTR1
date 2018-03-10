@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
@@ -23,9 +24,11 @@ import com.us.hotr.ui.fragment.beauty.CaseListFragment;
 import com.us.hotr.ui.fragment.beauty.ListWithFilterFragment;
 import com.us.hotr.ui.fragment.beauty.PostListFragment;
 import com.us.hotr.ui.fragment.beauty.ProductListWithFilterFragment;
+import com.us.hotr.ui.fragment.found.GroupListFragment;
 import com.us.hotr.ui.fragment.info.FriendListFragment;
 import com.us.hotr.ui.fragment.party.PartyListFragment;
 import com.us.hotr.ui.fragment.search.HintSearchFragment;
+import com.us.hotr.util.Tools;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -103,6 +106,7 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
     }
 
     private void updateResult(){
+        tvNumber.setText("");
         configListFragment();
         fragmentList.set(0, myListFragment);
         adapter = new PagerAdapter(getSupportFragmentManager());
@@ -112,10 +116,10 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
     private void configListFragment(){
         switch (type){
             case Constants.TYPE_CASE:
-                myListFragment = CaseListFragment.newInstance(mSearchView.getEtInput(), true, false);
+                myListFragment = CaseListFragment.newInstance(mSearchView.getEtInput(), true, false, -1, -1, -1);
                 break;
-            case Constants.TYPE_POST:
-                myListFragment = PostListFragment.newInstance(mSearchView.getEtInput(), true,  Constants.TYPE_POST,-1 ,-1);
+            case Constants.TYPE_SEARCH_POST:
+                myListFragment = PostListFragment.newInstance(mSearchView.getEtInput(), true,  Constants.TYPE_SEARCH_POST,-1 ,-1);
                 break;
             case Constants.TYPE_PARTY:
                 myListFragment = PartyListFragment.newInstance(mSearchView.getEtInput(), false);
@@ -132,6 +136,9 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
                 break;
             case Constants.TYPE_SEARCH_PEOPLE:
                 myListFragment = FriendListFragment.newInstance(mSearchView.getEtInput(), type);
+                break;
+            case Constants.TYPE_GROUP:
+                myListFragment = GroupListFragment.newInstance(-1, mSearchView.getEtInput());
         }
     }
 
@@ -147,7 +154,7 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
             case Constants.TYPE_CASE:
                 s = getString(R.string.case_title);
                 break;
-            case Constants.TYPE_POST:
+            case Constants.TYPE_SEARCH_POST:
                 s = getString(R.string.post_title);
                 break;
             case Constants.TYPE_PARTY:
@@ -174,6 +181,9 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
             case Constants.TYPE_SEARCH_PEOPLE:
                 s = getString(R.string.user);
                 break;
+            case Constants.TYPE_GROUP:
+                s= getString(R.string.group_title);
+                break;
         }
         tvNumber.setText(String.format(getString(R.string.search_total), s, getSearchCount.getSearchCount()));
     }
@@ -184,17 +194,6 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
         if(requestCode == SELECT_TYPE_REQUEST){
             if(resultCode == Activity.RESULT_OK && data != null) {
                 type = data.getExtras().getInt(Constants.PARAM_TYPE);
-                switch(type){
-                    case 106:
-                        type = Constants.TYPE_MASSAGE;
-                        break;
-                    case 107:
-                        type = Constants.TYPE_MASSEUR;
-                        break;
-                    case 108:
-                        type = Constants.TYPE_SPA;
-                        break;
-                }
                 updateResult();
             }
         }
@@ -216,10 +215,14 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
 
     @Override
     public void onSearch(String text) {
-        viewPager.setCurrentItem(0, false);
-        clTitle.setVisibility(View.VISIBLE);
-        DataBaseHelper.getInstance(getApplicationContext()).insertSearchHistory(text);
-        updateResult();
+        if(text.isEmpty())
+            Tools.Toast(this, getString(R.string.search_keyword));
+        else {
+            viewPager.setCurrentItem(0, false);
+            clTitle.setVisibility(View.VISIBLE);
+            DataBaseHelper.getInstance(getApplicationContext()).insertSearchHistory(text);
+            updateResult();
+        }
     }
 
     @Override

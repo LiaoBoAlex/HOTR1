@@ -20,7 +20,9 @@ import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.MassageOrder;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MapViewActivity;
+import com.us.hotr.ui.activity.PayOrderActivity;
 import com.us.hotr.ui.activity.massage.MassageActivity;
+import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.webservice.ServiceClient;
@@ -117,7 +119,12 @@ public class MassageOrderDetailActivity extends BaseLoadingActivity {
             tvBuyNow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent i = new Intent(MassageOrderDetailActivity.this, ReceiptDetailActivity.class);
+                    Bundle b = new Bundle();
+                    b.putLong(Constants.PARAM_ID, result.getId());
+                    b.putInt(Constants.PARAM_TYPE, ReceiptDetailActivity.TYPE_MASSAGE_ORDER);
+                    i.putExtras(b);
+                    startActivity(i);
                 }
             });
         }else{
@@ -126,7 +133,12 @@ public class MassageOrderDetailActivity extends BaseLoadingActivity {
             tvBuyNow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent i = new Intent(MassageOrderDetailActivity.this, PayOrderActivity.class);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, result);
+                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                    i.putExtras(b);
+                    startActivity(i);
                 }
             });
         }
