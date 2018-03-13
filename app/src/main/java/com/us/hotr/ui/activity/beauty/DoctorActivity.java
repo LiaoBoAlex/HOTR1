@@ -307,7 +307,7 @@ public class DoctorActivity extends BaseLoadingActivity {
                     doctorHeaderHolder.tvHospital.setText(doctorDetail.getDetail().getHospital_name());
                     doctorHeaderHolder.tvHospitalInfo.setText(doctorDetail.getDetail().getHospital_name());
                     doctorHeaderHolder.tvName.setText(doctorDetail.getDetail().getDoctor_name());
-                    doctorHeaderHolder.tvNumCase.setText("1256");
+                    doctorHeaderHolder.tvNumCase.setText(doctorDetail.getDetail().getCase_num());
                     doctorHeaderHolder.tvNumConsult.setText("759");
                     doctorHeaderHolder.tvNumPointment.setText(doctorDetail.getDetail().getOrder_num()+"");
                     doctorHeaderHolder.tvTitle.setText(doctorDetail.getDetail().getDoctor_job());

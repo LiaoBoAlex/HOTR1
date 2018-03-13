@@ -27,6 +27,15 @@ public class Hospital implements Serializable {
     private String cityName;
     @SerializedName(value = "areaName", alternate = {"area_name"})
     private String areaName;
+    private int case_num;
+
+    public int getCase_num() {
+        return case_num;
+    }
+
+    public void setCase_num(int case_num) {
+        this.case_num = case_num;
+    }
 
     public String getProvinceName() {
         return provinceName;

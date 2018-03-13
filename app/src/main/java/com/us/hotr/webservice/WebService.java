@@ -257,6 +257,10 @@ public interface WebService {
     @POST("travel/addAccessCountByTraveId.do?")
     Observable<BaseResponse<String>> increasePartyInterest(@Query("travel_id") long travel_id);
 
+    @POST("travel/user_method/reservation.do?")
+    Observable<BaseResponse<String>> reserveParty(@Query("travel_id") long travel_id,
+                                                  @Header("jsessionid") String jsessionid);
+
     @POST("user_method/coupon/list.do?")
     Observable<BaseResponse<BaseListResponse<List<Voucher>>>> getAvaliableVoucher(@Header("jsessionid") String jsessionid,
                                                                                   @Query("product_price") double product_price,
@@ -648,6 +652,14 @@ public interface WebService {
                                                                                    @Query("order_state") Integer order_state,
                                                                                    @Query("page_number") int page_number,
                                                                                    @Query("page_size") Integer page_size);
+    @POST("user_method/travel/order/travelList.do?order_state=0&page_size=1")
+    Call<BaseResponse<BaseListResponse<List<PartyOrder>>>> getUnpaidPartyOrderCount(@Header("jsessionid") String jsessionid);
+
+    @POST("user_method/order/massageList.do?order_state=0&page_size=1")
+    Call<BaseResponse<BaseListResponse<List<MassageOrder>>>> getUnpaidMassageOrderCount(@Header("jsessionid") String jsessionid);
+
+    @POST("user_method/order/hospitalList.do?order_state=0&page_size=1")
+    Call<BaseResponse<BaseListResponse<List<ProductOrder>>>> getUnpaidProductOrderCount(@Header("jsessionid") String jsessionid);
 
     @POST("user_method/order/hospitalDetail.do?")
     Observable<BaseResponse<ProductOrder>> getProductOrderDetail(@Header("jsessionid") String jsessionid,

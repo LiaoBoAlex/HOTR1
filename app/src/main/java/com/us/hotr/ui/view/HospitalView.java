@@ -65,7 +65,7 @@ public class HospitalView extends FrameLayout {
         tvTitle1.setText(hospital.getHospital_type());
         tvTitle2.setText(hospital.getCityName() + hospital.getAreaName() + hospital.getHospital_address());
         tvAppointment.setText(String.format(getContext().getString(R.string.num_of_appointment), hospital.getOrder_num()));
-        tvCase.setText(String.format(getContext().getString(R.string.num_of_case), 345));
+        tvCase.setText(String.format(getContext().getString(R.string.num_of_case), hospital.getCase_num()));
         Glide.with(getContext()).load(hospital.getHospital_logo()).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
         List<String> subjects = new ArrayList<>();
         if(hospital.getGood_at_project_list()!=null && hospital.getGood_at_project_list().size()>0) {

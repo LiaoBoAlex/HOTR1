@@ -191,7 +191,7 @@ public class PartyOrderListFragment extends BaseLoadingFragment {
                 tvPay = (TextView) view.findViewById(R.id.tv_pay);
                 tvCancel = (TextView) view.findViewById(R.id.tv_cancel);
                 tvBuy = (TextView) view.findViewById(R.id.tv_buy);
-                tvTime = (TextView) view.findViewById(R.id.tv_info);
+                tvTime = (TextView) view.findViewById(R.id.tv_time);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
                 tvSubTitle = (TextView) view.findViewById(R.id.tv_sub_title);
                 tvPrice = (TextView) view.findViewById(R.id.tv_amount);

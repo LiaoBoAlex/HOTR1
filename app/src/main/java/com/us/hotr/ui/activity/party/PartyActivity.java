@@ -209,8 +209,16 @@ public class PartyActivity extends BaseLoadingActivity{
     }
 
     private void turnOnNotification(long id){
-        tvPurchase.setText(R.string.turned_on_notification);
-        tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+        SubscriberListener mListener = new SubscriberListener<String>() {
+            @Override
+            public void onNext(String result) {
+                tvPurchase.setText(R.string.turned_on_notification);
+                tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+            }
+        };
+        ServiceClient.getInstance().reserveParty(new ProgressSubscriber(mListener, PartyActivity.this),
+                id, HOTRSharePreference.getInstance(PartyActivity.this.getApplicationContext()).getUserID());
+
     }
 
     private void initStaticView(){

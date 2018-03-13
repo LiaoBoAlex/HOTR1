@@ -24,6 +24,15 @@ public class Doctor implements Serializable {
     private long hospital_id;
     private int order_num;
     private String typeName;
+    private int case_num;
+
+    public int getCase_num() {
+        return case_num;
+    }
+
+    public void setCase_num(int case_num) {
+        this.case_num = case_num;
+    }
 
     public String getTypeName() {
         return typeName;

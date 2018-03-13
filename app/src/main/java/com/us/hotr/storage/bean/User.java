@@ -13,7 +13,7 @@ public class User implements Serializable {
     private String username;
     @SerializedName(value = "province_name", alternate = {"provinceName"})
     private String province_name;
-    @SerializedName(value = "head_portrait", alternate = {"head_image_path"})
+    @SerializedName(value = "head_portrait", alternate = {"head_image_path", "head_image"})
     private String head_portrait;
     @SerializedName(value = "attentionCount", alternate = {"follow_numb"})
     private int attentionCount;

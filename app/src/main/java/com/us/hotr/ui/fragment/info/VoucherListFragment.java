@@ -189,7 +189,7 @@ public class VoucherListFragment extends BaseLoadingFragment {
                 tvTotal = (TextView) view.findViewById(R.id.tv_amount);
                 tvName = (TextView) view.findViewById(R.id.tv_title);
                 tvCondition = (TextView) view.findViewById(R.id.tv_condition);
-                tvTime = (TextView) view.findViewById(R.id.tv_info);
+                tvTime = (TextView) view.findViewById(R.id.tv_time);
             }
         }
 

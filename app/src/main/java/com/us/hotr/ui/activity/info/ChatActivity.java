@@ -1,11 +1,14 @@
 package com.us.hotr.ui.activity.info;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -22,17 +27,17 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ChatSoftInputLayout;
 import com.us.hotr.customview.PullRefreshLayout;
+import com.us.hotr.customview.TipItem;
+import com.us.hotr.customview.TipView;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.activity.CameraActivity;
 import com.us.hotr.ui.activity.ImageViewerActivity;
 import com.us.hotr.util.Tools;
-import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.ApiException;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
-import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +52,7 @@ import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageRadioResultEvent;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.DownloadCompletionCallback;
+import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.callback.ProgressUpdateCallback;
 import cn.jpush.im.android.api.content.ImageContent;
 import cn.jpush.im.android.api.content.TextContent;
@@ -64,6 +70,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by liaobo on 2018/3/2.
@@ -75,6 +82,7 @@ public class ChatActivity extends BaseActivity {
     private ChatSoftInputLayout chatSoftInputLayout;
     private RecyclerView recyclerView;
     private PullRefreshLayout refreshLayout;
+    private RelativeLayout rootView;
 
     private User user, me;
     private String meId, userId;
@@ -102,7 +110,7 @@ public class ChatActivity extends BaseActivity {
             finish();
         }
         initStaticView();
-        initUser();
+        JMessageLogin();
         JMessageClient.registerEventReceiver(this);
     }
 
@@ -111,6 +119,7 @@ public class ChatActivity extends BaseActivity {
         chatSoftInputLayout = (ChatSoftInputLayout) findViewById(R.id.chat_soft_input_layout);
         recyclerView = (RecyclerView) chatSoftInputLayout.findViewById(R.id.recyclerview);
         refreshLayout = (PullRefreshLayout) chatSoftInputLayout.findViewById(R.id.refreshLayout);
+        rootView = (RelativeLayout) findViewById(R.id.rootView);
         chatSoftInputLayout.setOnCameraClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,34 +171,11 @@ public class ChatActivity extends BaseActivity {
         JMessageClient.exitConversation();
     }
 
-    private void initUser(){
-        SubscriberListener mListener = new SubscriberListener<User>() {
-            @Override
-            public void onNext(User result) {
-                user = result;
-                setMyTitle(user.getNickname());
-                JMessageLogin();
-            }
-        };
-        ServiceClient.getInstance().getUserDetail(new ProgressSubscriber(mListener, this),
-                null, getIntent().getExtras().getLong(Constants.PARAM_DATA));
-    }
-
     private void JMessageLogin(){
-        SubscriberWithFinishListener mListener = new SubscriberWithFinishListener<List<Message>>() {
+        SubscriberListener mListener = new SubscriberListener<List<Message>>() {
             @Override
             public void onNext(List<Message> result) {
                 loadData(result);
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Tools.Toast(ChatActivity.this, getString(R.string.connection_failed));
             }
         };
         Observable.create(new ObservableOnSubscribe<List<Message>>() {
@@ -199,36 +185,59 @@ public class ChatActivity extends BaseActivity {
                     mConversation = JMessageClient.getSingleConversation(userId);
                     if(mConversation == null)
                         mConversation =  Conversation.createSingleConversation(userId, "");
-                    List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
-                    emitter.onNext(list);
-                    emitter.onComplete();
+                    JMessageClient.getUserInfo(((UserInfo)mConversation.getTargetInfo()).getUserName(), new GetUserInfoCallback() {
+                        @Override
+                        public void gotResult(int i, String s, UserInfo userInfo) {
+                            user = new User();
+                            user.setUserId(getIntent().getExtras().getLong(Constants.PARAM_DATA));
+                            String name = userInfo.getNickname();
+                            if(name == null || name.isEmpty())
+                                name = userInfo.getUserName();
+                            user.setNickname(name);
+                            user.setHead_portrait(userInfo.getAddress());
+                            List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
+                            emitter.onNext(list);
+                            emitter.onComplete();
+                        }
+                    });
+
                 }else {
                     JMessageClient.login(meId, "123456", new BasicCallback() {
                         @Override
                         public void gotResult(int i, String s) {
                             if (i != 0) {
-                                emitter.onError(new ApiException(i, s));
+                                emitter.onError(new ApiException(i, getString(R.string.network_error)));
                             } else {
                                 mConversation = JMessageClient.getSingleConversation(userId);
                                 if (mConversation == null)
                                     mConversation = Conversation.createSingleConversation(userId, "");
-                                List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
-                                emitter.onNext(list);
-                                emitter.onComplete();
+                                JMessageClient.getUserInfo(((UserInfo)mConversation.getTargetInfo()).getUserName(), new GetUserInfoCallback() {
+                                    @Override
+                                    public void gotResult(int i, String s, UserInfo userInfo) {
+                                        user = new User();
+                                        user.setUserId(getIntent().getExtras().getLong(Constants.PARAM_DATA));
+                                        user.setNickname(userInfo.getNickname());
+                                        user.setHead_portrait(userInfo.getAddress());
+                                        List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
+                                        emitter.onNext(list);
+                                        emitter.onComplete();
+                                    }
+                                });
                             }
                         }
                     });
                 }
             }
         })
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .unsubscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new ProgressSubscriber(mListener, this));
 
     }
 
     private void loadData(List<Message> list){
+        setMyTitle(user.getNickname());
         if(list!=null && list.size()>0) {
             messageList.addAll(list);
         }else
@@ -418,6 +427,51 @@ public class ChatActivity extends BaseActivity {
                     Text1Holder text1Holder = (Text1Holder)holder;
                     Glide.with(ChatActivity.this).load(user.getHead_portrait()).dontAnimate().error(R.drawable.placeholder_chat).placeholder(R.drawable.placeholder_chat).into(text1Holder.ivAvatar);
                     text1Holder.tvContent.setText(((TextContent)message.getContent()).getText());
+                    text1Holder.tvContent.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            int[] location = new int[2];
+                            view.getLocationOnScreen(location);
+                            float OldListY = (float) location[1];
+                            float OldListX = (float) location[0];
+                            new TipView.Builder(ChatActivity.this, rootView, (int) OldListX + view.getWidth() / 2, (int) OldListY + view.getHeight())
+                                    .addItem(new TipItem(getString(R.string.copy)))
+                                    .addItem(new TipItem(getString(R.string.delete)))
+                                    .setOnItemClickListener(new TipView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(String str, final int p) {
+                                            if (p == 0) {
+                                                final String content = ((TextContent) message.getContent()).getText();
+                                                if (Build.VERSION.SDK_INT > 11) {
+                                                    ClipboardManager clipboard = (ClipboardManager) getApplicationContext()
+                                                            .getSystemService(Context.CLIPBOARD_SERVICE);
+                                                    ClipData clip = ClipData.newPlainText("Simple text", content);
+                                                    clipboard.setPrimaryClip(clip);
+                                                } else {
+                                                    android.text.ClipboardManager clip = (android.text.ClipboardManager) getApplicationContext()
+                                                            .getSystemService(Context.CLIPBOARD_SERVICE);
+                                                    if (clip.hasText()) {
+                                                        clip.getText();
+                                                    }
+                                                }
+                                                Tools.Toast(ChatActivity.this, getString(R.string.copied));
+                                            } else {
+                                                //删除
+                                                mConversation.deleteMessage(message.getId());
+                                                messageList.remove(position);
+                                                notifyDataSetChanged();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void dismiss() {
+
+                                        }
+                                    })
+                                    .create();
+                            return true;
+                        }
+                    });
                     break;
                 case TYPE_SEND_TEXT:
                     final Text2Holder text2Holder = (Text2Holder)holder;
@@ -454,7 +508,51 @@ public class ChatActivity extends BaseActivity {
                         });
                         JMessageClient.sendMessage(message);
                     }
+                    text2Holder.tvContent.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            int[] location = new int[2];
+                            view.getLocationOnScreen(location);
+                            float OldListY = (float) location[1];
+                            float OldListX = (float) location[0];
+                            new TipView.Builder(ChatActivity.this, rootView, (int) OldListX + view.getWidth() / 2, (int) OldListY + view.getHeight())
+                                    .addItem(new TipItem(getString(R.string.copy)))
+                                    .addItem(new TipItem(getString(R.string.delete)))
+                                    .setOnItemClickListener(new TipView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(String str, final int p) {
+                                            if (p == 0) {
+                                                final String content = ((TextContent) message.getContent()).getText();
+                                                if (Build.VERSION.SDK_INT > 11) {
+                                                    ClipboardManager clipboard = (ClipboardManager) getApplicationContext()
+                                                            .getSystemService(Context.CLIPBOARD_SERVICE);
+                                                    ClipData clip = ClipData.newPlainText("Simple text", content);
+                                                    clipboard.setPrimaryClip(clip);
+                                                } else {
+                                                    android.text.ClipboardManager clip = (android.text.ClipboardManager) getApplicationContext()
+                                                            .getSystemService(Context.CLIPBOARD_SERVICE);
+                                                    if (clip.hasText()) {
+                                                        clip.getText();
+                                                    }
+                                                }
+                                                Tools.Toast(ChatActivity.this, getString(R.string.copied));
+                                            } else {
+                                                //删除
+                                                mConversation.deleteMessage(message.getId());
+                                                messageList.remove(position);
+                                                notifyDataSetChanged();
+                                            }
+                                        }
 
+                                        @Override
+                                        public void dismiss() {
+
+                                        }
+                                    })
+                                    .create();
+                            return true;
+                        }
+                    });
                     break;
                 case TYPE_RECEIVE_PHOTO:
                     final Photo1Holder photo1Holder = (Photo1Holder)holder;
@@ -491,6 +589,32 @@ public class ChatActivity extends BaseActivity {
                             b.putString(Constants.PARAM_NAME, userId);
                             i.putExtras(b);
                             startActivity(i);
+                        }
+                    });
+                    photo1Holder.ivContent.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            int[] location = new int[2];
+                            view.getLocationOnScreen(location);
+                            float OldListY = (float) location[1];
+                            float OldListX = (float) location[0];
+                            new TipView.Builder(ChatActivity.this, rootView, (int) OldListX + view.getWidth() / 2, (int) OldListY + view.getHeight()/2)
+                                    .addItem(new TipItem(getString(R.string.delete)))
+                                    .setOnItemClickListener(new TipView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(String str, final int p) {
+                                            mConversation.deleteMessage(message.getId());
+                                            messageList.remove(position);
+                                            notifyDataSetChanged();
+                                        }
+
+                                        @Override
+                                        public void dismiss() {
+
+                                        }
+                                    })
+                                    .create();
+                            return true;
                         }
                     });
                     break;
@@ -585,6 +709,32 @@ public class ChatActivity extends BaseActivity {
                         });
                         JMessageClient.sendMessage(message);
                     }
+                    photo2Holder.ivContent.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            int[] location = new int[2];
+                            view.getLocationOnScreen(location);
+                            float OldListY = (float) location[1];
+                            float OldListX = (float) location[0];
+                            new TipView.Builder(ChatActivity.this, rootView, (int) OldListX + view.getWidth() / 2, (int) OldListY + view.getHeight()/2)
+                                    .addItem(new TipItem(getString(R.string.delete)))
+                                    .setOnItemClickListener(new TipView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(String str, final int p) {
+                                            mConversation.deleteMessage(message.getId());
+                                            messageList.remove(position);
+                                            notifyDataSetChanged();
+                                        }
+
+                                        @Override
+                                        public void dismiss() {
+
+                                        }
+                                    })
+                                    .create();
+                            return true;
+                        }
+                    });
                     break;
             }
 

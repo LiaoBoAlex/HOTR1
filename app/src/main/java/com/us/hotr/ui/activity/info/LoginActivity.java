@@ -171,7 +171,8 @@ public class LoginActivity extends AppCompatActivity {
                             if(i == 0){
                                 UserInfo userInfo = JMessageClient.getMyInfo();
                                 userInfo.setNickname(wechatLogin.getGetLoginResponse().getUser().getNickname());
-                                JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+                                userInfo.setAddress(wechatLogin.getGetLoginResponse().getUser().getHead_portrait());
+                                JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
                                     @Override
                                     public void gotResult(int i, String s) {
 

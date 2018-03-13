@@ -68,7 +68,7 @@ public class PostView extends FrameLayout {
         ivUserAvatar = (ImageView) findViewById(R.id.iv_user_avatar);
         tvTitle = (TextView) findViewById(R.id.tv_title);
         tvCertified = (TextView) findViewById(R.id.tv_certified);
-        tvPostTime = (TextView) findViewById(R.id.tv_info);
+        tvPostTime = (TextView) findViewById(R.id.tv_time);
         tvFollowUser = (TextView) findViewById(R.id.tv_follow_user);
         tvContent = (TextView) findViewById(R.id.tv_content);
         tvUserName = (TextView) findViewById(R.id.tv_name);

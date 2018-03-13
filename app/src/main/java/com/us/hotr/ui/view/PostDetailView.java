@@ -68,7 +68,7 @@ public class PostDetailView extends FrameLayout {
         tvIntro = (TextView) findViewById(R.id.tv_intro);
         tvTitle = (TextView) findViewById(R.id.tv_title);
         tvCertified = (TextView) findViewById(R.id.tv_certified);
-        tvPostTime = (TextView) findViewById(R.id.tv_info);
+        tvPostTime = (TextView) findViewById(R.id.tv_time);
         tvFollowUser = (TextView) findViewById(R.id.tv_follow_user);
         tvContent = (TextView) findViewById(R.id.tv_content);
         tvUserName = (TextView) findViewById(R.id.tv_name);

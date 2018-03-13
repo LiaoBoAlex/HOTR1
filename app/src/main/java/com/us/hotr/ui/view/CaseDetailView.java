@@ -63,7 +63,7 @@ public class CaseDetailView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_case_detail, this);
         ivAvatar = (ImageView) findViewById(R.id.iv_avatar);
         tvName = (TextView) findViewById(R.id.tv_name);
-        tvInfo = (TextView) findViewById(R.id.tv_info);
+        tvInfo = (TextView) findViewById(R.id.tv_time);
         tvFollow = (TextView) findViewById(R.id.tv_follow);
         tvHospital = (TextView) findViewById(R.id.tv_hospital);
         tvDoctor = (TextView) findViewById(R.id.tv_doctor);

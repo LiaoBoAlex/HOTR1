@@ -66,7 +66,7 @@ public class DoctorView extends FrameLayout {
         tvTitle1.setText(doctor.getDoctor_job());
         tvTitle2.setText(doctor.getHospital_name());
         tvAppointment.setText(String.format(getContext().getString(R.string.num_of_appointment), doctor.getOrder_num()));
-        tvCase.setText(String.format(getContext().getString(R.string.num_of_case), 345) );
+        tvCase.setText(String.format(getContext().getString(R.string.num_of_case), doctor.getCase_num()) );
         Glide.with(getContext()).load(doctor.getDoctor_main_img()).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
         List<String> subjects = new ArrayList<>();
         if(doctor.getGood_at_project_list()!=null && doctor.getGood_at_project_list().size()>0)

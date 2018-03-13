@@ -175,6 +175,23 @@ public class Events {
         public int getVoucherType(){return type;}
     }
 
+    public static class GetNoticeCount{
+        private int messageCount = 0, noticeCount = 0;
+        public GetNoticeCount(int messageCount, int noticeCount){
+            this.messageCount = messageCount;
+            this.noticeCount = noticeCount;
+        }
+        public int getTotalCount(){
+            return noticeCount + messageCount;
+        }
+
+        public int getMessageCount(){return messageCount;}
+
+        public int getNoticeCount(){
+            return noticeCount;
+        }
+    }
+
     public static class EnableEdit{
         public static final int ACTION_EDIT = 501;
         public static final int ACTION_DONE = 502;

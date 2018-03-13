@@ -21,7 +21,6 @@ import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.ProductOrder;
-import com.us.hotr.ui.activity.PayNumberActivity;
 import com.us.hotr.ui.activity.PayOrderActivity;
 import com.us.hotr.ui.activity.beauty.ProductActivity;
 import com.us.hotr.ui.activity.info.ProductOrderDetailActivity;
@@ -201,7 +200,7 @@ public class ProductOrderListFragment extends BaseLoadingFragment {
                 tvPay = (TextView) view.findViewById(R.id.tv_pay);
                 tvCancel = (TextView) view.findViewById(R.id.tv_cancel);
                 tvBuy = (TextView) view.findViewById(R.id.tv_buy);
-                tvTime = (TextView) view.findViewById(R.id.tv_info);
+                tvTime = (TextView) view.findViewById(R.id.tv_time);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
                 tvSubTitle = (TextView) view.findViewById(R.id.tv_sub_title);
                 tvPrice = (TextView) view.findViewById(R.id.tv_amount);

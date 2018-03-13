@@ -84,8 +84,8 @@ public class Tools {
     private static final long[] baiduCityCode=         {131,    289,      75,      132,    257,    340,    167,     179,    315};
 
     private static final String[] baiduProvinceName =      {"北京市", "上海市", "四川省", "重庆市", "广东省", "辽宁省", "浙江省", "江苏省"};
-    private static final long[] backendMassageProvinceCode={120000,  200000,   210000,  220000,  230000,  240000,   250000,  260100};
-    private static final long[] backendProductProvinceCode={110000,  140000,   130000,  150000,  160000,  170000,   180000,  190100};
+    private static final long[] backendMassageProvinceCode={120000,  200000,   210000,  220000,  230000,  240000,   250000,  260000};
+    private static final long[] backendProductProvinceCode={110000,  140000,   130000,  150000,  160000,  170000,   180000,  190000};
     public static int getScreenWidth(Context context){
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -564,7 +564,7 @@ public class Tools {
     }
 
     public static String getChatTime(Context mContext, long minisec){
-        Calendar c = new GregorianCalendar();
+        Calendar c =Calendar.getInstance();
         c.setTimeInMillis(minisec);
         Calendar calnow=Calendar.getInstance();
         if(calnow.get(Calendar.YEAR) == c.get(Calendar.YEAR))
@@ -573,6 +573,28 @@ public class Tools {
         else
             return c.get(Calendar.YEAR) + mContext.getString(R.string.year) + (c.get(Calendar.MONTH)+1) + mContext.getString(R.string.month)
                     + c.get(Calendar.DATE) + mContext.getString(R.string.day) + " " + String.format("%02d", c.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", c.get(Calendar.MINUTE));
+    }
+
+    public static String getChatTime1(Context mContext, long minisec){
+        try {
+            Calendar calCreate=Calendar.getInstance();
+            calCreate.setTimeInMillis(minisec);
+            Calendar calNow = Calendar.getInstance();
+            if(calNow.get(Calendar.YEAR) != calCreate.get(Calendar.YEAR))
+                return String.format(mContext.getString(R.string.date1), calCreate.get(Calendar.YEAR)+"", (calCreate.get(Calendar.MONTH)+1)+"", calCreate.get(Calendar.DATE)+"");
+            else if(calNow.getTimeInMillis()-calCreate.getTimeInMillis()>172800000)
+                return String.format(mContext.getString(R.string.date2), calCreate.get(Calendar.MONTH)+1, calCreate.get(Calendar.DATE));
+            else if(calNow.getTimeInMillis()-calCreate.getTimeInMillis()>86400000)
+                return mContext.getString(R.string.one_day_ago);
+            else if(calNow.getTimeInMillis()-calCreate.getTimeInMillis()>3600000)
+                return String.format(mContext.getString(R.string.hours_ago), (calNow.getTimeInMillis()-calCreate.getTimeInMillis())/3600000);
+            else if(calNow.getTimeInMillis()-calCreate.getTimeInMillis()>60000)
+                return String.format(mContext.getString(R.string.mins_ago), (calNow.getTimeInMillis()-calCreate.getTimeInMillis())/60000);
+            else
+                return mContext.getString(R.string.now);
+        } catch (Throwable tr) {
+            return "";
+        }
     }
 
     public static long getOrderTimeInMinSec(String date){

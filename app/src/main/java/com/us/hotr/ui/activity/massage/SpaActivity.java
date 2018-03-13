@@ -193,7 +193,7 @@ public class SpaActivity extends BaseLoadingActivity {
                 ivAdd = (ImageView) view.findViewById(R.id.iv_add);
                 ivMsg = (ImageView) view.findViewById(R.id.iv_msg);
                 tvName = (TextView) view.findViewById(R.id.tv_name);
-                tvTime = (TextView) view.findViewById(R.id.tv_info);
+                tvTime = (TextView) view.findViewById(R.id.tv_time);
                 tvAddress = (TextView) view.findViewById(R.id.tv_place);
                 tvIntroduction = (TextView) view.findViewById(R.id.tv_introduction);
                 tvShowAll = (TextView) view.findViewById(R.id.tv_expend);

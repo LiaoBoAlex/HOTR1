@@ -33,6 +33,8 @@ public class HOTRSharePreference {
     private static final String KEY_DEFAULT_ADDRESS = "KEY_DEFAULT_ADDRESS";
     private static final String KEY_LATITUDE = "KEY_LATITUDE";
     private static final String KEY_LONGITUDE = "KEY_LONGITUDE";
+    private static final String KEY_TOTAL_NOTICE_COUNT = "KEY_TOTAL_NOTICE_COUNT";
+    private static final String KEY_TOTAL_MESSAGE_COUNT = "KEY_TOTAL_MESSAGE_COUNT";
 
     private static SharedPreferences.Editor editor;
     private static SharedPreferences settings;
@@ -172,6 +174,28 @@ public class HOTRSharePreference {
 
     public static String getCurrentCityID(){
         return settings.getString(KEY_CURRENT_CITY_ID, "");
+    }
+
+    public static void storeNoticeCount(final int count){
+        editor.putInt(KEY_TOTAL_NOTICE_COUNT, count);
+        editor.apply();
+    }
+
+    public static int getNoticeCount(){
+        return  settings.getInt(KEY_TOTAL_NOTICE_COUNT, 0);
+    }
+
+    public static int getMessageCount(){
+        return  settings.getInt(KEY_TOTAL_MESSAGE_COUNT, 0);
+    }
+
+    public static void storeMessageCount(final int count){
+        editor.putInt(KEY_TOTAL_MESSAGE_COUNT, count);
+        editor.apply();
+    }
+
+    public static int getTotalNotice(){
+        return  settings.getInt(KEY_TOTAL_MESSAGE_COUNT, 0) + settings.getInt(KEY_TOTAL_NOTICE_COUNT, 0);
     }
 
     public static void storeUserInfo(User user){

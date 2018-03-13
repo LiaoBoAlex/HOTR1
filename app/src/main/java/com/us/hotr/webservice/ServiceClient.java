@@ -488,6 +488,15 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
+    public void reserveParty(DisposableObserver subscriber, long id, String ssesionId){
+        webService.reserveParty(id, ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
     public void getAvaliableVoucher(DisposableObserver subscriber, String jsessionid, AvailableVoucherRequest request){
         webService.getAvaliableVoucher(jsessionid, request.getProduct_price(), request.getType())
                 .subscribeOn(Schedulers.io())
@@ -1448,6 +1457,24 @@ public class ServiceClient {
         webService.getPartyOrderList(ssesionId, payment_state, page_number, page_size)
                 .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<PartyOrder>>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getUnpiadOrderCount(DisposableObserver subscriber, final String ssesionId){
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                int result = 0;
+                result = result + webService.getUnpaidProductOrderCount(ssesionId).execute().body().getResult().getTotal();
+                result = result + webService.getUnpaidMassageOrderCount(ssesionId).execute().body().getResult().getTotal();
+                result = result + webService.getUnpaidPartyOrderCount(ssesionId).execute().body().getResult().getTotal();
+                emitter.onNext(result);
+                emitter.onComplete();
+            }
+        })
+                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);

@@ -173,10 +173,11 @@ public class LoginPhoneFragment extends Fragment {
                                         if(i == 0){
                                             UserInfo userInfo = JMessageClient.getMyInfo();
                                             userInfo.setNickname(result.getUser().getNickname());
-                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+                                            userInfo.setAddress(result.getUser().getHead_portrait());
+                                            JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
                                                 @Override
                                                 public void gotResult(int i, String s) {
-
+                                                    Tools.Toast(getActivity(), s);
                                                 }
                                             });
                                         }

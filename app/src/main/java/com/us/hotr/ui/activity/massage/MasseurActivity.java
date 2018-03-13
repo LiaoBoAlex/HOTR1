@@ -313,7 +313,7 @@ public class MasseurActivity extends BaseLoadingActivity {
                 ivMsg = (ImageView) view.findViewById(R.id.iv_msg);
                 tvName = (TextView) view.findViewById(R.id.tv_name);
                 tvHeight = (TextView) view.findViewById(R.id.tv_height);
-                tvExperience = (TextView) view.findViewById(R.id.tv_info);
+                tvExperience = (TextView) view.findViewById(R.id.tv_time);
                 tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
                 flSubject = (FlowLayout) view.findViewById(R.id.fl_subject);
                 rvPhoto = (RecyclerView) view.findViewById(R.id.rv_photo);

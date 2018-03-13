@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.beauty.ListWithSearchActivity;
@@ -32,6 +33,8 @@ import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import q.rorbin.badgeview.QBadgeView;
 
 /**
@@ -45,6 +48,7 @@ public class InfoFragment extends BaseLoadingFragment {
     private ConstraintLayout clMyOrder, clAnnouncment, clVoucher, clDraft, clFav, clFriend, clAddress;
     private HOTRSharePreference p;
     private boolean isLoaded = false;
+    private QBadgeView messageBadgeView, noticeBadgeView;
 
     public static InfoFragment newInstance() {
         InfoFragment infoFragment = new InfoFragment();
@@ -84,12 +88,18 @@ public class InfoFragment extends BaseLoadingFragment {
         clFriend = (ConstraintLayout) view.findViewById(R.id.cl_friend);
         clAddress = (ConstraintLayout) view.findViewById(R.id.cl_address);
 
-        new QBadgeView(getContext())
-                .bindTarget(tvMyOrder)
-                .setBadgeGravity(Gravity.CENTER | Gravity.END)
+        messageBadgeView = new QBadgeView(getContext());
+        noticeBadgeView = new QBadgeView(getContext());
+        messageBadgeView
+                .bindTarget(tvAnnouncment)
+                .setBadgeGravity(Gravity.CENTER_VERTICAL | Gravity.END)
                 .setBadgeBackgroundColor(getResources().getColor(R.color.red))
-                .setShowShadow(false)
-                .setBadgeNumber(5);
+                .setShowShadow(false);
+        noticeBadgeView
+                .bindTarget(tvMyOrder)
+                .setBadgeGravity(Gravity.CENTER_VERTICAL | Gravity.END)
+                .setBadgeBackgroundColor(getResources().getColor(R.color.red))
+                .setShowShadow(false);
 
         clMyOrder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,6 +180,24 @@ public class InfoFragment extends BaseLoadingFragment {
         if (isVisibleToUser && isResumed() && !isLoaded) {
             loadData(Constants.LOAD_PAGE);
         }
+    }
+
+    @Subscribe
+    public void getMessage(final Events.GetNoticeCount getNoticeCount) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(getNoticeCount.getMessageCount()>0)
+                    messageBadgeView.setBadgeNumber(getNoticeCount.getMessageCount());
+                else
+                    messageBadgeView.hide(false);
+                if(getNoticeCount.getNoticeCount()>0)
+                    noticeBadgeView.setBadgeNumber(getNoticeCount.getNoticeCount());
+                else
+                    noticeBadgeView.hide(false);
+            }
+        });
+
     }
 
     @Override

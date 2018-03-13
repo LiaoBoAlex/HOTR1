@@ -28,7 +28,6 @@ import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
@@ -68,7 +67,6 @@ import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
-import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -639,7 +637,7 @@ public class CaseActivity extends BaseLoadingActivity {
                 recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
                 tvContent = (TextView) view.findViewById(R.id.tv_content);
                 tvName = (TextView) view.findViewById(R.id.tv_name);
-                tvTime = (TextView) view.findViewById(R.id.tv_info);
+                tvTime = (TextView) view.findViewById(R.id.tv_time);
                 ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
                 ivReply = (ImageView) view.findViewById(R.id.iv_reply);
                 tvDelete = (TextView) view.findViewById(R.id.tv_delete);

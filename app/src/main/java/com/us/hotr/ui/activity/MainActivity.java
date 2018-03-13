@@ -9,14 +9,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.customview.BadgeView;
 import com.us.hotr.customview.DeactivatedViewPager;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.info.LoginActivity;
@@ -27,8 +32,20 @@ import com.us.hotr.ui.fragment.HomeFragment;
 import com.us.hotr.ui.fragment.found.FoundFragment;
 import com.us.hotr.ui.fragment.info.InfoFragment;
 import com.us.hotr.ui.fragment.receipt.ReceiptFragment;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.event.MessageEvent;
+import cn.jpush.im.android.api.event.OfflineMessageEvent;
+import cn.jpush.im.android.api.model.Conversation;
+import q.rorbin.badgeview.QBadgeView;
 
 public class
 MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -41,16 +58,89 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private InfoFragment infoFragment;
     private ReceiptFragment receiptFragment;
+    private QBadgeView badgeView;
 
     private int currentPage;
+    private int orderCount = 0, noticeCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         currentPage = 0;
-
+        JMessageClient.registerEventReceiver(this);
         initStaticView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateNoticCount(true);
+    }
+
+    @Override
+    public void onDestroy() {
+        JMessageClient.unRegisterEventReceiver(this);
+        super.onDestroy();
+    }
+
+    public void onEvent(MessageEvent event) {
+        updateNoticCount(false);
+
+    }
+
+    public void onEvent(OfflineMessageEvent event) {
+        updateNoticCount(false);
+
+    }
+
+    private void updateNoticCount(boolean updateorderCount){
+        noticeCount = 0;
+        List<Conversation> conversationList = JMessageClient.getConversationList();
+        if(conversationList!=null && conversationList.size()>0){
+            for(Conversation conversation:conversationList)
+                noticeCount = noticeCount + conversation.getUnReadMsgCnt();
+        }
+        if(updateorderCount){
+            SubscriberListener mListener = new SubscriberListener<Integer>() {
+                @Override
+                public void onNext(Integer result) {
+                    if(result == null)
+                        orderCount = 0;
+                    else
+                        orderCount = result;
+                    GlobalBus.getBus().post(new Events.GetNoticeCount(noticeCount, orderCount));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (tabInfo != null && orderCount + noticeCount > 0) {
+                                badgeView.setBadgeNumber(orderCount + noticeCount);
+                            } else if (badgeView != null) {
+                                badgeView.hide(false);
+                            }
+                        }
+                    });
+                }
+            };
+                ServiceClient.getInstance().getUnpiadOrderCount(new SilentSubscriber(mListener, this, null),
+                        HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+        }else {
+            GlobalBus.getBus().post(new Events.GetNoticeCount(noticeCount, orderCount));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (tabInfo != null && orderCount + noticeCount > 0) {
+                        badgeView.setBadgeNumber(orderCount + noticeCount);
+                    } else if (badgeView != null) {
+                        badgeView.hide(false);
+                    }
+                }
+            });
+        }
+    }
+
+    private void updateOrderCount(){
+
     }
 
     private void initStaticView(){
@@ -64,6 +154,12 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
         ivCompare = (ImageView) findViewById(R.id.iv_compare);
         ivAll1 = (ImageView) findViewById(R.id.tab_all1);
         mFrameLayout = (RelativeLayout) findViewById(R.id.fl_dim);
+
+        badgeView = new QBadgeView(this);
+        badgeView.bindTarget(tabInfo)
+                .setBadgeGravity(Gravity.TOP | Gravity.END)
+                .setBadgeBackgroundColor(getResources().getColor(R.color.red))
+                .setShowShadow(false);
 
         tabHome.setOnClickListener(this);
         tabFound.setOnClickListener(this);
@@ -146,6 +242,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 }
                 break;
             case R.id.tab_info:
+            case -1:
                 if(!HOTRSharePreference.getInstance(getApplicationContext()).isUserLogin()) {
                     LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
                         @Override
@@ -208,12 +305,12 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-            if(resultCode == SettingActivity.CODE_LOGOUT){
-                currentPage = 0;
-                setupButton(currentPage);
-            }
-            if(resultCode == SettingActivity.CODE_BACK){
-                infoFragment.updateUserInfo();
+        if(resultCode == SettingActivity.CODE_LOGOUT){
+            currentPage = 0;
+            setupButton(currentPage);
+        }
+        if(resultCode == SettingActivity.CODE_BACK){
+            infoFragment.updateUserInfo();
         }
     }
 

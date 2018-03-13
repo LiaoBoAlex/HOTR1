@@ -317,19 +317,21 @@ public class EditInfoActivity extends BaseActivity {
             }
         }
 
-        UserInfo userInfo = JMessageClient.getMyInfo();
-        if(userInfo!=null)
-        userInfo.setNickname(etName.getText().toString().trim());
-        JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
-            @Override
-            public void gotResult(int i, String s) {
-
-            }
-        });
 
         SubscriberListener mListener = new SubscriberListener<User>() {
             @Override
             public void onNext(User result) {
+                UserInfo userInfo = JMessageClient.getMyInfo();
+                if(userInfo!=null) {
+                    userInfo.setNickname(result.getNickname());
+                    userInfo.setAddress(result.getHead_portrait());
+                    JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+
+                        }
+                    });
+                }
                 HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(result);
                 setResult(Activity.RESULT_OK);
                 if(avatarPath!=null && !avatarPath.isEmpty()) {

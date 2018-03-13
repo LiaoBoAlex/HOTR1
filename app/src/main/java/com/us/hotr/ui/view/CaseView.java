@@ -59,7 +59,7 @@ public class CaseView extends FrameLayout {
         ivDelete = (ImageView) findViewById(R.id.iv_delete);
         ivAvatar = (ImageView) findViewById(R.id.iv_user_avatar);
         tvName = (TextView) findViewById(R.id.tv_name);
-        tvTime = (TextView) findViewById(R.id.tv_info);
+        tvTime = (TextView) findViewById(R.id.tv_time);
         tvFollow = (TextView) findViewById(R.id.tv_follow);
         tvContent = (TextView) findViewById(R.id.tv_content);
         tvSubject = (TextView) findViewById(R.id.tv_subject);

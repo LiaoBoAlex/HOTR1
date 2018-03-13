@@ -381,7 +381,7 @@ public class HospitalActivity extends BaseLoadingActivity {
                         }
                     });
                     hospitalHeaderHolder.tvName.setText(hospitalDetail.getDetail().getHospital_name());
-                    hospitalHeaderHolder.tvNumCase.setText("1256");
+                    hospitalHeaderHolder.tvNumCase.setText(hospitalDetail.getDetail().getCase_num()+"");
                     hospitalHeaderHolder.tvNumConsult.setText("759");
                     hospitalHeaderHolder.tvNumPointment.setText(hospitalDetail.getDetail().getOrder_num()+"");
                     hospitalHeaderHolder.tvTitle.setText(hospitalDetail.getDetail().getHospital_style());
