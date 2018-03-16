@@ -13,8 +13,6 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.ui.activity.ImageViewerActivity;
-import com.us.hotr.ui.activity.beauty.DoctorInfoActivity;
-import com.us.hotr.ui.activity.massage.MasseurAlbumActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;

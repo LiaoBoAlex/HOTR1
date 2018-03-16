@@ -1,6 +1,5 @@
 package com.us.hotr.ui.fragment.found;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,10 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
@@ -19,7 +15,6 @@ import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Group;
-import com.us.hotr.ui.activity.found.GroupDetailActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
 import com.us.hotr.ui.view.GroupView;
 import com.us.hotr.util.Tools;

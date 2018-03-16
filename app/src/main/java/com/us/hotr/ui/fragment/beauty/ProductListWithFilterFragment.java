@@ -1,14 +1,8 @@
 package com.us.hotr.ui.fragment.beauty;
 
-import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +20,6 @@ import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.ui.activity.beauty.SubjectActivity;
 import com.us.hotr.ui.fragment.SelectCityFragment;
 import com.us.hotr.ui.fragment.SelectTypeFragment;
-import com.us.hotr.ui.fragment.massage.MassageFragment;
 import com.us.hotr.ui.fragment.massage.MassageListFragment;
 import com.us.hotr.util.Tools;
 

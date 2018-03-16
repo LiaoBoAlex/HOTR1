@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.us.hotr.Constants;
-import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.info.ChatActivity;
 
 import cn.jpush.im.android.api.JMessageClient;

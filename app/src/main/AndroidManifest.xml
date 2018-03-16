@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.us.hotr">
 
     <permission
@@ -24,7 +25,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name=".ui.HOTRApplication"
+        android:name="com.us.hotr.ui.HOTRApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -36,7 +37,7 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="5yA0T7mgtXpU0rlfTax6lR70lwqcadX7" />
         <activity
-            android:name=".ui.activity.SplashActivity"
+            android:name="com.us.hotr.ui.activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
         <intent-filter>
@@ -46,165 +47,165 @@
         </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.MainActivity"
+        <activity android:name="com.us.hotr.ui.activity.MainActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
-        <activity android:name=".ui.activity.SelectCityActivity"
+        <activity android:name="com.us.hotr.ui.activity.SelectCityActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.MapViewActivity"
+        <activity android:name="com.us.hotr.ui.activity.MapViewActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.ViewpagerActivity"
+        <activity android:name="com.us.hotr.ui.activity.ViewpagerActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.ListWithSearchActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.ListWithSearchActivity"
         android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.ListActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.ListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.SelectSubjectActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.SelectSubjectActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.SubjectActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.SubjectActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.DoctorActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.DoctorActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.HospitalActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.HospitalActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.ListWithCategoryActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.ListWithCategoryActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.DoctorInfoActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.DoctorInfoActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.ProductActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.ProductActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.PayNumberActivity"
+        <activity android:name="com.us.hotr.ui.activity.PayNumberActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.PayOrderActivity"
+        <activity android:name="com.us.hotr.ui.activity.PayOrderActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.PaySuccessActivity"
+        <activity android:name="com.us.hotr.ui.activity.PaySuccessActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.CameraActivity"
+        <activity android:name="com.us.hotr.ui.activity.CameraActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.AvailableVoucherActivity"
+        <activity android:name="com.us.hotr.ui.activity.AvailableVoucherActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.receipt.ReceiptDetailActivity"
+        <activity android:name="com.us.hotr.ui.activity.receipt.ReceiptDetailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.beauty.CaseActivity"
+        <activity android:name="com.us.hotr.ui.activity.beauty.CaseActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
-        <activity android:name=".ui.activity.search.SearchHintActivity"
+        <activity android:name="com.us.hotr.ui.activity.search.SearchHintActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible"/>
-        <activity android:name=".ui.activity.search.SearchResultActivity"
+        <activity android:name="com.us.hotr.ui.activity.search.SearchResultActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".ui.activity.search.SearchTypeActivity"
+        <activity android:name="com.us.hotr.ui.activity.search.SearchTypeActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.OrderListActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.OrderListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.ProductOrderDetailActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.ProductOrderDetailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.MassageOrderDetailActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.MassageOrderDetailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.PartyOrderDetailActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.PartyOrderDetailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.VoucherActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.VoucherActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.NoticeActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.NoticeActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.ChatActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.ChatActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|keyboardHidden"/>
-        <activity android:name=".ui.activity.info.FriendActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.FriendActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.FavoriteListActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.FavoriteListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.FavoriteCategoryActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.FavoriteCategoryActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.EditInfoActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.EditInfoActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.SettingActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.SettingActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.ChangePhoneNumberActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.ChangePhoneNumberActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible"/>
-        <activity android:name=".ui.activity.info.ChangePasswordActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.ChangePasswordActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible"/>
-        <activity android:name=".ui.activity.info.HelpAndFeedbackActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.HelpAndFeedbackActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.FAQActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.FAQActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.FeedbackActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.FeedbackActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.AboutUsActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.AboutUsActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.info.LoginActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.LoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".ui.activity.info.ForgotPasswordActivity"
+        <activity android:name="com.us.hotr.ui.activity.info.ForgotPasswordActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".ui.activity.WebViewActivity"
+        <activity android:name="com.us.hotr.ui.activity.WebViewActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.ImageViewerActivity"
+        <activity android:name="com.us.hotr.ui.activity.ImageViewerActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.post.UploadCompareActivity1"
+        <activity android:name="com.us.hotr.ui.activity.post.UploadCompareActivity1"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.post.UploadCompareActivity2"
+        <activity android:name="com.us.hotr.ui.activity.post.UploadCompareActivity2"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible"/>
-        <activity android:name=".ui.activity.post.UploadPostActivity1"
+        <activity android:name="com.us.hotr.ui.activity.post.UploadPostActivity1"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible"/>
-        <activity android:name=".ui.activity.post.UploadPostActivity2"
+        <activity android:name="com.us.hotr.ui.activity.post.UploadPostActivity2"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.massage.MasseurActivity"
+        <activity android:name="com.us.hotr.ui.activity.massage.MasseurActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.massage.SpaActivity"
+        <activity android:name="com.us.hotr.ui.activity.massage.SpaActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.massage.MassageActivity"
+        <activity android:name="com.us.hotr.ui.activity.massage.MassageActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.massage.MasseurAlbumActivity"
+        <activity android:name="com.us.hotr.ui.activity.massage.MasseurAlbumActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.party.FilterActivity"
+        <activity android:name="com.us.hotr.ui.activity.party.FilterActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.party.CalendarActivity"
+        <activity android:name="com.us.hotr.ui.activity.party.CalendarActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.party.PartyActivity"
+        <activity android:name="com.us.hotr.ui.activity.party.PartyActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name=".ui.activity.party.PartyPayNumberActivity"
+        <activity android:name="com.us.hotr.ui.activity.party.PartyPayNumberActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.party.PartyOrderActivity"
+        <activity android:name="com.us.hotr.ui.activity.party.PartyOrderActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.party.DeliverAddressListActivity"
+        <activity android:name="com.us.hotr.ui.activity.party.DeliverAddressListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.party.EditDeliverAddressActivity"
+        <activity android:name="com.us.hotr.ui.activity.party.EditDeliverAddressActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.party.BuyerInfoActivity"
+        <activity android:name="com.us.hotr.ui.activity.party.BuyerInfoActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.found.AllGroupActivity"
+        <activity android:name="com.us.hotr.ui.activity.found.AllGroupActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.found.GroupDetailActivity"
+        <activity android:name="com.us.hotr.ui.activity.found.GroupDetailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.found.NearbyActivity"
+        <activity android:name="com.us.hotr.ui.activity.found.NearbyActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".wxapi.WXEntryActivity"
+        <activity android:name="com.us.hotr.wxapi.WXEntryActivity"
             android:screenOrientation="portrait"
             android:exported="true"/>
         <activity
-            android:name=".wxapi.WXPayEntryActivity"
+            android:name="com.us.hotr.wxapi.WXPayEntryActivity"
             android:exported="true"
             android:launchMode="singleTop"
             >
         </activity>
 
-        <receiver android:name=".wxapi.AppRegister"
+        <receiver android:name="com.us.hotr.wxapi.AppRegister"
             android:permission="com.tencent.mm.plugin.permission.SEND">
             <intent-filter>
                 <action android:name="com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.activity.SinaShareActivity"
+        <activity android:name="com.us.hotr.ui.activity.SinaShareActivity"
             android:screenOrientation="portrait"/>
 
         <activity
@@ -245,6 +246,12 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name="cn.jpush.android.service.DownloadService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
+
         <receiver
             android:name="cn.jpush.android.service.PushReceiver"
             android:enabled="true"
@@ -270,16 +277,68 @@
             android:name="cn.jpush.android.service.AlarmReceiver"
             android:exported="false" />
 
+        <receiver
+            android:name="com.us.hotr.receiver.CallBackReceiver"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
+                <category android:name="com.us.hotr" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.us.hotr.receiver.NoticeReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" />
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
+                <action android:name="cn.jpush.android.intent.CONNECTION" />
+                <category android:name="com.us.hotr" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="cn.jpush.android.service.DataProvider"
             android:authorities="com.us.hotr.DataProvider"
-            android:exported="true" />
+            android:exported="true"
+            tools:replace="android:exported, android:authorities"/>
+
+        <provider
+            android:authorities="com.us.hotr.DownloadProvider"
+            android:name="cn.jpush.android.service.DownloadProvider"
+            android:exported="true"
+            />
 
         <receiver
             android:name="cn.jpush.im.android.helpers.IMReceiver"
             android:enabled="true"
             android:exported="false">
         </receiver>
+
+        <activity
+            android:name="cn.jpush.android.ui.PushActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.jpush.android.ui.PushActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.us.hotr" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="cn.jpush.android.ui.PopWinActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:theme="@style/MyDialogStyle">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.us.hotr" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="JPUSH_CHANNEL"

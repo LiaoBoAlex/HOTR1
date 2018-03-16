@@ -296,27 +296,33 @@
                             android:textSize="12sp" />
                     </LinearLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:background="@color/divider2" />
+
 
                     <android.support.constraint.ConstraintLayout
+                        android:id="@+id/cl_buyer_info_title"
                         android:layout_width="match_parent"
                         android:layout_height="44dp"
                         android:background="@color/white">
+
+                        <View
+                            android:id="@+id/view55"
+                            android:layout_width="match_parent"
+                            android:layout_height="6dp"
+                            android:background="@color/divider2"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="0dp"
                             android:layout_marginLeft="12dp"
-                            android:layout_marginTop="0dp"
                             android:text="@string/buyer_info"
                             android:textColor="@color/text_black"
                             android:textSize="14sp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toBottomOf="@+id/view55" />
                     </android.support.constraint.ConstraintLayout>
 
                     <View

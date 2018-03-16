@@ -1,7 +1,6 @@
 package com.us.hotr.storage.bean;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Created by Mloong on 2017/8/31.

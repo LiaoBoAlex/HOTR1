@@ -2,8 +2,6 @@ package com.us.hotr.webservice.response;
 
 import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Comment;
-import com.us.hotr.storage.bean.Doctor;
-import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.User;
 

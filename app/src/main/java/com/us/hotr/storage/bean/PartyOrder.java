@@ -19,10 +19,12 @@ public class PartyOrder implements Serializable{
     private String order_update_time;
     private String term_of_validity;
     private double order_price;
+    @SerializedName(value = "order_code", alternate = {"orderCode"})
     private String order_code;
     private long id;
     private String addressee_phone;
     private int purchaser_credentials;
+    @SerializedName(value = "travel_name", alternate = {"travelName"})
     private String travel_name;
     private long user_id;
     private String travel_start_time;

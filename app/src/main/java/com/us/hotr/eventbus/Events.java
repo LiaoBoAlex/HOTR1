@@ -4,8 +4,6 @@ package com.us.hotr.eventbus;
 import com.us.hotr.storage.bean.Voucher;
 import com.us.hotr.webservice.response.GetLoginResponse;
 
-import java.util.List;
-
 /**
  * Created by Mloong on 2017/9/5.
  */
@@ -92,6 +90,23 @@ public class Events {
     public static class Refresh{
         public Refresh(){
 
+        }
+    }
+
+    public static class PaymentSuccess{
+        public PaymentSuccess(){
+
+        }
+    }
+
+    public static class GotoMainPageNumber{
+        private int page;
+        public GotoMainPageNumber(int page){
+            this.page = page;
+        }
+
+        public int getPage() {
+            return page;
         }
     }
 
@@ -189,6 +204,17 @@ public class Events {
 
         public int getNoticeCount(){
             return noticeCount;
+        }
+    }
+
+    public static class JPushSetTag{
+        private boolean result;
+        public JPushSetTag(boolean result){
+            this.result = result;
+        }
+
+        public boolean isResult() {
+            return result;
         }
     }
 

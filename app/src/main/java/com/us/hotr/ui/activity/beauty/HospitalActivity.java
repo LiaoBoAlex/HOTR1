@@ -348,6 +348,7 @@ public class HospitalActivity extends BaseLoadingActivity {
                 case TYPE_CASE:
                     CaseHolder caseHolder = (CaseHolder) holder;
                     caseHolder.caseView.setData((Case)itemList.get(position).getContent());
+                    caseHolder.caseView.enableEdit(false);
                     break;
 
                 case TYPE_DOCTOR:

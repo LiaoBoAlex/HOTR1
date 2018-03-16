@@ -31,9 +31,11 @@ import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.enums.ContentType;
 import cn.jpush.im.android.api.event.MessageEvent;
@@ -117,18 +119,28 @@ public class NoticeMessageFragment extends BaseLoadingFragment {
             public void onNext(List<Conversation> result) {
                 int total = 0;
                 if(result!=null && result.size()>0) {
-                    for(Conversation conversation:result)
-                        total = total + conversation.getUnReadMsgCnt();
-                    mEmptyView.setVisibility(View.GONE);
-                    if (mAdapter == null) {
-                        mAdapter = new MyAdapter(result);
-                        MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
-                        myBaseAdapter.setFooterView();
-                        mRecyclerView.setAdapter(myBaseAdapter);
-                    } else {
-                        mAdapter.setData(result);
+                    List<Conversation> mConList = new ArrayList<>();
+
+                    for(Conversation conversation:result) {
+                        if(conversation.getLatestMessage()!=null) {
+                            total = total + conversation.getUnReadMsgCnt();
+                            mConList.add(conversation);
+                        }
                     }
-                }else
+                    if(mConList.size()>0) {
+                        mEmptyView.setVisibility(View.GONE);
+                        if (mAdapter == null) {
+                            mAdapter = new MyAdapter(mConList);
+                            MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
+                            myBaseAdapter.setFooterView();
+                            mRecyclerView.setAdapter(myBaseAdapter);
+                        } else {
+                            mAdapter.setData(mConList);
+                        }
+                    }else
+                        mEmptyView.setVisibility(View.VISIBLE);
+                }
+                else
                     mEmptyView.setVisibility(View.VISIBLE);
                 GlobalBus.getBus().post(new Events.GetNoticeCount(total, 0));
             }
@@ -201,6 +213,7 @@ public class NoticeMessageFragment extends BaseLoadingFragment {
         public void removeData(int position){
             conversationList.remove(position);
             notifyItemRemoved(position);
+            notifyItemRangeChanged(0, conversationList.size());
         }
 
         @Override
@@ -220,6 +233,16 @@ public class NoticeMessageFragment extends BaseLoadingFragment {
             if(name == null || name.isEmpty())
                 name = userInfo.getUserName();
             holder.tvName.setText(name);
+            JMessageClient.getUserInfo(((UserInfo)conversation.getTargetInfo()).getUserName(), new GetUserInfoCallback() {
+                        @Override
+                        public void gotResult(int i, String s, UserInfo info) {
+                            Glide.with(NoticeMessageFragment.this).load(info.getAddress()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(holder.ivAvatar);
+                            String name = info.getNickname();
+                            if(name == null || name.isEmpty())
+                                name = info.getUserName();
+                            holder.tvName.setText(name);
+                        }
+                    });
             Message message = conversation.getLatestMessage();
             holder.tvTime.setText(Tools.getChatTime1(getActivity().getApplicationContext(), message.getCreateTime()));
             if (message.getContentType() == ContentType.text)

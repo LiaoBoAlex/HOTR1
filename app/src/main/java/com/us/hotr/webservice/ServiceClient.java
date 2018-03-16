@@ -68,6 +68,7 @@ import com.us.hotr.webservice.response.UpdateUserAvatarRespone;
 import com.us.hotr.webservice.response.UploadPostResponse;
 import com.us.hotr.webservice.rxjava.ApiException;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import java.io.File;
@@ -76,6 +77,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.model.UserInfo;
+import cn.jpush.im.api.BasicCallback;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -589,11 +593,21 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
-    public void createWechatBill(final DisposableObserver subscriber, final String jsessionid, final long order_id, Context mContext){
+    public void createWechatBill(final DisposableObserver subscriber, final String jsessionid, final long order_id, final int type, Context mContext){
         SubscriberWithFinishListener l = new SubscriberWithFinishListener<String>() {
             @Override
             public void onNext(String s) {
-                createWechatBillEx(subscriber, jsessionid, order_id, s);
+                switch (type) {
+                    case Constants.TYPE_PRODUCT:
+                        createWechatProductBillEx(subscriber, jsessionid, order_id, s);
+                        break;
+                    case Constants.TYPE_MASSAGE:
+                        createWechatMassageBillEx(subscriber, jsessionid, order_id, s);
+                        break;
+                    case Constants.TYPE_PARTY:
+                        createWechatPartyBillEx(subscriber, jsessionid, order_id, s);
+                        break;
+                }
             }
 
             @Override
@@ -603,7 +617,17 @@ public class ServiceClient {
 
             @Override
             public void onError(Throwable e) {
-                createWechatBillEx(subscriber, jsessionid, order_id, "127.0.0.1");
+                switch (type) {
+                    case Constants.TYPE_PRODUCT:
+                        createWechatProductBillEx(subscriber, jsessionid, order_id, "127.0.0.1");
+                        break;
+                    case Constants.TYPE_MASSAGE:
+                        createWechatMassageBillEx(subscriber, jsessionid, order_id, "127.0.0.1");
+                        break;
+                    case Constants.TYPE_PARTY:
+                        createWechatPartyBillEx(subscriber, jsessionid, order_id, "127.0.0.1");
+                        break;
+                }
             }
         };
         Observable.create(new ObservableOnSubscribe<String>() {
@@ -619,8 +643,26 @@ public class ServiceClient {
                 .subscribe(new ProgressSubscriber<String>(l, mContext));
     }
 
-    public void createWechatBillEx(DisposableObserver subscriber, String jsessionid, long order_id, String spbill_create_ip){
-        webService.createWechatBill(jsessionid, order_id, spbill_create_ip)
+    public void createWechatProductBillEx(DisposableObserver subscriber, String jsessionid, long order_id, String spbill_create_ip){
+        webService.createWechatProductBill(jsessionid, order_id, spbill_create_ip)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<WechatBill>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void createWechatMassageBillEx(DisposableObserver subscriber, String jsessionid, long order_id, String spbill_create_ip){
+        webService.createWechatMassageBill(jsessionid, order_id, spbill_create_ip)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<WechatBill>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void createWechatPartyBillEx(DisposableObserver subscriber, String jsessionid, long order_id, String spbill_create_ip){
+        webService.createWechatPartyBill(jsessionid, order_id, spbill_create_ip)
                 .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<WechatBill>())
                 .unsubscribeOn(Schedulers.io())
@@ -1149,44 +1191,126 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
-    public void loginAndRegister(DisposableObserver subscriber, LoginAndRegisterRequest request) {
-        webService.loginAndRegister(request)
+    public void loginAndRegister(DisposableObserver subscriber, final LoginAndRegisterRequest request) {
+        Observable.create(new ObservableOnSubscribe<BaseResponse<GetLoginResponse>>() {
+            @Override
+            public void subscribe(final ObservableEmitter<BaseResponse<GetLoginResponse>> emitter) throws Exception {
+                final BaseResponse<GetLoginResponse> response =  webService.loginAndRegister(request).execute().body();
+                if(response.getResult()!=null && response.getStatus()==200) {
+                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+                            if (i == 0 || i == 898001) {
+                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+                                    @Override
+                                    public void gotResult(int i, String s) {
+                                        if (i == 0) {
+                                            UserInfo userInfo = JMessageClient.getMyInfo();
+                                            userInfo.setNickname(response.getResult().getUser().getNickname());
+                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
+                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+                                                @Override
+                                                public void gotResult(int i, String s) {
+
+                                                }
+                                            });
+
+                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
+                                                @Override
+                                                public void gotResult(int i, String s) {
+                                                    emitter.onNext(response);
+                                                    emitter.onComplete();
+                                                }
+                                            });
+
+
+                                        } else
+                                            emitter.onError(new ApiException(500, ""));
+                                    }
+                                });
+                            } else
+                                emitter.onError(new ApiException(500, ""));
+                        }
+                    });
+                }else{
+                    emitter.onNext(response);
+                    emitter.onComplete();
+                }
+
+            }
+        })      .map(new HttpResultFunc<GetLoginResponse>())
                 .subscribeOn(Schedulers.io())
-                .map(new HttpResultFunc<GetLoginResponse>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void loginWithWechat(DisposableObserver subscriber, String appid, String secret, String code, String grant_type){
-        webService.getWechatAccessToken(Constants.WECHAT_LOGIN_URL, appid, secret, code, grant_type)
-                .subscribeOn(Schedulers.io())
-                .flatMap(new Function<GetWechatAccessTokenResponse, Observable<GetWechatUserInfo>>() {
-                    @Override
-                    public Observable<GetWechatUserInfo> apply(GetWechatAccessTokenResponse getWechatAccessTokenResponse) throws Exception {
-                        return webService.getWechatUserInfo(Constants.WECHAT_USER_INFO_URL,
-                                getWechatAccessTokenResponse.getAccess_token(),
-                                getWechatAccessTokenResponse.getOpenid());
-                    }
-                })
-                .flatMap(new Function<GetWechatUserInfo, Observable<BaseResponse<GetLoginResponse>>>() {
-                    @Override
-                    public Observable<BaseResponse<GetLoginResponse>> apply(GetWechatUserInfo getWechatUserInfo) throws Exception {
-                        int sex;
-                        if(getWechatUserInfo.getSex().equals("1"))
-                            sex = 0;
-                        else if (getWechatUserInfo.getSex().equals("2"))
-                            sex = 1;
-                        else
-                            sex = 2;
-                        return webService.loginWithWechat(new LoginWithWechatRequest(
-                                getWechatUserInfo.getNickname(),
-                                getWechatUserInfo.getHeadimgurl(),
-                                getWechatUserInfo.getOpenid(),
-                                sex));
-                    }
-                })
+    public void loginWithWechat(DisposableObserver subscriber, final String appid, final String secret, final String code, final String grant_type){
+        Observable.create(new ObservableOnSubscribe<BaseResponse<GetLoginResponse>>() {
+            @Override
+            public void subscribe(final ObservableEmitter<BaseResponse<GetLoginResponse>> emitter) throws Exception {
+                GetWechatAccessTokenResponse getWechatAccessTokenResponse =  webService.getWechatAccessToken(Constants.WECHAT_LOGIN_URL, appid, secret, code, grant_type).execute().body();
+                GetWechatUserInfo getWechatUserInfo = webService.getWechatUserInfo(Constants.WECHAT_USER_INFO_URL,
+                        getWechatAccessTokenResponse.getAccess_token(),
+                        getWechatAccessTokenResponse.getOpenid()).execute().body();
+                int sex;
+                if(getWechatUserInfo.getSex().equals("1"))
+                    sex = 0;
+                else if (getWechatUserInfo.getSex().equals("2"))
+                    sex = 1;
+                else
+                    sex = 2;
+                final BaseResponse<GetLoginResponse> response = webService.loginWithWechat(new LoginWithWechatRequest(
+                        getWechatUserInfo.getNickname(),
+                        getWechatUserInfo.getHeadimgurl(),
+                        getWechatUserInfo.getOpenid(),
+                        sex)).execute().body();
+
+                if(response.getResult()!=null && response.getStatus() == 200) {
+                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+                            if (i == 0 || i == 898001) {
+                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+                                    @Override
+                                    public void gotResult(int i, String s) {
+                                        if (i == 0) {
+                                            UserInfo userInfo = JMessageClient.getMyInfo();
+                                            userInfo.setNickname(response.getResult().getUser().getNickname());
+                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
+                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+                                                @Override
+                                                public void gotResult(int i, String s) {
+
+                                                }
+                                            });
+
+                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
+                                                @Override
+                                                public void gotResult(int i, String s) {
+                                                    emitter.onNext(response);
+                                                    emitter.onComplete();
+                                                }
+                                            });
+
+
+                                        } else
+                                            emitter.onError(new ApiException(500));
+                                    }
+                                });
+                            } else
+                                emitter.onError(new ApiException(500));
+                        }
+                    });
+                }else{
+                    emitter.onNext(response);
+                    emitter.onComplete();
+                }
+
+            }
+        })
                 .map(new HttpResultFunc<GetLoginResponse>())
+                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -1237,10 +1361,56 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
-    public void login(DisposableObserver subscriber, String userName, String password) {
-        webService.login(userName, password)
-                .subscribeOn(Schedulers.io())
+    public void login(DisposableObserver subscriber, final String userName, final String password) {
+        Observable.create(new ObservableOnSubscribe<BaseResponse<GetLoginResponse>>() {
+            @Override
+            public void subscribe(final ObservableEmitter<BaseResponse<GetLoginResponse>> emitter) throws Exception {
+                final BaseResponse<GetLoginResponse> response =  webService.login(userName, password).execute().body();
+                if(response.getResult()!=null && response.getStatus() == 200) {
+                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+                            if (i == 0 || i == 898001) {
+                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+                                    @Override
+                                    public void gotResult(int i, String s) {
+                                        if (i == 0) {
+                                            UserInfo userInfo = JMessageClient.getMyInfo();
+                                            userInfo.setNickname(response.getResult().getUser().getNickname());
+                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
+                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+                                                @Override
+                                                public void gotResult(int i, String s) {
+
+                                                }
+                                            });
+
+                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
+                                                @Override
+                                                public void gotResult(int i, String s) {
+                                                    emitter.onNext(response);
+                                                    emitter.onComplete();
+                                                }
+                                            });
+
+
+                                        } else
+                                            emitter.onError(new ApiException(500, ""));
+                                    }
+                                });
+                            } else
+                                emitter.onError(new ApiException(500, ""));
+                        }
+                    });
+                }else {
+                    emitter.onNext(response);
+                    emitter.onComplete();
+                }
+
+            }
+        })
                 .map(new HttpResultFunc<GetLoginResponse>())
+                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -1462,14 +1632,20 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
-    public void getUnpiadOrderCount(DisposableObserver subscriber, final String ssesionId){
+    public void getUnpiadOrderCount(final SubscriberListener mListener, final String ssesionId){
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
                 int result = 0;
-                result = result + webService.getUnpaidProductOrderCount(ssesionId).execute().body().getResult().getTotal();
-                result = result + webService.getUnpaidMassageOrderCount(ssesionId).execute().body().getResult().getTotal();
-                result = result + webService.getUnpaidPartyOrderCount(ssesionId).execute().body().getResult().getTotal();
+                BaseListResponse response = webService.getUnpaidProductOrderCount(ssesionId).execute().body().getResult();
+                if(response!=null)
+                    result = result + response.getTotal();
+                response = webService.getUnpaidMassageOrderCount(ssesionId).execute().body().getResult();
+                if(response!=null)
+                    result = result + response.getTotal();
+                response = webService.getUnpaidPartyOrderCount(ssesionId).execute().body().getResult();
+                if(response!=null)
+                    result = result + response.getTotal();
                 emitter.onNext(result);
                 emitter.onComplete();
             }
@@ -1477,7 +1653,22 @@ public class ServiceClient {
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new DisposableObserver<Integer>() {
+                    @Override
+                    public void onNext(Integer integer) {
+                        mListener.onNext(integer);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
     public void getMassageOrderDetail(DisposableObserver subscriber, String ssesionId, long id){
         webService.getMassageOrderDetail(ssesionId, id)
@@ -1528,6 +1719,33 @@ public class ServiceClient {
         webService.cancelPartyOrder(ssesionId, request)
                 .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<PartyOrder>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void deleteProductOrder(DisposableObserver subscriber, String ssesionId, long order_id){
+        webService.deleteProductOrder(ssesionId, order_id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void deleteMassageOrder(DisposableObserver subscriber, String ssesionId, long order_id){
+        webService.deleteMassageOrder(ssesionId, order_id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void deletePartyOrder(DisposableObserver subscriber, String ssesionId, long order_id){
+        webService.deletePartyOrder(ssesionId, order_id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);

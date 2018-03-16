@@ -16,7 +16,6 @@ import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.storage.bean.Doctor;
 import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
 import com.us.hotr.ui.view.HospitalView;

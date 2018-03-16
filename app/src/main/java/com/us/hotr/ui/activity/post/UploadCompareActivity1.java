@@ -17,7 +17,6 @@ import com.us.hotr.storage.bean.Doctor;
 import com.us.hotr.storage.bean.Product;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.activity.beauty.ListActivity;
-import com.us.hotr.ui.activity.beauty.ListWithSearchActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.Tools;
 
@@ -112,13 +111,16 @@ public class UploadCompareActivity1 extends BaseActivity {
         clDoctor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(UploadCompareActivity1.this, ListActivity.class);
-                Bundle b = new Bundle();
-                b.putString(Constants.PARAM_TITLE, getString(R.string.choose_doctor_title));
-                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MY_DOCTOR);
-                b.putLong(Constants.PARAM_HOSPITAL_ID, selectedProduct.getHospital_id());
-                i.putExtras(b);
-                startActivityForResult(i, 1);
+                if(selectedProduct != null) {
+                    Intent i = new Intent(UploadCompareActivity1.this, ListActivity.class);
+                    Bundle b = new Bundle();
+                    b.putString(Constants.PARAM_TITLE, getString(R.string.choose_doctor_title));
+                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MY_DOCTOR);
+                    b.putLong(Constants.PARAM_HOSPITAL_ID, selectedProduct.getHospital_id());
+                    i.putExtras(b);
+                    startActivityForResult(i, 1);
+                }else
+                    Tools.Toast(UploadCompareActivity1.this, getString(R.string.choose_product_first));
             }
         });
 

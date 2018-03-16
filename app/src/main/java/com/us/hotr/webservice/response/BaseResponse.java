@@ -1,7 +1,5 @@
 package com.us.hotr.webservice.response;
 
-import java.io.Serializable;
-
 /**
  * Created by Mloong on 2017/11/29.
  */

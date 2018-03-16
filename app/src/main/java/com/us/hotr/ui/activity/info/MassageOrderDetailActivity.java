@@ -137,6 +137,7 @@ public class MassageOrderDetailActivity extends BaseLoadingActivity {
                     Bundle b = new Bundle();
                     b.putSerializable(Constants.PARAM_DATA, result);
                     b.putInt(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                    b.putBoolean(PayOrderActivity.PARAM_FROM_ORDED_LIST, true);
                     i.putExtras(b);
                     startActivity(i);
                 }

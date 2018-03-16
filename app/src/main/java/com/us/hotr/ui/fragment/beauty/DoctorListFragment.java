@@ -20,7 +20,6 @@ import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Doctor;
-import com.us.hotr.storage.bean.Post;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
 import com.us.hotr.ui.view.DoctorView;
 import com.us.hotr.util.Tools;

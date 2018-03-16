@@ -23,7 +23,6 @@ import com.us.hotr.ui.fragment.beauty.PostListFragment;
 import com.us.hotr.ui.fragment.info.PersonalIntroFragment;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
-import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
@@ -31,8 +30,6 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Mloong on 2017/9/21.

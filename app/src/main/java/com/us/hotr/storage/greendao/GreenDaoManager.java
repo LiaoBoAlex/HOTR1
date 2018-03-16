@@ -2,8 +2,6 @@ package com.us.hotr.storage.greendao;
 
 import android.content.Context;
 
-import com.us.hotr.ui.HOTRApplication;
-
 /**
  * Created by Mloong on 2017/8/30.
  */

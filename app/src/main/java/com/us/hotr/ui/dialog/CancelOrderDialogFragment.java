@@ -17,7 +17,8 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
  */
 
 public class CancelOrderDialogFragment extends BottomSheetDialogFragment {
-    TextView tvCancel, tvDone, tvOption1, tvOption2, tvOption3, tvOption4, lastSelectedView;
+    private TextView tvCancel, tvDone, tvOption1, tvOption2, tvOption3, tvOption4, lastSelectedView;
+    private String reason;
     private BottomSheetBehavior mBehavior;
     private OnItemSelectedListener onItemSeletedListener;
 
@@ -31,6 +32,20 @@ public class CancelOrderDialogFragment extends BottomSheetDialogFragment {
                 lastSelectedView.setBackgroundResource(R.color.white);
             }
             lastSelectedView = (TextView) view;
+            switch (view.getId()){
+                case R.id.tv_option1:
+                    reason = tvOption1.getText().toString().trim();
+                    break;
+                case R.id.tv_option2:
+                    reason = tvOption2.getText().toString().trim();
+                    break;
+                case R.id.tv_option3:
+                    reason = tvOption3.getText().toString().trim();
+                    break;
+                case R.id.tv_option4:
+                    reason = tvOption4.getText().toString().trim();
+                    break;
+            }
         }
     };
 
@@ -54,7 +69,7 @@ public class CancelOrderDialogFragment extends BottomSheetDialogFragment {
             public void onClick(View view) {
                 mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 if(onItemSeletedListener!= null)
-                    onItemSeletedListener.OnItemSelected(((TextView)view).getText().toString());
+                    onItemSeletedListener.OnItemSelected(reason);
             }
         });
         tvCancel.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +86,7 @@ public class CancelOrderDialogFragment extends BottomSheetDialogFragment {
         tvOption1.setTextColor(getResources().getColor(R.color.text_black));
         tvOption1.setBackgroundResource(R.color.cyan1);
         lastSelectedView = tvOption1;
+        reason = tvOption1.getText().toString().trim();
 
         return dialog;
 

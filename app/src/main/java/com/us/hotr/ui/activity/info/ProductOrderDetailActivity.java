@@ -18,13 +18,11 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.ProductOrder;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MapViewActivity;
 import com.us.hotr.ui.activity.PayOrderActivity;
 import com.us.hotr.ui.activity.beauty.ProductActivity;
-import com.us.hotr.ui.activity.massage.MassageActivity;
 import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.PermissionUtil;
@@ -160,6 +158,7 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
                     Bundle b = new Bundle();
                     b.putSerializable(Constants.PARAM_DATA, result);
                     b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
+                    b.putBoolean(PayOrderActivity.PARAM_FROM_ORDED_LIST, true);
                     i.putExtras(b);
                     startActivity(i);
                 }

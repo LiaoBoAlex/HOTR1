@@ -1,9 +1,6 @@
 package com.us.hotr.webservice.request;
 
-import com.us.hotr.storage.bean.Ticket;
-
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Created by liaobo on 2018/2/7.

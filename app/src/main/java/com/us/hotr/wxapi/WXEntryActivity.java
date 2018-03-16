@@ -2,9 +2,7 @@ package com.us.hotr.wxapi;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -13,17 +11,12 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
-import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.HOTRApplication;
-import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.GetLoginResponse;
-import com.us.hotr.webservice.response.GetWechatUserInfo;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
-
-import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by Mloong on 2017/11/2.

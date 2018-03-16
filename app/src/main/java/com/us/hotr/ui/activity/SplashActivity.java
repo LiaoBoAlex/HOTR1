@@ -1,32 +1,18 @@
 package com.us.hotr.ui.activity;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-import com.tencent.stat.MtaSDkException;
-import com.tencent.stat.StatService;
-import com.us.hotr.Constants;
 import com.us.hotr.R;
-import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Adv;
-import com.us.hotr.storage.bean.Subject;
-import com.us.hotr.ui.fragment.beauty.SelectSubjectFragment;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
-import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
-import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

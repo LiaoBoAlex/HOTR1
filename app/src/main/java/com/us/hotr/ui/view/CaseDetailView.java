@@ -63,7 +63,7 @@ public class CaseDetailView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_case_detail, this);
         ivAvatar = (ImageView) findViewById(R.id.iv_avatar);
         tvName = (TextView) findViewById(R.id.tv_name);
-        tvInfo = (TextView) findViewById(R.id.tv_time);
+        tvInfo = (TextView) findViewById(R.id.tv_info);
         tvFollow = (TextView) findViewById(R.id.tv_follow);
         tvHospital = (TextView) findViewById(R.id.tv_hospital);
         tvDoctor = (TextView) findViewById(R.id.tv_doctor);
@@ -222,7 +222,8 @@ public class CaseDetailView extends FrameLayout {
                 Bundle b = new Bundle();
                 b.putSerializable(Constants.PARAM_DATA, (Serializable) photoes);
                 b.putInt(Constants.PARAM_ID, 0);
-                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                b.putSerializable(Constants.PARAM_PRODUCT_ID, response.getProduct());
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
                 i.putExtras(b);
                 getContext().startActivity(i);
             }
@@ -234,7 +235,8 @@ public class CaseDetailView extends FrameLayout {
                 Bundle b = new Bundle();
                 b.putSerializable(Constants.PARAM_DATA, (Serializable) photoes);
                 b.putInt(Constants.PARAM_ID, 1);
-                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                b.putSerializable(Constants.PARAM_PRODUCT_ID, response.getProduct());
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
                 i.putExtras(b);
                 getContext().startActivity(i);
             }

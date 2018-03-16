@@ -1,17 +1,13 @@
 package com.us.hotr.ui.fragment.info;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.InputType;
-import android.text.Spanned;
 import android.text.TextWatcher;
-import android.text.method.DigitsKeyListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,14 +19,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.us.hotr.R;
-import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.request.ChangePasswordRequest;
-import com.us.hotr.webservice.request.LoginAndRegisterRequest;
 import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
-import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 

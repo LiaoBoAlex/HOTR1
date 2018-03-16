@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,7 +26,6 @@ import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Mloong on 2017/11/1.
@@ -192,6 +190,7 @@ public class GroupDetailFragment extends BaseLoadingFragment {
                         public void onClick(View view) {
                             haveHeader = false;
                             notifyItemRemoved(0);
+                            notifyItemRangeChanged(0, getItemCount());
                         }
                     });
                     if(mGroup.getNotice().length()>50) {

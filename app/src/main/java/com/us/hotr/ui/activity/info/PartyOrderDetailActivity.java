@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,12 +21,9 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.storage.bean.PartyOrder;
 import com.us.hotr.storage.bean.Ticket;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.PayOrderActivity;
-import com.us.hotr.ui.activity.party.PartyActivity;
-import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.util.Tools;
@@ -50,6 +48,7 @@ public class PartyOrderDetailActivity extends BaseLoadingActivity {
     private ImageView ivAvatar;
     private RecyclerView recyclerview;
     private LinearLayout llNotice;
+    private ConstraintLayout clBuyerInfo, clBuyerInfoTitle;
     private MyAdapter mAdapter;
 
     @Override
@@ -94,8 +93,13 @@ public class PartyOrderDetailActivity extends BaseLoadingActivity {
         tvGetterPhone.setText(getString(R.string.phone_number1)+result.getOrder().getAddressee_phone());
         tvGetterAddress.setText(getString(R.string.delivery_address) + getString(R.string.colon) + result.getOrder().getAddress());
         tvGetterEmail.setText(getString(R.string.email) + getString(R.string.colon) + result.getOrder().getAddressee_email());
-        tvBuyerName.setText(result.getOrder().getPurchaser_name());
-        tvBuyerAddress.setText(String.format(getString(R.string.buyer_info1), result.getOrder().getPurchaser_credentials_numb(), result.getOrder().getPurchaser_phone()));
+        if(result.getOrder().getPurchaser_name()!=null && result.getOrder().getPurchaser_credentials_numb()!=null && result.getOrder().getPurchaser_phone()!=null) {
+            tvBuyerName.setText(result.getOrder().getPurchaser_name());
+            tvBuyerAddress.setText(String.format(getString(R.string.buyer_info1), result.getOrder().getPurchaser_credentials_numb(), result.getOrder().getPurchaser_phone()));
+        }else{
+            clBuyerInfoTitle.setVisibility(View.GONE);
+            clBuyerInfo.setVisibility(View.GONE);
+        }
         if(result.getOrder().getTake_ticket_notice()!= null && !result.getOrder().getTake_ticket_notice().isEmpty())
             tvNotice.setText(result.getOrder().getTake_ticket_notice());
         else
@@ -157,6 +161,7 @@ public class PartyOrderDetailActivity extends BaseLoadingActivity {
                     Bundle b = new Bundle();
                     b.putSerializable(Constants.PARAM_DATA, result.getOrder());
                     b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PARTY);
+                    b.putBoolean(PayOrderActivity.PARAM_FROM_ORDED_LIST, true);
                     i.putExtras(b);
                     startActivity(i);
                 }
@@ -208,6 +213,8 @@ public class PartyOrderDetailActivity extends BaseLoadingActivity {
         tvBuyerAddress = (TextView) findViewById(R.id.tv_buyer_address);
         llNotice = (LinearLayout) findViewById(R.id.ll_notice);
         tvNotice = (TextView) findViewById(R.id.tv_notice);
+        clBuyerInfo = (ConstraintLayout) findViewById(R.id.cl_buyer_info);
+        clBuyerInfoTitle = (ConstraintLayout) findViewById(R.id.cl_buyer_info_title);
 
 
         enableLoadMore(false);

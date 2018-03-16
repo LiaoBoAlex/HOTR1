@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.MassageOrder;
 import com.us.hotr.storage.bean.PartyOrder;
@@ -24,6 +24,8 @@ import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.text.DecimalFormat;
 
 /**
@@ -31,21 +33,63 @@ import java.text.DecimalFormat;
  */
 
 public class PayOrderActivity extends BaseActivity {
-
+    public static final String PARAM_FROM_ORDED_LIST = "PARAM_FROM_ORDED_LIST";
     private ConstraintLayout clZfb, clWx;
     private ImageView ivZfb, ivWx;
     private TextView tvPay, tvNumber, tvAmount;
 
-    boolean isZfb = true;
-    int type;
-    long orderId;
+    private boolean isZfb = true;
+    private int type;
+    private long orderId;
+    private ProductOrder productOrder;
+    private MassageOrder massageOrder;
+    private PartyOrder partyOrder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setMyTitle(R.string.pay_order_title);
         type = getIntent().getExtras().getInt(Constants.PARAM_TYPE);
+        switch (type) {
+            case Constants.TYPE_PRODUCT:
+                productOrder = (ProductOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+                break;
+            case Constants.TYPE_MASSAGE:
+                massageOrder = (MassageOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+                break;
+            case Constants.TYPE_PARTY:
+                partyOrder = (PartyOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+                break;
+        }
         initStaticView();
+        GlobalBus.getBus().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        GlobalBus.getBus().unregister(this);
+        super.onDestroy();
+    }
+
+    @Subscribe
+    public void getMessage(Events.PaymentSuccess paymentSuccess) {
+        Intent i = new Intent(this, PaySuccessActivity.class);
+        Bundle b = new Bundle();
+        b.putBoolean(PARAM_FROM_ORDED_LIST, getIntent().getExtras().getBoolean(PARAM_FROM_ORDED_LIST, false));
+        switch (type) {
+            case Constants.TYPE_PRODUCT:
+                b.putSerializable(Constants.PARAM_DATA, productOrder);
+                break;
+            case Constants.TYPE_MASSAGE:
+                b.putSerializable(Constants.PARAM_DATA, massageOrder);
+                break;
+            case Constants.TYPE_PARTY:
+                b.putSerializable(Constants.PARAM_DATA, partyOrder);
+                break;
+        }
+        b.putInt(Constants.PARAM_TYPE, type);
+        i.putExtras(b);
+        startActivity(i);
     }
 
     @Override
@@ -64,19 +108,19 @@ public class PayOrderActivity extends BaseActivity {
 
         switch (type) {
             case Constants.TYPE_PRODUCT:
-                tvNumber.setText("x" + ((ProductOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getOrder_product_sum());
-                tvAmount.setText(getString(R.string.money)+new DecimalFormat("0.00").format(((ProductOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getSum_price()));
-                orderId = ((ProductOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getId();
+                tvNumber.setText("x" + productOrder.getOrder_product_sum());
+                tvAmount.setText(getString(R.string.money)+new DecimalFormat("0.00").format(productOrder.getSum_price()));
+                orderId = productOrder.getId();
                 break;
             case Constants.TYPE_MASSAGE:
-                tvNumber.setText("x" + ((MassageOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getOrder_product_sum());
-                tvAmount.setText(getString(R.string.money)+new DecimalFormat("0.00").format(((MassageOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getSum_price()));
-                orderId = ((MassageOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getId();
+                tvNumber.setText("x" + massageOrder.getOrder_product_sum());
+                tvAmount.setText(getString(R.string.money)+new DecimalFormat("0.00").format(massageOrder.getSum_price()));
+                orderId = massageOrder.getId();
                 break;
             case Constants.TYPE_PARTY:
-                tvNumber.setText("x" + ((PartyOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getTotal_number());
-                tvAmount.setText(getString(R.string.money)+new DecimalFormat("0.00").format(((PartyOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getRel_order_price()));
-                orderId = ((PartyOrder) getIntent().getExtras().getSerializable(Constants.PARAM_DATA)).getId();
+                tvNumber.setText("x" + partyOrder.getTotal_number());
+                tvAmount.setText(getString(R.string.money)+new DecimalFormat("0.00").format(partyOrder.getRel_order_price()));
+                orderId = partyOrder.getId();
                 break;
         }
 
@@ -117,7 +161,7 @@ public class PayOrderActivity extends BaseActivity {
                 }
             };
             ServiceClient.getInstance().createWechatBill(new ProgressSubscriber(mListener, PayOrderActivity.this),
-                    HOTRSharePreference.getInstance(PayOrderActivity.this.getApplicationContext()).getUserID(), orderId, this);
+                    HOTRSharePreference.getInstance(PayOrderActivity.this.getApplicationContext()).getUserID(), orderId, type, this);
         }
 
     }
@@ -140,5 +184,10 @@ public class PayOrderActivity extends BaseActivity {
                     }
                 });
         alertDialogBuilder.create().show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

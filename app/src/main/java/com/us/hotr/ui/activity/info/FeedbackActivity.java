@@ -11,8 +11,6 @@ import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
-import com.us.hotr.webservice.request.ChangePasswordRequest;
-import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 

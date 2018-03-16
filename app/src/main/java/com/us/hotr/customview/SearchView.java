@@ -1,6 +1,5 @@
 package com.us.hotr.customview;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.text.Editable;

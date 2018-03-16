@@ -115,6 +115,7 @@
     <string name="confirm_pay">确认支付</string>
     <string name="pay_success">支付成功</string>
     <string name="pay_success1">您的核销码已经发放到卡卷包里了\n请在门店消费时出示使用</string>
+    <string name="pay_success2">您的门票已经购买成功\n请到派对订单详情里查看</string>
     <string name="pay_id">订单编号：</string>
     <string name="pay_merchant">服务机构：</string>
     <string name="pay_product">商品名称：</string>
@@ -300,6 +301,7 @@
     <string name="deposit_title">预约金说明</string>
     <string name="promise_title">服务说明</string>
     <string name="deposit_content">预约金指的是收取商品总价的一定比例，剩余款项需到门店支付。</string>
+    <string name="choose_product_first">请先选择商品</string>
     <!--massage-->
     <string name="masseur_album">技师相册</string>
     <string name="operation_time">营业时间</string>
@@ -332,6 +334,7 @@
     <string name="party_status">派对状态</string>
     <string name="turn_on_notification">开通提醒</string>
     <string name="turned_on_notification">已开通开售提醒</string>
+    <string name="turn_on_notification_failed">开通提醒失败</string>
     <string name="no_ticket_for_recommended_party">推荐活动不进行卖票哦</string>
     <string name="no_ticket_for_promoted_party">预告派对不进行卖票哦</string>
     <string name="no_ticket_for_ended_party">活动已结束~</string>

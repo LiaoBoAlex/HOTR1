@@ -27,7 +27,6 @@ import com.us.hotr.ui.activity.info.SettingActivity;
 import com.us.hotr.ui.activity.info.VoucherActivity;
 import com.us.hotr.ui.activity.party.DeliverAddressListActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
-import com.us.hotr.ui.fragment.found.GroupFragment;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;

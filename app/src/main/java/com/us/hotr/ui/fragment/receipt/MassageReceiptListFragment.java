@@ -231,6 +231,7 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                                                 Tools.Toast(getActivity(), getString(R.string.delete_success));
                                                 massageReceiptList.remove(position);
                                                 notifyItemRemoved(position);
+                                                notifyItemRangeChanged(0, massageReceiptList.size());
                                             }
                                         };
                                         ServiceClient.getInstance().deleteMassageReceipt(new ProgressSubscriber(mListener, getActivity()),
@@ -267,6 +268,7 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                                                 Tools.Toast(getContext(), getString(R.string.refund_applied));
                                                 massageReceiptList.remove(position);
                                                 notifyItemRemoved(position);
+                                                notifyItemRangeChanged(0, massageReceiptList.size());
                                             }
                                         };
                                         ServiceClient.getInstance().refundMassageReceipt(new ProgressSubscriber(mListener, getActivity()),

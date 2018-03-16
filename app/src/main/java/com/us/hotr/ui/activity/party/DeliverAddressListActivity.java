@@ -16,16 +16,13 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Address;
-import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.webservice.ServiceClient;
-import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
-import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
 import java.util.List;
 
@@ -226,6 +223,7 @@ public class DeliverAddressListActivity extends BaseLoadingActivity {
                                         public void onNext(String result) {
                                             addressList.remove(position);
                                             notifyItemRemoved(position);
+                                            notifyItemRangeChanged(0, addressList.size());
                                             if(address.getDefaultAddress() == 1)
                                                 HOTRSharePreference.getInstance(getApplicationContext()).storeDefaultAddress(null);
                                         }

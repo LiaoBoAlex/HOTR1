@@ -1,29 +1,24 @@
 package com.us.hotr.ui.activity;
 
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
-import com.us.hotr.customview.BadgeView;
 import com.us.hotr.customview.DeactivatedViewPager;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.ui.activity.info.SettingActivity;
 import com.us.hotr.ui.activity.post.UploadCompareActivity1;
@@ -33,7 +28,6 @@ import com.us.hotr.ui.fragment.found.FoundFragment;
 import com.us.hotr.ui.fragment.info.InfoFragment;
 import com.us.hotr.ui.fragment.receipt.ReceiptFragment;
 import com.us.hotr.webservice.ServiceClient;
-import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -49,7 +43,6 @@ import q.rorbin.badgeview.QBadgeView;
 
 public class
 MainActivity extends AppCompatActivity implements View.OnClickListener{
-
     private ImageView tabHome, tabFound, tabAll, tabVoucher, tabInfo, ivPost, ivCompare, ivAll1;
     private ArrayList<Fragment> fragmentList;
     private PagerAdapter adapter;
@@ -60,15 +53,17 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     private ReceiptFragment receiptFragment;
     private QBadgeView badgeView;
 
-    private int currentPage;
+    private int currentPage = 0;
     private int orderCount = 0, noticeCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        currentPage = 0;
         JMessageClient.registerEventReceiver(this);
+        GlobalBus.getBus().register(this);
+        if(getIntent()!=null && getIntent().getExtras()!=null)
+            currentPage = getIntent().getExtras().getInt(Constants.PARAM_DATA, 0);
         initStaticView();
     }
 
@@ -81,6 +76,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     @Override
     public void onDestroy() {
         JMessageClient.unRegisterEventReceiver(this);
+        GlobalBus.getBus().unregister(this);
         super.onDestroy();
     }
 
@@ -92,6 +88,12 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     public void onEvent(OfflineMessageEvent event) {
         updateNoticCount(false);
 
+    }
+
+    @Subscribe
+    public void getMessage(Events.GotoMainPageNumber gotoMainPageNumber) {
+        currentPage = gotoMainPageNumber.getPage();
+        setupButton(currentPage);
     }
 
     private void updateNoticCount(boolean updateorderCount){
@@ -122,7 +124,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                     });
                 }
             };
-                ServiceClient.getInstance().getUnpiadOrderCount(new SilentSubscriber(mListener, this, null),
+                ServiceClient.getInstance().getUnpiadOrderCount(mListener,
                         HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
         }else {
             GlobalBus.getBus().post(new Events.GetNoticeCount(noticeCount, orderCount));

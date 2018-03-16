@@ -47,16 +47,17 @@
                 app:layout_constraintTop_toBottomOf="@+id/imageView5" />
 
             <TextView
+                android:id="@+id/tv_hint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="23dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="22dp"
+                android:gravity="center"
                 android:text="@string/pay_success1"
                 android:textColor="@color/white"
                 android:textSize="13sp"
-                android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -69,6 +70,7 @@
             android:background="@color/white">
 
             <TextView
+                android:id="@+id/tv_continue"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
                 android:layout_marginBottom="35dp"
@@ -168,7 +170,7 @@
                 android:textColor="@color/text_black"
                 android:textSize="13sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView37" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_marchent_title" />
 
             <TextView
                 android:id="@+id/tv_product"
@@ -177,7 +179,7 @@
                 android:layout_marginLeft="64dp"
                 android:layout_marginRight="12dp"
                 android:layout_marginTop="0dp"
-                android:ellipsize="marquee"
+                android:ellipsize="end"
                 android:gravity="end"
                 android:maxLines="1"
                 android:text="TextView"
@@ -189,7 +191,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textView39" />
 
             <TextView
-                android:id="@+id/textView37"
+                android:id="@+id/tv_marchent_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
@@ -214,7 +216,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toRightOf="@+id/textView29"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView37" />
+                app:layout_constraintTop_toTopOf="@+id/tv_marchent_title" />
 
             <TextView
                 android:id="@+id/tv_id"

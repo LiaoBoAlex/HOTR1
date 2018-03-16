@@ -1,9 +1,6 @@
 package com.us.hotr.ui.activity.info;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -11,42 +8,28 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import com.bumptech.glide.Glide;
-import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.DeactivatedViewPager;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.ui.activity.MainActivity;
-import com.us.hotr.ui.fragment.info.InfoFragment;
 import com.us.hotr.ui.fragment.info.LoginPasswordFragment;
 import com.us.hotr.ui.fragment.info.LoginPhoneFragment;
 import com.us.hotr.util.Tools;
-import com.us.hotr.webservice.ServiceClient;
-import com.us.hotr.webservice.response.GetWechatAccessTokenResponse;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Mloong on 2017/10/13.

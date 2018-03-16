@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -313,6 +312,7 @@ public class ChatActivity extends BaseActivity {
 
     public void onEvent(MessageEvent event) {
         final Message message = event.getMessage();
+        mConversation.resetUnreadCount();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -325,6 +325,7 @@ public class ChatActivity extends BaseActivity {
     }
 
     public void onEvent(OfflineMessageEvent event) {
+        mConversation.resetUnreadCount();
         String userName = ((UserInfo)event.getConversation().getTargetInfo()).getUserName();
         if(userId.equals(userName)){
             for(Message m:event.getOfflineMessageList()){

@@ -1,8 +1,6 @@
 package com.us.hotr.ui.fragment.info;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -18,11 +16,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.ui.activity.MainActivity;
-import com.us.hotr.ui.activity.info.ChangePhoneNumberActivity;
 import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
@@ -177,7 +172,6 @@ public class LoginPhoneFragment extends Fragment {
                                             JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
                                                 @Override
                                                 public void gotResult(int i, String s) {
-                                                    Tools.Toast(getActivity(), s);
                                                 }
                                             });
                                         }

@@ -1,7 +1,6 @@
 package com.us.hotr.webservice.rxjava;
 
 import android.content.Intent;
-import android.widget.Toast;
 
 import com.us.hotr.Constants;
 import com.us.hotr.storage.HOTRSharePreference;

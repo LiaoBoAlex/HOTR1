@@ -16,7 +16,6 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 
 import java.io.File;
-import java.io.Serializable;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.DownloadCompletionCallback;

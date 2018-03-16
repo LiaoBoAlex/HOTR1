@@ -1,15 +1,9 @@
 package android.support.design.widget;
 
 import android.content.Context;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
-
-import com.us.hotr.util.Tools;
 
 /**
  * Created by Mloong on 2017/9/12.

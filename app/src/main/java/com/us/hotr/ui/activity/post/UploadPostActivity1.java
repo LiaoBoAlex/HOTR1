@@ -28,7 +28,6 @@ import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.UploadPostResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
-import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import java.io.File;

@@ -172,7 +172,8 @@ public class ProductOrderListFragment extends BaseLoadingFragment {
             public void onNext(ProductOrder result) {
                 Tools.Toast(getActivity(), getString(R.string.order_canceled));
                 orderList.remove(position);
-                mAdapter.notifyDataSetChanged();
+                mAdapter.notifyItemRemoved(position);
+                mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
                 if(orderList.size() == 0){
                     clEmpty.setVisibility(View.VISIBLE);
                     return;
@@ -187,7 +188,21 @@ public class ProductOrderListFragment extends BaseLoadingFragment {
     }
 
     private void deleteOrder(ProductOrder order, final int position){
-        Tools.Toast(getActivity(), getString(R.string.order_deleted));
+        SubscriberListener mListener = new SubscriberListener<String>() {
+            @Override
+            public void onNext(String result) {
+                Tools.Toast(getActivity(), getString(R.string.order_deleted));
+                orderList.remove(position);
+                mAdapter.notifyItemRemoved(position);
+                mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
+                if(orderList.size() == 0){
+                    clEmpty.setVisibility(View.VISIBLE);
+                    return;
+                }
+            }
+        };
+        ServiceClient.getInstance().deleteProductOrder(new ProgressSubscriber(mListener, getContext()),
+                HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), order.getId());
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
@@ -269,6 +284,7 @@ public class ProductOrderListFragment extends BaseLoadingFragment {
                             Bundle b = new Bundle();
                             b.putSerializable(Constants.PARAM_DATA, order);
                             b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
+                            b.putBoolean(PayOrderActivity.PARAM_FROM_ORDED_LIST, true);
                             i.putExtras(b);
                             startActivity(i);
                         }

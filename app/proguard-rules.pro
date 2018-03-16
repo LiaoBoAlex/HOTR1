@@ -255,6 +255,9 @@ public static java.lang.String TABLENAME;
      public void onEvent*(**);
  }
  -keep class com.google.protobuf.** {*;}
+ -keep class * extends cn.jpush.android.helpers.JPushMessageReceiver { *; }
+
+
 
 
 

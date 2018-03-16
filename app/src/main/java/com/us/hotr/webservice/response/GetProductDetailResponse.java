@@ -1,7 +1,6 @@
 package com.us.hotr.webservice.response;
 
 import com.us.hotr.storage.bean.Doctor;
-import com.us.hotr.storage.bean.Product;
 
 import java.io.Serializable;
 import java.util.List;

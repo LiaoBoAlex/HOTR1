@@ -268,7 +268,8 @@ public class CaseView extends FrameLayout {
                     Bundle b = new Bundle();
                     b.putSerializable(Constants.PARAM_DATA, (Serializable) photoes);
                     b.putInt(Constants.PARAM_ID, 0);
-                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                    b.putSerializable(Constants.PARAM_PRODUCT_ID, aCase.getProduct());
+                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
                     i.putExtras(b);
                     getContext().startActivity(i);
                 }
@@ -281,7 +282,8 @@ public class CaseView extends FrameLayout {
                     Bundle b = new Bundle();
                     b.putSerializable(Constants.PARAM_DATA, (Serializable) photoes);
                     b.putInt(Constants.PARAM_ID, 1);
-                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                    b.putSerializable(Constants.PARAM_PRODUCT_ID, aCase.getProduct());
+                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
                     i.putExtras(b);
                     getContext().startActivity(i);
                 }

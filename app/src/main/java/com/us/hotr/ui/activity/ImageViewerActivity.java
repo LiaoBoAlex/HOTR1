@@ -1,13 +1,12 @@
 package com.us.hotr.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -15,15 +14,13 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.bean.Product;
+import com.us.hotr.ui.activity.beauty.ProductActivity;
 import com.us.hotr.ui.fragment.ImageViewerFragment;
 
-import org.w3c.dom.Text;
-
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import cn.jpush.im.android.api.content.ImageContent;
-import cn.jpush.im.android.api.model.Message;
 
 /**
  * Created by Mloong on 2017/9/22.
@@ -34,9 +31,10 @@ public class ImageViewerActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private PagerAdapter myAdapter;
     private ConstraintLayout clProduct;
-    private TextView tvPage;
+    private TextView tvPage, tvTitle, tvPrice;
     private List<String> mPhotoes;
     private List<Integer> messageList;
+    private Product product;
     private int index;
     private int type;
     private String userId;
@@ -52,13 +50,32 @@ public class ImageViewerActivity extends AppCompatActivity {
         }
         else
             mPhotoes = (List<String>)getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+        if(type == Constants.TYPE_CASE)
+            product = (Product) getIntent().getExtras().getSerializable(Constants.PARAM_PRODUCT_ID);
 
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         clProduct = (ConstraintLayout) findViewById(R.id.cl_product);
+        tvTitle = (TextView) findViewById(R.id.tv_title);
+        tvPrice = (TextView) findViewById(R.id.tv_price);
         tvPage = (TextView) findViewById(R.id.tv_page);
         switch (type){
             case Constants.TYPE_CASE:
-                clProduct.setVisibility(View.VISIBLE);
+                if(product!=null) {
+                    clProduct.setVisibility(View.VISIBLE);
+                    tvTitle.setText(getString(R.string.bracket_left) + product.getProduct_name() + getString(R.string.bracket_right) + product.getProduct_usp());
+                    tvPrice.setText(getString(R.string.money)+new DecimalFormat("0.00").format(product.getOnline_price()));
+                    clProduct.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent i = new Intent(ImageViewerActivity.this, ProductActivity.class);
+                            Bundle b = new Bundle();
+                            b.putLong(Constants.PARAM_ID, product.getProductId());
+                            i.putExtras(b);
+                            startActivity(i);
+                        }
+                    });
+                }else
+                    clProduct.setVisibility(View.GONE);
                 break;
             case Constants.TYPE_CHAT:
             case Constants.TYPE_DOCTOR:

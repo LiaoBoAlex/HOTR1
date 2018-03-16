@@ -19,7 +19,6 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Group;
-import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.storage.bean.Module;
 import com.us.hotr.storage.bean.Post;
@@ -410,6 +409,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_CASE:
                 CaseHolder caseHolder = (CaseHolder) holder;
                 caseHolder.caseView.setData((Case)itemList.get(position).getContent());
+                caseHolder.caseView.enableEdit(false);
                 break;
 
             case TYPE_MASSEUR:

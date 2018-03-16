@@ -8,6 +8,8 @@ import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.ui.HOTRApplication;
 import com.us.hotr.util.Tools;
 
@@ -37,9 +39,11 @@ public class WXPayEntryActivity extends AppCompatActivity implements IWXAPIEvent
         if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
             if (resp.errCode == 0) {
                 Tools.Toast(this, getString(R.string.wechat_pay_success2));
+                GlobalBus.getBus().post(new Events.PaymentSuccess());
             } else {
                 Tools.Toast(this, getString(R.string.wechat_pay_fail));
             }
+            setResult(RESULT_OK);
             finish();
         }
     }

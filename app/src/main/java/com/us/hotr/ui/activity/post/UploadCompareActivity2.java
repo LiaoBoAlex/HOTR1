@@ -17,13 +17,11 @@ import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.activity.beauty.CaseActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
-import com.us.hotr.webservice.response.UploadPostResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import id.zelory.compressor.Compressor;
 

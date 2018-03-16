@@ -2,7 +2,6 @@ package com.us.hotr.ui.activity.massage;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.us.hotr.R;
-import com.us.hotr.customview.ItemDecorationAlbumColumns;
 import com.us.hotr.ui.activity.BaseActivity;
 
 /**

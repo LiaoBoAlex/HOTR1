@@ -14,8 +14,6 @@ import com.us.hotr.R;
 import com.us.hotr.ui.activity.SinaShareActivity;
 import com.us.hotr.util.Tools;
 
-import org.w3c.dom.Text;
-
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
 /**

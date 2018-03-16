@@ -1,9 +1,7 @@
 package com.us.hotr.webservice.response;
 
-import com.google.gson.annotations.SerializedName;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.Masseur;
-import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.Spa;
 
 import java.io.Serializable;

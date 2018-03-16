@@ -12,8 +12,6 @@ import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.fragment.beauty.CaseListFragment;
 import com.us.hotr.ui.fragment.beauty.ListWithFilterFragment;
 import com.us.hotr.ui.fragment.beauty.PostListFragment;
-import com.us.hotr.ui.fragment.beauty.ProductListFragment;
-import com.us.hotr.ui.fragment.found.OfficialPostListFragment;
 import com.us.hotr.ui.fragment.info.FriendListFragment;
 import com.us.hotr.ui.fragment.massage.InterviewListFragment;
 

@@ -15,8 +15,6 @@ import android.widget.TextView;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.us.hotr.R;
 
-import java.util.TreeMap;
-
 public class PullRefreshLayout extends ViewGroup {
     private View mHeader;
     private TextView mHeaderText;

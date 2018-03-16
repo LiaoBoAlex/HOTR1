@@ -213,6 +213,9 @@ public class PayNumberActivity extends BaseActivity{
             SubscriberListener mListener = new SubscriberListener<ProductOrder>() {
                 @Override
                 public void onNext(ProductOrder result) {
+                    result.setProduct_name_usp(getString(R.string.bracket_left)+product.getProduct().getProductName()+getString(R.string.bracket_right)+product.getProduct().getProductUsp());
+                    result.setHospital_name(product.getHospital().getHospName());
+                    result.setProduct_id(product.getProduct().getKey());
                     Intent i = new Intent(PayNumberActivity.this, PayOrderActivity.class);
                     Bundle b = new Bundle();
                     b.putSerializable(Constants.PARAM_DATA, result);
@@ -238,6 +241,9 @@ public class PayNumberActivity extends BaseActivity{
             SubscriberListener mListener = new SubscriberListener<MassageOrder>() {
                 @Override
                 public void onNext(MassageOrder result) {
+                    result.setProduct_name_usp(getString(R.string.bracket_left)+massage.getProductName()+getString(R.string.bracket_right)+massage.getProductUsp());
+                    result.setMassage_name(spa.getMassageName());
+                    result.setProduct_id(massage.getKey());
                     Intent i = new Intent(PayNumberActivity.this, PayOrderActivity.class);
                     Bundle b = new Bundle();
                     b.putSerializable(Constants.PARAM_DATA, result);

@@ -15,7 +15,6 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.fragment.BaseFragment;
-import com.us.hotr.util.Tools;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,5 @@
 package com.us.hotr.storage.bean;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 
 /**

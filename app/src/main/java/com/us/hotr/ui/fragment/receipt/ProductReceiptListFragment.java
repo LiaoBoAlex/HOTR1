@@ -21,7 +21,6 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.storage.HOTRSharePreference;
-import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.ProductReceipt;
 import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
 import com.us.hotr.ui.dialog.RefundDialog;
@@ -37,7 +36,6 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Mloong on 2017/9/14.
@@ -236,6 +234,7 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
                                                 Tools.Toast(getActivity(), getString(R.string.delete_success));
                                                 productReceiptList.remove(position);
                                                 notifyItemRemoved(position);
+                                                notifyItemRangeChanged(0, productReceiptList.size());
                                             }
                                         };
                                         ServiceClient.getInstance().deleteProductReceipt(new ProgressSubscriber(mListener, getActivity()),
@@ -272,6 +271,7 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
                                                 Tools.Toast(getContext(), getString(R.string.refund_applied));
                                                 productReceiptList.remove(position);
                                                 notifyItemRemoved(position);
+                                                notifyItemRangeChanged(0, productReceiptList.size());
                                             }
                                         };
                                         ServiceClient.getInstance().refundProductReceipt(new ProgressSubscriber(mListener, getActivity()),

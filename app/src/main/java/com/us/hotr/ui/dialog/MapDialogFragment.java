@@ -1,10 +1,7 @@
 package com.us.hotr.ui.dialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
@@ -16,8 +13,6 @@ import com.baidu.mapapi.model.LatLng;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.util.Tools;
-
-import java.io.File;
 
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 

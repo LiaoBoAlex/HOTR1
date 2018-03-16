@@ -299,6 +299,7 @@ public class DoctorActivity extends BaseLoadingActivity {
                 case TYPE_CASE:
                     CaseHolder caseHolder = (CaseHolder) holder;
                     caseHolder.caseView.setData((Case)itemList.get(position).getContent());
+                    caseHolder.caseView.enableEdit(false);
                     break;
 
                 case TYPE_HEADER:
@@ -307,7 +308,7 @@ public class DoctorActivity extends BaseLoadingActivity {
                     doctorHeaderHolder.tvHospital.setText(doctorDetail.getDetail().getHospital_name());
                     doctorHeaderHolder.tvHospitalInfo.setText(doctorDetail.getDetail().getHospital_name());
                     doctorHeaderHolder.tvName.setText(doctorDetail.getDetail().getDoctor_name());
-                    doctorHeaderHolder.tvNumCase.setText(doctorDetail.getDetail().getCase_num());
+                    doctorHeaderHolder.tvNumCase.setText(doctorDetail.getDetail().getCase_num()+"");
                     doctorHeaderHolder.tvNumConsult.setText("759");
                     doctorHeaderHolder.tvNumPointment.setText(doctorDetail.getDetail().getOrder_num()+"");
                     doctorHeaderHolder.tvTitle.setText(doctorDetail.getDetail().getDoctor_job());

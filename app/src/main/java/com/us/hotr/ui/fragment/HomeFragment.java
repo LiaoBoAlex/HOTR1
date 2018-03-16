@@ -35,8 +35,6 @@ import com.us.hotr.ui.fragment.massage.MassageFragment;
 import com.us.hotr.ui.fragment.party.PartyFragment;
 import com.us.hotr.util.PermissionUtil;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 
 /**

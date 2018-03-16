@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,8 +13,6 @@ import android.widget.ImageView;
 import com.us.hotr.R;
 import com.us.hotr.customview.DeactivatedViewPager;
 import com.us.hotr.ui.fragment.info.ForgotPasswordFragment;
-import com.us.hotr.ui.fragment.info.LoginPasswordFragment;
-import com.us.hotr.ui.fragment.info.LoginPhoneFragment;
 
 import java.util.ArrayList;
 

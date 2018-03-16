@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
-import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.BaseListResponse;

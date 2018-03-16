@@ -3,21 +3,15 @@ package com.us.hotr.ui.activity.beauty;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.bean.Party;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.fragment.beauty.CaseListFragment;
 import com.us.hotr.ui.fragment.beauty.DoctorListFragment;
-import com.us.hotr.ui.fragment.beauty.ListWithFilterFragment;
-import com.us.hotr.ui.fragment.beauty.PostListFragment;
 import com.us.hotr.ui.fragment.beauty.ProductListFragment;
 import com.us.hotr.ui.fragment.found.OfficialPostListFragment;
-import com.us.hotr.ui.fragment.info.FriendListFragment;
-import com.us.hotr.ui.fragment.massage.InterviewListFragment;
 import com.us.hotr.ui.fragment.massage.MasseurListFragment;
 import com.us.hotr.ui.fragment.party.PartyListFragment;
 

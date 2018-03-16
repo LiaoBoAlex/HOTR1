@@ -53,6 +53,15 @@ public class Case implements Serializable {
     private Integer is_attention;
     private String filePathBefore;
     private String filePathAfter;
+    private Product product;
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 
     public String getFilePathBefore() {
         return filePathBefore;

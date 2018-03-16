@@ -5,24 +5,17 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.us.hotr.R;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.bean.Theme;
-import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.fragment.found.GroupListFragment;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
-import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import org.greenrobot.eventbus.Subscribe;

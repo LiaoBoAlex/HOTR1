@@ -2,18 +2,13 @@ package com.us.hotr.ui.fragment.beauty;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
-import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ItemSelectedListener;
@@ -22,8 +17,6 @@ import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Case;
-import com.us.hotr.storage.bean.Post;
-import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
 import com.us.hotr.ui.view.CaseView;
 import com.us.hotr.util.Tools;
@@ -149,12 +142,12 @@ public class CaseListFragment extends BaseLoadingFragment {
             } else {
                 currentPage = 1;
                 if (loadType == Constants.LOAD_PAGE) {
-                    if (getActivity() instanceof BaseLoadingActivity)
-                        ServiceClient.getInstance().getCaseByType(new LoadingSubscriber(mListener, (BaseLoadingActivity) getActivity()),
-                                HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), catagory, id, subjectId, currentPage, Constants.MAX_PAGE_ITEM);
-                    else
-                        ServiceClient.getInstance().getCaseByType(new LoadingSubscriber(mListener, this),
-                                HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), catagory, id, subjectId, currentPage, Constants.MAX_PAGE_ITEM);
+//                    if (getActivity() instanceof BaseLoadingActivity)
+//                        ServiceClient.getInstance().getCaseByType(new LoadingSubscriber(mListener, (BaseLoadingActivity) getActivity()),
+//                                HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), catagory, id, subjectId, currentPage, Constants.MAX_PAGE_ITEM);
+//                    else
+                    ServiceClient.getInstance().getCaseByType(new LoadingSubscriber(mListener, this),
+                            HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(), catagory, id, subjectId, currentPage, Constants.MAX_PAGE_ITEM);
                 }
                 else if (loadType == Constants.LOAD_DIALOG)
                     ServiceClient.getInstance().getCaseByType(new ProgressSubscriber(mListener, getContext()),

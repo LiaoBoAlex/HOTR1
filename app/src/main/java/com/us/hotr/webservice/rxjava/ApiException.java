@@ -36,7 +36,7 @@ public class ApiException extends RuntimeException {
         String message = "";
         switch (code) {
             default:
-                message = "未知错误";
+                message = "网络未连接，请检查网络设置";
         }
         return message;
     }

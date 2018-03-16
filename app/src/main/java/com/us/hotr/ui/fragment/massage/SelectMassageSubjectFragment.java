@@ -2,7 +2,6 @@ package com.us.hotr.ui.fragment.massage;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.bean.Subject;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
-import com.us.hotr.ui.fragment.beauty.SelectSubjectFragment;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;

@@ -2,29 +2,10 @@ package com.us.hotr.ui.activity.info;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.Gravity;
-import android.view.ViewGroup;
 
 import com.us.hotr.R;
-import com.us.hotr.eventbus.Events;
-import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.fragment.info.NoticeCommentFragment;
-import com.us.hotr.ui.fragment.info.NoticeFriendFragment;
-import com.us.hotr.ui.fragment.info.NoticeLikeFragment;
 import com.us.hotr.ui.fragment.info.NoticeMessageFragment;
-import com.us.hotr.ui.fragment.info.NoticeNoticeFragment;
-
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.ArrayList;
-
-import q.rorbin.badgeview.QBadgeView;
 
 /**
  * Created by Mloong on 2017/9/20.

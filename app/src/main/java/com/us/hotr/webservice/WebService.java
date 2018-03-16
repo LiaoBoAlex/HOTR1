@@ -85,15 +85,15 @@ import retrofit2.http.Url;
 public interface WebService {
 
     @POST
-    Observable<GetWechatAccessTokenResponse> getWechatAccessToken(@Url String url,
-                                                                  @Query("appid") String appid,
-                                                                  @Query("secret") String secret,
-                                                                  @Query("code") String code,
-                                                                  @Query("grant_type") String grant_type);
+    Call<GetWechatAccessTokenResponse> getWechatAccessToken(@Url String url,
+                                                            @Query("appid") String appid,
+                                                            @Query("secret") String secret,
+                                                            @Query("code") String code,
+                                                            @Query("grant_type") String grant_type);
     @POST
-    Observable<GetWechatUserInfo> getWechatUserInfo(@Url String url,
-                                                    @Query("access_token") String access_token,
-                                                    @Query("openid") String openid);
+    Call<GetWechatUserInfo> getWechatUserInfo(@Url String url,
+                                              @Query("access_token") String access_token,
+                                              @Query("openid") String openid);
     @POST("dictionary/splashScreen.do?")
     Observable<BaseResponse<List<Adv>>> getAdvList(@Query("width") int width,
                                                    @Query("height") int height,
@@ -300,9 +300,19 @@ public interface WebService {
                                                           @Body CreatePartyOrderRequest request);
 
     @GET("user_method/order/payment/getWXPayNumber.do?")
-    Observable<BaseResponse<WechatBill>> createWechatBill(@Header("jsessionid") String jsessionid,
-                                                          @Query("order_id") long order_id,
-                                                          @Query("spbill_create_ip") String spbill_create_ip);
+    Observable<BaseResponse<WechatBill>> createWechatProductBill(@Header("jsessionid") String jsessionid,
+                                                                 @Query("order_id") long order_id,
+                                                                 @Query("spbill_create_ip") String spbill_create_ip);
+
+    @GET("user_method/order/payment/getWXPayNumberByAm.do?")
+    Observable<BaseResponse<WechatBill>> createWechatMassageBill(@Header("jsessionid") String jsessionid,
+                                                                 @Query("order_id") long order_id,
+                                                                 @Query("spbill_create_ip") String spbill_create_ip);
+
+    @GET("user_method/order/payment/getWXPayNumberByTravel.do?")
+    Observable<BaseResponse<WechatBill>> createWechatPartyBill(@Header("jsessionid") String jsessionid,
+                                                               @Query("order_id") long order_id,
+                                                               @Query("spbill_create_ip") String spbill_create_ip);
 
     @POST("apiCoshow/recommendCoshowList.do?")
     Observable<BaseResponse<GetGroupMainPageResponse>> getGroupMainPage(@Header("jsessionid") String jsessionid);
@@ -518,29 +528,29 @@ public interface WebService {
 
     @POST("user_method/verification/deleYmVerificationById.do?")
     Observable<BaseResponse<String>> deleteProductReceipt(@Header("jsessionid") String jsessionid,
-                                                                  @Query("verification_id") long verification_id);
+                                                          @Query("verification_id") long verification_id);
 
     @POST("user_method/verification/deleAmVerificationById.do?")
     Observable<BaseResponse<String>> deleteMassageReceipt(@Header("jsessionid") String jsessionid,
-                                                                  @Query("verification_id") long verification_id);
+                                                          @Query("verification_id") long verification_id);
 
     @POST("user_method/verification/amRefundActionById.do?")
     Observable<BaseResponse<String>> refundProductReceipt(@Header("jsessionid") String jsessionid,
-                                                                  @Query("verification_id") long verification_id);
+                                                          @Query("verification_id") long verification_id);
 
     @POST("user_method/verification/ymRefundActionById.do?")
     Observable<BaseResponse<String>> refundMassageReceipt(@Header("jsessionid") String jsessionid,
-                                                                  @Query("verification_id") long verification_id);
+                                                          @Query("verification_id") long verification_id);
 
     @POST("user/login.do?")
-    Observable<BaseResponse<GetLoginResponse>> login(@Query("username") String username,
-                                                     @Query("password") String password);
+    Call<BaseResponse<GetLoginResponse>> login(@Query("username") String username,
+                                               @Query("password") String password);
 
     @POST("user/loginByValidCode.do?")
-    Observable<BaseResponse<GetLoginResponse>> loginAndRegister(@Body LoginAndRegisterRequest request);
+    Call<BaseResponse<GetLoginResponse>> loginAndRegister(@Body LoginAndRegisterRequest request);
 
     @POST("user/loginByThird.do?")
-    Observable<BaseResponse<GetLoginResponse>> loginWithWechat(@Body LoginWithWechatRequest request);
+    Call<BaseResponse<GetLoginResponse>> loginWithWechat(@Body LoginWithWechatRequest request);
 
     @POST("user/validCode.do?")
     Observable<BaseResponse<String>> requestForValidationCode(@Body RequestForValidationCodeRequest request);
@@ -655,10 +665,10 @@ public interface WebService {
     @POST("user_method/travel/order/travelList.do?order_state=0&page_size=1")
     Call<BaseResponse<BaseListResponse<List<PartyOrder>>>> getUnpaidPartyOrderCount(@Header("jsessionid") String jsessionid);
 
-    @POST("user_method/order/massageList.do?order_state=0&page_size=1")
+    @POST("user_method/order/massageList.do?payment_state=0&page_size=1")
     Call<BaseResponse<BaseListResponse<List<MassageOrder>>>> getUnpaidMassageOrderCount(@Header("jsessionid") String jsessionid);
 
-    @POST("user_method/order/hospitalList.do?order_state=0&page_size=1")
+    @POST("user_method/order/hospitalList.do?payment_state=0&page_size=1")
     Call<BaseResponse<BaseListResponse<List<ProductOrder>>>> getUnpaidProductOrderCount(@Header("jsessionid") String jsessionid);
 
     @POST("user_method/order/hospitalDetail.do?")
@@ -684,6 +694,18 @@ public interface WebService {
     @POST("user_method/travel/order/cancel.do?")
     Observable<BaseResponse<PartyOrder>> cancelPartyOrder(@Header("jsessionid") String jsessionid,
                                                           @Body CancelOrderRequest request);
+
+    @POST("user_method/order/deleYmOrderById.do?")
+    Observable<BaseResponse<String>> deleteProductOrder(@Header("jsessionid") String jsessionid,
+                                                              @Query("order_id") long order_id);
+
+    @POST("user_method/order/deleAmOrderById.do?")
+    Observable<BaseResponse<String>> deleteMassageOrder(@Header("jsessionid") String jsessionid,
+                                                              @Query("order_id") long order_id);
+
+    @POST("user_method/order/deleTravelOrderById.do?")
+    Observable<BaseResponse<String>> deletePartyOrder(@Header("jsessionid") String jsessionid,
+                                                          @Query("order_id") long order_id);
 
     @POST("user/user_method/addUserFeedBack.do?")
     Observable<BaseResponse<String>> userFeedback(@Header("jsessionid") String jsessionid,

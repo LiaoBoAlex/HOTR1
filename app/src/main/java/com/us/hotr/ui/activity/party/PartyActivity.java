@@ -17,6 +17,8 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Post;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
@@ -36,8 +38,14 @@ import com.xiao.nicevideoplayer.NiceVideoPlayer;
 import com.xiao.nicevideoplayer.NiceVideoPlayerManager;
 import com.xiao.nicevideoplayer.TxVideoPlayerController;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import cn.jpush.android.api.JPushInterface;
 
 public class PartyActivity extends BaseLoadingActivity{
 
@@ -208,16 +216,17 @@ public class PartyActivity extends BaseLoadingActivity{
             ServiceClient.getInstance().checkPartyOrderCount(new ProgressSubscriber(mListener, PartyActivity.this), getPartyDetailResponse.getTicket());
     }
 
-    private void turnOnNotification(long id){
-        SubscriberListener mListener = new SubscriberListener<String>() {
-            @Override
-            public void onNext(String result) {
-                tvPurchase.setText(R.string.turned_on_notification);
-                tvPurchase.setBackgroundResource(R.color.bg_button_grey);
-            }
-        };
-        ServiceClient.getInstance().reserveParty(new ProgressSubscriber(mListener, PartyActivity.this),
-                id, HOTRSharePreference.getInstance(PartyActivity.this.getApplicationContext()).getUserID());
+    private void turnOnNotification(final long id){
+                    SubscriberListener mListener = new SubscriberListener<String>() {
+                @Override
+                public void onNext(String result) {
+                    Set<String> set = new HashSet<String>();
+                    set.add(id+"");
+                    JPushInterface.addTags(getApplicationContext(), (int)id, set);
+                }
+            };
+            ServiceClient.getInstance().reserveParty(new ProgressSubscriber(mListener, PartyActivity.this),
+                    id, HOTRSharePreference.getInstance(PartyActivity.this.getApplicationContext()).getUserID());
 
     }
 
@@ -287,12 +296,37 @@ public class PartyActivity extends BaseLoadingActivity{
     protected void onStop() {
         super.onStop();
         NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+        GlobalBus.getBus().unregister(this);
     }
 
     @Override
     public void onBackPressed() {
         if (NiceVideoPlayerManager.instance().onBackPressd()) return;
         super.onBackPressed();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(!GlobalBus.getBus().isRegistered(this))
+            GlobalBus.getBus().register(this);
+    }
+
+    @Subscribe
+    public void getMessage(final Events.JPushSetTag jPushSetTag) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(jPushSetTag.isResult()){
+                    tvPurchase.setText(R.string.turned_on_notification);
+                    tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+                }else{
+                    Tools.Toast(PartyActivity.this, getString(R.string.turn_on_notification_failed));
+                }
+            }
+        });
+
+
     }
 
     public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

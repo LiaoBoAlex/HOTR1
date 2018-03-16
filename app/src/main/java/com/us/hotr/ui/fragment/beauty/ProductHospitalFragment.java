@@ -2,7 +2,6 @@ package com.us.hotr.ui.fragment.beauty;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +20,6 @@ import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.storage.bean.Product;
 import com.us.hotr.ui.activity.beauty.ListWithCategoryActivity;
-import com.us.hotr.ui.activity.beauty.ProductActivity;
 import com.us.hotr.ui.view.ProductView;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.response.GetProductDetailResponse;

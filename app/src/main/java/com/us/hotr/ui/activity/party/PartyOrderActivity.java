@@ -22,7 +22,6 @@ import com.us.hotr.storage.bean.PartyOrder;
 import com.us.hotr.storage.bean.Ticket;
 import com.us.hotr.ui.activity.AvailableVoucherActivity;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.activity.PayNumberActivity;
 import com.us.hotr.ui.activity.PayOrderActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
@@ -208,7 +207,7 @@ public class PartyOrderActivity extends BaseActivity {
     private void purchaseCheckCount(){
         if(!isGetterInfoSelected)
             Tools.Toast(this, getString(R.string.add_getter_info));
-        if(!isBuyerInfoSelected && data.getTravel().getIdType()!=0)
+        else if(!isBuyerInfoSelected && data.getTravel().getIdType()!=0)
             Tools.Toast(this, getString(R.string.add_buyer_info));
         else {
             SubscriberListener mListener = new SubscriberListener<Boolean>() {
@@ -254,7 +253,7 @@ public class PartyOrderActivity extends BaseActivity {
             public MyViewHolder(View view){
                 super(view);
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvAmount = (TextView) view.findViewById(R.id.tv_amount);
+                tvAmount = (TextView) view.findViewById(R.id.tv_number);
                 tvTotal = (TextView) view.findViewById(R.id.tv_amount);
             }
         }
