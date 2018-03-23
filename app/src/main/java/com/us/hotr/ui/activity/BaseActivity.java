@@ -53,13 +53,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                     startActivity(new Intent(BaseActivity.this, SearchHintActivity.class));
                 }
             });
-        if(ivShare!=null)
-            ivShare.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new ShareDialogFragment().show(getSupportFragmentManager(), "dialog");
-                }
-            });
     }
 
     protected void showToolBar(boolean value){

@@ -131,8 +131,11 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
         if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
                 ||totalSize == 0) {
             enableLoadMore(false);
-            if(totalSize>0)
+            if(totalSize>0) {
                 myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+                mRecyclerView.setVisibility(View.VISIBLE);
+                clEmpty.setVisibility(View.GONE);
+            }
             else{
                 mRecyclerView.setVisibility(View.GONE);
                 clEmpty.setVisibility(View.VISIBLE);

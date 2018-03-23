@@ -20,6 +20,7 @@ import com.us.hotr.customview.FlowLayout;
 import com.us.hotr.customview.HorizontalImageAdapter;
 import com.us.hotr.customview.ImageBannerCrop;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.Spa;
@@ -28,6 +29,7 @@ import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.PayNumberActivity;
 import com.us.hotr.ui.activity.info.LoginActivity;
+import com.us.hotr.ui.dialog.ShareDialogFragment;
 import com.us.hotr.ui.view.MassageView;
 import com.us.hotr.ui.view.SpaBigView;
 import com.us.hotr.util.Tools;
@@ -170,6 +172,19 @@ public class MasseurActivity extends BaseLoadingActivity {
                             ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, MasseurActivity.this),
                                     HOTRSharePreference.getInstance(MasseurActivity.this.getApplicationContext()).getUserID(), result.getMassagist().getId(), 5);
                         }
+                    }
+                });
+
+                ivShare.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Share share = new Share();
+                        share.setDescription(getString(R.string.share_massage));
+                        share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(result.getMassagist().getMassagistPhotos())));
+                        share.setTitle(result.getMassagist().getMassagist_name());
+                        share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/massagist?id="+result.getMassagist().getId());
+                        share.setSinaContent(getString(R.string.share_massage));
+                        ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
                     }
                 });
 

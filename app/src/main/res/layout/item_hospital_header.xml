@@ -182,6 +182,34 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_name" />
 
+        <TextView
+            android:id="@+id/tv_height"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="14dp"
+            android:text="@string/operation_time"
+            android:textSize="12sp"
+            android:textColor="@color/text_grey2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_address"/>
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="6dp"
+            android:text="TextView"
+            android:textSize="12sp"
+            android:textColor="@color/text_grey2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_height" />
+
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="0dp"
@@ -191,7 +219,7 @@
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/linearLayout"
-            app:layout_constraintTop_toBottomOf="@+id/tv_address">
+            app:layout_constraintTop_toBottomOf="@+id/tv_time">
 
             <TextView
                 android:layout_width="match_parent"

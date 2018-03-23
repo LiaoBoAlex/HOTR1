@@ -145,13 +145,18 @@ public class PartyActivity extends BaseLoadingActivity{
                         });
                         break;
                     case 2:
-                        tvPurchase.setText(R.string.turn_on_notification);
-                        tvPurchase.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                turnOnNotification(result.getTravel().getId());
-                            }
-                        });
+                        if(result.getIs_reservation() == 1){
+                            tvPurchase.setText(R.string.turned_on_notification);
+                            tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+                        }else {
+                            tvPurchase.setText(R.string.turn_on_notification);
+                            tvPurchase.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    turnOnNotification(result.getTravel().getId());
+                                }
+                            });
+                        }
                         break;
                     case 3:
                         tvPurchase.setBackgroundResource(R.color.bg_button_grey);

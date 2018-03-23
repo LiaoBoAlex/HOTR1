@@ -1,8 +1,10 @@
 package com.us.hotr.webservice;
 
 
+import android.app.Activity;
 import android.content.Context;
 
+import com.alipay.sdk.app.PayTask;
 import com.us.hotr.Constants;
 import com.us.hotr.storage.bean.Address;
 import com.us.hotr.storage.bean.Adv;
@@ -11,6 +13,7 @@ import com.us.hotr.storage.bean.Doctor;
 import com.us.hotr.storage.bean.Group;
 import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.storage.bean.HotSearchTopic;
+import com.us.hotr.storage.bean.Info;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.MassageOrder;
 import com.us.hotr.storage.bean.MassageReceipt;
@@ -31,6 +34,7 @@ import com.us.hotr.storage.bean.Type;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.storage.bean.Voucher;
 import com.us.hotr.storage.bean.WechatBill;
+import com.us.hotr.util.AliPayResult;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.request.AvailableVoucherRequest;
 import com.us.hotr.webservice.request.BoundMobileRequest;
@@ -72,6 +76,10 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +99,7 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 
 /**
  * Created by liaobo on 4/27/2017.
@@ -643,6 +652,20 @@ public class ServiceClient {
                 .subscribe(new ProgressSubscriber<String>(l, mContext));
     }
 
+    public void createAlipayBill(final DisposableObserver subscriber, final String jsessionid, final long order_id, final int type, Activity mActivity){
+        switch (type) {
+            case Constants.TYPE_PRODUCT:
+                createAlipayProductBill(subscriber, jsessionid, order_id, mActivity);
+                break;
+            case Constants.TYPE_MASSAGE:
+                createAlipayMassageBill(subscriber, jsessionid, order_id, mActivity);
+                break;
+            case Constants.TYPE_PARTY:
+                createAlipayPartyBill(subscriber, jsessionid, order_id, mActivity);
+                break;
+        }
+    }
+
     public void createWechatProductBillEx(DisposableObserver subscriber, String jsessionid, long order_id, String spbill_create_ip){
         webService.createWechatProductBill(jsessionid, order_id, spbill_create_ip)
                 .subscribeOn(Schedulers.io())
@@ -665,6 +688,57 @@ public class ServiceClient {
         webService.createWechatPartyBill(jsessionid, order_id, spbill_create_ip)
                 .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<WechatBill>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void createAlipayProductBill(DisposableObserver subscriber, String jsessionid, long order_id, final Activity mActivity){
+        webService.createAlipayProductBill(jsessionid, order_id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .map(new Function<String, AliPayResult>() {
+                    @Override
+                    public AliPayResult apply(String order) throws Exception {
+                        PayTask alipay = new PayTask(mActivity);
+                        Map<String, String> result = alipay.payV2(order,true);
+                        return new AliPayResult(result);
+                    }
+                })
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void createAlipayMassageBill(DisposableObserver subscriber, String jsessionid, long order_id, final Activity mActivity){
+        webService.createAlipayMassageBill(jsessionid, order_id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .map(new Function<String, AliPayResult>() {
+                    @Override
+                    public AliPayResult apply(String order) throws Exception {
+                        PayTask alipay = new PayTask(mActivity);
+                        Map<String, String> result = alipay.payV2(order,true);
+                        return new AliPayResult(result);
+                    }
+                })
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void createAlipayPartyBill(DisposableObserver subscriber, String jsessionid, long order_id, final Activity mActivity){
+        webService.createAlipayPartyBill(jsessionid, order_id)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .map(new Function<String, AliPayResult>() {
+                    @Override
+                    public AliPayResult apply(String order) throws Exception {
+                        PayTask alipay = new PayTask(mActivity);
+                        Map<String, String> result = alipay.payV2(order,true);
+                        return new AliPayResult(result);
+                    }
+                })
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -1839,6 +1913,39 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
+    public void getFAQs(DisposableObserver subscriber, String ssesionId){
+        webService.getFAQs(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Info>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getBusinessPartener(DisposableObserver subscriber, String ssesionId){
+        webService.getBusinessPartener(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Info>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void downloadFileWithDynamicUrlSync(DisposableObserver subscriber, String url, final String filePath){
+        webService.downloadFileWithDynamicUrlSync(url)
+                .subscribeOn(Schedulers.io())
+                .map(new Function<ResponseBody, Boolean>() {
+                    @Override
+                    public Boolean apply(ResponseBody responseBody) throws Exception {
+                        writeResponseBodyToDisk(filePath, responseBody);
+                        return true;
+                    }
+                })
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
     private class HttpResultFunc<T> implements Function<BaseResponse<T>, T>{
 
         @Override
@@ -1847,6 +1954,54 @@ public class ServiceClient {
                 throw new ApiException(tBaseResponse.getStatus(), tBaseResponse.getMemo());
             }
             return tBaseResponse.getResult();
+        }
+    }
+
+    private boolean writeResponseBodyToDisk(String filePath, ResponseBody body) {
+        try {
+            File futureStudioIconFile = new File(filePath);
+
+            InputStream inputStream = null;
+            OutputStream outputStream = null;
+
+            try {
+                byte[] fileReader = new byte[4096];
+
+                long fileSize = body.contentLength();
+                long fileSizeDownloaded = 0;
+
+                inputStream = body.byteStream();
+                outputStream = new FileOutputStream(futureStudioIconFile);
+
+                while (true) {
+                    int read = inputStream.read(fileReader);
+
+                    if (read == -1) {
+                        break;
+                    }
+
+                    outputStream.write(fileReader, 0, read);
+
+                    fileSizeDownloaded += read;
+
+                }
+
+                outputStream.flush();
+
+                return true;
+            } catch (IOException e) {
+                return false;
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+        } catch (IOException e) {
+            return false;
         }
     }
 }

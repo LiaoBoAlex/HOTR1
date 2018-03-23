@@ -40,7 +40,6 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
 
     @Override
     public void onReq(BaseReq baseReq) {
-
     }
 
     //app发送消息给微信，微信返回的消息回调函数,根据不同的返回码来判断操作是否成功

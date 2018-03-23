@@ -15,6 +15,15 @@ public class GetPartyDetailResponse implements Serializable {
     private Party travel;
     private List<Ticket> ticket;
     private int is_collected;
+    private int is_reservation;
+
+    public int getIs_reservation() {
+        return is_reservation;
+    }
+
+    public void setIs_reservation(int is_reservation) {
+        this.is_reservation = is_reservation;
+    }
 
     public int getIs_collected() {
         return is_collected;

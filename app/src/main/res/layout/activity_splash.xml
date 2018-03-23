@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/black"
     android:layout_height="match_parent">
-    <TextView
-        android:background="@color/red"
+    <ImageView
+        android:id="@+id/iv_image"
+        android:background="@mipmap/splash_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <VideoView
+        android:id="@+id/vv_video"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Splash Screen"
-        android:gravity="center"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"/>
 
-</LinearLayout>
+</RelativeLayout>

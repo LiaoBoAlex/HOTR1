@@ -19,6 +19,7 @@ import com.us.hotr.storage.bean.PartyOrder;
 import com.us.hotr.storage.bean.ProductOrder;
 import com.us.hotr.storage.bean.WechatBill;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
+import com.us.hotr.util.AliPayResult;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
@@ -152,7 +153,19 @@ public class PayOrderActivity extends BaseActivity {
 
     private void pay(){
         if(isZfb){
-
+            SubscriberListener mListener = new SubscriberListener<AliPayResult>() {
+                @Override
+                public void onNext(AliPayResult result) {
+                    if (result.getResultStatus() == "9000") {
+                        Tools.Toast(PayOrderActivity.this, getString(R.string.alipay_pay_success));
+                        GlobalBus.getBus().post(new Events.PaymentSuccess());
+                    } else {
+                        Tools.Toast(PayOrderActivity.this, getString(R.string.alipay_pay_fail));
+                    }
+                }
+            };
+            ServiceClient.getInstance().createAlipayBill(new ProgressSubscriber(mListener, PayOrderActivity.this),
+                    HOTRSharePreference.getInstance(PayOrderActivity.this.getApplicationContext()).getUserID(), orderId, type, this);
         }else {
             SubscriberListener mListener = new SubscriberListener<WechatBill>() {
                 @Override

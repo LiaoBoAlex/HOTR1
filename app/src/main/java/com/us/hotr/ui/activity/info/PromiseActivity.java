@@ -9,36 +9,36 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.bean.Info;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.response.GetProductDetailResponse;
 
 /**
  * Created by Mloong on 2017/10/13.
  */
 
-public class FAQActivity extends BaseActivity {
+public class PromiseActivity extends BaseActivity {
 
-    private Info info;
+    private GetProductDetailResponse.Promise promise;
     private TextView tvTitle;
-    private WebView wvContent;
+    private TextView tvContent;
 
     @Override
     protected int getLayout() {
-        return R.layout.activity_faq;
+        return R.layout.activity_promise;
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMyTitle(R.string.faq);
-        info = (Info)getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+        setMyTitle(R.string.promise_title);
+        promise = (GetProductDetailResponse.Promise)getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
         initStaticView();
     }
 
     private void initStaticView(){
         tvTitle = (TextView) findViewById(R.id.tv_title);
-        wvContent = (WebView) findViewById(R.id.wv_content);
+        tvContent = (TextView) findViewById(R.id.tv_content);
 
-        tvTitle.setText(info.getTitle());
-        wvContent.loadData(info.getContent(), "text/html; charset=UTF-8", null);
+        tvTitle.setText(promise.getPromise_title());
+        tvContent.setText(promise.getPromise_content());
     }
 }

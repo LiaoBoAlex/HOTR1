@@ -73,11 +73,13 @@ public class AllGroupActivity extends BaseLoadingActivity {
                     for (Theme t:result) {
                         titleList.add(t.getThemeName());
                         fragmentList.add(GroupListFragment.newInstance(t.getKey(), null));
-                        adapter = new PagerAdapter(getSupportFragmentManager(), titleList, fragmentList);
-                        viewPager.setAdapter(adapter);
-                        viewPager.setOffscreenPageLimit(result.size());
-                        tabLayout.setupWithViewPager(viewPager, true);
                     }
+                    if(result.size()<=5)
+                        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+                    adapter = new PagerAdapter(getSupportFragmentManager(), titleList, fragmentList);
+                    viewPager.setAdapter(adapter);
+                    viewPager.setOffscreenPageLimit(result.size());
+                    tabLayout.setupWithViewPager(viewPager, true);
                 }
             }
         };

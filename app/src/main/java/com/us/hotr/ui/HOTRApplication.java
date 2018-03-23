@@ -22,6 +22,7 @@ import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 
+import cn.jpush.android.api.BasicPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.im.android.api.JMessageClient;
 
@@ -79,6 +80,9 @@ public class HOTRApplication extends MultiDexApplication {
         new NotificationClickEventReceiver(getApplicationContext());
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
+        BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(getApplicationContext());
+        builder.statusBarDrawable = R.drawable.logo_hotr_round;
+        JPushInterface.setPushNotificationBuilder(0, builder);
 
     }
 

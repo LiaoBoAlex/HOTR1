@@ -58,6 +58,8 @@ public class AboutUsActivity extends BaseActivity {
                 Intent i = new Intent(AboutUsActivity.this, WebViewActivity.class);
                 Bundle b = new Bundle();
                 b.putString(Constants.PARAM_TITLE, getString(R.string.hotr_contract));
+                b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_URL);
+                b.putString(Constants.PARAM_DATA, Constants.ABOUT_US);
                 i.putExtras(b);
                 startActivity(i);
             }

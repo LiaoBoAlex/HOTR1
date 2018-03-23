@@ -10,7 +10,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.receiver.Share;
 import com.us.hotr.ui.activity.SinaShareActivity;
 import com.us.hotr.util.Tools;
 
@@ -26,6 +28,16 @@ public class ShareDialogFragment extends BottomSheetDialogFragment {
     private TextView tvCancel;
     private BottomSheetBehavior mBehavior;
 
+    private Share share;
+
+    public static ShareDialogFragment newInstance(Share share) {
+        ShareDialogFragment shareDialogFragment = new ShareDialogFragment();
+        Bundle b = new Bundle();
+        b.putSerializable(Constants.PARAM_DATA, share);
+        shareDialogFragment.setArguments(b);
+        return shareDialogFragment;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
@@ -33,6 +45,7 @@ public class ShareDialogFragment extends BottomSheetDialogFragment {
         View view = View.inflate(getActivity(), R.layout.dialog_share, null);
         dialog.setContentView(view);
         mBehavior = BottomSheetBehavior.from((View) view.getParent());
+        share = (Share) getArguments().getSerializable(Constants.PARAM_DATA);
 
         ivFriend = (ImageView) view.findViewById(R.id.iv_friend);
         ivMoment = (ImageView) view.findViewById(R.id.iv_moment);
@@ -43,21 +56,25 @@ public class ShareDialogFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                Tools.shareToWechatFriend(getContext());
+                Tools.shareToWechatFriend(getContext(), share);
             }
         });
         ivMoment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                Tools.shareToWechatTimeLine(getContext());
+                Tools.shareToWechatTimeLine(getContext(), share);
             }
         });
         ivWeibo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                startActivity(new Intent(getActivity(), SinaShareActivity.class));
+                Intent i = new Intent(getActivity(), SinaShareActivity.class);
+                Bundle b = new Bundle();
+                b.putSerializable(Constants.PARAM_DATA, share);
+                i.putExtras(b);
+                startActivity(i);
             }
         });
         tvCancel.setOnClickListener(new View.OnClickListener() {

@@ -1,6 +1,7 @@
 package com.us.hotr.ui.dialog;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.ui.activity.info.PromiseActivity;
 import com.us.hotr.webservice.response.GetProductDetailResponse;
 
 import java.io.Serializable;
@@ -97,6 +99,16 @@ public class PromiseQueryDialogFragment extends BottomSheetDialogFragment {
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             holder.tvTitle.setText(promiseList.get(position).getPromise_title());
             holder.tvContent.setText(promiseList.get(position).getPromise_content());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(getActivity(), PromiseActivity.class);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, promiseList.get(position));
+                    i.putExtras(b);
+                    startActivity(i);
+                }
+            });
         }
 
         @Override

@@ -219,6 +219,15 @@ public class GetProductDetailResponse implements Serializable {
         private String productUsp;
         private double shopPrice;
         private int activityCount;
+        private String usableTime;
+
+        public String getUsableTime() {
+            return usableTime;
+        }
+
+        public void setUsableTime(String usableTime) {
+            this.usableTime = usableTime;
+        }
 
         public long getKey() {
             return key;

@@ -67,35 +67,6 @@ public class UploadCompareActivity1 extends BaseActivity {
         tvNext.setText(R.string.next);
         tvNext.setTextColor(getResources().getColor(R.color.text_grey2));
 
-        tvNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(selectedProduct == null)
-                    Tools.Toast(UploadCompareActivity1.this, getString(R.string.choose_product));
-                else if(selectedDoctor == null)
-                    Tools.Toast(UploadCompareActivity1.this, getString(R.string.choose_doctor));
-                else{
-                    Case aCase = new Case();
-                    aCase.setProductId(selectedProduct.getProductId());
-                    aCase.setProductName(selectedProduct.getProduct_name());
-                    aCase.setDoctorId(selectedDoctor.getDoctor_id());
-                    aCase.setDoctorName(selectedDoctor.getDoctor_name());
-                    aCase.setHospitalId(selectedProduct.getHospital_id());
-                    aCase.setHospitalName(selectedProduct.getHospital_name());
-                    aCase.setProjectId(selectedProduct.getProject_id());
-                    aCase.setProjectName(selectedProduct.getProject_name());
-                    aCase.setContrastPhotoTitle(selectedProduct.getProduct_name()+getString(R.string.photo_before_after));
-                    aCase.setFilePathBefore(photoBeforeFilePath);
-                    aCase.setFilePathAfter(photoAfterFilePath);
-                    Intent i = new Intent(UploadCompareActivity1.this, UploadCompareActivity2.class);
-                    Bundle b = new Bundle();
-                    b.putSerializable(Constants.PARAM_DATA, aCase);
-                    i.putExtras(b);
-                    startActivity(i);
-                }
-            }
-        });
-
         clProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -223,6 +194,39 @@ public class UploadCompareActivity1 extends BaseActivity {
                 selectedDoctor.setDoctor_id(selectedProduct.getDoctor_id());
                 selectedDoctor.setDoctor_name(selectedProduct.getDoctor_name());
                 tvDoctor.setText(selectedDoctor.getDoctor_name());
+                tvNext.setTextColor(getResources().getColor(R.color.cyan));
+                tvNext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(selectedProduct == null)
+                            Tools.Toast(UploadCompareActivity1.this, getString(R.string.choose_product));
+                        else if(selectedDoctor == null)
+                            Tools.Toast(UploadCompareActivity1.this, getString(R.string.choose_doctor));
+                        else if(photoBeforeFilePath == null || photoBeforeFilePath.isEmpty())
+                            Tools.Toast(UploadCompareActivity1.this, getString(R.string.pls_upload_photo_before));
+                        else if (photoAfterFilePath == null || photoAfterFilePath.isEmpty())
+                            Tools.Toast(UploadCompareActivity1.this, getString(R.string.pls_upload_photo_after));
+                        else{
+                            Case aCase = new Case();
+                            aCase.setProductId(selectedProduct.getProductId());
+                            aCase.setProductName(selectedProduct.getProduct_name());
+                            aCase.setDoctorId(selectedDoctor.getDoctor_id());
+                            aCase.setDoctorName(selectedDoctor.getDoctor_name());
+                            aCase.setHospitalId(selectedProduct.getHospital_id());
+                            aCase.setHospitalName(selectedProduct.getHospital_name());
+                            aCase.setProjectId(selectedProduct.getProject_id());
+                            aCase.setProjectName(selectedProduct.getProject_name());
+                            aCase.setContrastPhotoTitle(selectedProduct.getProduct_name()+getString(R.string.photo_before_after));
+                            aCase.setFilePathBefore(photoBeforeFilePath);
+                            aCase.setFilePathAfter(photoAfterFilePath);
+                            Intent i = new Intent(UploadCompareActivity1.this, UploadCompareActivity2.class);
+                            Bundle b = new Bundle();
+                            b.putSerializable(Constants.PARAM_DATA, aCase);
+                            i.putExtras(b);
+                            startActivity(i);
+                        }
+                    }
+                });
             }
         }
         if(requestCode == 1){

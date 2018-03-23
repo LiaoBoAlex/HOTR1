@@ -31,6 +31,15 @@ public class Product implements Serializable {
     private List<Promise> promiseList;
     private long project_id;
     private String project_name;
+    private String usableTime;
+
+    public String getUsableTime() {
+        return usableTime;
+    }
+
+    public void setUsableTime(String usableTime) {
+        this.usableTime = usableTime;
+    }
 
     public long getProject_id() {
         return project_id;

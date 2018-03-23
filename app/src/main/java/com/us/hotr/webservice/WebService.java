@@ -11,6 +11,7 @@ import com.us.hotr.storage.bean.Doctor;
 import com.us.hotr.storage.bean.Group;
 import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.storage.bean.HotSearchTopic;
+import com.us.hotr.storage.bean.Info;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.MassageOrder;
 import com.us.hotr.storage.bean.MassageReceipt;
@@ -71,6 +72,7 @@ import java.util.Map;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -314,6 +316,18 @@ public interface WebService {
                                                                @Query("order_id") long order_id,
                                                                @Query("spbill_create_ip") String spbill_create_ip);
 
+    @POST("user_method/order/payment/getAliPayNumber.do?")
+    Observable<BaseResponse<String>> createAlipayProductBill(@Header("jsessionid") String jsessionid,
+                                                                 @Query("order_id") long order_id);
+
+    @POST("user_method/order/payment/getAliPayNumber.do?")
+    Observable<BaseResponse<String>> createAlipayMassageBill(@Header("jsessionid") String jsessionid,
+                                                                 @Query("order_id") long order_id);
+
+    @POST("user_method/order/payment/getAliPayNumber.do?")
+    Observable<BaseResponse<String>> createAlipayPartyBill(@Header("jsessionid") String jsessionid,
+                                                                 @Query("order_id") long order_id);
+
     @POST("apiCoshow/recommendCoshowList.do?")
     Observable<BaseResponse<GetGroupMainPageResponse>> getGroupMainPage(@Header("jsessionid") String jsessionid);
 
@@ -534,11 +548,11 @@ public interface WebService {
     Observable<BaseResponse<String>> deleteMassageReceipt(@Header("jsessionid") String jsessionid,
                                                           @Query("verification_id") long verification_id);
 
-    @POST("user_method/verification/amRefundActionById.do?")
+    @POST("user_method/verification/ymRefundActionById.do?")
     Observable<BaseResponse<String>> refundProductReceipt(@Header("jsessionid") String jsessionid,
                                                           @Query("verification_id") long verification_id);
 
-    @POST("user_method/verification/ymRefundActionById.do?")
+    @POST("user_method/verification/amRefundActionById.do?")
     Observable<BaseResponse<String>> refundMassageReceipt(@Header("jsessionid") String jsessionid,
                                                           @Query("verification_id") long verification_id);
 
@@ -736,4 +750,13 @@ public interface WebService {
 
     @POST("search/mainSearch.do?")
     Observable<BaseResponse<HashMap<String, Integer>>> getSearchCount(@Query("search_keyword") String search_keyword);
+
+    @POST("user/user_method/userHelp.do?select_marker=1")
+    Observable<BaseResponse<List<Info>>> getFAQs(@Header("jsessionid") String jsessionid);
+
+    @POST("user/user_method/userHelp.do?select_marker=2")
+    Observable<BaseResponse<List<Info>>> getBusinessPartener(@Header("jsessionid") String jsessionid);
+
+    @GET
+    Observable<ResponseBody> downloadFileWithDynamicUrlSync(@Url String fileUrl);
 }

@@ -40,6 +40,15 @@ public class PartyOrder implements Serializable{
     private String address;
     private String create_time;
     private String cancel_detail;
+    private String pay_time;
+
+    public String getPay_time() {
+        return pay_time;
+    }
+
+    public void setPay_time(String pay_time) {
+        this.pay_time = pay_time;
+    }
 
     public long getId() {
         return id;

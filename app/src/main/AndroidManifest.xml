@@ -27,9 +27,9 @@
     <application
         android:name="com.us.hotr.ui.HOTRApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo_hotr"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo_hotr_round"
         android:largeHeap="true"
         android:hardwareAccelerated="true"
         android:theme="@style/AppTheme">
@@ -132,6 +132,8 @@
         <activity android:name="com.us.hotr.ui.activity.info.HelpAndFeedbackActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.FAQActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.us.hotr.ui.activity.info.PromiseActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.FeedbackActivity"
             android:screenOrientation="portrait"/>

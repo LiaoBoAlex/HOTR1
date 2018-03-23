@@ -209,7 +209,6 @@ public class ProductOrderListFragment extends BaseLoadingFragment {
         public class MyViewHolder extends RecyclerView.ViewHolder {
             TextView tvPay, tvTime, tvTitle, tvSubTitle, tvPrice,tvCancel, tvBuy, tvMoney;
             ImageView ivAvatar;
-            CountDownTimer timer;
             public MyViewHolder(View view){
                 super(view);
                 tvPay = (TextView) view.findViewById(R.id.tv_pay);
@@ -248,23 +247,7 @@ public class ProductOrderListFragment extends BaseLoadingFragment {
                     holder.tvPay.setText(R.string.order_wait_pay);
                     holder.tvCancel.setText(R.string.cancel_order);
                     holder.tvBuy.setText(R.string.pay_now);
-                    if(holder.timer == null) {
-                        final long leftValideTime = Tools.getOrderTimeInMinSec(order.getOrder_create_time());
-                        if(leftValideTime>0) {
-                            holder.timer = new CountDownTimer(leftValideTime, 1000) {
-                                public void onTick(long millisUntilFinished) {
-                                    if (holder != null && getContext() != null)
-                                        holder.tvTime.setText(Tools.getOrderTime(getContext(), millisUntilFinished));
-                                }
-
-                                public void onFinish() {
-                                    orderList.remove(position);
-                                    notifyDataSetChanged();
-                                }
-                            }.start();
-                        }else
-                            holder.tvTime.setText("INVALID!");
-                    }
+                    holder.tvTime.setText(Tools.getOrderTime(getContext(), Tools.getOrderTimeInMinSec(order.getOrder_create_time())));
                     holder.tvCancel.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -296,6 +279,8 @@ public class ProductOrderListFragment extends BaseLoadingFragment {
                     holder.tvBuy.setText(R.string.buy_again);
                     if(order.getOrder_payment_time()!=null)
                         holder.tvTime.setText(getString(R.string.pay_time) + order.getOrder_payment_time().replace("-", "/"));
+                    else
+                        holder.tvTime.setText("");
                     holder.tvCancel.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

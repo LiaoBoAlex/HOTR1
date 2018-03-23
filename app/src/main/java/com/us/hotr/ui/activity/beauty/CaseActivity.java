@@ -33,6 +33,7 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Comment;
 import com.us.hotr.storage.bean.Doctor;
@@ -48,6 +49,7 @@ import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
 import com.us.hotr.ui.dialog.CommentDialogFragment;
+import com.us.hotr.ui.dialog.ShareDialogFragment;
 import com.us.hotr.ui.view.CaseDetailView;
 import com.us.hotr.ui.view.DoctorView;
 import com.us.hotr.ui.view.HospitalView;
@@ -115,7 +117,7 @@ public class CaseActivity extends BaseLoadingActivity {
             SubscriberListener mListener;
             mListener = new SubscriberListener<GetPostDetailResponse>() {
                 @Override
-                public void onNext(GetPostDetailResponse result) {
+                public void onNext(final GetPostDetailResponse result) {
                     isFav = (result.getHotTopic().getIs_collect() == 1)?true:false;
                     if(isFav)
                         ivFav.setImageResource(R.mipmap.ic_fav_text_ed);
@@ -145,6 +147,21 @@ public class CaseActivity extends BaseLoadingActivity {
                         tvCommentHint.setGravity(Gravity.CENTER);
                         tvCommentHint.setText(R.string.no_comment_allowed);
                     }
+                    ivShare.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Share share = new Share();
+                            share.setDescription(getString(R.string.share_post));
+                            if(result.getHotTopic().getIsOfficial()==1)
+                                share.setImageUrl(result.getHotTopic().getShow_img());
+                            else
+                                share.setImageUrl(Tools.validatePhotoString(result.getHotTopic().getContentImg()).split("\\s*,\\s*")[0]);
+                            share.setTitle(result.getHotTopic().getTitle());
+                            share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/invitation?id="+result.getHotTopic().getId());
+                            share.setSinaContent(getString(R.string.share_post));
+                            ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
+                        }
+                    });
                     mAdapter = new MyAdapter(CaseActivity.this, result);
                     MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
                     myBaseAdapter.setFooterView();

@@ -28,6 +28,26 @@ public class Hospital implements Serializable {
     @SerializedName(value = "areaName", alternate = {"area_name"})
     private String areaName;
     private int case_num;
+    @SerializedName(value = "openTimeOver", alternate = {"open_time_over"})
+    private String openTimeOver;
+    @SerializedName(value = "openTimeStart", alternate = {"open_time_start"})
+    private String openTimeStart;
+
+    public String getOpenTimeOver() {
+        return openTimeOver;
+    }
+
+    public void setOpenTimeOver(String openTimeOver) {
+        this.openTimeOver = openTimeOver;
+    }
+
+    public String getOpenTimeStart() {
+        return openTimeStart;
+    }
+
+    public void setOpenTimeStart(String openTimeStart) {
+        this.openTimeStart = openTimeStart;
+    }
 
     public int getCase_num() {
         return case_num;

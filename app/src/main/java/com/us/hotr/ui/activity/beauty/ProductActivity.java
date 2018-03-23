@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ImageBanner;
+import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MainActivity;
@@ -30,6 +31,7 @@ import com.us.hotr.ui.activity.PayNumberActivity;
 import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.ui.dialog.PriceQueryDialogFragment;
 import com.us.hotr.ui.dialog.PromiseQueryDialogFragment;
+import com.us.hotr.ui.dialog.ShareDialogFragment;
 import com.us.hotr.ui.fragment.beauty.CaseListFragment;
 import com.us.hotr.ui.fragment.beauty.ProductHospitalFragment;
 import com.us.hotr.ui.fragment.beauty.ProductIntroFragment;
@@ -59,7 +61,7 @@ public class ProductActivity extends BaseLoadingActivity {
     private AppBarLayout appBarLayout;
     private ImageView ivQuestion, ivBackHome, ivOnePrice, ivPromoPrice, ivHospitalAvatar, ivHospitalCetificate, ivFav;
     private ImageBanner mBanner;
-    private TextView tvPurchase, tvTitle, tvPriceAfter, tvPriceBefore, tvAppointment,
+    private TextView tvPurchase, tvTitle, tvPriceAfter, tvPriceBefore, tvAppointment, tvApplyTime,
                         tvHospitalName, tvHospitalType, tvHospitalAddress, tvHospitalEnqurey, tvDoctorName, tvDoctorSpecial, tvPaymentType, tvPaymentAmount, tvPayOther;
     private ConstraintLayout clPromise, clHospital, clDoctor;
     private List<LinearLayout> llPromiseList = new ArrayList<>();
@@ -116,6 +118,7 @@ public class ProductActivity extends BaseLoadingActivity {
         tvPaymentType = (TextView) findViewById(R.id.tv_payment_type);
         tvPaymentAmount = (TextView) findViewById(R.id.tv_deposit);
         tvPayOther = (TextView) findViewById(R.id.tv_pay_other);
+        tvApplyTime = (TextView) findViewById(R.id.tv_apply_time);
         clPromise = (ConstraintLayout) findViewById(R.id.cl_promise);
         clHospital = (ConstraintLayout) findViewById(R.id.cl_hospital);
         clDoctor = (ConstraintLayout) findViewById(R.id.cl_doctor);
@@ -198,6 +201,7 @@ public class ProductActivity extends BaseLoadingActivity {
 //                    }
 //                });
                 tvTitle.setText(getString(R.string.bracket_left)+product.getProductName()+getString(R.string.bracket_right)+product.getProductUsp());
+                tvApplyTime.setText(getString(R.string.use_time) + product.getUsableTime());
                 if(product.getPaymentType() == Constants.FULL_PAYMENT) {
                     ivOnePrice.setVisibility(View.VISIBLE);
                     tvPaymentType.setText(getString(R.string.full_amount));
@@ -337,6 +341,19 @@ public class ProductActivity extends BaseLoadingActivity {
                             ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, ProductActivity.this),
                                     HOTRSharePreference.getInstance(ProductActivity.this.getApplicationContext()).getUserID(), product.getKey(), 3);
                         }
+                    }
+                });
+
+                ivShare.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Share share = new Share();
+                        share.setDescription(getString(R.string.share_product));
+                        share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(product.getProductImg())));
+                        share.setTitle(getString(R.string.bracket_left)+product.getProductName()+getString(R.string.bracket_right)+product.getProductUsp());
+                        share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/commodityYM?id="+product.getKey());
+                        share.setSinaContent(getString(R.string.share_sina_product));
+                        ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
                     }
                 });
 

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.os.Environment;
 import android.support.annotation.ColorInt;
@@ -22,6 +23,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.BarcodeFormat;
@@ -36,6 +40,7 @@ import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.CityCode;
 import com.us.hotr.storage.bean.Type;
@@ -62,6 +67,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -188,42 +194,74 @@ public class Tools {
         });
     }
 
-    public static void shareToWechatFriend(Context mContext) {
+    public static void shareToWechatFriend(final Context mContext, Share share) {
         if (!HOTRApplication.getIwxApi().isWXAppInstalled()) {
             Tools.Toast(mContext, mContext.getString(R.string.no_wechat_installed));
             return;
         }
         WXWebpageObject webPage = new WXWebpageObject();
-        webPage.webpageUrl = "http://blog.csdn.net/jing_unique_da/article/details/47254993";
-        WXMediaMessage msg = new WXMediaMessage(webPage);
-        msg.title = "this is title";
-        msg.description = "this is description";
-        Bitmap loadedImage = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.placeholder_post3);
-        msg.setThumbImage(loadedImage);
-        SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = String.valueOf(Constants.SHARE_TO_WECHAT_FRIEND);
-        req.message = msg;
-        req.scene = SendMessageToWX.Req.WXSceneSession;
-        HOTRApplication.getIwxApi().sendReq(req);
+        webPage.webpageUrl = share.getUrl();
+        final WXMediaMessage msg = new WXMediaMessage(webPage);
+        msg.title = share.getTitle();
+        msg.description = share.getDescription();
+        Glide.with(mContext).load(share.getImageUrl()).asBitmap().into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                msg.setThumbImage(Bitmap.createScaledBitmap(resource, 120, 120, false));
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = String.valueOf(Constants.SHARE_TO_WECHAT_FRIEND);
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneSession;
+                HOTRApplication.getIwxApi().sendReq(req);
+            }
+
+            @Override
+            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                super.onLoadFailed(e, errorDrawable);
+                msg.setThumbImage(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.placeholder_post3));
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = String.valueOf(Constants.SHARE_TO_WECHAT_TIMELINE);
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+                HOTRApplication.getIwxApi().sendReq(req);
+            }
+        });
+
     }
 
-    public static void shareToWechatTimeLine(Context mContext) {
+    public static void shareToWechatTimeLine(final Context mContext, Share share) {
         if (!HOTRApplication.getIwxApi().isWXAppInstalled()) {
             Tools.Toast(mContext, mContext.getString(R.string.no_wechat_installed));
             return;
         }
         WXWebpageObject webPage = new WXWebpageObject();
-        webPage.webpageUrl = "http://blog.csdn.net/jing_unique_da/article/details/47254993";
-        WXMediaMessage msg = new WXMediaMessage(webPage);
-        msg.title = "this is title";
-        msg.description = "this is description";
-        Bitmap loadedImage = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.placeholder_post3);
-        msg.setThumbImage(loadedImage);
-        SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = String.valueOf(Constants.SHARE_TO_WECHAT_TIMELINE);
-        req.message = msg;
-        req.scene = SendMessageToWX.Req.WXSceneTimeline;
-        HOTRApplication.getIwxApi().sendReq(req);
+        webPage.webpageUrl = share.getUrl();
+        final WXMediaMessage msg = new WXMediaMessage(webPage);
+        msg.title = share.getTitle();
+        msg.description = share.getDescription();
+        Glide.with(mContext).load(share.getImageUrl()).asBitmap().into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                msg.setThumbImage(Bitmap.createScaledBitmap(resource, 120, 120, false));
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = String.valueOf(Constants.SHARE_TO_WECHAT_TIMELINE);
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+                HOTRApplication.getIwxApi().sendReq(req);
+            }
+
+            @Override
+            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                super.onLoadFailed(e, errorDrawable);
+                msg.setThumbImage(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.placeholder_post3));
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = String.valueOf(Constants.SHARE_TO_WECHAT_TIMELINE);
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+                HOTRApplication.getIwxApi().sendReq(req);
+            }
+        });
+
     }
 
     public static void loginWechat(Context mContext){
@@ -250,20 +288,20 @@ public class Tools {
         HOTRApplication.getIwxApi().sendReq(payRequest);
     }
 
-    public static void aliPay(final Activity mActivity, final String order, SubscriberListener listener){
-        Observable.create(new ObservableOnSubscribe<AliPayResult>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<AliPayResult> subscriber) throws Exception {
-                PayTask alipay = new PayTask(mActivity);
-                Map<String, String> result = alipay.payV2(order,true);
-                AliPayResult payResult = new AliPayResult(result);
-                subscriber.onNext(payResult);
-                subscriber.onComplete();
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new ProgressSubscriber(listener, mActivity));
+//    public static void aliPay(final Activity mActivity, final String order, SubscriberListener listener){
+//        Observable.create(new ObservableOnSubscribe<AliPayResult>() {
+//            @Override
+//            public void subscribe(@NonNull ObservableEmitter<AliPayResult> subscriber) throws Exception {
+//                PayTask alipay = new PayTask(mActivity);
+//                Map<String, String> result = alipay.payV2(order,true);
+//                AliPayResult payResult = new AliPayResult(result);
+//                subscriber.onNext(payResult);
+//                subscriber.onComplete();
+//            }
+//        })
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new ProgressSubscriber(listener, mActivity));
 //        switch (payResult.getResultStatus()) {
 //            case "9000":
 //                GMToastUtil.showToast("支付成功");
@@ -290,8 +328,54 @@ public class Tools {
 //                GMToastUtil.showToast("支付失败");
 //                break;
 //        }
-    }
+//    }
 
+    public static String getAliPayOrder(String order){
+        class AliPayOrder{
+            private String body;
+            private String out_trade_no;
+            private String seller_id;
+            private String subject;
+            private String timeout_express;
+            private String total_amount;
+
+            public String getBody() {
+                return body;
+            }
+
+            public String getOut_trade_no() {
+                return out_trade_no;
+            }
+
+            public String getSeller_id() {
+                return seller_id;
+            }
+
+            public String getSubject() {
+                return subject;
+            }
+
+            public String getTimeout_express() {
+                return timeout_express;
+            }
+
+            public String getTotal_amount() {
+                return total_amount;
+            }
+        }
+        String result ="partner=" + "\"" + Constants.ALIPAY_PARTENER_ID + "\""
+                +"&service=\"mobile.securitypay.pay\""
+                +"&payment_type=\"1\""
+                +"&_input_charset=\"utf-8\"";
+        String[] s = order.split("&");
+        for(int i=0;i<s.length;i++){
+            if(s[i].contains("biz_content")){
+                String s1 = s[i].replace("biz_content={", "").replace("}", "");
+            }
+        }
+
+        return  null;
+    }
     public static List<Type> getTypes(int type, Context mContext){
         List<Type> types = new ArrayList<>();
         types.add(new Type(Constants.SORT_BY_DEFAULT, mContext.getResources().getString(R.string.filter_default)));
@@ -565,7 +649,7 @@ public class Tools {
         Calendar calnow=Calendar.getInstance();
         if(calnow.get(Calendar.YEAR) == c.get(Calendar.YEAR))
             return (c.get(Calendar.MONTH)+1) + mContext.getString(R.string.month)+c.get(Calendar.DATE) + mContext.getString(R.string.day) + " "
-            + String.format("%02d", c.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", c.get(Calendar.MINUTE));
+                    + String.format("%02d", c.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", c.get(Calendar.MINUTE));
         else
             return c.get(Calendar.YEAR) + mContext.getString(R.string.year) + (c.get(Calendar.MONTH)+1) + mContext.getString(R.string.month)
                     + c.get(Calendar.DATE) + mContext.getString(R.string.day) + " " + String.format("%02d", c.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", c.get(Calendar.MINUTE));
@@ -598,8 +682,17 @@ public class Tools {
         try {
             calCreate.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date));
             Calendar calNow = Calendar.getInstance();
-            if(calNow.getTimeInMillis()-calCreate.getTimeInMillis()<Constants.ORDER_VALID_TIME_IN_MINISEC)
-                return Constants.ORDER_VALID_TIME_IN_MINISEC -(calNow.getTimeInMillis()-calCreate.getTimeInMillis());
+            Calendar c = Calendar.getInstance();
+            long now = c.getTimeInMillis();
+
+            c.add(Calendar.DAY_OF_MONTH, 1);
+            c.set(Calendar.HOUR_OF_DAY, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
+            long validTimeInMinisec = c.getTimeInMillis() - now + Constants.ORDER_VALID_TIME_IN_MINISEC;
+            if(calNow.getTimeInMillis()-calCreate.getTimeInMillis()<validTimeInMinisec)
+                return validTimeInMinisec -(calNow.getTimeInMillis()-calCreate.getTimeInMillis());
             else
                 return 0;
         } catch (Throwable tr) {
@@ -613,7 +706,7 @@ public class Tools {
         else if(minisec>60000)
             return mContext.getString(R.string.order_time_left)+(minisec/60000) + mContext.getString(R.string.min);
         else
-            return mContext.getString(R.string.order_time_left)+(minisec/1000) + mContext.getString(R.string.sec);
+            return mContext.getString(R.string.order_time_left)+"1" + mContext.getString(R.string.min);
     }
 
     public static Map<String ,String>  gsonStringToMap(String jsonStr){

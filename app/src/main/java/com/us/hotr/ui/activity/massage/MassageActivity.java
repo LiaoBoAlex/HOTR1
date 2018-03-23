@@ -25,12 +25,14 @@ import android.widget.TextView;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ImageBanner;
+import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.PayNumberActivity;
 import com.us.hotr.ui.activity.info.LoginActivity;
+import com.us.hotr.ui.dialog.ShareDialogFragment;
 import com.us.hotr.ui.fragment.massage.MassageIntroFragment;
 import com.us.hotr.ui.fragment.massage.MassageSpaFragment;
 import com.us.hotr.ui.view.MasseurBigView;
@@ -61,7 +63,7 @@ public class MassageActivity extends BaseLoadingActivity {
     private AppBarLayout appBarLayout;
     private ImageView ivBack, ivShare, ivBackHome, ivPromo, ivFav;
     private ImageBanner mBanner;
-    private TextView tvPurchase, tvTitle, tvPriceAfter, tvPriceBefore, tvAppointment, tvAddress, tvMasseurTitle;
+    private TextView tvPurchase, tvTitle, tvPriceAfter, tvPriceBefore, tvAppointment, tvAddress, tvMasseurTitle, tvApplyTime;
     private SpaBigView mSpaBigView;
     private RecyclerView rvMasseur;
     private ArrayList<String> titleList;
@@ -101,6 +103,7 @@ public class MassageActivity extends BaseLoadingActivity {
         tvPriceAfter = (TextView) findViewById(R.id.tv_amount);
         tvPriceBefore = (TextView) findViewById(R.id.tv_price_before);
         tvAppointment = (TextView) findViewById(R.id.tv_appointment);
+        tvApplyTime = (TextView) findViewById(R.id.tv_apply_time);
         tvAddress = (TextView) findViewById(R.id.tv_place);
         tvMasseurTitle = (TextView) findViewById(R.id.tv_masseur_title);
         ivPromo = (ImageView) findViewById(R.id.iv_promo);
@@ -178,6 +181,7 @@ public class MassageActivity extends BaseLoadingActivity {
                 mBanner.setSource(photoes);
                 mBanner.startScroll();
                 tvTitle.setText(getString(R.string.bracket_left)+result.getProduct().getProductName()+getString(R.string.bracket_right)+result.getProduct().getProductUsp());
+                tvApplyTime.setText(getString(R.string.use_time) + result.getProduct().getUsableTime());
                 if(result.getProduct().getProductType()==Constants.PROMOTION_PRODUCT){
                     tvPriceAfter.setText(new DecimalFormat("0.00").format(result.getProduct().getActivityPrice()) + "/" + result.getProduct().getServiceTime());
                     ivPromo.setVisibility(View.VISIBLE);
@@ -256,6 +260,19 @@ public class MassageActivity extends BaseLoadingActivity {
                             ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, MassageActivity.this),
                                     HOTRSharePreference.getInstance(MassageActivity.this.getApplicationContext()).getUserID(), mMassage.getProduct().getKey(), 6);
                         }
+                    }
+                });
+
+                ivShare.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Share share = new Share();
+                        share.setDescription(getString(R.string.share_massage));
+                        share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(mMassage.getProduct().getProductImg())));
+                        share.setTitle(getString(R.string.bracket_left)+mMassage.getProduct().getProductName()+getString(R.string.bracket_right)+mMassage.getProduct().getProductUsp());
+                        share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/commodityAM?id="+mMassage.getProduct().getKey());
+                        share.setSinaContent(getString(R.string.share_massage));
+                        ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
                     }
                 });
 

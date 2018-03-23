@@ -182,7 +182,7 @@ public class HospitalActivity extends BaseLoadingActivity {
 
         public class HospitalHeaderHolder extends RecyclerView.ViewHolder {
             ImageView ivAvatar, ivAdd, ivMsg, ivCertified;
-            TextView tvNumConsult, tvNumCase, tvNumPointment, tvName, tvTitle, tvHospital, tvAddress, tvIndroduction, tvShowAll;
+            TextView tvNumConsult, tvNumCase, tvNumPointment, tvName, tvTitle, tvHospital, tvAddress, tvIndroduction, tvShowAll, tvTime;
             FlowLayout flSubject;
             RelativeLayout rlAddress;
             RecyclerView recyclerView;
@@ -207,6 +207,7 @@ public class HospitalActivity extends BaseLoadingActivity {
                 tvShowAll = (TextView) view.findViewById(R.id.tv_expend);
                 recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
                 clSubject = (ConstraintLayout) view.findViewById(R.id.cl_subject);
+                tvTime = (TextView) view.findViewById(R.id.tv_time);
             }
         }
 
@@ -368,6 +369,7 @@ public class HospitalActivity extends BaseLoadingActivity {
                     final HospitalHeaderHolder hospitalHeaderHolder = (HospitalHeaderHolder) holder;
                     hospitalHeaderHolder.tvHospital.setText(hospitalDetail.getDetail().getHospital_type());
                     hospitalHeaderHolder.tvAddress.setText(hospitalDetail.getDetail().getHospital_address());
+                    hospitalHeaderHolder.tvTime.setText(Tools.convertTime(hospitalDetail.getDetail().getOpenTimeStart())+ "-" + Tools.convertTime(hospitalDetail.getDetail().getOpenTimeOver()));
                     hospitalHeaderHolder.rlAddress.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

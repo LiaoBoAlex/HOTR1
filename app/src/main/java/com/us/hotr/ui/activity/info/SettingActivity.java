@@ -114,6 +114,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.cl_check_for_update:
+                openApplicationMarket("com.tencent.mm");
                 break;
             case R.id.tv_logout:
                 TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(this);
@@ -144,6 +145,27 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
 
         }
 
+    }
+
+    private void openApplicationMarket(String packageName) {
+        try {
+            String str = "market://details?id=" + packageName;
+            Intent localIntent = new Intent(Intent.ACTION_VIEW);
+            localIntent.setData(Uri.parse(str));
+            startActivity(localIntent);
+        } catch (Exception e) {
+            // 打开应用商店失败 可能是没有手机没有安装应用市场
+            e.printStackTrace();
+            Tools.Toast(this, getString(R.string.open_market_fail));
+            String url = "http://app.mi.com/detail/163525?ref=search";
+            openLinkBySystem(url);
+        }
+    }
+
+    private void openLinkBySystem(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
     }
 
     @Override

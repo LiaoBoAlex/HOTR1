@@ -1,5 +1,7 @@
 package com.us.hotr.storage.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -13,6 +15,7 @@ public class MassageReceipt implements Serializable {
     private String action_refund_time;
     private int numb;
     private String massagist_name;
+    @SerializedName(value = "real_payment", alternate = {"realPayment"})
     private double real_payment;
     private String refund_time;
     private String massage_name;

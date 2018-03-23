@@ -6,7 +6,7 @@ package com.us.hotr;
 
 public class Constants {
 
-    public static final String SERVER_URL = "http://hotr.hotr-app.com/hotr-api-web/";
+    public static final String SERVER_URL = "http://192.168.0.234:8080/hotr-api-web/";
     public static final int SERVER_TIMEOUT = 30;
     public static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?";
     public static final String WECHAT_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?";
@@ -17,6 +17,7 @@ public class Constants {
     public static final String SINA_APP_ID = "1546502328";
     public static final String SINA_REDIRECT_URL = "www.sina.com";
     public static final String SINA_SCOPE = "all";
+    public static final String ALIPAY_PARTENER_ID = "2088811922494101";
 
     public static final String SHARE_TO_WECHAT_FRIEND = "SHARE_TO_WECHAT_FRIEND";
     public static final String SHARE_TO_WECHAT_TIMELINE = "SHARE_TO_WECHAT_TIMELINE";
@@ -94,7 +95,8 @@ public class Constants {
 
     public static final int MAX_PAGE_ITEM = 10;
     public static final long ORDER_VALID_TIME_IN_MINISEC = 24*60*60*1000;
-    public static final String SUPPORT_LINE = "01058455202";
+    public static final String SUPPORT_LINE = "4001118518";
+    public static final String ABOUT_US = "http://hotr.us-app.com/share/about.html";
 
     public static final int ALL_CITY_ID = 5000;
 

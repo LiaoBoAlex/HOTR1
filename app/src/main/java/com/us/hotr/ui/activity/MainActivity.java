@@ -27,6 +27,7 @@ import com.us.hotr.ui.fragment.HomeFragment;
 import com.us.hotr.ui.fragment.found.FoundFragment;
 import com.us.hotr.ui.fragment.info.InfoFragment;
 import com.us.hotr.ui.fragment.receipt.ReceiptFragment;
+import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
@@ -55,6 +56,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private int currentPage = 0;
     private int orderCount = 0, noticeCount = 0;
+    private long exitTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -305,6 +307,18 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     }
 
     @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - exitTime > 2000) {
+            Tools.Toast(this, getString(R.string.press_again_to_exit));
+            exitTime = System.currentTimeMillis();
+        } else {
+            super.onBackPressed();
+        }
+
+
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == SettingActivity.CODE_LOGOUT){
@@ -317,7 +331,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     }
 
     private void buttonRollOut(){
-        ValueAnimator animator = ValueAnimator.ofFloat(0, 150);
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 200);
         animator.setDuration(200).start();
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
@@ -331,20 +345,20 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                     tabAll.setVisibility(View.INVISIBLE);
                 }
                 ivPost.setTranslationY((Float) animation.getAnimatedValue()*-1.2F);
-                ivPost.setTranslationX((Float) animation.getAnimatedValue()*-0.7F);
-                ivPost.setScaleX((Float) animation.getAnimatedValue()/150*1.5F);
-                ivPost.setScaleY((Float) animation.getAnimatedValue()/150*1.5F);
+                ivPost.setTranslationX((Float) animation.getAnimatedValue()*-0.9F);
+                ivPost.setScaleX((Float) animation.getAnimatedValue()/200*1.5F);
+                ivPost.setScaleY((Float) animation.getAnimatedValue()/200*1.5F);
                 ivCompare.setTranslationY((Float) animation.getAnimatedValue()*-1.2F);
-                ivCompare.setTranslationX((Float) animation.getAnimatedValue()*0.7F);
-                ivCompare.setScaleX((Float) animation.getAnimatedValue()/150*1.5F);
-                ivCompare.setScaleY((Float) animation.getAnimatedValue()/150*1.5F);
-                ivAll1.setRotation((Float) animation.getAnimatedValue()/150*45);
+                ivCompare.setTranslationX((Float) animation.getAnimatedValue()*0.9F);
+                ivCompare.setScaleX((Float) animation.getAnimatedValue()/200*1.5F);
+                ivCompare.setScaleY((Float) animation.getAnimatedValue()/200*1.5F);
+                ivAll1.setRotation((Float) animation.getAnimatedValue()/200*45);
             }
         });
     }
 
     private void buttonRollIn(){
-        ValueAnimator animator = ValueAnimator.ofFloat(150, 0);
+        ValueAnimator animator = ValueAnimator.ofFloat(200, 0);
         animator.setDuration(200).start();
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
@@ -358,14 +372,14 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                     tabAll.setVisibility(View.VISIBLE);
                 }
                 ivPost.setTranslationY((Float) animation.getAnimatedValue()*-1.2F);
-                ivPost.setTranslationX((Float) animation.getAnimatedValue()*-0.7F);
-                ivPost.setScaleX((Float) animation.getAnimatedValue()/150*1.5F);
-                ivPost.setScaleY((Float) animation.getAnimatedValue()/150*1.5F);
+                ivPost.setTranslationX((Float) animation.getAnimatedValue()*-0.9F);
+                ivPost.setScaleX((Float) animation.getAnimatedValue()/200*1.5F);
+                ivPost.setScaleY((Float) animation.getAnimatedValue()/200*1.5F);
                 ivCompare.setTranslationY((Float) animation.getAnimatedValue()*-1.2F);
-                ivCompare.setTranslationX((Float) animation.getAnimatedValue()*0.7F);
-                ivCompare.setScaleX((Float) animation.getAnimatedValue()/150*1.5F);
-                ivCompare.setScaleY((Float) animation.getAnimatedValue()/150*1.5F);
-                ivAll1.setRotation((Float) animation.getAnimatedValue()/150*45);
+                ivCompare.setTranslationX((Float) animation.getAnimatedValue()*0.9F);
+                ivCompare.setScaleX((Float) animation.getAnimatedValue()/200*1.5F);
+                ivCompare.setScaleY((Float) animation.getAnimatedValue()/200*1.5F);
+                ivAll1.setRotation((Float) animation.getAnimatedValue()/200*45);
             }
         });
 

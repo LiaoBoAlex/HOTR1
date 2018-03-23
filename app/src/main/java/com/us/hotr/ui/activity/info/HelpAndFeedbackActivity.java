@@ -13,13 +13,23 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Info;
 import com.us.hotr.ui.activity.BaseActivity;
+import com.us.hotr.ui.activity.BaseLoadingActivity;
+import com.us.hotr.ui.fragment.BaseLoadingFragment;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import java.util.List;
 
 /**
  * Created by Mloong on 2017/10/13.
  */
 
-public class HelpAndFeedbackActivity extends BaseActivity {
+public class HelpAndFeedbackActivity extends BaseLoadingActivity {
 
     private RecyclerView recyclerView;
     private MyAdapter mAdapter;
@@ -35,6 +45,27 @@ public class HelpAndFeedbackActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setMyTitle(R.string.help_and_feedback);
         initStaticView();
+        loadData(Constants.LOAD_PAGE);
+    }
+
+    @Override
+    protected void loadData(int loadType) {
+        SubscriberListener mListener = new SubscriberListener<List<Info>>() {
+            @Override
+            public void onNext(List<Info> result) {
+                if(mAdapter == null) {
+                    mAdapter = new MyAdapter(result);
+                    recyclerView.setAdapter(mAdapter);
+                }else
+                    mAdapter.setData(result);
+            }
+        };
+        if (loadType == Constants.LOAD_PAGE)
+            ServiceClient.getInstance().getFAQs(new LoadingSubscriber(mListener, this),
+                    HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+        else if (loadType == Constants.LOAD_PULL_REFRESH)
+            ServiceClient.getInstance().getFAQs(new SilentSubscriber(mListener, this, refreshLayout),
+                    HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
     }
 
     private void initStaticView(){
@@ -43,8 +74,6 @@ public class HelpAndFeedbackActivity extends BaseActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        mAdapter = new MyAdapter();
-        recyclerView.setAdapter(mAdapter);
 
         tvFeedback.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,7 +84,8 @@ public class HelpAndFeedbackActivity extends BaseActivity {
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-        private String[] myList = {"我要投诉", "优惠券使用说明", "购物注意事项", "最后一个"};
+        private List<Info> infoList;
+
         public class MyViewHolder extends RecyclerView.ViewHolder {
             TextView tvTitle;
 
@@ -65,8 +95,13 @@ public class HelpAndFeedbackActivity extends BaseActivity {
             }
         }
 
-        public MyAdapter() {
+        public MyAdapter(List<Info> infoList) {
+            this.infoList = infoList;
+        }
 
+        public void setData(List<Info> infoList) {
+            this.infoList = infoList;
+            notifyDataSetChanged();
         }
 
         @Override
@@ -79,12 +114,14 @@ public class HelpAndFeedbackActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
-            holder.tvTitle.setText(myList[position]);
+            holder.tvTitle.setText(infoList.get(position).getTitle());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent i = new Intent(HelpAndFeedbackActivity.this, FAQActivity.class);
-                    i.putExtra(Constants.PARAM_TITLE, myList[position]);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, infoList.get(position));
+                    i.putExtras(b);
                     startActivity(i);
                 }
             });
@@ -92,7 +129,10 @@ public class HelpAndFeedbackActivity extends BaseActivity {
 
         @Override
         public int getItemCount() {
-            return myList.length;
+            if(infoList == null)
+                return 0;
+            else
+                return infoList.size();
         }
     }
 }
