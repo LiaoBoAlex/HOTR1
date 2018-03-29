@@ -41,6 +41,15 @@ public class Massage implements Serializable {
     @SerializedName(value = "product_main_img", alternate = {"main_img"})
     private String product_main_img;
     private String massage_name;
+    private int onsaleState;
+    private int checkState;
+
+    public boolean isMassageVaiable(){
+        if(onsaleState == 1 && checkState ==1)
+            return  true;
+        else
+            return false;
+    }
 
     public int getOrder_num() {
         return order_num;

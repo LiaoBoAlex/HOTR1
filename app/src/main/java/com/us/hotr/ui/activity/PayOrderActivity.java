@@ -156,7 +156,7 @@ public class PayOrderActivity extends BaseActivity {
             SubscriberListener mListener = new SubscriberListener<AliPayResult>() {
                 @Override
                 public void onNext(AliPayResult result) {
-                    if (result.getResultStatus() == "9000") {
+                    if ("9000".equals(result.getResultStatus())) {
                         Tools.Toast(PayOrderActivity.this, getString(R.string.alipay_pay_success));
                         GlobalBus.getBus().post(new Events.PaymentSuccess());
                     } else {

@@ -320,11 +320,11 @@ public interface WebService {
     Observable<BaseResponse<String>> createAlipayProductBill(@Header("jsessionid") String jsessionid,
                                                                  @Query("order_id") long order_id);
 
-    @POST("user_method/order/payment/getAliPayNumber.do?")
+    @POST("user_method/order/payment/getAliPayNumberByMassage.do?")
     Observable<BaseResponse<String>> createAlipayMassageBill(@Header("jsessionid") String jsessionid,
                                                                  @Query("order_id") long order_id);
 
-    @POST("user_method/order/payment/getAliPayNumber.do?")
+    @POST("user_method/order/payment/getAliPayNumberByTravel.do?")
     Observable<BaseResponse<String>> createAlipayPartyBill(@Header("jsessionid") String jsessionid,
                                                                  @Query("order_id") long order_id);
 

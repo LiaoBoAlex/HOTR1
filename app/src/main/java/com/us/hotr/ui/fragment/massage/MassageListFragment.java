@@ -82,9 +82,11 @@ public class MassageListFragment extends BaseLoadingFragment {
         if(spalId<=0)
             spalId = null;
         if(spalId!=null){
-            typeId = 5l;
             cityCode = null;
+            if(subjectId == null || subjectId < 0)
+                subjectId = 0l;
         }
+
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

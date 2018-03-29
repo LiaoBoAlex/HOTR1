@@ -31,6 +31,7 @@ import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.request.CancelOrderRequest;
 import com.us.hotr.webservice.response.BaseListResponse;
+import com.us.hotr.webservice.response.GetMassageDetailResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
@@ -302,11 +303,7 @@ public class MassageOrderListFragment extends BaseLoadingFragment {
                     holder.tvBuy.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent i = new Intent(getActivity(), MassageActivity.class);
-                            Bundle b = new Bundle();
-                            b.putLong(Constants.PARAM_ID, order.getProduct_id());
-                            i.putExtras(b);
-                            startActivity(i);
+                            buyAgain(order);
                         }
                     });
                     break;
@@ -321,6 +318,24 @@ public class MassageOrderListFragment extends BaseLoadingFragment {
                     startActivity(i);
                 }
             });
+        }
+
+        private void buyAgain(final MassageOrder result){
+            final SubscriberListener mListener = new SubscriberListener<GetMassageDetailResponse>() {
+                @Override
+                public void onNext(final GetMassageDetailResponse response) {
+                    if(response.getProduct().isMassageVaiable()) {
+                        Intent i = new Intent(getActivity(), MassageActivity.class);
+                        Bundle b = new Bundle();
+                        b.putLong(Constants.PARAM_ID, response.getProduct().getKey());
+                        i.putExtras(b);
+                        startActivity(i);
+                    }else
+                        Tools.Toast(getActivity(), getString(R.string.product_not_available));
+                }
+            };
+            ServiceClient.getInstance().getMassageDetail(new ProgressSubscriber(mListener, getActivity()),
+                    result.getMassage_id(), HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
         }
 
         @Override

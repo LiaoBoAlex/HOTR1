@@ -736,9 +736,11 @@ public class Tools {
                 index = i;
             i++;
         }
-        String s = list.get(index);
-        list.remove(index);
-        list.add(0, s);
+        if(list.size()>index) {
+            String s = list.get(index);
+            list.remove(index);
+            list.add(0, s);
+        }
         return list;
     }
 

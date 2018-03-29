@@ -32,9 +32,18 @@ public class Product implements Serializable {
     private long project_id;
     private String project_name;
     private String usableTime;
+    private int onsaleState;
+    private int checkState;
 
     public String getUsableTime() {
         return usableTime;
+    }
+
+    public boolean isProductVaiable(){
+        if(onsaleState == 1 && checkState ==1)
+            return  true;
+        else
+            return false;
     }
 
     public void setUsableTime(String usableTime) {

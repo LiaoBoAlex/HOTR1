@@ -623,4 +623,5 @@
     <string name="open_market_fail">打开应用商店失败</string>
     <string name="at_hotr">\@HOTR科技</string>
     <string name="press_again_to_exit">再按一次退出程序</string>
+    <string name="product_not_available">该商品已下架</string>
 </resources>

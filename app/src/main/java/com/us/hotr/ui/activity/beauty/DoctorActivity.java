@@ -256,7 +256,7 @@ public class DoctorActivity extends BaseLoadingActivity {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             switch (holder.getItemViewType()) {
                 case TYPE_PRODUCT_HEADER:
-                    ((HeaderHolder) holder).textView.setText(getString(R.string.hospital_product));
+                            ((HeaderHolder) holder).textView.setText(getString(R.string.popular_massage));
                     break;
                 case TYPE_CASE_HEADER:
                     ((HeaderHolder) holder).textView.setText(getString(R.string.case_title));

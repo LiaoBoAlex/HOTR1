@@ -1,12 +1,13 @@
 package com.us.hotr;
 
+
 /**
  * Created by Mloong on 2017/8/31.
  */
 
 public class Constants {
 
-    public static final String SERVER_URL = "http://192.168.0.234:8080/hotr-api-web/";
+    public static final String SERVER_URL = "http://hotr.hotr-app.com/hotr-api-web/";
     public static final int SERVER_TIMEOUT = 30;
     public static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?";
     public static final String WECHAT_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?";

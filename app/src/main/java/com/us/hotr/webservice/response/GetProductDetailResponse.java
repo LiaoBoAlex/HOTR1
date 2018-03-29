@@ -220,6 +220,15 @@ public class GetProductDetailResponse implements Serializable {
         private double shopPrice;
         private int activityCount;
         private String usableTime;
+        private int onsaleState;
+        private int checkState;
+
+        public boolean isProductVaiable(){
+            if(onsaleState == 1 && checkState ==1)
+                return  true;
+            else
+                return false;
+        }
 
         public String getUsableTime() {
             return usableTime;

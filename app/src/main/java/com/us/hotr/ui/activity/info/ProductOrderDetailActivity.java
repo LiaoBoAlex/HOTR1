@@ -26,8 +26,11 @@ import com.us.hotr.ui.activity.beauty.ProductActivity;
 import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.PermissionUtil;
+import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.GetProductDetailResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
@@ -129,11 +132,7 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
             tvBuyAgain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(ProductOrderDetailActivity.this, ProductActivity.class);
-                    Bundle b = new Bundle();
-                    b.putLong(Constants.PARAM_ID, result.getProduct_id());
-                    i.putExtras(b);
-                    startActivity(i);
+                    buyAgain(result);
                 }
             });
             tvBuyNow.setOnClickListener(new View.OnClickListener() {
@@ -195,6 +194,24 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
         });
 
 
+    }
+
+    private void buyAgain(final ProductOrder result){
+        final SubscriberListener mListener = new SubscriberListener<GetProductDetailResponse>() {
+            @Override
+            public void onNext(final GetProductDetailResponse response) {
+                if(response.getProduct().isProductVaiable()) {
+                    Intent i = new Intent(ProductOrderDetailActivity.this, ProductActivity.class);
+                    Bundle b = new Bundle();
+                    b.putLong(Constants.PARAM_ID, response.getProduct().getKey());
+                    i.putExtras(b);
+                    startActivity(i);
+                }else
+                    Tools.Toast(ProductOrderDetailActivity.this, getString(R.string.product_not_available));
+            }
+        };
+        ServiceClient.getInstance().getProductDetail(new ProgressSubscriber(mListener, this),
+                result.getProduct_id(), HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
     }
 
     @Override

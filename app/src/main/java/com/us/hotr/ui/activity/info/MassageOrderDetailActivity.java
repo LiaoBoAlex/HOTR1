@@ -25,8 +25,11 @@ import com.us.hotr.ui.activity.massage.MassageActivity;
 import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.PermissionUtil;
+import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.GetMassageDetailResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
@@ -109,11 +112,7 @@ public class MassageOrderDetailActivity extends BaseLoadingActivity {
             tvBuyAgain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(MassageOrderDetailActivity.this, MassageActivity.class);
-                    Bundle b = new Bundle();
-                    b.putLong(Constants.PARAM_ID, result.getMassage_id());
-                    i.putExtras(b);
-                    startActivity(i);
+                    buyAgain(result);
                 }
             });
             tvBuyNow.setOnClickListener(new View.OnClickListener() {
@@ -176,6 +175,23 @@ public class MassageOrderDetailActivity extends BaseLoadingActivity {
 
     }
 
+    private void buyAgain(final MassageOrder result){
+        final SubscriberListener mListener = new SubscriberListener<GetMassageDetailResponse>() {
+            @Override
+            public void onNext(final GetMassageDetailResponse response) {
+                if(response.getProduct().isMassageVaiable()) {
+                    Intent i = new Intent(MassageOrderDetailActivity.this, MassageActivity.class);
+                    Bundle b = new Bundle();
+                    b.putLong(Constants.PARAM_ID, response.getProduct().getKey());
+                    i.putExtras(b);
+                    startActivity(i);
+                }else
+                    Tools.Toast(MassageOrderDetailActivity.this, getString(R.string.product_not_available));
+            }
+        };
+        ServiceClient.getInstance().getMassageDetail(new ProgressSubscriber(mListener, this),
+                result.getMassage_id(), HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+    }
     @Override
     protected int getLayout() {
         return R.layout.activity_order_detail;
