@@ -624,4 +624,7 @@
     <string name="at_hotr">\@HOTR科技</string>
     <string name="press_again_to_exit">再按一次退出程序</string>
     <string name="product_not_available">该商品已下架</string>
+    <string name="new_version_update">发现新版本，马上去更新吧。</string>
+    <string name="force_version_update">当前版本无法正常使用，请更新版本！</string>
+    <string name="latest_version">已是最新版本</string>
 </resources>

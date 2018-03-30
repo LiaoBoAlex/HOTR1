@@ -43,6 +43,7 @@ import com.us.hotr.webservice.request.ChangePasswordRequest;
 import com.us.hotr.webservice.request.CreateMassageOrderRequest;
 import com.us.hotr.webservice.request.CreatePartyOrderRequest;
 import com.us.hotr.webservice.request.CreateProductOrderRequest;
+import com.us.hotr.webservice.request.GetAppVersionRequest;
 import com.us.hotr.webservice.request.LoginAndRegisterRequest;
 import com.us.hotr.webservice.request.LoginWithWechatRequest;
 import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
@@ -52,6 +53,7 @@ import com.us.hotr.webservice.request.UploadReplyRequest;
 import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.response.BaseResponse;
 import com.us.hotr.webservice.response.GetAllGroupResponse;
+import com.us.hotr.webservice.response.GetAppVersionResponse;
 import com.us.hotr.webservice.response.GetCaseDetailResponse;
 import com.us.hotr.webservice.response.GetDoctorDetailResponse;
 import com.us.hotr.webservice.response.GetGroupListbyUserResponse;
@@ -119,15 +121,6 @@ public class ServiceClient {
 
     public static ServiceClient getInstance(){
         return SingletonHolder.INSTANCE;
-    }
-
-    public void getAdvList(DisposableObserver subscriber, int width, int height, int type){
-        webService.getAdvList(width, height, type)
-                .subscribeOn(Schedulers.io())
-                .map(new HttpResultFunc<List<Adv>>())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
     }
 
     public void getHomePage(DisposableObserver subscriber, String jsessionid, long provinceCode, Long cityCode, int modelId){
@@ -602,10 +595,12 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
-    public void createWechatBill(final DisposableObserver subscriber, final String jsessionid, final long order_id, final int type, Context mContext){
+    public void createWechatBill(final DisposableObserver subscriber, final String jsessionid, final long order_id, final int type, final Context mContext){
         SubscriberWithFinishListener l = new SubscriberWithFinishListener<String>() {
             @Override
             public void onNext(String s) {
+                if(s.isEmpty())
+                    s = "127.0.0.1";
                 switch (type) {
                     case Constants.TYPE_PRODUCT:
                         createWechatProductBillEx(subscriber, jsessionid, order_id, s);
@@ -642,7 +637,7 @@ public class ServiceClient {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
-                emitter.onNext(Tools.GetNetIp());
+                emitter.onNext(Tools.getIpAddress(mContext));
                 emitter.onComplete();
             }
         })
@@ -1929,6 +1924,75 @@ public class ServiceClient {
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
+    }
+
+    public void getStartVideoUrl(final SubscriberWithFinishListener mListener){
+        webService.getStartVideoUrl()
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<String>() {
+                    @Override
+                    public void onNext(String response) {
+                        mListener.onNext(response);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mListener.onError(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mListener.onComplete();
+                    }
+                });
+    }
+
+    public void getAppVersion(final SubscriberWithFinishListener mListener, GetAppVersionRequest request){
+        webService.getAppVersion(request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetAppVersionResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<GetAppVersionResponse>() {
+                    @Override
+                    public void onNext(GetAppVersionResponse response) {
+                        mListener.onNext(response);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mListener.onError(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+    }
+
+    public void getAdvList(final SubscriberListener mListener, int width, int height, int type){
+        webService.getAdvList(width, height, type)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<List<Adv>>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<List<Adv>>() {
+                    @Override
+                    public void onNext(List<Adv> response) {
+                        mListener.onNext(response);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
     }
 
     public void downloadFileWithDynamicUrlSync(DisposableObserver subscriber, String url, final String filePath){

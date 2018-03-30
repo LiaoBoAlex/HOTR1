@@ -158,7 +158,8 @@ public class BuyerInfoActivity extends BaseActivity {
         mContact.setPurchaser_credentials_numb(etDoc.getText().toString().trim());
         mContact.setPurchaser_name(etName.getText().toString().trim());
         mContact.setPurchaser_phone(etPhone.getText().toString().trim());
-        mContact.setTerm_of_validity(tvDocDate.getText().toString().trim());
+        if(isDateSelected)
+            mContact.setTerm_of_validity(tvDocDate.getText().toString().trim());
         mContact.setValideDate(ValideDate);
     }
 

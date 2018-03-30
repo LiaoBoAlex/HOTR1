@@ -1,7 +1,11 @@
 package com.us.hotr.ui.activity;
 
 import android.animation.ValueAnimator;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,23 +17,29 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.squareup.haha.perflib.Main;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.DeactivatedViewPager;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Adv;
 import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.ui.activity.info.SettingActivity;
 import com.us.hotr.ui.activity.post.UploadCompareActivity1;
 import com.us.hotr.ui.activity.post.UploadPostActivity1;
+import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.ui.fragment.HomeFragment;
 import com.us.hotr.ui.fragment.found.FoundFragment;
 import com.us.hotr.ui.fragment.info.InfoFragment;
 import com.us.hotr.ui.fragment.receipt.ReceiptFragment;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.request.GetAppVersionRequest;
+import com.us.hotr.webservice.response.GetAppVersionResponse;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -67,6 +77,8 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
         if(getIntent()!=null && getIntent().getExtras()!=null)
             currentPage = getIntent().getExtras().getInt(Constants.PARAM_DATA, 0);
         initStaticView();
+        if(getIntent().getExtras()!=null && getIntent().getExtras().getBoolean(Constants.PARAM_DATA, false))
+            checkAppVersion();
     }
 
     @Override
@@ -143,8 +155,70 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
         }
     }
 
-    private void updateOrderCount(){
+    private void checkAppVersion(){
+        SubscriberWithFinishListener mListener = new SubscriberWithFinishListener<GetAppVersionResponse>() {
+            @Override
+            public void onNext(GetAppVersionResponse result) {
+                if(result.isResult()){
+                    TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(MainActivity.this);
+                    alertDialogBuilder.setMessage(R.string.new_version_update);
+                    alertDialogBuilder.setPositiveButton(getString(R.string.yes),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    showAd();
+                                    Tools.openApplicationMarket(getApplicationContext());
+                                }
+                            });
+                    alertDialogBuilder.setNegativeButton(getString(R.string.no),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    showAd();
+                                }
+                            });
+                    alertDialogBuilder.create().show();
+                }else{
+                    showAd();
+                }
+            }
 
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                showAd();
+            }
+        };
+
+        GetAppVersionRequest request = new GetAppVersionRequest();
+        request.setDevice_type(0);
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            request.setVersion_code(packageInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            request.setVersion_code("0");
+        }
+        ServiceClient.getInstance().getAppVersion(mListener, request);
+    }
+
+    private void showAd(){
+        SubscriberListener mListener = new SubscriberListener<List<Adv>>() {
+            @Override
+            public void onNext(List<Adv> result) {
+                if(result!=null && result.size()>0){
+                    Intent i = new Intent(MainActivity.this, ViewpagerActivity.class);
+                    Bundle b = new Bundle();
+                    b.putSerializable(Constants.PARAM_DATA, new ArrayList<>(result));
+                    i.putExtras(b);
+                    startActivity(i);
+                }
+            }
+        };
+        ServiceClient.getInstance().getAdvList(mListener, Tools.getScreenWidth(this), Tools.getWindowHeight(this), 1);
     }
 
     private void initStaticView(){
@@ -313,6 +387,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
             exitTime = System.currentTimeMillis();
         } else {
             super.onBackPressed();
+            System.exit(0);
         }
 
 

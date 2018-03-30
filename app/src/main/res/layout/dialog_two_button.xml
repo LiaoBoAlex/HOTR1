@@ -26,7 +26,7 @@
             android:layout_marginTop="33dp"
             android:text="@string/do_you_want_to_leave"
             android:textColor="@color/text_black"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:gravity="center"
             android:lineSpacingMultiplier="1.3"
             app:layout_constraintLeft_toLeftOf="parent"

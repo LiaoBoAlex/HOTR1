@@ -113,6 +113,13 @@ public class CityPicker implements NumberPickerView.OnValueChangeListener {
         popwindow.setOutsideTouchable(true);
         popwindow.setFocusable(true);
 
+        popwindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                setBackgroundAlpha(1.0f);
+            }
+        });
+
 
         if (this.showProvinceAndCity) {
             mViewDistrict.setVisibility(View.GONE);
@@ -373,7 +380,6 @@ public class CityPicker implements NumberPickerView.OnValueChangeListener {
 
     public void hide() {
         if (isShow()) {
-            setBackgroundAlpha(1.0f);
             popwindow.dismiss();
         }
     }

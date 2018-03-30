@@ -37,6 +37,7 @@ import com.us.hotr.webservice.request.ChangePasswordRequest;
 import com.us.hotr.webservice.request.CreateMassageOrderRequest;
 import com.us.hotr.webservice.request.CreatePartyOrderRequest;
 import com.us.hotr.webservice.request.CreateProductOrderRequest;
+import com.us.hotr.webservice.request.GetAppVersionRequest;
 import com.us.hotr.webservice.request.LoginAndRegisterRequest;
 import com.us.hotr.webservice.request.LoginWithWechatRequest;
 import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
@@ -46,6 +47,7 @@ import com.us.hotr.webservice.request.UploadReplyRequest;
 import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.response.BaseResponse;
 import com.us.hotr.webservice.response.GetAllGroupResponse;
+import com.us.hotr.webservice.response.GetAppVersionResponse;
 import com.us.hotr.webservice.response.GetCaseDetailResponse;
 import com.us.hotr.webservice.response.GetDoctorDetailResponse;
 import com.us.hotr.webservice.response.GetGroupListbyUserResponse;
@@ -759,4 +761,10 @@ public interface WebService {
 
     @GET
     Observable<ResponseBody> downloadFileWithDynamicUrlSync(@Url String fileUrl);
+
+    @POST("dictionary/startVideo.do")
+    Observable<BaseResponse<String>> getStartVideoUrl();
+
+    @POST("dictionary/appVersion.do?")
+    Observable<BaseResponse<GetAppVersionResponse>> getAppVersion(@Body GetAppVersionRequest request);
 }

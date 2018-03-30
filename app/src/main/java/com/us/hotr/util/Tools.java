@@ -2,6 +2,7 @@ package com.us.hotr.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -9,6 +10,11 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -57,13 +63,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -195,7 +206,7 @@ public class Tools {
     }
 
     public static void shareToWechatFriend(final Context mContext, Share share) {
-        if (!HOTRApplication.getIwxApi().isWXAppInstalled()) {
+        if (!isWXAppInstalledAndSupported()) {
             Tools.Toast(mContext, mContext.getString(R.string.no_wechat_installed));
             return;
         }
@@ -230,7 +241,7 @@ public class Tools {
     }
 
     public static void shareToWechatTimeLine(final Context mContext, Share share) {
-        if (!HOTRApplication.getIwxApi().isWXAppInstalled()) {
+        if (!isWXAppInstalledAndSupported()) {
             Tools.Toast(mContext, mContext.getString(R.string.no_wechat_installed));
             return;
         }
@@ -265,7 +276,7 @@ public class Tools {
     }
 
     public static void loginWechat(Context mContext){
-        if (!HOTRApplication.getIwxApi().isWXAppInstalled()) {
+        if (!isWXAppInstalledAndSupported()) {
             Tools.Toast(mContext, mContext.getString(R.string.no_wechat_installed));
             return;
         }
@@ -276,6 +287,10 @@ public class Tools {
     }
 
     public static void wechatPay(Context mContext, WechatBill wechatBill){
+        if (!isWXAppInstalledAndSupported()) {
+            Tools.Toast(mContext, mContext.getString(R.string.no_wechat_installed));
+            return;
+        }
         PayReq payRequest = new PayReq();
         payRequest.appId = Constants.WECHAT_APP_ID;
         payRequest.partnerId = wechatBill.getPartnerid();
@@ -286,6 +301,32 @@ public class Tools {
         payRequest.sign = wechatBill.getSign();
 
         HOTRApplication.getIwxApi().sendReq(payRequest);
+    }
+
+    private static boolean isWXAppInstalledAndSupported() {
+        boolean sIsWXAppInstalledAndSupported = HOTRApplication.getIwxApi().isWXAppInstalled()
+                && HOTRApplication.getIwxApi().isWXAppSupportAPI();
+        return sIsWXAppInstalledAndSupported;
+    }
+
+    public static void openApplicationMarket(Context mContext) {
+//        String packageName = mContext.getPackageName();
+        String packageName = "com.tencent.mm";
+        try {
+            if (TextUtils.isEmpty(packageName)) return;
+
+            Uri uri = Uri.parse("market://details?id=" + packageName);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//            if (!TextUtils.isEmpty(marketPkg)) {
+//                intent.setPackage(marketPkg);
+//            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast(mContext, mContext.getString(R.string.open_market_fail));
+        }
+
     }
 
 //    public static void aliPay(final Activity mActivity, final String order, SubscriberListener listener){
@@ -749,40 +790,104 @@ public class Tools {
         return true;
     }
 
-    public static String GetNetIp()
-    {
-        URL infoUrl = null;
-        InputStream inStream = null;
-        try
-        {
-            infoUrl = new URL("http://1212.ip138.com/ic.asp");
-            URLConnection connection = infoUrl.openConnection();
-            HttpURLConnection httpConnection = (HttpURLConnection)connection;
-            int responseCode = httpConnection.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK)
-            {
-                inStream = httpConnection.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"utf-8"));
-                StringBuilder strber = new StringBuilder();
-                String line = null;
-                while ((line = reader.readLine()) != null)
-                    strber.append(line + "\n");
-                inStream.close();
-                //从反馈的结果中提取出IP地址
-                int start = strber.indexOf("[");
-                int end = strber.indexOf("]", start + 1);
-                line = strber.substring(start + 1, end);
-                return line;
+    public static String getIpAddress(Context context){
+        NetworkInfo info = ((ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        if (info != null && info.isConnected()) {
+            // 3/4g网络
+            if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
+                try {
+                    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                        NetworkInterface intf = en.nextElement();
+                        for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                            InetAddress inetAddress = enumIpAddr.nextElement();
+                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                                return inetAddress.getHostAddress();
+                            }
+                        }
+                    }
+                } catch (SocketException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (info.getType() == ConnectivityManager.TYPE_WIFI) {
+                //  wifi网络
+                WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                String ipAddress = intIP2StringIP(wifiInfo.getIpAddress());
+                return ipAddress;
+            }  else if (info.getType() == ConnectivityManager.TYPE_ETHERNET){
+                // 有限网络
+                return getLocalIp();
             }
         }
-        catch(MalformedURLException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return "";
     }
+
+    private static String intIP2StringIP(int ip) {
+        return (ip & 0xFF) + "." +
+                ((ip >> 8) & 0xFF) + "." +
+                ((ip >> 16) & 0xFF) + "." +
+                (ip >> 24 & 0xFF);
+    }
+
+
+    // 获取有限网IP
+    private static String getLocalIp() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface
+                    .getNetworkInterfaces(); en.hasMoreElements(); ) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf
+                        .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()
+                            && inetAddress instanceof Inet4Address) {
+                        return inetAddress.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+
+        }
+        return "0.0.0.0";
+
+    }
+
+//    public static String GetNetIp()
+//    {
+//        URL infoUrl = null;
+//        InputStream inStream = null;
+//        try
+//        {
+//            infoUrl = new URL("http://1212.ip138.com/ic.asp");
+//            URLConnection connection = infoUrl.openConnection();
+//            HttpURLConnection httpConnection = (HttpURLConnection)connection;
+//            int responseCode = httpConnection.getResponseCode();
+//            if(responseCode == HttpURLConnection.HTTP_OK)
+//            {
+//                inStream = httpConnection.getInputStream();
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"utf-8"));
+//                StringBuilder strber = new StringBuilder();
+//                String line = null;
+//                while ((line = reader.readLine()) != null)
+//                    strber.append(line + "\n");
+//                inStream.close();
+//                //从反馈的结果中提取出IP地址
+//                int start = strber.indexOf("[");
+//                int end = strber.indexOf("]", start + 1);
+//                line = strber.substring(start + 1, end);
+//                return line;
+//            }
+//        }
+//        catch(MalformedURLException e) {
+//            e.printStackTrace();
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return "";
+//    }
 
     @Nullable
     public static Bitmap createQRCodeBitmap(String content, int width, int height){

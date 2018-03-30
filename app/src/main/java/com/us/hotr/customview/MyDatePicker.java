@@ -109,6 +109,13 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
         popwindow.setOutsideTouchable(true);
         popwindow.setFocusable(true);
 
+        popwindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                setBackgroundAlpha(1.0f);
+            }
+        });
+
         // 添加change事件
         mViewYear.setOnValueChangedListener(this);
         // 添加change事件
@@ -298,7 +305,6 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
 
     public void hide() {
         if (isShow()) {
-            setBackgroundAlpha(1.0f);
             popwindow.dismiss();
         }
     }

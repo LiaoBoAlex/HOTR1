@@ -3,6 +3,7 @@ package com.us.hotr.ui.activity.info;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,11 +16,16 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.activity.BaseActivity;
+import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.WebViewActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.DataCleanManager;
 import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.request.GetAppVersionRequest;
+import com.us.hotr.webservice.response.GetAppVersionResponse;
+import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import cn.jpush.im.android.api.JMessageClient;
 
@@ -32,7 +38,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     public static final int CODE_BACK = 2;
 
     private ConstraintLayout clUpdateInfo, clUpdatePhone, clChangePassword, clCleanCache, clFeedBack, clAboutUs, clBusiness, clCustomer, clCheckForUpdate;
-    private TextView tvLogout, tvCache, tvPhoneNumber;
+    private TextView tvLogout, tvCache, tvPhoneNumber, tvVersion;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,6 +60,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         tvLogout = (TextView) findViewById(R.id.tv_logout);
         tvCache = (TextView) findViewById(R.id.tv_cache);
         tvPhoneNumber = (TextView) findViewById(R.id.tv_phone);
+        tvVersion = (TextView) findViewById(R.id.tv_version);
 
         clUpdateInfo.setOnClickListener(this);
         clUpdatePhone.setOnClickListener(this);
@@ -67,6 +74,13 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         tvLogout.setOnClickListener(this);
         tvCache.setText(DataCleanManager.getTotalCacheSize(getBaseContext()));
         tvPhoneNumber.setText(Constants.SUPPORT_LINE);
+
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            tvVersion.setText("v"+packageInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            tvVersion.setText("v1.0");
+        }
     }
 
     @Override
@@ -114,7 +128,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.cl_check_for_update:
-                openApplicationMarket("com.tencent.mm");
+                checkAppVersion();
                 break;
             case R.id.tv_logout:
                 TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(this);
@@ -147,25 +161,52 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
 
     }
 
-    private void openApplicationMarket(String packageName) {
-        try {
-            String str = "market://details?id=" + packageName;
-            Intent localIntent = new Intent(Intent.ACTION_VIEW);
-            localIntent.setData(Uri.parse(str));
-            startActivity(localIntent);
-        } catch (Exception e) {
-            // 打开应用商店失败 可能是没有手机没有安装应用市场
-            e.printStackTrace();
-            Tools.Toast(this, getString(R.string.open_market_fail));
-            String url = "http://app.mi.com/detail/163525?ref=search";
-            openLinkBySystem(url);
-        }
-    }
+    private void checkAppVersion(){
+        SubscriberWithFinishListener mListener = new SubscriberWithFinishListener<GetAppVersionResponse>() {
+            @Override
+            public void onNext(GetAppVersionResponse result) {
+                if(result.isResult()){
+                    TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(SettingActivity.this);
+                    alertDialogBuilder.setMessage(R.string.new_version_update);
+                    alertDialogBuilder.setPositiveButton(getString(R.string.yes),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    Tools.openApplicationMarket(getApplicationContext());
+                                }
+                            });
+                    alertDialogBuilder.setNegativeButton(getString(R.string.no),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialogBuilder.create().show();
+                }else{
+                    Tools.Toast(SettingActivity.this, getString(R.string.latest_version));
+                }
+            }
 
-    private void openLinkBySystem(String url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(url));
-        startActivity(intent);
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Tools.Toast(SettingActivity.this, getString(R.string.latest_version));
+            }
+        };
+
+        GetAppVersionRequest request = new GetAppVersionRequest();
+        request.setDevice_type(0);
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            request.setVersion_code(packageInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            request.setVersion_code("0");
+        }
+        ServiceClient.getInstance().getAppVersion(mListener, request);
     }
 
     @Override

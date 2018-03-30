@@ -14,15 +14,14 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
+import com.us.hotr.Constants;
 import com.us.hotr.R;
-import com.us.hotr.storage.bean.Adv;
-import com.us.hotr.util.Tools;
+import com.us.hotr.ui.HOTRApplication;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Created by Mloong on 2017/11/2.
@@ -31,33 +30,24 @@ import java.util.List;
 public class SplashActivity extends AppCompatActivity {
     private ImageView ivImage;
     private VideoView vvVideo;
+    private boolean isVideoPlaying = false;
 
-    private String url, videoPath;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
-        url = "http://us-shop-2.oss-cn-beijing.aliyuncs.com/video/start_video/66.mp4";
-        File f = new File(Environment.getExternalStorageDirectory() + "/DCIM" + File.separator + "HOTR");
-        if(!f.exists())
-            f.mkdir();
-        videoPath = Environment.getExternalStorageDirectory() + "/DCIM" + File.separator + "HOTR" + File.separator + "welcome.mp4";
-
-        WindowManager.LayoutParams attrs = getWindow().getAttributes();
-        attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        getWindow().setAttributes(attrs);
-
-        ivImage = (ImageView) findViewById(R.id.iv_image);
-        vvVideo = (VideoView) findViewById(R.id.vv_video);
-        f = new File(videoPath);
-        if(f.exists())
-            playVideo(true);
-        else
-            downloadVideo();
+        initStaticView();
+        getVideoUrl();
     }
 
-    private void playVideo(final boolean isVideoDownloaded){
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isVideoPlaying)
+            startActivity();
+    }
+
+    private void playVideo(final boolean isVideoDownloaded, final String videoPath){
         AlphaAnimation alphaAnimation=new AlphaAnimation(1.0f, 0.0f);
         alphaAnimation.setDuration(1000);
         alphaAnimation.setStartOffset(1000);
@@ -74,8 +64,8 @@ public class SplashActivity extends AppCompatActivity {
                     vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                            finish();
+                            isVideoPlaying = false;
+                            startActivity();
                         }
                     });
 
@@ -83,10 +73,10 @@ public class SplashActivity extends AppCompatActivity {
                     Uri videoUri = Uri.parse(videoPath);
                     vvVideo.setVideoURI(videoUri);
                     vvVideo.start();
+                    isVideoPlaying = true;
                 }
                 else{
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                    finish();
+                    startActivity();
                 }
 
             }
@@ -99,11 +89,11 @@ public class SplashActivity extends AppCompatActivity {
         ivImage.startAnimation(alphaAnimation);
     }
 
-    private void downloadVideo(){
+    private void downloadVideo(String url, final String videoPath){
         SubscriberWithFinishListener mListener = new SubscriberWithFinishListener<Boolean>() {
             @Override
             public void onNext(Boolean result) {
-                playVideo(true);
+                playVideo(true, videoPath);
             }
 
             @Override
@@ -113,28 +103,39 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
-                playVideo(false);
+                playVideo(false, videoPath);
 
             }
         };
-            ServiceClient.getInstance().downloadFileWithDynamicUrlSync(new SilentSubscriber(mListener, this, null),
-                    url, videoPath);
+        ServiceClient.getInstance().downloadFileWithDynamicUrlSync(new SilentSubscriber(mListener, this, null),
+                url, videoPath);
     }
 
-    private void next(){
-        SubscriberWithFinishListener mListener = new SubscriberWithFinishListener<List<Adv>>() {
+    private void initStaticView(){
+        WindowManager.LayoutParams attrs = getWindow().getAttributes();
+        attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        getWindow().setAttributes(attrs);
+
+        ivImage = (ImageView) findViewById(R.id.iv_image);
+        vvVideo = (VideoView) findViewById(R.id.vv_video);
+    }
+
+    private void getVideoUrl(){
+        SubscriberWithFinishListener mListener = new SubscriberWithFinishListener<String>() {
             @Override
-            public void onNext(List<Adv> result) {
-//                if(result!=null && result.size()>0){
-//                    Intent i = new Intent(SplashActivity.this, ViewpagerActivity.class);
-//                    Bundle b = new Bundle();
-//                    b.putSerializable(Constants.PARAM_DATA, new ArrayList<>(result));
-//                    i.putExtras(b);
-//                    startActivity(i);
-//
-//                }else
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                SplashActivity.this.finish();
+            public void onNext(String result) {
+                String[] s = result.split("/");
+                String fileName = s[s.length-1];
+                File f = new File(Environment.getExternalStorageDirectory() + "/DCIM" + File.separator + "HOTR");
+                if(!f.exists())
+                    f.mkdir();
+                String videoPath = Environment.getExternalStorageDirectory() + "/DCIM" + File.separator + "HOTR" + File.separator + fileName;
+
+                f = new File(videoPath);
+                if(f.exists())
+                    playVideo(true, videoPath);
+                else
+                    downloadVideo(result, videoPath);
             }
 
             @Override
@@ -144,14 +145,21 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                SplashActivity.this.finish();
+                playVideo(false, "");
             }
         };
-        ServiceClient.getInstance().getAdvList(new SilentSubscriber(mListener, this, null),
-                Tools.getScreenWidth(this),
-                Tools.getWindowHeight(this),
-                1);
+        ServiceClient.getInstance().getStartVideoUrl(mListener);
 
+    }
+
+    private void startActivity(){
+        if(!HOTRApplication.isMaintaince) {
+            Intent i = new Intent(SplashActivity.this, MainActivity.class);
+            Bundle b = new Bundle();
+            b.putBoolean(Constants.PARAM_DATA, true);
+            i.putExtras(b);
+            startActivity(i);
+            SplashActivity.this.finish();
+        }
     }
 }

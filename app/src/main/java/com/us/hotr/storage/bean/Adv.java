@@ -7,17 +7,17 @@ import java.io.Serializable;
  */
 
 public class Adv implements Serializable {
-    private String forwart_type;
+    private String forwart_url;
     private String forward_model;
     private String image;
     private Params params;
 
-    public String getForwart_type() {
-        return forwart_type;
+    public String getForwart_url() {
+        return forwart_url;
     }
 
-    public void setForwart_type(String forwart_type) {
-        this.forwart_type = forwart_type;
+    public void setForwart_url(String forwart_url) {
+        this.forwart_url = forwart_url;
     }
 
     public String getForward_model() {
