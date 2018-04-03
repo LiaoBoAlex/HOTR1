@@ -115,6 +115,7 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
     }
 
     private void updateList(int loadType, BaseListResponse<List<MassageReceipt>> result){
+        isLoaded = true;
         totalSize = result.getTotal();
         if(loadType == Constants.LOAD_MORE){
             mAdapter.addItems(result.getRows());
