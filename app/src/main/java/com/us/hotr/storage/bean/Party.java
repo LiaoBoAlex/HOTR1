@@ -22,6 +22,7 @@ public class Party implements Serializable {
     private String travel_end_time;
     @SerializedName(value = "sale_ticket_status", alternate = {"saleTicketStatus"})
     private int sale_ticket_status;
+    @SerializedName(value = "access_count", alternate = {"accessCount"})
     private int access_count;
     @SerializedName(value = "sale_ticket_time", alternate = {"saleTicketTime"})
     private String sale_ticket_time;

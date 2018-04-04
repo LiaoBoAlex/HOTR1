@@ -451,14 +451,14 @@ public class PartyActivity extends BaseLoadingActivity{
                     switch (response.getTravel().getSale_ticket_status()) {
                         case 0:
                             headerHolder.tvStatus.setText(getString(R.string.status_on_sale));
-                            headerHolder.tvPeople.setText(String.format(getString(R.string.party_sale_number), response.getTravel().getOrder_num()));
+                            headerHolder.tvPeople.setText(String.format(getString(R.string.party_sale_number), response.getOrderNum()));
                             headerHolder.tvNoPrice.setVisibility(View.INVISIBLE);
                             headerHolder.tvMoney.setVisibility(View.VISIBLE);
                             headerHolder.tvPrice.setVisibility(View.VISIBLE);
                             break;
                         case 1:
                             headerHolder.tvStatus.setText(getString(R.string.status_on_going));
-                            headerHolder.tvPeople.setText(String.format(getString(R.string.party_sale_number), response.getTravel().getOrder_num()));
+                            headerHolder.tvPeople.setText(String.format(getString(R.string.party_sale_number), response.getOrderNum()));
                             headerHolder.tvNoPrice.setVisibility(View.INVISIBLE);
                             headerHolder.tvMoney.setVisibility(View.VISIBLE);
                             headerHolder.tvPrice.setVisibility(View.VISIBLE);

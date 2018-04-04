@@ -287,22 +287,27 @@ public class PartyListFragment extends BaseLoadingFragment {
             switch (party.getSale_ticket_status()) {
                 case 0:
                     holder.tvStatus.setText(getString(R.string.status_on_sale));
+                    holder.tvNumber.setVisibility(View.VISIBLE);
                     holder.tvNumber.setText(String.format(getString(R.string.party_sale_number), party.getOrder_num()));
                     break;
                 case 1:
                     holder.tvStatus.setText(getString(R.string.status_on_going));
+                    holder.tvNumber.setVisibility(View.VISIBLE);
                     holder.tvNumber.setText(String.format(getString(R.string.party_sale_number), party.getOrder_num()));
                     break;
                 case 2:
                     holder.tvStatus.setText(Tools.getSaleTime(getActivity(), party.getSale_ticket_time()));
+                    holder.tvNumber.setVisibility(View.VISIBLE);
                     holder.tvNumber.setText(String.format(getString(R.string.party_interested_number), party.getAccess_count()));
                     break;
                 case 3:
                     holder.tvStatus.setText(getString(R.string.status_promo));
+                    holder.tvNumber.setVisibility(View.VISIBLE);
                     holder.tvNumber.setText(String.format(getString(R.string.party_interested_number), party.getAccess_count()));
                     break;
                 case 4:
                     holder.tvStatus.setText(getString(R.string.status_pre_view));
+                    holder.tvNumber.setVisibility(View.VISIBLE);
                     holder.tvNumber.setText(String.format(getString(R.string.party_interested_number), party.getAccess_count()));
                     break;
                 case 5:
