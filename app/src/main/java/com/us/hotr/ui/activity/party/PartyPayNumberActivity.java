@@ -217,7 +217,7 @@ public class PartyPayNumberActivity extends BaseActivity {
                         headerHolder.tvDate.setText(Tools.getPartyTime2(PartyPayNumberActivity.this, data.getTravel().getTravel_start_time(), data.getTravel().getTravel_end_time()));
                     else
                         headerHolder.tvDate.setText(Tools.getPartyTime2(PartyPayNumberActivity.this, data.getTravel().getTravel_start_time()));
-                    headerHolder.tvPeople.setText(String.format(getString(R.string.party_join_number), data.getTravel().getOrder_num()));
+                    headerHolder.tvPeople.setText(String.format(getString(R.string.party_join_number), data.getOrderNum()));
                     if(data.getTravel().getBuyTicketNotice()!=null)
                         headerHolder.tvNotice.setText(data.getTravel().getBuyTicketNotice());
                     else
