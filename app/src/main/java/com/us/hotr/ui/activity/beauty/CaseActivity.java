@@ -30,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
@@ -41,6 +43,7 @@ import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.storage.bean.Post;
+import com.us.hotr.storage.bean.PostOld;
 import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.Reply;
 import com.us.hotr.storage.bean.Spa;
@@ -68,6 +71,8 @@ import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
+
+import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -526,6 +531,8 @@ public class CaseActivity extends BaseLoadingActivity {
 
         private final int TYPE_CASE = 101;
         private final int TYPE_POST = 102;
+        private final int TYPE_POST_TEXT = 121;
+        private final int TYPE_POST_IMAGE = 122;
         private final int TYPE_INTERVIEW= 113;
         private final int TYPE_COMMENT = 104;
         private final int TYPE_DOCTOR = 105;
@@ -568,8 +575,22 @@ public class CaseActivity extends BaseLoadingActivity {
 
         private void initData(GetPostDetailResponse response){
             itemList.clear();
-            if (response.getHotTopic() != null)
+            if (response.getHotTopic() != null) {
                 itemList.add(new Item(TYPE_POST, response.getHotTopic()));
+//                if(response.getHotTopic().getIs_new() == 0){
+//                    String content = response.getHotTopic().getContent();
+//                    content = content.replace("&quot;", "\"").replace("<p>", "").replace("</p>", "");
+//                    List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>(){}.getType());
+//                    for(PostOld postOld:postOldList) {
+//                        if (postOld.getStatus() == 1) {
+//                            if(postOld.getType() == 1)
+//                                itemList.add(new Item(TYPE_POST_IMAGE, postOld));
+//                            if(postOld.getType() == 0)
+//                                itemList.add(new Item(TYPE_POST_TEXT, postOld));
+//                        }
+//                    }
+//                }
+            }
             if(response.getLink_ammerchant_list()!=null && response.getLink_ammerchant_list().size()>0){
                 itemList.add(new Item(TYPE_SPA_HEADER));
                 for(Spa s:response.getLink_ammerchant_list())
@@ -633,6 +654,22 @@ public class CaseActivity extends BaseLoadingActivity {
             public PostHolder(View view) {
                 super(view);
                 postDetailView = (PostDetailView) view;
+            }
+        }
+
+        public class PostTextHolder extends RecyclerView.ViewHolder {
+            TextView tvText;
+            public PostTextHolder(View itemView) {
+                super(itemView);
+                tvText = (TextView) itemView.findViewById(R.id.tv_content);
+            }
+        }
+
+        public class PostImageHolder extends RecyclerView.ViewHolder {
+            ImageView ivImage;
+            public PostImageHolder(View itemView) {
+                super(itemView);
+                ivImage = (ImageView) itemView.findViewById(R.id.iv_image);
             }
         }
 
@@ -748,6 +785,12 @@ public class CaseActivity extends BaseLoadingActivity {
                 case TYPE_POST:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post_detail, parent, false);
                     return new PostHolder(view);
+                case TYPE_POST_IMAGE:
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post_image, parent, false);
+                    return new PostImageHolder(view);
+                case TYPE_POST_TEXT:
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post_text, parent, false);
+                    return new PostTextHolder(view);
                 case TYPE_INTERVIEW:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_web, parent, false);
                     return new WebHolder(view);
@@ -807,6 +850,16 @@ public class CaseActivity extends BaseLoadingActivity {
                     PostHolder postHolder = (PostHolder) holder;
                     final Post post = (Post)itemList.get(position).getContent();
                     postHolder.postDetailView.setData(post);
+                    break;
+                case TYPE_POST_IMAGE:
+                    PostImageHolder postImageHolder = (PostImageHolder) holder;
+                    final PostOld postOld = (PostOld)itemList.get(position).getContent();
+                    Glide.with(CaseActivity.this).load(postOld.getImageURL()).into(postImageHolder.ivImage);
+                    break;
+                case TYPE_POST_TEXT:
+                    PostTextHolder postTextHolder = (PostTextHolder) holder;
+                    final PostOld postOld2 = (PostOld)itemList.get(position).getContent();
+                    postTextHolder.tvText.setText(postOld2.getEditContent());
                     break;
                 case TYPE_COMMENT:
                     final CommentHolder commentHolder = (CommentHolder) holder;

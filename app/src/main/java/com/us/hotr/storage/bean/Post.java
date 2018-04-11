@@ -25,6 +25,7 @@ public class Post implements Serializable {
     private String head_portrait;
     private Integer comment_cnt;
     private Integer like_cnt;
+    private Integer is_new;
     //普通帖(文字)
     @SerializedName(value = "contentWord", alternate = {"content_word"})
     private String contentWord;
@@ -48,6 +49,14 @@ public class Post implements Serializable {
     private Integer gender;
     @SerializedName(value = "topicType", alternate = {"topic_type"})
     private int topicType;
+
+    public Integer getIs_new() {
+        return is_new;
+    }
+
+    public void setIs_new(Integer is_new) {
+        this.is_new = is_new;
+    }
 
     public String getProvince_name() {
         return province_name;

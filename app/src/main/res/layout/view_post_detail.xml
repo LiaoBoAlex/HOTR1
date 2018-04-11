@@ -112,7 +112,14 @@
         android:textColor="@color/text_black"
         android:textSize="14sp"/>
     <com.us.hotr.customview.ScrollThroughRecyclerView
-        android:id="@+id/recyclerview"
+        android:id="@+id/rv_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="15dp"/>
+    <com.us.hotr.customview.ScrollThroughRecyclerView
+        android:id="@+id/rv_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"

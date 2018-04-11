@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -17,11 +18,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ScrollThroughRecyclerView;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Post;
+import com.us.hotr.storage.bean.PostOld;
 import com.us.hotr.ui.activity.ImageViewerActivity;
 import com.us.hotr.ui.activity.found.GroupDetailActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
@@ -33,6 +37,7 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,7 +45,7 @@ import java.util.List;
  */
 
 public class PostDetailView extends FrameLayout {
-    private RecyclerView recyclerView;
+    private RecyclerView rvPhoto, rvContent;
     private ImageView ivDelete, ivUserAvatar;
     private TextView tvTitle, tvUserName, tvCertified, tvPostTime, tvFollowUser, tvContent, tvSubject, tvRead, tvComment, tvLike, tvIntro;
     private WebView wvContent;
@@ -62,7 +67,8 @@ public class PostDetailView extends FrameLayout {
 
     public void init(){
         LayoutInflater.from(getContext()).inflate(R.layout.view_post_detail,this);
-        recyclerView = (ScrollThroughRecyclerView) findViewById(R.id.recyclerview);
+        rvPhoto = (ScrollThroughRecyclerView) findViewById(R.id.rv_photo);
+        rvContent = (ScrollThroughRecyclerView) findViewById(R.id.rv_content);
         ivDelete = (ImageView) findViewById(R.id.iv_delete);
         ivUserAvatar = (ImageView) findViewById(R.id.iv_user_avatar);
         tvIntro = (TextView) findViewById(R.id.tv_intro);
@@ -144,6 +150,7 @@ public class PostDetailView extends FrameLayout {
             tvTitle.setVisibility(VISIBLE);
             tvPostTime.setVisibility(VISIBLE);
             wvContent.setVisibility(GONE);
+            rvContent.setVisibility(GONE);
             tvContent.setText(post.getContentWord());
             if(post.getCreate_time()!=null)
                 tvPostTime.setText(Tools.getPostTime(getContext(), post.getCreate_time()));
@@ -151,8 +158,24 @@ public class PostDetailView extends FrameLayout {
             tvContent.setVisibility(GONE);
             tvTitle.setVisibility(VISIBLE);
             tvPostTime.setVisibility(GONE);
-            wvContent.setVisibility(VISIBLE);
-            wvContent.loadData(Tools.getHtmlData(post.getContent()), "text/html; charset=UTF-8", null);
+            if(post.getIs_new() == 1) {
+                wvContent.setVisibility(VISIBLE);
+                wvContent.loadData(Tools.getHtmlData(post.getContent()), "text/html; charset=UTF-8", null);
+            }else{
+                rvContent.setVisibility(VISIBLE);
+                String content = post.getContent();
+                content = content.replace("&quot;", "\"").replace("<p>", "").replace("</p>", "");
+                List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>(){}.getType());
+                Iterator<PostOld> i = postOldList.iterator();
+                while (i.hasNext()) {
+                    if(i.next().getStatus()!=1)
+                        i.remove();
+                }
+
+                PostOldAdapter mAdapter = new PostOldAdapter(postOldList);
+                rvContent.setLayoutManager(new LinearLayoutManager(getContext()));
+                rvContent.setAdapter(mAdapter);
+            }
         }
         tvUserName.setText(post.getNick_name());
         if(post.getIsOfficial() != 1 && post.getListCoshow()!= null && post.getListCoshow().size()>0){
@@ -205,12 +228,12 @@ public class PostDetailView extends FrameLayout {
                     column = 2;
                 else
                     column = 3;
-                recyclerView.setVisibility(VISIBLE);
-                recyclerView.setLayoutManager(new GridLayoutManager(getContext(), column));
+                rvPhoto.setVisibility(VISIBLE);
+                rvPhoto.setLayoutManager(new GridLayoutManager(getContext(), column));
                 picAdapter = new PicGridAdapter(getContext(), photoes);
-                recyclerView.setAdapter(picAdapter);
+                rvPhoto.setAdapter(picAdapter);
             } else
-                recyclerView.setVisibility(GONE);
+                rvPhoto.setVisibility(GONE);
         }
     }
 
@@ -305,6 +328,84 @@ public class PostDetailView extends FrameLayout {
                 super(itemView);
                 mImageView = (ImageView) itemView.findViewById(R.id.image);
             }
+        }
+    }
+
+    public class PostOldAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        private final int TYPE_POST_TEXT = 121;
+        private final int TYPE_POST_IMAGE = 122;
+        private List<PostOld> postOldList;
+
+        public PostOldAdapter(List<PostOld> postOldList) {
+            this.postOldList = postOldList;
+        }
+
+        public class PostTextHolder extends RecyclerView.ViewHolder {
+            TextView tvText;
+            public PostTextHolder(View itemView) {
+                super(itemView);
+                tvText = (TextView) itemView.findViewById(R.id.tv_content);
+            }
+        }
+
+        public class PostImageHolder extends RecyclerView.ViewHolder {
+            ImageView ivImage;
+            public PostImageHolder(View itemView) {
+                super(itemView);
+                ivImage = (ImageView) itemView.findViewById(R.id.iv_image);
+            }
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view;
+            switch (viewType) {
+                case TYPE_POST_IMAGE:
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post_image, parent, false);
+                    return new PostImageHolder(view);
+                case TYPE_POST_TEXT:
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post_text, parent, false);
+                    return new PostTextHolder(view);
+                default:
+                    return null;
+            }
+        }
+
+
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+            switch (holder.getItemViewType()) {
+                case TYPE_POST_IMAGE:
+                    PostImageHolder postImageHolder = (PostImageHolder) holder;
+                    final PostOld postOld = postOldList.get(position);
+                    Glide.with(getContext()).load(postOld.getImageURL()).dontAnimate().placeholder(R.drawable.placeholder_banner).error(R.drawable.placeholder_banner).into(postImageHolder.ivImage);
+                    break;
+                case TYPE_POST_TEXT:
+                    PostTextHolder postTextHolder = (PostTextHolder) holder;
+                    final PostOld postOld2 = postOldList.get(position);
+                    postTextHolder.tvText.setText(postOld2.getEditContent());
+                    break;
+            }
+
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if(postOldList.get(position).getType() == 1)
+                return TYPE_POST_IMAGE;
+            if(postOldList.get(position).getType() == 0)
+                return TYPE_POST_TEXT;
+            return TYPE_POST_TEXT;
+        }
+
+        @Override
+        public int getItemCount() {
+            if(postOldList == null)
+                return  0;
+            else
+            return postOldList.size();
         }
     }
 }
