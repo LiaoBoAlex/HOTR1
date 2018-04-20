@@ -197,7 +197,7 @@ public class Tools {
         final WXMediaMessage msg = new WXMediaMessage(webPage);
         msg.title = share.getTitle();
         msg.description = share.getDescription();
-        Glide.with(mContext).load(share.getImageUrl()).asBitmap().into(new SimpleTarget<Bitmap>() {
+        Glide.with(mContext.getApplicationContext()).load(share.getImageUrl()).asBitmap().into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                 msg.setThumbImage(Bitmap.createScaledBitmap(resource, 120, 120, false));
@@ -213,9 +213,9 @@ public class Tools {
                 super.onLoadFailed(e, errorDrawable);
                 msg.setThumbImage(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.placeholder_post3));
                 SendMessageToWX.Req req = new SendMessageToWX.Req();
-                req.transaction = String.valueOf(Constants.SHARE_TO_WECHAT_TIMELINE);
+                req.transaction = String.valueOf(Constants.SHARE_TO_WECHAT_FRIEND);
                 req.message = msg;
-                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+                req.scene = SendMessageToWX.Req.WXSceneSession;
                 HOTRApplication.getIwxApi().sendReq(req);
             }
         });

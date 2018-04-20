@@ -35,6 +35,8 @@ import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -385,7 +387,11 @@ public class PostDetailView extends FrameLayout {
                 case TYPE_POST_TEXT:
                     PostTextHolder postTextHolder = (PostTextHolder) holder;
                     final PostOld postOld2 = postOldList.get(position);
-                    postTextHolder.tvText.setText(postOld2.getEditContent());
+                    try {
+                        postTextHolder.tvText.setText(URLDecoder.decode(postOld2.getEditContent(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                     break;
             }
 

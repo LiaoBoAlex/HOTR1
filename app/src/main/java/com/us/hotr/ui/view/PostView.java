@@ -16,12 +16,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ItemSelectedListener;
 import com.us.hotr.customview.ScrollThroughRecyclerView;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Post;
+import com.us.hotr.storage.bean.PostOld;
 import com.us.hotr.ui.activity.ImageViewerActivity;
 import com.us.hotr.ui.activity.beauty.CaseActivity;
 import com.us.hotr.ui.activity.found.GroupDetailActivity;
@@ -32,6 +35,8 @@ import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +47,7 @@ import java.util.List;
 
 public class PostView extends FrameLayout {
     private RecyclerView recyclerView;
-    private ImageView ivDelete, ivUserAvatar;
+    private ImageView ivDelete, ivUserAvatar, ivPic;
     private TextView tvTitle, tvUserName, tvCertified, tvPostTime, tvFollowUser, tvContent, tvSubject, tvRead, tvComment, tvLike;
     private ConstraintLayout clInterestedSubject;
     private PicGridAdapter picAdapter;
@@ -77,7 +82,7 @@ public class PostView extends FrameLayout {
         tvComment = (TextView) findViewById(R.id.tv_comment);
         tvLike = (TextView) findViewById(R.id.tv_like);
         clInterestedSubject = (ConstraintLayout) findViewById(R.id.cl_subject);
-
+        ivPic = (ImageView) findViewById(R.id.iv_pic);
     }
 
     public void setData(final Post post){
@@ -124,6 +129,39 @@ public class PostView extends FrameLayout {
 //                });
 //            }
 //        }
+
+        List<String> photoes = new ArrayList<>();
+        if(post.getIs_new() == 1){
+            if(post.getIsOfficial() != 1){
+                if (post.getContentImg() != null)
+                    photoes = Arrays.asList(Tools.validatePhotoString(post.getContentImg()).split("\\s*,\\s*"));
+            }
+        }else{
+            if(post.getUser_type() != 6)
+                post.setIsOfficial(0);
+            String content = post.getContent();
+            content = content.replace("&quot;", "\"").replace("<p>", "").replace("</p>", "");
+            List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>() {}.getType());
+            boolean found = false;
+            for (PostOld postOld : postOldList) {
+                if (postOld.getStatus() == 1 && postOld.getType() == 1 && postOld.getImageURL() != null)
+                    photoes.add(postOld.getImageURL());
+                if(postOld.getStatus() == 1 && postOld.getType() == 0 && !postOld.getEditContent().isEmpty() && !found){
+                    try {
+                        post.setContentWord(URLDecoder.decode(postOld.getEditContent(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    found = true;
+                }
+            }
+            if(photoes.size()>0) {
+                if (post.getIsOfficial() == 1) {
+                    post.setShow_img(photoes.get(0));
+                }
+            }
+        }
+
         if(post.getIsOfficial() != 1){
             tvContent.setVisibility(VISIBLE);
             tvContent.setText(post.getContentWord());
@@ -170,19 +208,15 @@ public class PostView extends FrameLayout {
             }
         });
         if(post.getIsOfficial() == 1){
+            recyclerView.setVisibility(GONE);
+            ivPic.setVisibility(VISIBLE);
             if(post.getShow_img()!=null){
-                List<String> photoes = new ArrayList<>();
-                photoes.add(post.getShow_img());
-                recyclerView.setVisibility(VISIBLE);
-                recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
-                picAdapter = new PicGridAdapter(getContext(), photoes, true);
-                recyclerView.setAdapter(picAdapter);
+                Glide.with(getContext()).load(post.getShow_img()).dontAnimate().error(R.drawable.placeholder_post1).placeholder(R.drawable.placeholder_post1).into(ivPic);
             }else
-                recyclerView.setVisibility(GONE);
+                ivPic.setVisibility(GONE);
         }else {
-            List<String> photoes = new ArrayList<>();
-            if (post.getContentImg() != null)
-                photoes = Arrays.asList(Tools.validatePhotoString(post.getContentImg()).split("\\s*,\\s*"));
+            recyclerView.setVisibility(GONE);
+            ivPic.setVisibility(GONE);
             if (photoes != null && photoes.size() > 0) {
                 int column;
                 if (photoes.size() == 1)
@@ -206,20 +240,20 @@ public class PostView extends FrameLayout {
 //                gotoPost();
 //            }
 //        });
-        if(post.getIsOfficial() == 1){
-            recyclerView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    readPost();
-                    Intent i = new Intent(getContext(), CaseActivity.class);
-                    Bundle b = new Bundle();
-                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
-                    b.putLong(Constants.PARAM_ID, post.getId());
-                    i.putExtras(b);
-                    getContext().startActivity(i);
-                }
-            });
-        }
+//        if(post.getIsOfficial() == 1){
+//            recyclerView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    readPost();
+//                    Intent i = new Intent(getContext(), CaseActivity.class);
+//                    Bundle b = new Bundle();
+//                    b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+//                    b.putLong(Constants.PARAM_ID, post.getId());
+//                    i.putExtras(b);
+//                    getContext().startActivity(i);
+//                }
+//            });
+//        }
     }
 
     private void gotoPost(){
@@ -298,7 +332,8 @@ public class PostView extends FrameLayout {
                 }
             });
         }
-        picAdapter.setEdit(isEdit);
+        if(picAdapter!=null)
+            picAdapter.setEdit(isEdit);
     }
 
     public class PicGridAdapter extends RecyclerView.Adapter<PicGridAdapter.ViewHolder> {
