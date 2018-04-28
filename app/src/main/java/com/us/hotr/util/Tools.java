@@ -614,6 +614,14 @@ public class Tools {
         return "<html>" + head + "<body style:'height:auto;max-width: 100%; width:auto;'>" + bodyHTML + "</body></html>";
     }
 
+    public static  String getHtmlImage(String imageUrl) {
+        String head = "<head>" +
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"> " +
+                "<style>img{max-width:100% !important; width:auto; height:auto;}</style>" +
+                "</head>";
+        return "<html>" + head + "<body style:'height:auto;max-width: 100%; width:auto;'>" + "<p><img src=\"" + imageUrl + "\"/></p>" + "</body></html>";
+    }
+
     public static String getPostTime(Context mContext, String date){
         try {
             Calendar calCreate=Calendar.getInstance();
@@ -701,19 +709,18 @@ public class Tools {
     }
 
     public static long getOrderTimeInMinSec(String date){
-        Calendar calCreate=Calendar.getInstance();
+        Calendar calCreate=Calendar.getInstance(), endOfCreateDay = Calendar.getInstance();
         try {
             calCreate.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date));
+            endOfCreateDay.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date));
             Calendar calNow = Calendar.getInstance();
-            Calendar c = Calendar.getInstance();
-            long now = c.getTimeInMillis();
 
-            c.add(Calendar.DAY_OF_MONTH, 1);
-            c.set(Calendar.HOUR_OF_DAY, 0);
-            c.set(Calendar.MINUTE, 0);
-            c.set(Calendar.SECOND, 0);
-            c.set(Calendar.MILLISECOND, 0);
-            long validTimeInMinisec = c.getTimeInMillis() - now + Constants.ORDER_VALID_TIME_IN_MINISEC;
+            endOfCreateDay.add(Calendar.DAY_OF_MONTH, 1);
+            endOfCreateDay.set(Calendar.HOUR_OF_DAY, 0);
+            endOfCreateDay.set(Calendar.MINUTE, 0);
+            endOfCreateDay.set(Calendar.SECOND, 0);
+            endOfCreateDay.set(Calendar.MILLISECOND, 0);
+            long validTimeInMinisec = endOfCreateDay.getTimeInMillis() - calCreate.getTimeInMillis() + Constants.ORDER_VALID_TIME_IN_MINISEC;
             if(calNow.getTimeInMillis()-calCreate.getTimeInMillis()<validTimeInMinisec)
                 return validTimeInMinisec -(calNow.getTimeInMillis()-calCreate.getTimeInMillis());
             else

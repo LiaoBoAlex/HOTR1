@@ -311,6 +311,7 @@
     <string name="massage_highlight">按摩院特色</string>
     <string name="massage_enviorment">按摩院环境</string>
     <string name="masseur_appointment">%1$d人约</string>
+    <string name="spa_appointment1">%1$d人去过</string>
     <string name="massage_appointment">已预约 %1$d</string>
     <string name="height">%1$dcm</string>
     <string name="experience">从业经验：%1$d年</string>

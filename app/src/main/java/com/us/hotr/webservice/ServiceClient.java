@@ -253,8 +253,8 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
-    public void getProductList(DisposableObserver subscriber, String keyword, Long type, Long hospitalId, Long doctorId, Long project_id, Long city_id, Double pos_latitude, Double pos_longitude, Integer pageSize, int page){
-        webService.getProductList(keyword, type, hospitalId, doctorId, project_id, city_id, pos_latitude, pos_longitude, pageSize, page)
+    public void getProductList(DisposableObserver subscriber, String keyword, Long type, Long hospitalId, Long doctorId, Long type_id, Long project_id, Long city_id, Double pos_latitude, Double pos_longitude, Integer pageSize, int page){
+        webService.getProductList(keyword, type, hospitalId, doctorId, type_id, project_id, city_id, pos_latitude, pos_longitude, pageSize, page)
                 .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<BaseListResponse<List<Product>>>())
                 .unsubscribeOn(Schedulers.io())

@@ -154,6 +154,7 @@ public interface WebService {
                                                                              @Query("hospitalId") Long hospitalId,
                                                                              @Query("doctorId") Long doctorId,
                                                                              @Query("typeId") Long typeId,
+                                                                             @Query("projectId") Long projectId,
                                                                              @Query("city_code") Long city_id,
                                                                              @Query("pos_latitude") Double pos_latitude,
                                                                              @Query("pos_longitude") Double pos_longitude,

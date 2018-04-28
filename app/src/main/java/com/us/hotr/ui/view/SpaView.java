@@ -56,7 +56,7 @@ public class SpaView extends FrameLayout {
         }
         Glide.with(getContext()).load(spa.getMassageLogo()).dontAnimate().placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
         tvAddress.setText(spa.getLandmarkName());
-        tvAppointment.setText(String.format(getContext().getString(R.string.masseur_appointment), spa.getOrder_num()));
+        tvAppointment.setText(String.format(getContext().getString(R.string.spa_appointment1), spa.getOrder_num()));
         tvName.setText(spa.getMassageName());
         setOnClickListener(new View.OnClickListener() {
             @Override

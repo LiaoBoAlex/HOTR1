@@ -34,6 +34,8 @@ import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -140,7 +142,9 @@ public class PostView extends FrameLayout {
             if(post.getUser_type() != 6)
                 post.setIsOfficial(0);
             String content = post.getContent();
-            content = content.replace("&quot;", "\"").replace("<p>", "").replace("</p>", "");
+//            content = content.replace(" &nbsp;", "");
+//            content = StringEscapeUtils.unescapeHtml4(content);
+//            content = content.replace("<p>", "").replace("</p>", "").replace("\n","").replace("\t","");
             List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>() {}.getType());
             boolean found = false;
             for (PostOld postOld : postOldList) {

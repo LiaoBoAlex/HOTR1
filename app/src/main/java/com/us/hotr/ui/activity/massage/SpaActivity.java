@@ -407,7 +407,7 @@ public class SpaActivity extends BaseLoadingActivity {
                             startActivity(i);
                         }
                     });
-                    spaHeaderHolder.tvAppointment.setText(String.format(getString(R.string.masseur_appointment), spaDetail.getMassage().getOrder_num()));
+                    spaHeaderHolder.tvAppointment.setText(String.format(getString(R.string.spa_appointment1), spaDetail.getMassage().getOrder_num()));
                     spaHeaderHolder.banner.startScroll();
                     spaHeaderHolder.tvAddress.setText(spaDetail.getMassage().getProvinceName() +
                             spaDetail.getMassage().getCityName() +

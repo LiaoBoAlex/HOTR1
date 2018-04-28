@@ -241,7 +241,7 @@ public class PartyActivity extends BaseLoadingActivity{
         ivFav = (ImageView) findViewById(R.id.iv_fav);
         ivBackHome = (ImageView) findViewById(R.id.iv_homepage);
         tvPurchase = (TextView) findViewById(R.id.tv_purchase);
-
+        ivShare.setVisibility(View.GONE);
         mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
@@ -492,7 +492,7 @@ public class PartyActivity extends BaseLoadingActivity{
                             headerHolder.tvPrice.setVisibility(View.VISIBLE);
                             break;
                     }
-                    if(response.getTravel().getVideoUrl()!=null) {
+                    if(response.getTravel().getVideoUrl()!=null && !response.getTravel().getVideoUrl().isEmpty()) {
                         headerHolder.vvVideo.setVisibility(View.VISIBLE);
                         headerHolder.ivAvatar.setVisibility(View.GONE);
                         Glide.with(PartyActivity.this).load(response.getTravel().getPartyDetailImg()).error(R.color.black).placeholder(R.color.black).into(headerHolder.mController.imageView());

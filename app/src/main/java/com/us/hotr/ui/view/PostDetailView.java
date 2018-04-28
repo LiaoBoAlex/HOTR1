@@ -2,6 +2,9 @@ package com.us.hotr.ui.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -18,14 +21,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ScrollThroughRecyclerView;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Post;
 import com.us.hotr.storage.bean.PostOld;
+import com.us.hotr.ui.HOTRApplication;
 import com.us.hotr.ui.activity.ImageViewerActivity;
 import com.us.hotr.ui.activity.found.GroupDetailActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
@@ -33,6 +44,8 @@ import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -166,7 +179,9 @@ public class PostDetailView extends FrameLayout {
             }else{
                 rvContent.setVisibility(VISIBLE);
                 String content = post.getContent();
-                content = content.replace("&quot;", "\"").replace("<p>", "").replace("</p>", "");
+//                content = content.replace(" &nbsp;", "");
+//                content = StringEscapeUtils.unescapeHtml4(content);
+//                content = content.replace("<p>", "").replace("</p>", "").replace("\n","").replace("\t","");
                 List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>(){}.getType());
                 Iterator<PostOld> i = postOldList.iterator();
                 while (i.hasNext()) {
@@ -380,8 +395,28 @@ public class PostDetailView extends FrameLayout {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             switch (holder.getItemViewType()) {
                 case TYPE_POST_IMAGE:
-                    PostImageHolder postImageHolder = (PostImageHolder) holder;
+                    final PostImageHolder postImageHolder = (PostImageHolder) holder;
                     final PostOld postOld = postOldList.get(position);
+//                    Glide.with(getContext()).load(postOld.getImageURL()).asBitmap().into(new SimpleTarget<Bitmap>() {
+//                        @Override
+//                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+//                            Matrix matrix = new Matrix();
+//                            float scaleWidth = 1, scaleHeight = 1;
+//                            if(resource.getHeight()>4096)
+//                                scaleHeight = 4096/(float)resource.getHeight();
+//                            if(resource.getWidth()>4096)
+//                                scaleWidth = 4096/(float)resource.getWidth();
+//                            matrix.postScale(Math.min(scaleWidth,scaleHeight), Math.min(scaleWidth,scaleHeight));// 放大缩小比例
+//                            Bitmap scaleBitmap = Bitmap.createBitmap(resource, 0, 0, resource.getWidth(), resource.getHeight(), matrix, true);
+//                            postImageHolder.ivImage.setImageBitmap(scaleBitmap);
+//                        }
+//
+//                        @Override
+//                        public void onLoadFailed(Exception e, Drawable errorDrawable) {
+//                            super.onLoadFailed(e, errorDrawable);
+//                            postImageHolder.ivImage.setImageResource(R.drawable.placeholder_banner);
+//                        }
+//                    });
                     Glide.with(getContext()).load(postOld.getImageURL()).dontAnimate().placeholder(R.drawable.placeholder_banner).error(R.drawable.placeholder_banner).into(postImageHolder.ivImage);
                     break;
                 case TYPE_POST_TEXT:

@@ -69,7 +69,7 @@ public class ListWithCategoryActivity extends BaseActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
                 break;
             case Constants.TYPE_PRODUCT:
-                listFragment = new ProductListFragment().newInstance(null, true, type, selectedSubjectID, -1, hospitalId, doctorId);
+                listFragment = new ProductListFragment().newInstance(null, true, type, selectedSubjectID, -1, -1, hospitalId, doctorId);
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
                 break;
             case Constants.TYPE_MASSAGE:

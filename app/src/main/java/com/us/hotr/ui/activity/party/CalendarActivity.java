@@ -155,9 +155,10 @@ public class CalendarActivity extends BaseActivity{
                 holder.tvMonth.setText(String.format(getString(R.string.date), year, month+1));
             holder.mMonthRecyclerView.setLayoutManager(new GridLayoutManager(CalendarActivity.this, 7, GridLayoutManager.VERTICAL, false));
             holder.mMonthRecyclerView.setItemAnimator(new DefaultItemAnimator());
-            MonthAdapter mMonthAdapter = new MonthAdapter(month, year, partyCalendarList);
-            if(holder.mMonthRecyclerView.getAdapter()==null)
+            if(holder.mMonthRecyclerView.getAdapter()==null){
+                MonthAdapter mMonthAdapter = new MonthAdapter(month, year, partyCalendarList);
                 holder.mMonthRecyclerView.setAdapter(mMonthAdapter);
+            }
             else
                 ((MonthAdapter)holder.mMonthRecyclerView.getAdapter()).setData(month, year, partyCalendarList);
         }

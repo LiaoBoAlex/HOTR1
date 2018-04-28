@@ -88,6 +88,7 @@
         <activity android:name="com.us.hotr.ui.activity.receipt.ReceiptDetailActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.beauty.CaseActivity"
+            android:hardwareAccelerated="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
         <activity android:name="com.us.hotr.ui.activity.search.SearchHintActivity"
