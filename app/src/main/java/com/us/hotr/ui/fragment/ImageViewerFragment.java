@@ -88,6 +88,12 @@ public class ImageViewerFragment extends Fragment {
         }
         else
             Glide.with(this).load(url).skipMemoryCache(true).into(mPhotoView);
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
     }
 
     @Override
