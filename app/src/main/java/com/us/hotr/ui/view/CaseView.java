@@ -77,7 +77,7 @@ public class CaseView extends FrameLayout {
         tvName.setText(aCase.getNick_name());
         if(aCase.getCreateTime()!=null)
             tvTime.setText(Tools.getPostTime(getContext(), aCase.getCreateTime()));
-        if(aCase.getIs_attention() == 1){
+        if(aCase.getIs_attention()!=null && aCase.getIs_attention() == 1){
             isFollow = true;
             tvFollow.setVisibility(VISIBLE);
             tvFollow.setText(R.string.fav_ed);

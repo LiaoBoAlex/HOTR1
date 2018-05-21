@@ -49,39 +49,51 @@
 
         <TextView
             android:id="@+id/tv_hospital3"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="14dp"
+            android:layout_marginEnd="12dp"
             android:layout_marginTop="4dp"
-            android:text="TextView"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@color/text_grey2"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/tv_hospital2"
             app:layout_constraintTop_toBottomOf="@+id/tv_hospital2" />
 
         <TextView
             android:id="@+id/tv_hospital2"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="3dp"
-            android:text="TextView"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="4dp"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@color/text_grey2"
             android:textSize="12dp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_hospital3"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/tv_hospital1"
             app:layout_constraintTop_toBottomOf="@+id/tv_hospital1" />
 
         <TextView
             android:id="@+id/tv_hospital1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
+            android:layout_width="0dp"
+            android:layout_height="23dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="21dp"
-            android:text="TextView"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/text_black"
             android:textSize="14dp"
-            app:layout_constraintLeft_toRightOf="@+id/iv_hospital_avatar"
+            app:layout_constraintBottom_toTopOf="@+id/tv_hospital2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_hospital_avatar"
             app:layout_constraintTop_toBottomOf="@+id/view12" />
 
         <com.us.hotr.customview.ShapedImageView

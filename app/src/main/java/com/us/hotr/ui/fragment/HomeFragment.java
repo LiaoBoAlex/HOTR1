@@ -56,7 +56,7 @@ public class HomeFragment extends Fragment {
 
     private LocationClient mLocationClient = null;
     public BDAbstractLocationListener myListener = new MyLocationListener();
-    private int cityType = 0;
+    private int cityType = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -132,8 +132,12 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                if(position == 0 || position == 1)
-                    cityType = position;
+                if(position == 0 || position == 1) {
+                    if (position == 0)
+                        cityType = 1;
+                    if (position == 1)
+                        cityType = 0;
+                }
             }
 
             @Override

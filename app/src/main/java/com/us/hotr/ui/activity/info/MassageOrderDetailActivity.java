@@ -190,7 +190,7 @@ public class MassageOrderDetailActivity extends BaseLoadingActivity {
             }
         };
         ServiceClient.getInstance().getMassageDetail(new ProgressSubscriber(mListener, this),
-                result.getMassage_id(), HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+                result.getProduct_id(), HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
     }
     @Override
     protected int getLayout() {

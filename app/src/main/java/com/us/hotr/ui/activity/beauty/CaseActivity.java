@@ -965,12 +965,12 @@ public class CaseActivity extends BaseLoadingActivity {
                 case TYPE_MASSAGE:
                     final Massage massage = (Massage) itemList.get(position).getContent();
                     MassageHolder massageHolder = (MassageHolder) holder;
-                    massageHolder.massageView.setData(massage);
+                    massageHolder.massageView.setData(massage, -1);
                     break;
                 case TYPE_MASSEUR:
                     final Masseur masseur = (Masseur) itemList.get(position).getContent();
                     MasseurHolder masseurHolder = (MasseurHolder) holder;
-                    masseurHolder.masseurBigView.setData(masseur);
+                    masseurHolder.masseurBigView.setData(masseur, -1);
                     break;
                 case TYPE_SPA:
                     final Spa spa = (Spa) itemList.get(position).getContent();

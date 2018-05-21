@@ -22,7 +22,11 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Mloong on 2017/8/29.
@@ -65,8 +69,10 @@ public class TypeSearchFragment extends BaseLoadingFragment {
 
         if(getArguments()!=null) {
             keyword = getArguments().getString(Constants.PARAM_SEARCH_STRING);
-            DataBaseHelper.getInstance(getActivity().getApplicationContext()).insertSearchHistory(keyword);
-            loadData(Constants.LOAD_PAGE);
+            if(keyword!=null && !keyword.isEmpty()) {
+                DataBaseHelper.getInstance(getActivity().getApplicationContext()).insertSearchHistory(keyword);
+                loadData(Constants.LOAD_PAGE);
+            }
         }
     }
 
@@ -77,11 +83,21 @@ public class TypeSearchFragment extends BaseLoadingFragment {
             public void onNext(HashMap<String, Integer> result) {
                 int total = 0;
                 if(result!=null && result.size()>0) {
-                    if(mAdapter == null) {
-                        mAdapter = new MyAdapter(result);
-                        mRecycleView.setAdapter(mAdapter);
-                    }else
-                        mAdapter.setData(result);
+                    List<String> myResult = new ArrayList<>();
+                    Iterator it = result.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry) it.next();
+                        if (((int) pair.getValue()) != 0) {
+                            myResult.add(pair.getKey()+","+pair.getValue());
+                            total = total + (int) pair.getValue();
+                        }
+                    }
+                    if (total > 0)
+                        if (mAdapter == null) {
+                            mAdapter = new MyAdapter(myResult);
+                            mRecycleView.setAdapter(mAdapter);
+                        } else
+                            mAdapter.setData(myResult);
                 }
                 tvTotal.setText(String.format(getString(R.string.total), total));
             }
@@ -91,7 +107,7 @@ public class TypeSearchFragment extends BaseLoadingFragment {
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-        HashMap<String, Integer> map;
+        List<String> map;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
             TextView tvTitle, tvTotal;
@@ -103,11 +119,11 @@ public class TypeSearchFragment extends BaseLoadingFragment {
             }
         }
 
-        public MyAdapter(HashMap<String, Integer> map) {
+        public MyAdapter(List<String> map) {
             this.map = map;
         }
 
-        public void setData(HashMap<String, Integer> map){
+        public void setData(List<String> map){
             this.map = map;
             notifyDataSetChanged();
         }
@@ -121,57 +137,50 @@ public class TypeSearchFragment extends BaseLoadingFragment {
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
-            switch (position + 101){
+            String[] item = map.get(position).split(",");
+            final int id = Integer.parseInt(item[0]);
+            int value = Integer.parseInt(item[1]);
+            switch (id + 100){
                 case Constants.TYPE_CASE:
                     holder.tvTitle.setText(R.string.case_title);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("7")));
+
                     break;
                 case Constants.TYPE_SEARCH_POST:
                     holder.tvTitle.setText(R.string.post_title);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("8")));
                     break;
                 case Constants.TYPE_PARTY:
                     holder.tvTitle.setText(R.string.party_title);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("10")));
                     break;
                 case Constants.TYPE_DOCTOR:
                     holder.tvTitle.setText(R.string.doctor);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("2")));
                     break;
                 case Constants.TYPE_HOSPITAL:
                     holder.tvTitle.setText(R.string.hospital1);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("1")));
                     break;
                 case Constants.TYPE_SPA:
-                    holder.tvTitle.setText(R.string.spa1);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("4")));
+                    holder.tvTitle.setText(R.string.spa);
                     break;
                 case Constants.TYPE_MASSEUR:
                     holder.tvTitle.setText(R.string.masseur2);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("5")));
                     break;
                 case Constants.TYPE_PRODUCT:
                     holder.tvTitle.setText(R.string.product1);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("3")));
                     break;
                 case Constants.TYPE_MASSAGE:
                     holder.tvTitle.setText(R.string.massage1);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("6")));
                     break;
                 case Constants.TYPE_SEARCH_PEOPLE:
                     holder.tvTitle.setText(R.string.user);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("11")));
                     break;
                 case Constants.TYPE_GROUP:
                     holder.tvTitle.setText(R.string.group_title);
-                    holder.tvTotal.setText(String.format(getString(R.string.total2), map.get("9")));
                     break;
-
             }
+            holder.tvTotal.setText(String.format(getString(R.string.total2), value));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Events.SearchTypeChosen event = new Events.SearchTypeChosen(position + 101);
+                    Events.SearchTypeChosen event = new Events.SearchTypeChosen(id + 100);
                     GlobalBus.getBus().post(event);
                 }
             });

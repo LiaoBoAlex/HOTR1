@@ -76,7 +76,7 @@ public class MassageListFragment extends BaseLoadingFragment {
         if(subjectId<0)
             subjectId = null;
         cityCode = getArguments().getLong(PARAM_CITY);
-        if(cityCode<=0)
+        if(cityCode<=0 || (keyword != null && !keyword.isEmpty()))
             cityCode = null;
         spalId = getArguments().getLong(PARAM_SPA);
         if(spalId<=0)
@@ -272,7 +272,7 @@ public class MassageListFragment extends BaseLoadingFragment {
         @Override
         public void onBindViewHolder(MyAdapter.MyViewHolder holder, final int position) {
             final Massage massage = massageList.get(position);
-            holder.massageView.setData(massage);
+            holder.massageView.setData(massage, -1);
             holder.massageView.enableEdit(isEdit);
             holder.massageView.setItemSelectedListener(new ItemSelectedListener() {
                 @Override

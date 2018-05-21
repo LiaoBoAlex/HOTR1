@@ -166,7 +166,7 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
                 s = getString(R.string.hospital1);
                 break;
             case Constants.TYPE_SPA:
-                s = getString(R.string.spa1);
+                s = getString(R.string.spa);
                 break;
             case Constants.TYPE_MASSEUR:
                 s = getString(R.string.masseur2);

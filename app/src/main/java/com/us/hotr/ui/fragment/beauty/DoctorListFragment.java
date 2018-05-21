@@ -72,7 +72,7 @@ public class DoctorListFragment extends BaseLoadingFragment {
         cityCode = getArguments().getLong(PARAM_CITY);
         type = getArguments().getInt(Constants.PARAM_TYPE);
         keyword = getArguments().getString(Constants.PARAM_KEYWORD);
-        if(cityCode<0)
+        if(cityCode<0 || (keyword != null && !keyword.isEmpty()))
             cityCode = null;
         hospitalId = getArguments().getLong(PARAM_HOSPITAL);
         if(hospitalId<=0)

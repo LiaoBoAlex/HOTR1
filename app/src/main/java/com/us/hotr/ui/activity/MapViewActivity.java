@@ -139,14 +139,16 @@ public class MapViewActivity extends BaseActivity{
             public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
                 PolylineOptions polyline = null;
                 List<LatLng> pointList = new ArrayList<>();
-                for(int i=0;i<drivingRouteResult.getRouteLines().get(0).getAllStep().size();i++){
-                    pointList.addAll(drivingRouteResult.getRouteLines().get(0).getAllStep().get(i).getWayPoints());
+                if(drivingRouteResult!=null && drivingRouteResult.getRouteLines()!=null && drivingRouteResult.getRouteLines().size()>0) {
+                    for (int i = 0; i < drivingRouteResult.getRouteLines().get(0).getAllStep().size(); i++) {
+                        pointList.addAll(drivingRouteResult.getRouteLines().get(0).getAllStep().get(i).getWayPoints());
+                    }
+                    if (pointList.size() >= 2 && pointList.size() <= 100000) {
+                        polyline = new PolylineOptions().width(6)
+                                .color(getResources().getColor(R.color.blue)).points(pointList);
+                    }
+                    mBaiduMap.addOverlay(polyline);
                 }
-                if (pointList.size() >=2 && pointList.size() <= 100000) {
-                    polyline = new PolylineOptions().width(6)
-                            .color(getResources().getColor(R.color.blue)).points(pointList);
-                }
-                mBaiduMap.addOverlay(polyline);
             }
 
             @Override

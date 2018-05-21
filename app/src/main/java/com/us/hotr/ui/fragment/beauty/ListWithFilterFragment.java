@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.customview.CloseFragmentListener;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
@@ -30,7 +31,7 @@ import org.greenrobot.eventbus.Subscribe;
  * Created by Mloong on 2017/9/20.
  */
 
-public class ListWithFilterFragment extends Fragment {
+public class ListWithFilterFragment extends Fragment implements CloseFragmentListener{
 
     private TextView tvFilterCity, tvFilterSubject, tvFilterType;
     private FrameLayout mContainerList, mContainerFilter;
@@ -110,6 +111,11 @@ public class ListWithFilterFragment extends Fragment {
                     }
                 }
                 break;
+        }
+
+        if(keyword!=null && !keyword.isEmpty()){
+            tvFilterCity.setText(getString(R.string.filter_city));
+            cityID = Constants.ALL_CITY_ID;
         }
 
         if(cityID == Constants.ALL_CITY_ID)
@@ -294,5 +300,20 @@ public class ListWithFilterFragment extends Fragment {
         });
         mContainerFilter.startAnimation(animOut);
 
+    }
+
+    @Override
+    public void onFragmentClose() {
+        if(isCityListOpen){
+            hideAnimation();
+            isCityListOpen = false;
+        }else if (isSubjectListOpen){
+            hideAnimation();
+            isSubjectListOpen = false;
+
+        }else if (isTypeListOpen) {
+            hideAnimation();
+            isTypeListOpen = false;
+        }
     }
 }

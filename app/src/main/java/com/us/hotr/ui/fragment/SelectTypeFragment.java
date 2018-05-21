@@ -1,5 +1,6 @@
 package com.us.hotr.ui.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.customview.BlankRecyclerView;
+import com.us.hotr.customview.CloseFragmentListener;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.bean.Type;
@@ -25,11 +28,12 @@ import java.util.List;
  */
 
 public class SelectTypeFragment extends Fragment{
-    private RecyclerView recyclerView;
+    private BlankRecyclerView recyclerView;
     private MyAdapter myAdapter;
     private LinearLayout llContainer;
     private int type;
     private boolean isProduct = false;
+    private CloseFragmentListener listener;
 
     public static final String PARAM_IS_PRODUCT = "PARAM_IS_PRODUCT";
 
@@ -41,9 +45,16 @@ public class SelectTypeFragment extends Fragment{
         selectTypeFragment.setArguments(b);
         return selectTypeFragment;
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        listener = (CloseFragmentListener) getParentFragment();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recyclerview, container, false);
+        return inflater.inflate(R.layout.fragment_blank_recyclerview, container, false);
     }
 
     @Override
@@ -51,7 +62,7 @@ public class SelectTypeFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         type = getArguments().getInt(Constants.PARAM_TYPE);
         isProduct = getArguments().getBoolean(PARAM_IS_PRODUCT);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        recyclerView = (BlankRecyclerView) view.findViewById(R.id.recyclerview);
         recyclerView.setBackground(null);
         llContainer = (LinearLayout) view.findViewById(R.id.ll_container);
         llContainer.setBackgroundResource(R.color.dim_bg);
@@ -61,6 +72,13 @@ public class SelectTypeFragment extends Fragment{
         else
             myAdapter = new MyAdapter(Tools.getTypes(type, getContext()));
         recyclerView.setAdapter(myAdapter);
+
+        recyclerView.setBlankListener(new BlankRecyclerView.BlankListener() {
+            @Override
+            public void onBlankClick() {
+                listener.onFragmentClose();
+            }
+        });
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {

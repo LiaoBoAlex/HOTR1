@@ -43,7 +43,6 @@ public class MasseurBigListFragment extends BaseLoadingFragment {
     private MyAdapter mAdapter;
     private MyBaseAdapter myBaseAdapter;
     private int totalSize = 0;
-    private int currentPage = 1;
     private Long SpaId = null;
 
     public static MasseurBigListFragment newInstance(long cityId, long SpaId) {
@@ -64,7 +63,7 @@ public class MasseurBigListFragment extends BaseLoadingFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         cityCode = getArguments().getLong(Constants.PARAM_DATA);
-        if(cityCode<0)
+        if(cityCode<0 || (keyword != null && !keyword.isEmpty()))
             cityCode = null;
         SpaId = getArguments().getLong(PARAM_SPA);
         if(SpaId<0)
@@ -78,7 +77,7 @@ public class MasseurBigListFragment extends BaseLoadingFragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
+        enableLoadMore(false);
         loadData(Constants.LOAD_PAGE);
     }
 
@@ -103,27 +102,12 @@ public class MasseurBigListFragment extends BaseLoadingFragment {
         totalSize = result.getTotal();
         Events.GetSearchCount event = new Events.GetSearchCount(totalSize);
         GlobalBus.getBus().post(event);
-        if(loadType == Constants.LOAD_MORE){
-            mAdapter.addItems(result.getRows());
-        }else{
-            if(mAdapter!=null)
-                mAdapter.setItems(result.getRows());
-            else
-                mAdapter = new MyAdapter(result.getRows());
-            myBaseAdapter = new MyBaseAdapter(mAdapter);
-            mRecyclerView.setAdapter(myBaseAdapter);
-        }
-        currentPage ++;
-        if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
-                ||totalSize == 0) {
-            enableLoadMore(false);
-            if(totalSize>0)
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
-            else
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_empty, mRecyclerView, false));
-        }
+        if(mAdapter!=null)
+            mAdapter.setItems(result.getRows());
         else
-            enableLoadMore(true);
+            mAdapter = new MyAdapter(result.getRows());
+        myBaseAdapter = new MyBaseAdapter(mAdapter);
+        mRecyclerView.setAdapter(myBaseAdapter);
     }
 
     @Subscribe
@@ -217,7 +201,7 @@ public class MasseurBigListFragment extends BaseLoadingFragment {
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             final Masseur masseur = masseurList.get(position);
-            holder.masseurBigView.setData(masseur);
+            holder.masseurBigView.setData(masseur, -1);
             holder.masseurBigView.enableEdit(isEdit);
             holder.masseurBigView.setItemSelectedListener(new ItemSelectedListener() {
                 @Override

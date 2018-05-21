@@ -63,7 +63,7 @@ public class MassageActivity extends BaseLoadingActivity {
     private AppBarLayout appBarLayout;
     private ImageView ivBack, ivShare, ivBackHome, ivPromo, ivFav;
     private ImageBanner mBanner;
-    private TextView tvPurchase, tvTitle, tvPriceAfter, tvPriceBefore, tvAppointment, tvAddress, tvMasseurTitle, tvApplyTime;
+    private TextView tvPurchase, tvTitle, tvPriceAfter, tvPriceBefore, tvAppointment, tvAddress, tvMasseurTitle, tvApplyTime, tvShowAll;
     private SpaBigView mSpaBigView;
     private RecyclerView rvMasseur;
     private ArrayList<String> titleList;
@@ -72,13 +72,14 @@ public class MassageActivity extends BaseLoadingActivity {
 
     private long mMassageId;
     private GetMassageDetailResponse mMassage;
-    private boolean isCollected = false;
+    private boolean isCollected = false, isShowAll = false;
     private long selectedMasseurId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMassageId = getIntent().getExtras().getLong(Constants.PARAM_ID);
+        selectedMasseurId = getIntent().getExtras().getLong(Constants.PARAM_MASSEUR_ID, -1);
         initStaticView();
         setMyTitle(R.string.product_detail);
     }
@@ -108,6 +109,7 @@ public class MassageActivity extends BaseLoadingActivity {
         tvMasseurTitle = (TextView) findViewById(R.id.tv_masseur_title);
         ivPromo = (ImageView) findViewById(R.id.iv_promo);
         mSpaBigView = (SpaBigView) findViewById(R.id.v_spa);
+        tvShowAll = (TextView) findViewById(R.id.tv_expend);
 
         ivBackHome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,7 +165,6 @@ public class MassageActivity extends BaseLoadingActivity {
                     return;
                 }
                 mMassage = result;
-                selectedMasseurId = result.getProposeMassagist().get(0).getId();
                 isCollected = result.getIs_collected()==1?true:false;
                 final List<String> photoes = Tools.mapToList(Tools.gsonStringToMap(result.getProduct().getProductImg()));
 //                mBanner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
@@ -180,7 +181,8 @@ public class MassageActivity extends BaseLoadingActivity {
 //                });
                 mBanner.setSource(photoes);
                 mBanner.startScroll();
-                tvTitle.setText(getString(R.string.bracket_left)+result.getProduct().getProductName()+getString(R.string.bracket_right)+result.getProduct().getProductUsp());
+//                tvTitle.setText(getString(R.string.bracket_left)+result.getProduct().getProductName()+getString(R.string.bracket_right)+result.getProduct().getProductUsp());
+                tvTitle.setText(result.getProduct().getProductUsp());
                 tvApplyTime.setText(getString(R.string.use_time) + result.getProduct().getUsableTime());
                 if(result.getProduct().getProductType()==Constants.PROMOTION_PRODUCT){
                     tvPriceAfter.setText(new DecimalFormat("0.00").format(result.getProduct().getActivityPrice()) + "/" + result.getProduct().getServiceTime());
@@ -221,10 +223,29 @@ public class MassageActivity extends BaseLoadingActivity {
                 else
                     mSpaBigView.setData(result.getMassage());
                 if(result.getProposeMassagist()!=null && result.getProposeMassagist().size()>0) {
-                    MyAdapter mAdapter = new MyAdapter(result.getProposeMassagist());
+                    if(selectedMasseurId < 0)
+                        selectedMasseurId = result.getProposeMassagist().get(0).getId();
+                    final MyAdapter mAdapter = new MyAdapter(result.getProposeMassagist());
                     rvMasseur.setAdapter(mAdapter);
-                }else
+                    tvShowAll.setVisibility(View.VISIBLE);
+                    tvShowAll.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            isShowAll = !isShowAll;
+                            if(!isShowAll)
+                                tvShowAll.setText(R.string.see_all);
+                            else
+                                tvShowAll.setText(R.string.see_part);
+                            if(mAdapter!=null)
+                                mAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }else {
                     tvMasseurTitle.setVisibility(View.GONE);
+                    tvShowAll.setVisibility(View.GONE);
+                    tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+                    tvPurchase.setOnClickListener(null);
+                }
                 isCollected = result.getIs_collected()==1?true:false;
                 if(isCollected)
                     ivFav.setImageResource(R.mipmap.ic_fav_text_ed);
@@ -388,6 +409,12 @@ public class MassageActivity extends BaseLoadingActivity {
 
         public MyAdapter(List<Masseur> masseurList) {
             this.masseurList = masseurList;
+            for(int i=0;i<masseurList.size();i++){
+                if(selectedMasseurId == masseurList.get(i).getId()) {
+                    selectedPosition = i;
+                    break;
+                }
+            }
         }
 
         public long getSelectedId(){
@@ -403,7 +430,7 @@ public class MassageActivity extends BaseLoadingActivity {
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             final Masseur masseur = masseurList.get(position);
-            holder.masseurBigView.setData(masseur);
+            holder.masseurBigView.setData(masseur, mMassageId);
             if(position == selectedPosition) {
                 holder.masseurBigView.setGoButtonResource(R.mipmap.ic_massage_clicked);
                 selectedMasseurId = masseur.getId();
@@ -423,8 +450,12 @@ public class MassageActivity extends BaseLoadingActivity {
         public int getItemCount() {
             if(masseurList==null)
                 return 0;
-            else
-                return masseurList.size();
+            else {
+                if (isShowAll)
+                    return masseurList.size();
+                else
+                    return Math.min(3, masseurList.size());
+            }
         }
     }
 }

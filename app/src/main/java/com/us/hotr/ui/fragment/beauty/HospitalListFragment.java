@@ -66,7 +66,7 @@ public class HospitalListFragment extends BaseLoadingFragment {
         cityCode = getArguments().getLong(Constants.PARAM_DATA);
         isFav = getArguments().getBoolean(Constants.PARAM_IS_FAV);
         keyword = getArguments().getString(Constants.PARAM_KEYWORD);
-        if(cityCode<=0)
+        if(cityCode<=0 || (keyword != null && !keyword.isEmpty()))
             cityCode = null;
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);

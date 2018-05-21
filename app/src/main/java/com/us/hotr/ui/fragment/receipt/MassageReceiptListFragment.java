@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.eventbus.Events;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.MassageReceipt;
 import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
@@ -33,6 +34,8 @@ import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -131,8 +134,11 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
         if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
                 ||totalSize == 0) {
             enableLoadMore(false);
-            if(totalSize>0)
+            if(totalSize>0) {
+                mRecyclerView.setVisibility(View.VISIBLE);
+                clEmpty.setVisibility(View.GONE);
                 myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+            }
             else{
                 mRecyclerView.setVisibility(View.GONE);
                 clEmpty.setVisibility(View.VISIBLE);
@@ -140,6 +146,12 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
         }
         else
             enableLoadMore(true);
+    }
+
+    @Subscribe
+    public void getMessage(Events.Refresh refresh) {
+        if(type == Constants.RECEIPT_STATUS_REFUNDING)
+            loadData(Constants.LOAD_PULL_REFRESH);
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
@@ -192,7 +204,7 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
             holder.tvTitle.setText(massageReceipt.getProduct_name_usp());
             holder.tvName.setText(massageReceipt.getMassagist_name());
             if(type == Constants.RECEIPT_STATUS_UNUSED) {
-                holder.tvNumber.setText(String.format(getString(R.string.available_receipt), massageReceipt.getNumb()));
+                holder.tvNumber.setText(getString(R.string.unused_title));
                 holder.tvNumber.setTextColor(getResources().getColor(R.color.text_black));
                 holder.tvMerchant.setTextColor(getResources().getColor(R.color.text_black));
                 holder.tvDate.setTextColor(getResources().getColor(R.color.red));
@@ -211,7 +223,7 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                 });
             }
             if(type == Constants.RECEIPT_STATUS_USED){
-                holder.tvNumber.setText(getString(R.string.used_receipt));
+                holder.tvNumber.setText(getString(R.string.used_title));
                 holder.tvDate.setText(getString(R.string.receipt_used_time)+massageReceipt.getVerification_time());
                 holder.tvOption.setVisibility(View.VISIBLE);
                 holder.tvOption.setText(R.string.delete);
@@ -233,6 +245,10 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                                                 massageReceiptList.remove(position);
                                                 notifyItemRemoved(position);
                                                 notifyItemRangeChanged(0, massageReceiptList.size());
+                                                if(massageReceiptList.size() == 0){
+                                                    mRecyclerView.setVisibility(View.GONE);
+                                                    clEmpty.setVisibility(View.VISIBLE);
+                                                }
                                             }
                                         };
                                         ServiceClient.getInstance().deleteMassageReceipt(new ProgressSubscriber(mListener, getActivity()),
@@ -249,8 +265,8 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                     }
                 });
             }
-            if(type == Constants.RECEIPT_STATUS_EXPIRED){
-                holder.tvNumber.setText(String.format(getString(R.string.expired_receipt), massageReceipt.getNumb()));
+            if(type == Constants.RECEIPT_STATUS_EXPIRED) {
+                holder.tvNumber.setText(getString(R.string.expired_title));
                 holder.tvDate.setText(Tools.getReceiptTime(getContext(), massageReceipt.getRepeal_time()));
                 holder.tvOption.setVisibility(View.VISIBLE);
                 holder.tvOption.setText(R.string.apply_refund);
@@ -258,7 +274,7 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                     @Override
                     public void onClick(View view) {
                         RefundDialog.Builder alertDialogBuilder = new RefundDialog.Builder(getActivity());
-                        alertDialogBuilder.setMessage(getString(R.string.money)+new DecimalFormat("0.00").format(massageReceipt.getReal_payment()));
+                        alertDialogBuilder.setMessage(getString(R.string.money) + new DecimalFormat("0.00").format(massageReceipt.getReal_payment()));
                         alertDialogBuilder.setPositiveButton(getString(R.string.yes),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -270,6 +286,10 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                                                 massageReceiptList.remove(position);
                                                 notifyItemRemoved(position);
                                                 notifyItemRangeChanged(0, massageReceiptList.size());
+                                                if(massageReceiptList.size() == 0){
+                                                    mRecyclerView.setVisibility(View.GONE);
+                                                    clEmpty.setVisibility(View.VISIBLE);
+                                                }
                                             }
                                         };
                                         ServiceClient.getInstance().refundMassageReceipt(new ProgressSubscriber(mListener, getActivity()),
@@ -285,25 +305,25 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                         alertDialogBuilder.create().show();
                     }
                 });
-                if(type == Constants.RECEIPT_STATUS_REFUNDING){
-                    holder.tvNumber.setText(String.format(getString(R.string.expired_receipt), massageReceipt.getNumb()));
-                    String money = getString(R.string.money) + new DecimalFormat("0.00").format(massageReceipt.getReal_payment());
-                    String date = Tools.getReceiptRefundTime(getContext(), massageReceipt.getAction_refund_time());
-                    SpannableString msp = new SpannableString(date+money);
-                    msp.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red)), date.length(), date.length()+money.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    holder.tvDate.setText(msp);
-                }
-                if(type == Constants.RECEIPT_STATUS_REFUNDED){
-                    holder.tvNumber.setText(String.format(getString(R.string.expired_receipt), massageReceipt.getNumb()));
-                    String money = getString(R.string.money) + new DecimalFormat("0.00").format(massageReceipt.getReal_payment());
-                    String date = Tools.getReceiptRefundedTime(getContext(), massageReceipt.getRefund_time());
-                    SpannableString msp = new SpannableString(date+money);
-                    msp.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red)), date.length(), date.length()+money.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    holder.tvDate.setText(msp);
-                }
             }
-
+            if(type == Constants.RECEIPT_STATUS_REFUNDING){
+                holder.tvNumber.setText(getString(R.string.refunding_title));
+                String money = getString(R.string.money) + new DecimalFormat("0.00").format(massageReceipt.getReal_payment());
+                String date = Tools.getReceiptRefundTime(getContext(), massageReceipt.getAction_refund_time());
+                SpannableString msp = new SpannableString(date+money);
+                msp.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red)), date.length(), date.length()+money.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                holder.tvDate.setText(msp);
+            }
+            if(type == Constants.RECEIPT_STATUS_REFUNDED){
+                holder.tvNumber.setText(getString(R.string.refunded_title));
+                String money = getString(R.string.money) + new DecimalFormat("0.00").format(massageReceipt.getReal_payment());
+                String date = Tools.getReceiptRefundedTime(getContext(), massageReceipt.getRefund_time());
+                SpannableString msp = new SpannableString(date+money);
+                msp.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red)), date.length(), date.length()+money.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                holder.tvDate.setText(msp);
+            }
         }
+
 
         @Override
         public int getItemCount() {

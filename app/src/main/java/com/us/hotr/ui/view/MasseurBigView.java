@@ -65,7 +65,7 @@ public class MasseurBigView extends FrameLayout {
 //        });
 //    }
 
-    public void setData(final Masseur masseur){
+    public void setData(final Masseur masseur, final long massageId){
         this.masseur = masseur;
         tvAppointment.setText(String.format(getContext().getString(R.string.masseur_appointment), masseur.getOrder_num()));
         tvHeight.setText(String.format(getContext().getString(R.string.height), masseur.getMassagist_height()));
@@ -82,6 +82,7 @@ public class MasseurBigView extends FrameLayout {
                 Intent i =new Intent(getContext(), MasseurActivity.class);
                 Bundle b = new Bundle();
                 b.putLong(Constants.PARAM_ID, masseur.getId());
+                b.putLong(Constants.PARAM_MASSAGE_ID, massageId);
                 i.putExtras(b);
                 getContext().startActivity(i);
             }

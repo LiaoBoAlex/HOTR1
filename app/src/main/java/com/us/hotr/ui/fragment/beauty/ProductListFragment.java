@@ -90,7 +90,7 @@ public class ProductListFragment extends BaseLoadingFragment {
         if(typeId<=0)
             typeId = null;
         cityCode = getArguments().getLong(PARAM_CITY);
-        if(cityCode<=0)
+        if(cityCode<=0 || (keyword != null && !keyword.isEmpty()))
             cityCode = null;
         hospitalId = getArguments().getLong(PARAM_HOSPITAL);
         if(hospitalId<=0)

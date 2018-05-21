@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.customview.CloseFragmentListener;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
@@ -28,11 +29,13 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.internal.operators.flowable.FlowableTakeWhile;
+
 /**
  * Created by Mloong on 2017/9/6.
  */
 
-public class ProductListWithFilterFragment extends Fragment{
+public class ProductListWithFilterFragment extends Fragment implements CloseFragmentListener{
 
     private TextView tvFilterCity, tvFilterType;
     private FrameLayout mContainerCity, mContainerList;
@@ -119,7 +122,10 @@ public class ProductListWithFilterFragment extends Fragment{
                 break;
         }
 
-
+        if(keyword!=null && !keyword.isEmpty()){
+            tvFilterCity.setText(getString(R.string.filter_city));
+            cityId = Constants.ALL_CITY_ID;
+        }
 
         if(cityId == Constants.ALL_CITY_ID)
             cityId = -1;
@@ -257,5 +263,14 @@ public class ProductListWithFilterFragment extends Fragment{
         if(haveParent)
             parentActivity.enableAppBarLayoutBehavior(true);
 
+    }
+
+    @Override
+    public void onFragmentClose() {
+        if(haveParent && parentActivity.isSubjectListOpen){
+            parentActivity.hideAnimation();
+        }else if (isTypeListOpen){
+            hideAnimation();
+        }
     }
 }

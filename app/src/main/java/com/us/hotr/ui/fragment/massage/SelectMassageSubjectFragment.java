@@ -1,9 +1,11 @@
 package com.us.hotr.ui.fragment.massage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.us.hotr.R;
+import com.us.hotr.customview.BlankRecyclerView;
+import com.us.hotr.customview.CloseFragmentListener;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.bean.Subject;
@@ -27,30 +31,44 @@ import java.util.List;
  */
 
 public class SelectMassageSubjectFragment extends BaseLoadingFragment {
-    private RecyclerView recyclerView;
+    private BlankRecyclerView recyclerView;
     private MyAdapter myAdapter;
     private LinearLayout llContainer;
+    private CloseFragmentListener listener;
 
     public static SelectMassageSubjectFragment newInstance() {
         SelectMassageSubjectFragment selectMassageSubjectFragment = new SelectMassageSubjectFragment();
         return selectMassageSubjectFragment;
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        listener = (CloseFragmentListener) getParentFragment();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recyclerview, container, false);
+        return inflater.inflate(R.layout.fragment_blank_recyclerview, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        recyclerView = (BlankRecyclerView) view.findViewById(R.id.recyclerview);
         recyclerView.setBackground(null);
         llContainer = (LinearLayout) view.findViewById(R.id.ll_container);
         llContainer.setBackgroundResource(R.color.dim_bg);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         loadData(0);
+        recyclerView.setBlankListener(new BlankRecyclerView.BlankListener() {
+            @Override
+            public void onBlankClick() {
+                listener.onFragmentClose();
+            }
+        });
 
     }
 

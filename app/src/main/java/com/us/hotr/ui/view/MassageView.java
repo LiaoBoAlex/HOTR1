@@ -31,6 +31,7 @@ public class MassageView extends FrameLayout{
 
     private ItemSelectedListener itemSelectedListener;
     private Massage massage;
+    private long masseurId;
 
     public MassageView(Context context) {
         super(context);
@@ -59,9 +60,11 @@ public class MassageView extends FrameLayout{
         vDivider = findViewById(R.id.v_divider);
     }
 
-    public void setData(final Massage massage){
+    public void setData(final Massage massage, final long masseurId){
         this.massage = massage;
-        tvTitle.setText(getContext().getString(R.string.bracket_left)+massage.getProductName()+getContext().getString(R.string.bracket_right)+massage.getProductUsp());
+        this.masseurId = masseurId;
+//        tvTitle.setText(getContext().getString(R.string.bracket_left)+massage.getProductName()+getContext().getString(R.string.bracket_right)+massage.getProductUsp());
+        tvTitle.setText(massage.getProductUsp());
         tvDoctor.setText(massage.getMassage_name());
         tvHospital.setText("");
         tvAppointment.setText(String.format(getContext().getString(R.string.num_of_appointment1), massage.getOrder_num()));
@@ -84,6 +87,7 @@ public class MassageView extends FrameLayout{
                 Intent i = new Intent(getContext(), MassageActivity.class);
                 Bundle b = new Bundle();
                 b.putLong(Constants.PARAM_ID, massage.getKey());
+                b.putLong(Constants.PARAM_MASSEUR_ID, masseurId);
                 i.putExtras(b);
                 getContext().startActivity(i);
             }

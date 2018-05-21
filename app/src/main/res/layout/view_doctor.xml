@@ -42,44 +42,47 @@
 
             <TextView
                 android:id="@+id/tv_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="0dp"
+                android:layout_marginEnd="12dp"
                 android:layout_marginTop="16dp"
                 android:text="TextView"
                 android:textColor="@color/text_black"
                 android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@+id/imageView11"
                 app:layout_constraintLeft_toLeftOf="@+id/guideline10"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_title1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="0dp"
+                android:layout_marginEnd="12dp"
                 android:layout_marginTop="3dp"
                 android:text="TextView"
                 android:textColor="@color/text_grey2"
                 android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintLeft_toLeftOf="@+id/tv_name"
                 app:layout_constraintTop_toBottomOf="@+id/tv_name" />
 
             <TextView
                 android:id="@+id/tv_title2"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="0dp"
+                android:layout_marginEnd="12dp"
                 android:layout_marginTop="3dp"
                 android:text="TextView"
                 android:textColor="@color/text_grey2"
                 android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintLeft_toLeftOf="@+id/tv_title1"
                 app:layout_constraintTop_toBottomOf="@+id/tv_title1" />
 
             <ImageView
+                android:id="@+id/imageView11"
                 android:layout_width="30dp"
                 android:layout_height="18dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="18dp"
                 app:layout_constraintRight_toRightOf="parent"

@@ -42,7 +42,6 @@ public class SpaBigListFragment extends BaseLoadingFragment {
     private MyAdapter mAdapter;
     private MyBaseAdapter myBaseAdapter;
     private int totalSize = 0;
-    private int currentPage = 1;
 
     public static SpaBigListFragment newInstance(long cityId) {
         SpaBigListFragment spaBigListFragment = new SpaBigListFragment();
@@ -61,13 +60,13 @@ public class SpaBigListFragment extends BaseLoadingFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         cityCode = getArguments().getLong(Constants.PARAM_DATA);
-        if(cityCode<=0)
+        if(cityCode<=0 || (keyword != null && !keyword.isEmpty()))
             cityCode = null;
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
+        enableLoadMore(false);
         loadData(Constants.LOAD_PAGE);
     }
 
@@ -92,27 +91,13 @@ public class SpaBigListFragment extends BaseLoadingFragment {
         totalSize = result.getTotal();
         Events.GetSearchCount event = new Events.GetSearchCount(totalSize);
         GlobalBus.getBus().post(event);
-        if(loadType == Constants.LOAD_MORE){
-            mAdapter.addItems(result.getRows());
-        }else{
-            if(mAdapter == null)
-                mAdapter = new MyAdapter(result.getRows());
-            else
-                mAdapter.setItems(result.getRows());
-            myBaseAdapter = new MyBaseAdapter(mAdapter);
-            mRecyclerView.setAdapter(myBaseAdapter);
-        }
-        currentPage ++;
-        if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
-                ||totalSize == 0) {
-            enableLoadMore(false);
-            if(totalSize>0)
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
-            else
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_empty, mRecyclerView, false));
-        }
+        if(mAdapter == null)
+            mAdapter = new MyAdapter(result.getRows());
         else
-            enableLoadMore(true);
+            mAdapter.setItems(result.getRows());
+        myBaseAdapter = new MyBaseAdapter(mAdapter);
+        myBaseAdapter.setFooterView();
+        mRecyclerView.setAdapter(myBaseAdapter);
     }
 
     @Subscribe

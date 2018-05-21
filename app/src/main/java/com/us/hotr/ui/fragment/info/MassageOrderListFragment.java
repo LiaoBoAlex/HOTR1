@@ -335,7 +335,7 @@ public class MassageOrderListFragment extends BaseLoadingFragment {
                 }
             };
             ServiceClient.getInstance().getMassageDetail(new ProgressSubscriber(mListener, getActivity()),
-                    result.getMassage_id(), HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
+                    result.getProduct_id(), HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID());
         }
 
         @Override

@@ -12,7 +12,9 @@ public class Spa implements Serializable {
     @SerializedName(value = "key", alternate = {"id"})
     private long key;
     private String provinceName;
+    @SerializedName(value = "cityName", alternate = {"city_name"})
     private String cityName;
+    @SerializedName(value = "areaName", alternate = {"area_name"})
     private String areaName;
     @SerializedName(value = "massageAddress", alternate = {"address"})
     private String massageAddress;

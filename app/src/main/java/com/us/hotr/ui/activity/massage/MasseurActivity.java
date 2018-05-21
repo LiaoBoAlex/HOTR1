@@ -61,11 +61,13 @@ public class MasseurActivity extends BaseLoadingActivity {
     private boolean isCollected = false;
     private Spa spa;
     private Massage selectedMassage;
+    private long selectedMassageId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMasseurId = getIntent().getExtras().getLong(Constants.PARAM_ID);
+        selectedMassageId = getIntent().getExtras().getLong(Constants.PARAM_MASSAGE_ID, -1);
         initStaticView();
         setMyTitle(R.string.masseur_detail);
 
@@ -134,8 +136,18 @@ public class MasseurActivity extends BaseLoadingActivity {
                 }
                 isCollected = result.getIs_collected()==1?true:false;
                 spa = result.getMassage();
-                if(result.getProductList()!=null && result.getProductList().size()>0)
+                if(result.getProductList()!=null && result.getProductList().size()>0) {
+                    if(selectedMassageId < 0)
                     selectedMassage = result.getProductList().get(0);
+                    else{
+                        for(Massage massage:result.getProductList()){
+                            if(massage.getKey() == selectedMassageId) {
+                                selectedMassage = massage;
+                                break;
+                            }
+                        }
+                    }
+                }
                 if(isCollected)
                     ivFav.setImageResource(R.mipmap.ic_fav_text_ed);
                 else
@@ -275,8 +287,11 @@ public class MasseurActivity extends BaseLoadingActivity {
             itemList.add(new Item(TYPE_HEADER));
             if(masseurDetail.getProductList()!=null && masseurDetail.getProductList().size()>0){
                 itemList.add(new Item(TYPE_MASSAGE_HEADER));
-                for(int i=0;i<masseurDetail.getProductList().size();i++)
+                for(int i=0;i<masseurDetail.getProductList().size();i++) {
                     itemList.add(new Item(TYPE_MASSAGE, masseurDetail.getProductList().get(i)));
+                    if(masseurDetail.getProductList().get(i).getKey() == selectedMassageId)
+                        selectedPosition = 2 + i;
+                }
             }
             if(masseurDetail.getMassage()!=null)
                 itemList.add(new Item(TYPE_SPA, masseurDetail.getMassage()));
@@ -397,7 +412,7 @@ public class MasseurActivity extends BaseLoadingActivity {
                 case TYPE_MASSAGE:
                     final MassageHolder massageHolder = (MassageHolder) holder;
                     final Massage massage = (Massage)itemList.get(position).getContent();
-                    massageHolder.massageView.setData(massage);
+                    massageHolder.massageView.setData(massage, mMasseurId);
                     if(position == selectedPosition) {
                         massageHolder.massageView.setGoButtonResource(R.mipmap.ic_massage_clicked);
                         selectedMassage = massage;

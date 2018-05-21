@@ -406,7 +406,8 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     }
 
     private void buttonRollOut(){
-        ValueAnimator animator = ValueAnimator.ofFloat(0, 200);
+        final float dis = Tools.dpToPx(getApplicationContext(), 66);
+        ValueAnimator animator = ValueAnimator.ofFloat(0, dis);
         animator.setDuration(200).start();
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
@@ -421,19 +422,20 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 }
                 ivPost.setTranslationY((Float) animation.getAnimatedValue()*-1.2F);
                 ivPost.setTranslationX((Float) animation.getAnimatedValue()*-0.9F);
-                ivPost.setScaleX((Float) animation.getAnimatedValue()/200*1.5F);
-                ivPost.setScaleY((Float) animation.getAnimatedValue()/200*1.5F);
+                ivPost.setScaleX((Float) animation.getAnimatedValue()/dis*1.5F);
+                ivPost.setScaleY((Float) animation.getAnimatedValue()/dis*1.5F);
                 ivCompare.setTranslationY((Float) animation.getAnimatedValue()*-1.2F);
                 ivCompare.setTranslationX((Float) animation.getAnimatedValue()*0.9F);
-                ivCompare.setScaleX((Float) animation.getAnimatedValue()/200*1.5F);
-                ivCompare.setScaleY((Float) animation.getAnimatedValue()/200*1.5F);
-                ivAll1.setRotation((Float) animation.getAnimatedValue()/200*45);
+                ivCompare.setScaleX((Float) animation.getAnimatedValue()/dis*1.5F);
+                ivCompare.setScaleY((Float) animation.getAnimatedValue()/dis*1.5F);
+                ivAll1.setRotation((Float) animation.getAnimatedValue()/dis*45);
             }
         });
     }
 
     private void buttonRollIn(){
-        ValueAnimator animator = ValueAnimator.ofFloat(200, 0);
+        final float dis = Tools.dpToPx(getApplicationContext(), 66);
+        ValueAnimator animator = ValueAnimator.ofFloat(dis, 0);
         animator.setDuration(200).start();
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
@@ -448,13 +450,13 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 }
                 ivPost.setTranslationY((Float) animation.getAnimatedValue()*-1.2F);
                 ivPost.setTranslationX((Float) animation.getAnimatedValue()*-0.9F);
-                ivPost.setScaleX((Float) animation.getAnimatedValue()/200*1.5F);
-                ivPost.setScaleY((Float) animation.getAnimatedValue()/200*1.5F);
+                ivPost.setScaleX((Float) animation.getAnimatedValue()/dis*1.5F);
+                ivPost.setScaleY((Float) animation.getAnimatedValue()/dis*1.5F);
                 ivCompare.setTranslationY((Float) animation.getAnimatedValue()*-1.2F);
                 ivCompare.setTranslationX((Float) animation.getAnimatedValue()*0.9F);
-                ivCompare.setScaleX((Float) animation.getAnimatedValue()/200*1.5F);
-                ivCompare.setScaleY((Float) animation.getAnimatedValue()/200*1.5F);
-                ivAll1.setRotation((Float) animation.getAnimatedValue()/200*45);
+                ivCompare.setScaleX((Float) animation.getAnimatedValue()/dis*1.5F);
+                ivCompare.setScaleY((Float) animation.getAnimatedValue()/dis*1.5F);
+                ivAll1.setRotation((Float) animation.getAnimatedValue()/dis*45);
             }
         });
 

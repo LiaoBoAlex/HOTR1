@@ -477,7 +477,7 @@ public class SpaActivity extends BaseLoadingActivity {
                 case TYPE_MASSAGE:
                     final Massage massage = (Massage) itemList.get(position).getContent();
                     final MassageHolder massageHolder = (MassageHolder) holder;
-                    massageHolder.massageView.setData(massage);
+                    massageHolder.massageView.setData(massage, -1);
                     break;
 
 

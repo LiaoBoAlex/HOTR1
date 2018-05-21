@@ -103,7 +103,7 @@ public class Case implements Serializable {
         this.head_portrait = head_portrait;
     }
 
-    public int getIs_attention() {
+    public Integer getIs_attention() {
         return is_attention;
     }
 

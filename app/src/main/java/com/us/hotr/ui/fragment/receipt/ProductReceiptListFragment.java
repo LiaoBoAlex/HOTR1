@@ -20,6 +20,8 @@ import android.widget.TextView;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.ProductReceipt;
 import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
@@ -33,6 +35,8 @@ import com.us.hotr.webservice.rxjava.LoadingSubscriber;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -145,6 +149,12 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
             enableLoadMore(true);
     }
 
+    @Subscribe
+    public void getMessage(Events.Refresh refresh) {
+        if(type == Constants.RECEIPT_STATUS_REFUNDING)
+            loadData(Constants.LOAD_PULL_REFRESH);
+    }
+
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private List<ProductReceipt> productReceiptList;
@@ -197,7 +207,7 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
             holder.tvName.setText(productReceipt.getDoctor_name());
             holder.ivType.setImageResource(R.mipmap.ic_receipt_beauty_gray);
             if(type == Constants.RECEIPT_STATUS_UNUSED) {
-                holder.tvNumber.setText(String.format(getString(R.string.available_receipt), productReceipt.getNumb()));
+                holder.tvNumber.setText(getString(R.string.unused_title));
                 holder.tvNumber.setTextColor(getResources().getColor(R.color.text_black));
                 holder.tvMerchant.setTextColor(getResources().getColor(R.color.text_black));
                 holder.tvDate.setTextColor(getResources().getColor(R.color.red));
@@ -216,7 +226,7 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
                 });
             }
             if(type == Constants.RECEIPT_STATUS_USED){
-                holder.tvNumber.setText(getString(R.string.used_receipt));
+                holder.tvNumber.setText(getString(R.string.used_title));
                 holder.tvDate.setText(getString(R.string.receipt_used_time)+productReceipt.getVerification_time());
                 holder.tvOption.setVisibility(View.VISIBLE);
                 holder.tvOption.setText(R.string.delete);
@@ -238,6 +248,10 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
                                                 productReceiptList.remove(position);
                                                 notifyItemRemoved(position);
                                                 notifyItemRangeChanged(0, productReceiptList.size());
+                                                if(productReceiptList.size() == 0){
+                                                    mRecyclerView.setVisibility(View.GONE);
+                                                    clEmpty.setVisibility(View.VISIBLE);
+                                                }
                                             }
                                         };
                                         ServiceClient.getInstance().deleteProductReceipt(new ProgressSubscriber(mListener, getActivity()),
@@ -255,7 +269,7 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
                 });
             }
             if(type == Constants.RECEIPT_STATUS_EXPIRED){
-                holder.tvNumber.setText(String.format(getString(R.string.expired_receipt), productReceipt.getNumb()));
+                holder.tvNumber.setText(getString(R.string.expired_title));
                 holder.tvDate.setText(Tools.getReceiptTime(getContext(), productReceipt.getRepeal_time()));
                 holder.tvOption.setVisibility(View.VISIBLE);
                 holder.tvOption.setText(R.string.apply_refund);
@@ -272,9 +286,14 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
                                             @Override
                                             public void onNext(String result) {
                                                 Tools.Toast(getContext(), getString(R.string.refund_applied));
+                                                GlobalBus.getBus().post(new Events.Refresh());
                                                 productReceiptList.remove(position);
                                                 notifyItemRemoved(position);
                                                 notifyItemRangeChanged(0, productReceiptList.size());
+                                                if (productReceiptList.size() == 0) {
+                                                    mRecyclerView.setVisibility(View.GONE);
+                                                    clEmpty.setVisibility(View.VISIBLE);
+                                                }
                                             }
                                         };
                                         ServiceClient.getInstance().refundProductReceipt(new ProgressSubscriber(mListener, getActivity()),
@@ -292,7 +311,7 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
                 });
             }
             if(type == Constants.RECEIPT_STATUS_REFUNDING){
-                holder.tvNumber.setText(String.format(getString(R.string.expired_receipt), productReceipt.getNumb()));
+                holder.tvNumber.setText(getString(R.string.refunding_title));
                 String money = getString(R.string.money) + new DecimalFormat("0.00").format(productReceipt.getReal_payment());
                 String date = Tools.getReceiptRefundTime(getContext(), productReceipt.getAction_refund_time());
                 SpannableString msp = new SpannableString(date+money);
@@ -300,7 +319,7 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
                 holder.tvDate.setText(msp);
             }
             if(type == Constants.RECEIPT_STATUS_REFUNDED){
-                holder.tvNumber.setText(String.format(getString(R.string.expired_receipt), productReceipt.getNumb()));
+                holder.tvNumber.setText(getString(R.string.refunded_title));
                 String money = getString(R.string.money) + new DecimalFormat("0.00").format(productReceipt.getReal_payment());
                 String date = Tools.getReceiptRefundedTime(getContext(), productReceipt.getRefund_time());
                 SpannableString msp = new SpannableString(date+money);

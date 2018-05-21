@@ -29,12 +29,12 @@ public class Constants {
     public static final String AUTONAVI_MAP_PACKAGE_NAME = "com.autonavi.minimap";
     public static final String TENCENT_MAP_PACKAGE_NAME = "com.tencent.map";
 
-    public static final int TYPE_PRODUCT = 101;
-    public static final int TYPE_HOSPITAL = 102;
-    public static final int TYPE_DOCTOR = 103;
-    public static final int TYPE_MASSAGE = 104;
-    public static final int TYPE_SPA = 105;
-    public static final int TYPE_MASSEUR = 106;
+    public static final int TYPE_PRODUCT = 103;
+    public static final int TYPE_HOSPITAL = 101;
+    public static final int TYPE_DOCTOR = 102;
+    public static final int TYPE_MASSAGE = 106;
+    public static final int TYPE_SPA = 104;
+    public static final int TYPE_MASSEUR = 105;
     public static final int TYPE_CASE = 107;
     public static final int TYPE_SEARCH_POST = 108;
     public static final int TYPE_GROUP = 109;
@@ -91,7 +91,7 @@ public class Constants {
     public static final int RECEIPT_STATUS_UNUSED = 0;
     public static final int RECEIPT_STATUS_USED = 1;
     public static final int RECEIPT_STATUS_EXPIRED = 5;
-    public static final int RECEIPT_STATUS_REFUNDING = 2;
+    public static final int RECEIPT_STATUS_REFUNDING = 6;
     public static final int RECEIPT_STATUS_REFUNDED = 4;
 
     public static final int MAX_PAGE_ITEM = 10;
