@@ -29,4 +29,13 @@
         </attr>
         <attr name="round_radius" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="DragScrollDetailsLayout">
+        <attr name="percent" format="float"/>
+        <attr name="duration" format="integer"/>
+        <attr name="default_panel" format="enum">
+            <enum name="front" value="0"/>
+            <enum name="behind" value="1"/>
+        </attr>
+    </declare-styleable>
 </resources>

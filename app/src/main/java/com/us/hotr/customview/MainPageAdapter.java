@@ -309,17 +309,19 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 List<String> urls = new ArrayList<>();
                 for(Module.ModuleContent m:bannerModule.getBannerList())
                     urls.add(m.getBannerImg());
-
-                BannerHolder bannerHolder = (BannerHolder) holder;
-                bannerHolder.mBanner.setRatio(0.419);
-                bannerHolder.mBanner.setSource(urls);
-                bannerHolder.mBanner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
-                    @Override
-                    public void onBannerItemClicked(int p) {
-                        handleClickEvent(bannerModule.getBannerList().get(p), null);
-                    }
-                });
-                bannerHolder.mBanner.startScroll();
+                if(urls!=null && urls.size()>0) {
+                    BannerHolder bannerHolder = (BannerHolder) holder;
+                    bannerHolder.mBanner.setRatio(0.419);
+                    bannerHolder.mBanner.setSource(urls);
+                    bannerHolder.mBanner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
+                        @Override
+                        public void onBannerItemClicked(int p) {
+                            handleClickEvent(bannerModule.getBannerList().get(p), null);
+                        }
+                    });
+                    if(urls.size()>1)
+                        bannerHolder.mBanner.startScroll();
+                }
                 break;
 
             case TYPE_BUTTON:

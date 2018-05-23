@@ -5,13 +5,9 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.SnapBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextPaint;
 import android.view.View;
@@ -23,6 +19,8 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ImageBanner;
+import com.us.hotr.customview.ObserveScrollView;
+import com.us.hotr.customview.PagerAdapter;
 import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
@@ -58,11 +56,11 @@ public class ProductActivity extends BaseLoadingActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private PagerAdapter adapter;
-    private AppBarLayout appBarLayout;
+    private ObserveScrollView scrollView;
     private ImageView ivQuestion, ivBackHome, ivOnePrice, ivPromoPrice, ivHospitalAvatar, ivHospitalCetificate, ivFav;
     private ImageBanner mBanner;
     private TextView tvPurchase, tvTitle, tvPriceAfter, tvPriceBefore, tvAppointment, tvApplyTime,
-                        tvHospitalName, tvHospitalType, tvHospitalAddress, tvHospitalEnqurey, tvDoctorName, tvDoctorSpecial, tvPaymentType, tvPaymentAmount, tvPayOther;
+            tvHospitalName, tvHospitalType, tvHospitalAddress, tvHospitalEnqurey, tvDoctorName, tvDoctorSpecial, tvPaymentType, tvPaymentAmount, tvPayOther;
     private ConstraintLayout clPromise, clHospital, clDoctor;
     private List<LinearLayout> llPromiseList = new ArrayList<>();
     private List<TextView> tvPromiseList = new ArrayList<>();
@@ -90,7 +88,7 @@ public class ProductActivity extends BaseLoadingActivity {
     private void initStaticView(){
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        appBarLayout = (AppBarLayout)findViewById(R.id.appbar);
+        scrollView = (ObserveScrollView) findViewById(R.id.scrollView);
         ivQuestion = (ImageView) findViewById(R.id.iv_question);
         ivBackHome = (ImageView) findViewById(R.id.iv_homepage);
         tvPurchase = (TextView) findViewById(R.id.tv_purchase);
@@ -151,23 +149,20 @@ public class ProductActivity extends BaseLoadingActivity {
         mBanner.setRatio(1);
         mBanner.setPlacehoderResource(R.drawable.placeholder_post_2);
 
-        mBehavior = new SnapBehavior(this);
-        CoordinatorLayout.LayoutParams params =
-                (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
-        params.setBehavior(mBehavior);
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+        findViewById(R.id.tb_title).setAlpha(0);
+        findViewById(R.id.v_divider).setAlpha(0);
+        scrollView.setScrollListener(new ObserveScrollView.ScrollListener() {
             @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                float dis = Math.abs(verticalOffset);
-                mBehavior.setAppBarLayoutOffset((int)dis);
-                if(dis > 300){
+            public void scrollOritention(int l, int t, int oldl, int oldt) {
+                float y = (float) t;
+                if(y > 300){
                     ivBack.setImageResource(R.mipmap.ic_back);
                     ivShare.setImageResource(R.mipmap.ic_share);
                     findViewById(R.id.tb_title).setAlpha(1);
                     findViewById(R.id.v_divider).setAlpha(1);
                 }else{
-                    findViewById(R.id.tb_title).setAlpha(dis / 300);
-                    findViewById(R.id.v_divider).setAlpha(dis / 300);
+                    findViewById(R.id.tb_title).setAlpha(y / 300);
+                    findViewById(R.id.v_divider).setAlpha(y / 300);
                     ivBack.setImageResource(R.mipmap.ic_back_dark);
                     ivShare.setImageResource(R.mipmap.ic_share_dark);
                 }
@@ -186,8 +181,11 @@ public class ProductActivity extends BaseLoadingActivity {
                 final GetProductDetailResponse.Product product =result.getProduct();
                 mProduct = result;
                 final List<String> urls = Tools.mapToList(Tools.gsonStringToMap(product.getProductImg()));
-                mBanner.setSource(urls);
-                mBanner.startScroll();
+                if(urls!=null && urls.size()>0) {
+                    mBanner.setSource(urls);
+                    if(urls.size()>1)
+                        mBanner.startScroll();
+                }
 //                mBanner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
 //                    @Override
 //                    public void onBannerItemClicked(int position) {
@@ -388,7 +386,7 @@ public class ProductActivity extends BaseLoadingActivity {
             LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
                 @Override
                 public void onLoginSuccess() {
-                purchaseCheckCount();
+                    purchaseCheckCount();
                 }
             });
             startActivityForResult(new Intent(ProductActivity.this, LoginActivity.class), 0);
@@ -425,33 +423,6 @@ public class ProductActivity extends BaseLoadingActivity {
             b.putSerializable(Constants.PARAM_DATA, mProduct);
             i.putExtras(b);
             startActivity(i);
-        }
-    }
-
-    public class PagerAdapter extends FragmentStatePagerAdapter {
-
-        private ArrayList<String> titleList;
-        private ArrayList<Fragment> fragmentList;
-
-        public PagerAdapter(FragmentManager fm, ArrayList<String> titleList, ArrayList<Fragment> fragmentList) {
-            super(fm);
-            this.titleList = titleList;
-            this.fragmentList = fragmentList;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return fragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return fragmentList.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return titleList.get(position);
         }
     }
 }

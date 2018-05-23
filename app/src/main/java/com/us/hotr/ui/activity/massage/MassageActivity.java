@@ -4,13 +4,9 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.SnapBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,6 +21,8 @@ import android.widget.TextView;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ImageBanner;
+import com.us.hotr.customview.ObserveScrollView;
+import com.us.hotr.customview.PagerAdapter;
 import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Masseur;
@@ -55,12 +53,12 @@ import java.util.List;
  * Created by Mloong on 2017/9/30.
  */
 
-public class MassageActivity extends BaseLoadingActivity {
+public class MassageActivity extends BaseLoadingActivity{
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private PagerAdapter adapter;
-    private AppBarLayout appBarLayout;
+    private ObserveScrollView scrollView;
     private ImageView ivBack, ivShare, ivBackHome, ivPromo, ivFav;
     private ImageBanner mBanner;
     private TextView tvPurchase, tvTitle, tvPriceAfter, tvPriceBefore, tvAppointment, tvAddress, tvMasseurTitle, tvApplyTime, tvShowAll;
@@ -92,10 +90,10 @@ public class MassageActivity extends BaseLoadingActivity {
     private void initStaticView(){
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        appBarLayout = (AppBarLayout)findViewById(R.id.appbar);
         ivBack = (ImageView) findViewById(R.id.img_back);
         ivShare = (ImageView) findViewById(R.id.iv_share);
         ivFav = (ImageView) findViewById(R.id.iv_fav);
+        scrollView = (ObserveScrollView) findViewById(R.id.scrollView);
         ivBackHome = (ImageView) findViewById(R.id.iv_homepage);
         tvPurchase = (TextView) findViewById(R.id.tv_purchase);
         rvMasseur = (RecyclerView) findViewById(R.id.recyclerview);
@@ -123,22 +121,21 @@ public class MassageActivity extends BaseLoadingActivity {
         mBanner.setRatio(1);
         mBanner.setPlacehoderResource(R.drawable.placeholder_post_2);
         mBehavior = new SnapBehavior(this);
-        CoordinatorLayout.LayoutParams params =
-                (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
-        params.setBehavior(mBehavior);
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+
+        findViewById(R.id.tb_title).setAlpha(0);
+        findViewById(R.id.v_divider).setAlpha(0);
+        scrollView.setScrollListener(new ObserveScrollView.ScrollListener() {
             @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                float dis = Math.abs(verticalOffset);
-                mBehavior.setAppBarLayoutOffset((int)dis);
-                if(dis > 300){
+            public void scrollOritention(int l, int t, int oldl, int oldt) {
+                float y = (float) t;
+                if(y > 300){
                     ivBack.setImageResource(R.mipmap.ic_back);
                     ivShare.setImageResource(R.mipmap.ic_share);
                     findViewById(R.id.tb_title).setAlpha(1);
                     findViewById(R.id.v_divider).setAlpha(1);
                 }else{
-                    findViewById(R.id.tb_title).setAlpha(dis / 300);
-                    findViewById(R.id.v_divider).setAlpha(dis / 300);
+                    findViewById(R.id.tb_title).setAlpha(y / 300);
+                    findViewById(R.id.v_divider).setAlpha(y / 300);
                     ivBack.setImageResource(R.mipmap.ic_back_dark);
                     ivShare.setImageResource(R.mipmap.ic_share_dark);
                 }
@@ -147,8 +144,9 @@ public class MassageActivity extends BaseLoadingActivity {
 
         rvMasseur.setLayoutManager(new LinearLayoutManager(this));
         rvMasseur.setItemAnimator(new DefaultItemAnimator());
-
-        enableLoadMore(false);
+        rvMasseur.setNestedScrollingEnabled(false);
+//
+//        enableLoadMore(false);
         viewPager.setOffscreenPageLimit(2);
         tabLayout.setupWithViewPager(viewPager, true);
 
@@ -179,8 +177,11 @@ public class MassageActivity extends BaseLoadingActivity {
 //                        startActivity(i);
 //                    }
 //                });
-                mBanner.setSource(photoes);
-                mBanner.startScroll();
+                if(photoes!=null && photoes.size()>0) {
+                    mBanner.setSource(photoes);
+                    if(photoes.size()>1)
+                        mBanner.startScroll();
+                }
 //                tvTitle.setText(getString(R.string.bracket_left)+result.getProduct().getProductName()+getString(R.string.bracket_right)+result.getProduct().getProductUsp());
                 tvTitle.setText(result.getProduct().getProductUsp());
                 tvApplyTime.setText(getString(R.string.use_time) + result.getProduct().getUsableTime());
@@ -366,33 +367,6 @@ public class MassageActivity extends BaseLoadingActivity {
             b.putSerializable(Constants.PARAM_SPA_ID, mMassage.getMassage());
             i.putExtras(b);
             startActivity(i);
-        }
-    }
-
-    public class PagerAdapter extends FragmentStatePagerAdapter {
-
-        private ArrayList<String> titleList;
-        private ArrayList<Fragment> fragmentList;
-
-        public PagerAdapter(FragmentManager fm, ArrayList<String> titleList, ArrayList<Fragment> fragmentList) {
-            super(fm);
-            this.titleList = titleList;
-            this.fragmentList = fragmentList;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return fragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return fragmentList.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return titleList.get(position);
         }
     }
 

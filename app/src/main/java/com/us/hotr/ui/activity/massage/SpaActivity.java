@@ -165,7 +165,7 @@ public class SpaActivity extends BaseLoadingActivity {
                 for(int i=0;i<spaDetail.getMassageList().size();i++)
                     itemList.add(new Item(TYPE_MASSAGE, spaDetail.getMassageList().get(i)));
                 if(spaDetail.getTotalMassageCount()>3)
-                itemList.add(new Item(TYPE_MASSAGE_FOOTER));
+                    itemList.add(new Item(TYPE_MASSAGE_FOOTER));
             }
 //            if(hospitalDetail.getCaseList()!=null && hospitalDetail.getCaseList().size()>0){
 //                itemList.add(new Item(TYPE_CASE_HEADER));
@@ -382,7 +382,11 @@ public class SpaActivity extends BaseLoadingActivity {
 
                     spaHeaderHolder.banner.setRatio(1);
                     spaHeaderHolder.banner.setPlacehoderResource(R.drawable.placeholder_post_2);
-                    spaHeaderHolder.banner.setSource(bannerUrls);
+                    if(bannerUrls!=null && bannerUrls.size()>0) {
+                        spaHeaderHolder.banner.setSource(bannerUrls);
+                        if (bannerUrls.size()>1)
+                            spaHeaderHolder.banner.startScroll();
+                    }
 //                    spaHeaderHolder.banner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
 //                        @Override
 //                        public void onBannerItemClicked(int position) {
@@ -408,7 +412,6 @@ public class SpaActivity extends BaseLoadingActivity {
                         }
                     });
                     spaHeaderHolder.tvAppointment.setText(String.format(getString(R.string.spa_appointment1), spaDetail.getMassage().getOrder_num()));
-                    spaHeaderHolder.banner.startScroll();
                     spaHeaderHolder.tvAddress.setText(spaDetail.getMassage().getProvinceName() +
                             spaDetail.getMassage().getCityName() +
                             spaDetail.getMassage().getAreaName() +

@@ -138,7 +138,7 @@ public class MasseurActivity extends BaseLoadingActivity {
                 spa = result.getMassage();
                 if(result.getProductList()!=null && result.getProductList().size()>0) {
                     if(selectedMassageId < 0)
-                    selectedMassage = result.getProductList().get(0);
+                        selectedMassage = result.getProductList().get(0);
                     else{
                         for(Massage massage:result.getProductList()){
                             if(massage.getKey() == selectedMassageId) {
@@ -489,7 +489,8 @@ public class MasseurActivity extends BaseLoadingActivity {
 
                     masseurHeaderHolder.banner.setRatio(1);
                     masseurHeaderHolder.banner.setPlacehoderResource(R.drawable.placeholder_post_2);
-                    masseurHeaderHolder.banner.setSource(bannerUrls);
+                    if(bannerUrls!=null && bannerUrls.size()>0) {
+                        masseurHeaderHolder.banner.setSource(bannerUrls);
 //                    masseurHeaderHolder.banner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
 //                        @Override
 //                        public void onBannerItemClicked(int position) {
@@ -502,7 +503,9 @@ public class MasseurActivity extends BaseLoadingActivity {
 //                            startActivity(i);
 //                        }
 //                    });
-                    masseurHeaderHolder.banner.startScroll();
+                        if(bannerUrls.size()>1)
+                            masseurHeaderHolder.banner.startScroll();
+                    }
                     if(isCollected)
                         masseurHeaderHolder.ivAdd.setImageResource(R.mipmap.ic_click);
                     else
