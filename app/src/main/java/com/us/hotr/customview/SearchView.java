@@ -80,6 +80,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener  {
                 if(charSequence.length()>0)
                     imgDelete.setVisibility(View.VISIBLE);
                 else {
+                    mListener.onSearchEmpty();
                     imgDelete.setVisibility(View.GONE);
                     InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.showSoftInput(etInput, 0);
@@ -112,8 +113,10 @@ public class SearchView extends LinearLayout implements View.OnClickListener  {
     }
 
     public void setEtInput(String text){
-        if(etInput!=null)
+        if(etInput!=null) {
             etInput.setText(text);
+            etInput.setSelection(text.length());
+        }
         if (mListener != null) {
             mListener.onSearch(etInput.getText().toString().trim());
         }
@@ -135,5 +138,6 @@ public class SearchView extends LinearLayout implements View.OnClickListener  {
         void onRefreshAutoComplete(String text);
         void onSearch(String text);
         void onCancel();
+        void onSearchEmpty();
     }
 }

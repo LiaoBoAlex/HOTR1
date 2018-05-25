@@ -503,8 +503,9 @@ public class MasseurActivity extends BaseLoadingActivity {
 //                            startActivity(i);
 //                        }
 //                    });
-                        if(bannerUrls.size()>1)
-                            masseurHeaderHolder.banner.startScroll();
+                        masseurHeaderHolder.banner.startScroll();
+                        if(bannerUrls.size()==1)
+                            masseurHeaderHolder.banner.pauseScroll();
                     }
                     if(isCollected)
                         masseurHeaderHolder.ivAdd.setImageResource(R.mipmap.ic_click);

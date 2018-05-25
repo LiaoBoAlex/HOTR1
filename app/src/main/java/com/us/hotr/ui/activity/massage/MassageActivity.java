@@ -179,8 +179,9 @@ public class MassageActivity extends BaseLoadingActivity{
 //                });
                 if(photoes!=null && photoes.size()>0) {
                     mBanner.setSource(photoes);
-                    if(photoes.size()>1)
-                        mBanner.startScroll();
+                    mBanner.startScroll();
+                    if(photoes.size()==1)
+                        mBanner.pauseScroll();
                 }
 //                tvTitle.setText(getString(R.string.bracket_left)+result.getProduct().getProductName()+getString(R.string.bracket_right)+result.getProduct().getProductUsp());
                 tvTitle.setText(result.getProduct().getProductUsp());
@@ -228,19 +229,22 @@ public class MassageActivity extends BaseLoadingActivity{
                         selectedMasseurId = result.getProposeMassagist().get(0).getId();
                     final MyAdapter mAdapter = new MyAdapter(result.getProposeMassagist());
                     rvMasseur.setAdapter(mAdapter);
-                    tvShowAll.setVisibility(View.VISIBLE);
-                    tvShowAll.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            isShowAll = !isShowAll;
-                            if(!isShowAll)
-                                tvShowAll.setText(R.string.see_all);
-                            else
-                                tvShowAll.setText(R.string.see_part);
-                            if(mAdapter!=null)
-                                mAdapter.notifyDataSetChanged();
-                        }
-                    });
+                    if(result.getProposeMassagist().size()>3) {
+                        tvShowAll.setVisibility(View.VISIBLE);
+                        tvShowAll.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                isShowAll = !isShowAll;
+                                if (!isShowAll)
+                                    tvShowAll.setText(R.string.see_all);
+                                else
+                                    tvShowAll.setText(R.string.see_part);
+                                if (mAdapter != null)
+                                    mAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }else
+                        tvShowAll.setVisibility(View.GONE);
                 }else {
                     tvMasseurTitle.setVisibility(View.GONE);
                     tvShowAll.setVisibility(View.GONE);

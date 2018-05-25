@@ -112,6 +112,11 @@ public class SearchHintActivity extends AppCompatActivity implements SearchView.
         finish();
     }
 
+    @Override
+    public void onSearchEmpty() {
+        viewPager.setCurrentItem(0, false);
+    }
+
     public class PagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<Fragment> fragmentList;

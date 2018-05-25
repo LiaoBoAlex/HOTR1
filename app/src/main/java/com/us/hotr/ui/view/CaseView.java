@@ -77,29 +77,34 @@ public class CaseView extends FrameLayout {
         tvName.setText(aCase.getNick_name());
         if(aCase.getCreateTime()!=null)
             tvTime.setText(Tools.getPostTime(getContext(), aCase.getCreateTime()));
-        if(aCase.getIs_attention()!=null && aCase.getIs_attention() == 1){
-            isFollow = true;
-            tvFollow.setVisibility(VISIBLE);
-            tvFollow.setText(R.string.fav_ed);
-            tvFollow.setTextColor(getContext().getResources().getColor(R.color.text_grey2));
-        }else{
-            isFollow = false;
-            if(HOTRSharePreference.getInstance(getContext()).getUserInfo()!= null
-                    && aCase.getUserId() == HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId())
-                tvFollow.setVisibility(GONE);
-            else {
+        if(HOTRSharePreference.getInstance(getContext()).getUserInfo()!= null
+                && aCase.getUserId() == HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId())
+            tvFollow.setVisibility(GONE);
+        else {
+            if (aCase.getIs_attention() != null && aCase.getIs_attention() == 1) {
+                isFollow = true;
                 tvFollow.setVisibility(VISIBLE);
-                tvFollow.setText(R.string.guanzhu);
-                tvFollow.setTextColor(getContext().getResources().getColor(R.color.text_black));
+                tvFollow.setText(R.string.fav_ed);
+                tvFollow.setTextColor(getContext().getResources().getColor(R.color.text_grey2));
+            } else {
+                isFollow = false;
+                if (HOTRSharePreference.getInstance(getContext()).getUserInfo() != null
+                        && aCase.getUserId() == HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId())
+                    tvFollow.setVisibility(GONE);
+                else {
+                    tvFollow.setVisibility(VISIBLE);
+                    tvFollow.setText(R.string.guanzhu);
+                    tvFollow.setTextColor(getContext().getResources().getColor(R.color.text_black));
 
+                }
             }
+            tvFollow.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    followUser();
+                }
+            });
         }
-        tvFollow.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                followUser();
-            }
-        });
         tvContent.setText(aCase.getContrastPhotoContent());
         tvSubject.setText(aCase.getProjectName());
         tvRead.setText(aCase.getReadCnt()+"");

@@ -19,12 +19,14 @@ import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
+import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Post;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.WebViewActivity;
 import com.us.hotr.ui.activity.info.LoginActivity;
+import com.us.hotr.ui.dialog.ShareDialogFragment;
 import com.us.hotr.ui.view.PostView;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
@@ -175,6 +177,19 @@ public class PartyActivity extends BaseLoadingActivity{
                 MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
                 myBaseAdapter.setFooterView();
                 recyclerView.setAdapter(myBaseAdapter);
+
+                ivShare.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Share share = new Share();
+                        share.setDescription(getString(R.string.share_party));
+                        share.setImageUrl(result.getTravel().getPartyDetailImg());
+                        share.setTitle(result.getTravel().getTravel_name());
+                        share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/party?id="+result.getTravel().getId());
+                        share.setSinaContent(getString(R.string.share_party));
+                        ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
+                    }
+                });
             }
         };
         if(type == Constants.LOAD_PAGE)
@@ -241,7 +256,6 @@ public class PartyActivity extends BaseLoadingActivity{
         ivFav = (ImageView) findViewById(R.id.iv_fav);
         ivBackHome = (ImageView) findViewById(R.id.iv_homepage);
         tvPurchase = (TextView) findViewById(R.id.tv_purchase);
-        ivShare.setVisibility(View.GONE);
         mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);

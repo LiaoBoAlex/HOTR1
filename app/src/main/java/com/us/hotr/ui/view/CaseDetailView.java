@@ -109,24 +109,29 @@ public class CaseDetailView extends FrameLayout {
         if (response.getUser().getGender() != null && response.getUser().getAge() != null)
             tvInfo.setText(getResources().getStringArray(R.array.gender)[response.getUser().getGender()] + " | " + String.format(getContext().getString(R.string.age_number), response.getUser().getAge()) + " | " + response.getUser().getProvince_name());
         isFav = response.getIs_attention()==1?true:false;
-        if (isFav) {
-            tvFollow.setText(R.string.fav_ed);
-            tvFollow.setTextColor(getContext().getResources().getColor(R.color.text_grey2));
-        } else {
-            if (HOTRSharePreference.getInstance(getContext()).getUserInfo() != null
-                    && response.getUser().getUserId() == HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId())
-                tvFollow.setVisibility(GONE);
-            else {
-                tvFollow.setText(R.string.guanzhu);
-                tvFollow.setTextColor(getContext().getResources().getColor(R.color.text_black));
+        if(HOTRSharePreference.getInstance(getContext()).getUserInfo()!= null
+                && response.getUser().getUserId() == HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId())
+            tvFollow.setVisibility(GONE);
+        else {
+            if (isFav) {
+                tvFollow.setText(R.string.fav_ed);
+                tvFollow.setTextColor(getContext().getResources().getColor(R.color.text_grey2));
+            } else {
+                if (HOTRSharePreference.getInstance(getContext()).getUserInfo() != null
+                        && response.getUser().getUserId() == HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId())
+                    tvFollow.setVisibility(GONE);
+                else {
+                    tvFollow.setText(R.string.guanzhu);
+                    tvFollow.setTextColor(getContext().getResources().getColor(R.color.text_black));
+                }
             }
+            tvFollow.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    followUser();
+                }
+            });
         }
-        tvFollow.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                followUser();
-            }
-        });
         clUser.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

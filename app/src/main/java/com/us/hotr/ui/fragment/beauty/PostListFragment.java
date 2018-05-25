@@ -45,7 +45,7 @@ public class PostListFragment extends BaseLoadingFragment{
 
     private int totalSize = 0;
     private int currentPage = 1;
-    private boolean isLoaded = false;
+//    private boolean isLoaded = false;
     private long userId = -1;
     private int type;
 
@@ -98,18 +98,18 @@ public class PostListFragment extends BaseLoadingFragment{
 
         enablePullDownRefresh(enableRefresh);
 
-        if(getUserVisibleHint() && !isLoaded){
+//        if(getUserVisibleHint() && !isLoaded){
             loadData(Constants.LOAD_PAGE);
-        }
+//        }
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && isResumed() && !isLoaded) {
-            loadData(Constants.LOAD_PAGE);
-        }
-    }
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if (isVisibleToUser && isResumed() && !isLoaded) {
+//            loadData(Constants.LOAD_PAGE);
+//        }
+//    }
 
     @Override
     protected void loadData(final int loadType) {
@@ -186,7 +186,7 @@ public class PostListFragment extends BaseLoadingFragment{
     }
 
     private void updateList(int loadType, BaseListResponse<List<Post>> result){
-        isLoaded = true;
+//        isLoaded = true;
         totalSize = result.getTotal();
         Events.GetSearchCount event = new Events.GetSearchCount(totalSize);
         GlobalBus.getBus().post(event);

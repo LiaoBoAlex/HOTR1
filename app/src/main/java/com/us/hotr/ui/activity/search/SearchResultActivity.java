@@ -229,6 +229,11 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
         finish();
     }
 
+    @Override
+    public void onSearchEmpty() {
+
+    }
+
     public class PagerAdapter extends FragmentStatePagerAdapter {
 
         public PagerAdapter(FragmentManager fm) {

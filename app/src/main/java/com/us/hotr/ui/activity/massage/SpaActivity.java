@@ -384,8 +384,9 @@ public class SpaActivity extends BaseLoadingActivity {
                     spaHeaderHolder.banner.setPlacehoderResource(R.drawable.placeholder_post_2);
                     if(bannerUrls!=null && bannerUrls.size()>0) {
                         spaHeaderHolder.banner.setSource(bannerUrls);
-                        if (bannerUrls.size()>1)
-                            spaHeaderHolder.banner.startScroll();
+                        spaHeaderHolder.banner.startScroll();
+                        if (bannerUrls.size()==1)
+                            spaHeaderHolder.banner.pauseScroll();
                     }
 //                    spaHeaderHolder.banner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
 //                        @Override

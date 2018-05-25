@@ -45,7 +45,7 @@ public class CaseListFragment extends BaseLoadingFragment {
     private boolean enableRefresh;
     private int totalSize = 0;
     private int currentPage = 1;
-    private boolean isLoaded = false;
+//    private boolean isLoaded = false;
     private long userId = -1;
     private boolean isFav = false;
     private int catagory = 0;
@@ -98,18 +98,18 @@ public class CaseListFragment extends BaseLoadingFragment {
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         enablePullDownRefresh(enableRefresh);
 
-        if(getUserVisibleHint() && !isLoaded){
+//        if(getUserVisibleHint() && !isLoaded){
             loadData(Constants.LOAD_PAGE);
-        }
+//        }
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && isResumed() && !isLoaded) {
-            loadData(Constants.LOAD_PAGE);
-        }
-    }
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if (isVisibleToUser && isResumed() && !isLoaded) {
+//            loadData(Constants.LOAD_PAGE);
+//        }
+//    }
 
     @Override
     protected void loadData(final int loadType) {
@@ -176,7 +176,7 @@ public class CaseListFragment extends BaseLoadingFragment {
     }
 
     private void updateList(int loadType, BaseListResponse<List<Case>> result){
-        isLoaded = true;
+//        isLoaded = true;
         totalSize = result.getTotal();
         Events.GetSearchCount event = new Events.GetSearchCount(totalSize);
         GlobalBus.getBus().post(event);

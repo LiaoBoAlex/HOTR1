@@ -153,8 +153,7 @@ public class PostView extends FrameLayout {
                 if(postOld.getStatus() == 1 && postOld.getType() == 0 && !postOld.getEditContent().isEmpty() && !found){
                     try {
                         post.setContentWord(URLDecoder.decode(postOld.getEditContent(), "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                    } catch (Throwable t) {
                     }
                     found = true;
                 }
@@ -403,7 +402,7 @@ public class PostView extends FrameLayout {
 
         @Override
         public int getItemCount() {
-            return photoes.size();
+            return Math.min(9, photoes.size());
         }
 
 

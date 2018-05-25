@@ -141,24 +141,24 @@ public class PostDetailView extends FrameLayout {
                 tvCertified.setText(R.string.official);
                 break;
         }
-        if(post.getIs_attention() == 1){
-            tvFollowUser.setText(R.string.fav_ed);
-            tvFollowUser.setTextColor(getContext().getResources().getColor(R.color.text_grey2));
-        }else{
-            if(HOTRSharePreference.getInstance(getContext()).getUserInfo()!= null
-                    && post.getUser_id() == HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId())
-                tvFollowUser.setVisibility(GONE);
-            else {
+        if(HOTRSharePreference.getInstance(getContext()).getUserInfo()!= null
+                && post.getUser_id() == HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId())
+            tvFollowUser.setVisibility(GONE);
+        else {
+            if (post.getIs_attention() == 1) {
+                tvFollowUser.setText(R.string.fav_ed);
+                tvFollowUser.setTextColor(getContext().getResources().getColor(R.color.text_grey2));
+            } else {
                 tvFollowUser.setText(R.string.guanzhu);
                 tvFollowUser.setTextColor(getContext().getResources().getColor(R.color.text_black));
             }
+            tvFollowUser.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    followUser(post.getUser_id());
+                }
+            });
         }
-        tvFollowUser.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                followUser(post.getUser_id());
-            }
-        });
         tvTitle.setText(post.getTitle());
         if(post.getIsOfficial() != 1) {
             tvContent.setVisibility(VISIBLE);
@@ -424,8 +424,7 @@ public class PostDetailView extends FrameLayout {
                     final PostOld postOld2 = postOldList.get(position);
                     try {
                         postTextHolder.tvText.setText(URLDecoder.decode(postOld2.getEditContent(), "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                    } catch (Throwable t) {
                     }
                     break;
             }
@@ -446,7 +445,7 @@ public class PostDetailView extends FrameLayout {
             if(postOldList == null)
                 return  0;
             else
-            return postOldList.size();
+                return postOldList.size();
         }
     }
 }

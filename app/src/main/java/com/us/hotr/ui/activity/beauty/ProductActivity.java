@@ -183,8 +183,9 @@ public class ProductActivity extends BaseLoadingActivity {
                 final List<String> urls = Tools.mapToList(Tools.gsonStringToMap(product.getProductImg()));
                 if(urls!=null && urls.size()>0) {
                     mBanner.setSource(urls);
-                    if(urls.size()>1)
-                        mBanner.startScroll();
+                    mBanner.startScroll();
+                    if(urls.size()==1)
+                        mBanner.pauseScroll();
                 }
 //                mBanner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
 //                    @Override

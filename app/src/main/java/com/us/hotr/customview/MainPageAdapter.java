@@ -319,8 +319,9 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             handleClickEvent(bannerModule.getBannerList().get(p), null);
                         }
                     });
-                    if(urls.size()>1)
-                        bannerHolder.mBanner.startScroll();
+                    bannerHolder.mBanner.startScroll();
+                    if(urls.size()==1)
+                        bannerHolder.mBanner.pauseScroll();
                 }
                 break;
 

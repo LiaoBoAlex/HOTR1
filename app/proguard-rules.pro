@@ -151,10 +151,11 @@
 # Gson specific classes
 -keep class sun.misc.Unsafe { *; }
 # Application classes that will be serialized/deserialized over Gson
--keep class com.google.gson.examples.android.model.** { *; }
+-keep class com.google.gson.** { *; }
 
 #客户端代码中的JavaBean(实体类)的类名与其字段名称全部变成了a、b、c、d等等字符串，这与服务端返回的json字符串中的不一致，导致解析失败。所以，解决的办法是：在进行混淆编译进行打包apk的时候，过滤掉存放所有JavaBean（实体类)的包不进行混淆编译
 -keep class com.us.hotr.storage.bean.** {*;}
+-keep class com.us.hotr.webservice.** {*;}
 
 #eventbus
 -keepclassmembers class ** {

@@ -168,9 +168,11 @@
             android:textColor="@color/text_grey2"
             android:gravity="center_vertical"
             android:text="TextView"
-            android:layout_width="wrap_content"
+            android:layout_toLeftOf="@+id/v_arrow"
+            android:layout_width="match_parent"
             android:layout_height="match_parent" />
         <ImageView
+            android:id="@+id/v_arrow"
             android:paddingRight="12dp"
             android:paddingLeft="12dp"
             android:src="@mipmap/ic_arror_more"
