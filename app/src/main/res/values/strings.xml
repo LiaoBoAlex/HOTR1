@@ -147,7 +147,7 @@
     <string name="refund_amount">退款金额</string>
     <string name="refund_info">自申请之日起3到5个工作日\n退款将会退还至您的原支付账户</string>
     <string name="delete_receipt">确定要删除此核销卷吗？</string>
-    <string name="hint_make_appointment">温馨提示：去门店消费是可以先进行预约哦~</string>
+    <string name="hint_make_appointment">温馨提示：去门店消费是可以先进行预约哦~\n预约电话：%1$s</string>
     <string name="merchant_certified">已通过机构认证</string>
     <string name="reply">发表评论...</string>
     <string name="post_item">帖子</string>
@@ -575,6 +575,7 @@
     <string name="apply_refund">申请退款</string>
     <string name="refund_applied">申请已提交</string>
     <string name="no_receipt">还没有核销券</string>
+    <string name="empty_search">没有搜索结果</string>
     <string name="receipt_code">核销码:</string>
     <string name="send">发送</string>
     <string name="photo">相册</string>

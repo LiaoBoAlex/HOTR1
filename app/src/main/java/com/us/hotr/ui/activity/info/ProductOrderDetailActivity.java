@@ -49,7 +49,8 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
     private ConstraintLayout clAddress, clPlace, clPromise;
     private List<LinearLayout> llPromiseList = new ArrayList<>();
     private List<TextView> tvPromiseList = new ArrayList<>();
-    private ImageView ivAvatar, ivMessage;
+    private ImageView ivAvatar, ivPhone;
+    private String phoneNumber;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,7 +148,20 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
 
                 }
             });
+            ivPhone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    phoneNumber = result.getContact_mobile();
+                    if (PermissionUtil.hasCallPermission(ProductOrderDetailActivity.this)) {
+                        callPhoneNumber();
+                    } else {
+                        PermissionUtil.requestCallPermission(ProductOrderDetailActivity.this);
+                    }
+                }
+            });
+            ivPhone.setVisibility(View.VISIBLE);
         }else{
+            ivPhone.setVisibility(View.GONE);
             tvBuyAgain.setVisibility(View.GONE);
             tvBuyNow.setText(R.string.pay);
             tvBuyNow.setOnClickListener(new View.OnClickListener() {
@@ -164,12 +178,6 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
             });
         }
 
-        ivMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
         clAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -185,6 +193,7 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
         tvPhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                phoneNumber = Constants.SUPPORT_LINE;
                 if (PermissionUtil.hasCallPermission(ProductOrderDetailActivity.this)) {
                     callPhoneNumber();
                 } else {
@@ -226,7 +235,7 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
         tvPrice = (TextView) findViewById(R.id.tv_price);
         tvAddress = (TextView) findViewById(R.id.tv_address);
         tvPlace = (TextView) findViewById(R.id.tv_place);
-        ivMessage = (ImageView) findViewById(R.id.iv_message);
+        ivPhone = (ImageView) findViewById(R.id.iv_phone);
         tvVoucher = (TextView) findViewById(R.id.tv_voucher);
         tvAmount = (TextView) findViewById(R.id.tv_amount);
         tvPayNow = (TextView) findViewById(R.id.tv_pay_now);
@@ -269,12 +278,12 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
     private void callPhoneNumber()
     {
         TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(this);
-        alertDialogBuilder.setMessage(Constants.SUPPORT_LINE);
+        alertDialogBuilder.setMessage(phoneNumber);
         alertDialogBuilder.setPositiveButton(getString(R.string.call),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent callIntent = new Intent(Intent.ACTION_CALL);
-                        callIntent.setData(Uri.parse("tel:" + Constants.SUPPORT_LINE));
+                        callIntent.setData(Uri.parse("tel:" + phoneNumber));
                         startActivity(callIntent);
                         dialog.dismiss();
                     }

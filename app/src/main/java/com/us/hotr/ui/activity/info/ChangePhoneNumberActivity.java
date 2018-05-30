@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.User;
@@ -24,21 +25,40 @@ import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.model.UserInfo;
+import cn.jpush.im.api.BasicCallback;
+
 /**
  * Created by Mloong on 2017/10/10.
  */
 
 public class ChangePhoneNumberActivity extends BaseActivity {
+    public static final int TYPE_CHANGE_PASSWORD = 1;
+    public static final int TYPE_SET_PASSWORD = 2;
 
     private EditText etPhoneNumber, etCode;
     private TextView tvVerify, tvConfirm, tvMyNumber;
 
     private String myNumber;
+    private int type;
+    private User mUser;
+    private String jSessionid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMyTitle(R.string.update_phone_number);
+        if(getIntent().getExtras()!=null) {
+            type = getIntent().getExtras().getInt(Constants.PARAM_TYPE);
+        }
+        if(type == TYPE_SET_PASSWORD) {
+            setMyTitle(R.string.bound_mobile);
+            mUser = (User)getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+            jSessionid = getIntent().getExtras().getString(Constants.PARAM_ID);
+        }else{
+            setMyTitle(R.string.update_phone_number);
+            myNumber = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getMobile();
+        }
         initStaticView();
     }
 
@@ -53,8 +73,6 @@ public class ChangePhoneNumberActivity extends BaseActivity {
         tvVerify = (TextView) findViewById(R.id.tv_verify);
         tvConfirm = (TextView) findViewById(R.id.tv_confirm);
         tvMyNumber = (TextView) findViewById(R.id.tv_my_number);
-
-        myNumber = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getMobile();
         if(myNumber!= null && !myNumber.isEmpty())
             tvMyNumber.setText(String.format(getString(R.string.my_phone_number), myNumber.substring(0,3) + "****" + myNumber.substring(myNumber.length()-4, myNumber.length())));
         else
@@ -135,15 +153,47 @@ public class ChangePhoneNumberActivity extends BaseActivity {
             SubscriberListener mListener = new SubscriberListener<String>() {
                 @Override
                 public void onNext(String result) {
-                    Tools.Toast(ChangePhoneNumberActivity.this, getString(R.string.password_changed));
-                    User user = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo();
-                    user.setMobile(etPhoneNumber.getText().toString().trim());
-                    HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(user);
-                    finish();
+                    if(type == TYPE_SET_PASSWORD){
+                        mUser.setMobile(etPhoneNumber.getText().toString().trim());
+                        JMessageClient.register("user" + mUser.getUserId(), "123456", new BasicCallback() {
+                            @Override
+                            public void gotResult(int i, String s) {
+                                if (i == 0 || i == 898001) {
+                                    JMessageClient.login("user" + mUser.getUserId(), "123456", new BasicCallback() {
+                                        @Override
+                                        public void gotResult(int i, String s) {
+                                            if (i == 0) {
+                                                UserInfo userInfo = JMessageClient.getMyInfo();
+                                                userInfo.setNickname(mUser.getNickname());
+                                                userInfo.setAddress(mUser.getHead_portrait());
+                                                JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
+                                                    @Override
+                                                    public void gotResult(int i, String s) {
+
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(jSessionid);
+                        HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(mUser);
+                        setResult(RESULT_OK);
+                        finish();
+                    }else {
+                        Tools.Toast(ChangePhoneNumberActivity.this, getString(R.string.password_changed));
+                        User user = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo();
+                        user.setMobile(etPhoneNumber.getText().toString().trim());
+                        HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(user);
+                        finish();
+                    }
                 }
             };
+            String id = type ==TYPE_SET_PASSWORD?jSessionid:HOTRSharePreference.getInstance(getApplicationContext()).getUserID();
             ServiceClient.getInstance().boundMobile(new ProgressSubscriber(mListener, ChangePhoneNumberActivity.this),
-                    HOTRSharePreference.getInstance(getApplicationContext()).getUserID(),
+                    id,
                     new BoundMobileRequest(etPhoneNumber.getText().toString().trim(), etCode.getText().toString().trim()));
         }
     }

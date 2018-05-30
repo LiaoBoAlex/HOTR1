@@ -28,6 +28,15 @@ public class ProductReceipt implements Serializable {
     private double prepayment;
     private double fixed_price;
     private String address;
+    private String contact_mobile;
+
+    public String getContact_mobile() {
+        return contact_mobile;
+    }
+
+    public void setContact_mobile(String contact_mobile) {
+        this.contact_mobile = contact_mobile;
+    }
 
     public String getAddress() {
         return address;

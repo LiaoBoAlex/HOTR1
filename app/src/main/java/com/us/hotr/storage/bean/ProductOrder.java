@@ -46,6 +46,15 @@ public class ProductOrder implements Serializable {
     private double lon;
     private long product_id;
     private double online_price;
+    private String contact_mobile;
+
+    public String getContact_mobile() {
+        return contact_mobile;
+    }
+
+    public void setContact_mobile(String contact_mobile) {
+        this.contact_mobile = contact_mobile;
+    }
 
     public double getOnline_price() {
         return online_price;

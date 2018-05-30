@@ -1,6 +1,10 @@
 package com.us.hotr.ui.activity.receipt;
 
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
@@ -18,6 +22,8 @@ import com.us.hotr.storage.bean.MassageReceipt;
 import com.us.hotr.storage.bean.ProductReceipt;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MapViewActivity;
+import com.us.hotr.ui.dialog.TwoButtonDialog;
+import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
@@ -33,11 +39,13 @@ public class ReceiptDetailActivity extends BaseLoadingActivity {
     public static final int TYPE_PRODUCT_ORDER = 991;
     public static final int TYPE_MASSAGE_ORDER = 992;
 
-    private TextView tvMarchent, tvId, tvTitle, tvAmount, tvCode, tvSubTitle, tvMap;
+    private TextView tvMarchent, tvId, tvTitle, tvAmount, tvCode, tvSubTitle, tvMap, tvPhone;
     private ImageView ivCode;
 
     private int type;
     private long id;
+    private String phoneNumber;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +64,7 @@ public class ReceiptDetailActivity extends BaseLoadingActivity {
         tvSubTitle = (TextView) findViewById(R.id.tv_sub_title);
         ivCode = (ImageView) findViewById(R.id.iv_code);
         tvMap = (TextView) findViewById(R.id.tv_map);
+        tvPhone = (TextView) findViewById(R.id.tv_phone);
     }
 
     @Override
@@ -99,6 +108,23 @@ public class ReceiptDetailActivity extends BaseLoadingActivity {
                         }
                     });
 
+                    String number = result.getContact_mobile();
+                    String s = String.format(getString(R.string.hint_make_appointment), number);
+                    msp = new SpannableString(s);
+                    msp.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red)), s.length()-number.length(), s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    tvPhone.setText(msp);
+                    tvPhone.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            phoneNumber = result.getContact_mobile();
+                            if (PermissionUtil.hasCallPermission(ReceiptDetailActivity.this)) {
+                                callPhoneNumber();
+                            } else {
+                                PermissionUtil.requestCallPermission(ReceiptDetailActivity.this);
+                            }
+                        }
+                    });
+
                 }
             };
             if(type == Constants.TYPE_PRODUCT)
@@ -135,6 +161,23 @@ public class ReceiptDetailActivity extends BaseLoadingActivity {
                             startActivity(i);
                         }
                     });
+
+                    String number = result.getContact_mobile();
+                    String s = String.format(getString(R.string.hint_make_appointment), number);
+                    msp = new SpannableString(s);
+                    msp.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red)), s.length()-number.length(), s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    tvPhone.setText(msp);
+                    tvPhone.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            phoneNumber = result.getContact_mobile();
+                            if (PermissionUtil.hasCallPermission(ReceiptDetailActivity.this)) {
+                                callPhoneNumber();
+                            } else {
+                                PermissionUtil.requestCallPermission(ReceiptDetailActivity.this);
+                            }
+                        }
+                    });
                 }
             };
             if(type == Constants.TYPE_MASSAGE)
@@ -149,5 +192,38 @@ public class ReceiptDetailActivity extends BaseLoadingActivity {
     @Override
     protected int getLayout() {
         return R.layout.activity_receipt_detail;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        if (requestCode == PermissionUtil.PERMISSIONS_REQUEST_CALL) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                callPhoneNumber();
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void callPhoneNumber()
+    {
+        TwoButtonDialog.Builder alertDialogBuilder = new TwoButtonDialog.Builder(this);
+        alertDialogBuilder.setMessage(phoneNumber);
+        alertDialogBuilder.setPositiveButton(getString(R.string.call),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent callIntent = new Intent(Intent.ACTION_CALL);
+                        callIntent.setData(Uri.parse("tel:" + phoneNumber));
+                        startActivity(callIntent);
+                        dialog.dismiss();
+                    }
+                });
+        alertDialogBuilder.setNegativeButton(getString(R.string.no),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialogBuilder.create().show();
     }
 }

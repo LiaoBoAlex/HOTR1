@@ -412,7 +412,10 @@ public class SpaActivity extends BaseLoadingActivity {
                             startActivity(i);
                         }
                     });
-                    spaHeaderHolder.tvAppointment.setText(String.format(getString(R.string.spa_appointment1), spaDetail.getMassage().getOrder_num()));
+                    int total = 0;
+                    for(Type t:spaDetail.getTypeList())
+                        total = total + t.getProduct_num();
+                    spaHeaderHolder.tvAppointment.setText(String.format(getString(R.string.spa_appointment1), total));
                     spaHeaderHolder.tvAddress.setText(spaDetail.getMassage().getProvinceName() +
                             spaDetail.getMassage().getCityName() +
                             spaDetail.getMassage().getAreaName() +

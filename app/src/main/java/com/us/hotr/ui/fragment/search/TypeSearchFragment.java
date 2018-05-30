@@ -2,6 +2,7 @@ package com.us.hotr.ui.fragment.search;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,6 +35,7 @@ import java.util.Map;
 
 public class TypeSearchFragment extends BaseLoadingFragment {
     private TextView tvTotal;
+    private ConstraintLayout clEmpty;
     private RecyclerView mRecycleView;
     private LinearLayoutManager mLayoutManager;
     private MyAdapter mAdapter;
@@ -60,6 +62,7 @@ public class TypeSearchFragment extends BaseLoadingFragment {
 
         mRecycleView = (RecyclerView) view.findViewById(R.id.recyclerview);
         tvTotal = (TextView) view.findViewById(R.id.tv_amount);
+        clEmpty = (ConstraintLayout) view.findViewById(R.id.cl_empty);
 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecycleView.setLayoutManager(mLayoutManager);
@@ -92,12 +95,16 @@ public class TypeSearchFragment extends BaseLoadingFragment {
                             total = total + (int) pair.getValue();
                         }
                     }
-                    if (total > 0)
+                    if (total > 0) {
+                        clEmpty.setVisibility(View.GONE);
                         if (mAdapter == null) {
                             mAdapter = new MyAdapter(myResult);
                             mRecycleView.setAdapter(mAdapter);
                         } else
                             mAdapter.setData(myResult);
+                    }
+                    else
+                        clEmpty.setVisibility(View.VISIBLE);
                 }
                 tvTotal.setText(String.format(getString(R.string.total), total));
             }

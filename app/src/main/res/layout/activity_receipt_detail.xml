@@ -181,10 +181,9 @@
                 app:layout_constraintTop_toBottomOf="@+id/iv_code" />
 
             <TextView
-                android:id="@+id/textView42"
+                android:id="@+id/tv_phone"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
-                android:text="@string/hint_make_appointment"
                 android:textSize="11sp"
                 android:textColor="@color/text_grey2"
                 android:gravity="center"
@@ -200,7 +199,7 @@
                 android:layout_marginRight="0dp"
                 android:background="@drawable/dash_line"
                 android:layerType="software"
-                app:layout_constraintBottom_toTopOf="@+id/textView42"
+                app:layout_constraintBottom_toTopOf="@+id/tv_phone"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:id="@+id/view30" />

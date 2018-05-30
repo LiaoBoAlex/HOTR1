@@ -1,6 +1,7 @@
 package com.us.hotr.ui.activity.info;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.DeactivatedViewPager;
 import com.us.hotr.eventbus.Events;
@@ -143,34 +145,56 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void getMessage(final Events.WechatLogin wechatLogin){
-        JMessageClient.register("user" + wechatLogin.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
-            @Override
-            public void gotResult(int i, String s) {
-                if(i == 0 || i ==898001){
-                    JMessageClient.login("user" + wechatLogin.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
-                        @Override
-                        public void gotResult(int i, String s) {
-                            if(i == 0){
-                                UserInfo userInfo = JMessageClient.getMyInfo();
-                                userInfo.setNickname(wechatLogin.getGetLoginResponse().getUser().getNickname());
-                                userInfo.setAddress(wechatLogin.getGetLoginResponse().getUser().getHead_portrait());
-                                JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
-                                    @Override
-                                    public void gotResult(int i, String s) {
+    public void getMessage(final Events.WechatLogin wechatLogin) {
+        if (wechatLogin.getGetLoginResponse().getUser() != null) {
+            if (wechatLogin.getGetLoginResponse().getUser().getMobile() != null
+                    && !wechatLogin.getGetLoginResponse().getUser().getMobile().isEmpty()) {
+                JMessageClient.register("user" + wechatLogin.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
+                    @Override
+                    public void gotResult(int i, String s) {
+                        if (i == 0 || i == 898001) {
+                            JMessageClient.login("user" + wechatLogin.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
+                                @Override
+                                public void gotResult(int i, String s) {
+                                    if (i == 0) {
+                                        UserInfo userInfo = JMessageClient.getMyInfo();
+                                        userInfo.setNickname(wechatLogin.getGetLoginResponse().getUser().getNickname());
+                                        userInfo.setAddress(wechatLogin.getGetLoginResponse().getUser().getHead_portrait());
+                                        JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
+                                            @Override
+                                            public void gotResult(int i, String s) {
 
+                                            }
+                                        });
                                     }
-                                });
-                            }
+                                }
+                            });
                         }
-                    });
-                }
+                    }
+                });
+                HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(wechatLogin.getGetLoginResponse().getJsessionid());
+                HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(wechatLogin.getGetLoginResponse().getUser());
+                loginSuccess();
+                finish();
+            } else {
+                Intent i = new Intent(this, ChangePhoneNumberActivity.class);
+                Bundle b = new Bundle();
+                b.putInt(Constants.PARAM_TYPE, ChangePhoneNumberActivity.TYPE_SET_PASSWORD);
+                b.putSerializable(Constants.PARAM_DATA, wechatLogin.getGetLoginResponse().getUser());
+                b.putString(Constants.PARAM_ID, wechatLogin.getGetLoginResponse().getJsessionid());
+                i.putExtras(b);
+                startActivityForResult(i, 0);
             }
-        });
-        HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(wechatLogin.getGetLoginResponse().getJsessionid());
-        HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(wechatLogin.getGetLoginResponse().getUser());
-        loginSuccess();
-        finish();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode ==RESULT_OK) {
+            loginSuccess();
+            finish();
+        }
     }
 
     @Override
