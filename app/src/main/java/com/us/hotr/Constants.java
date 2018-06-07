@@ -1,16 +1,20 @@
 package com.us.hotr;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Mloong on 2017/8/31.
  */
 
 public class Constants {
 
-    public static final String SERVER_URL = "http://hotr.hotr-app.com/hotr-api-web/";
+    public static final String SERVER_URL = "https://hotr.hotr-app.com/hotr-api-web/";
     public static final int SERVER_TIMEOUT = 30;
     public static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?";
     public static final String WECHAT_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?";
+    public static final String LOGO_URL = "http://image-product-web.oss-cn-beijing.aliyuncs.com/headPortrait/logo_hotr.png";
 
     public static final String WECHAT_APP_ID = "wx162b31804e04a141";
     public static final String WECHAT_APP_SECRET = "4791e3ede549087797a2cea44d9d01de";
@@ -28,6 +32,13 @@ public class Constants {
     public static final String BAIDU_MAP_PACKAGE_NAME = "com.baidu.BaiduMap";
     public static final String AUTONAVI_MAP_PACKAGE_NAME = "com.autonavi.minimap";
     public static final String TENCENT_MAP_PACKAGE_NAME = "com.tencent.map";
+
+    public static final List<Long> NEW_USER_VOUCHER = new ArrayList<Long>(){{
+        add(4l);add(4l);add(4l);add(4l);add(4l);
+        add(5l);add(5l);add(5l);add(5l);add(5l);
+        add(6l);add(6l);add(6l);add(6l);add(6l);
+        add(7l);add(7l);add(7l);add(7l);add(7l);
+        add(8l);add(9l);add(10l);}};
 
     public static final int TYPE_PRODUCT = 103;
     public static final int TYPE_HOSPITAL = 101;
@@ -96,8 +107,10 @@ public class Constants {
 
     public static final int MAX_PAGE_ITEM = 10;
     public static final long ORDER_VALID_TIME_IN_MINISEC = 24*60*60*1000;
-    public static final String SUPPORT_LINE = "4001118518";
-    public static final String ABOUT_US = "http://hotr.us-app.com/share/about.html";
+    public static final String SUPPORT_LINE = "01059458967";
+    public static final String ABOUT_US = "https://hotr.us-app.com/share/about.html";
+    public static final String RECIEPT_URL = "https://hotr.hotr-app.com/toIndex.do#/?ticket_sn=";
+    public static final String BUSINESS_PARTENER = "https://hotr.us-app.com/share/activity/cooperation/index.html";
 
     public static final int ALL_CITY_ID = 5000;
 

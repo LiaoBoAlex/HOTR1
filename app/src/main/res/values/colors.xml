@@ -5,6 +5,7 @@
     <color name="colorAccent">#5ac9c2</color>
 
     <color name="red">#fb0721</color>
+    <color name="yellow">#ffd200</color>
     <color name="pink">#ffebea</color>
     <color name="divider">#CED2E2</color>
     <color name="divider2">#f1f1f1</color>
@@ -27,4 +28,5 @@
     <color name="blue">#006aff</color>
     <color name="blue1">#2f87e0</color>
     <color name="black">#000000</color>
+    <color name="transparent">#00ffffff</color>
 </resources>

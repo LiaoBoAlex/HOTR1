@@ -90,7 +90,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                         SubscriberWithFinishListener subscriber = new SubscriberWithFinishListener<GetLoginResponse>() {
                             @Override
                             public void onNext(GetLoginResponse result) {
-                                GlobalBus.getBus().post(new Events.WechatLogin(result));
+                                GlobalBus.getBus().post(new Events.Login(result));
                             }
 
                             @Override

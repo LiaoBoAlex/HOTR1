@@ -49,7 +49,7 @@ public class VoucherListFragment extends BaseLoadingFragment {
 
     private int totalSize = 0;
     private int currentPage = 1;
-    private boolean isLoaded = false;
+//    private boolean isLoaded = false;
 
     private int type;
     private AvailableVoucherRequest request;
@@ -90,25 +90,25 @@ public class VoucherListFragment extends BaseLoadingFragment {
         enableLoadMore(false);
         if(type == TYPE_AVAILABLE)
             enablePullDownRefresh(false);
-        if(getUserVisibleHint() && !isLoaded){
+//        if(getUserVisibleHint() && !isLoaded){
             loadData(Constants.LOAD_PAGE);
-        }
+//        }
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && isResumed() && !isLoaded) {
-            loadData(Constants.LOAD_PAGE);
-        }
-    }
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if (isVisibleToUser && isResumed() && !isLoaded) {
+//            loadData(Constants.LOAD_PAGE);
+//        }
+//    }
 
     @Override
     protected void loadData(final int loadType) {
         SubscriberListener mListener = new SubscriberListener<BaseListResponse<List<Voucher>>>() {
             @Override
             public void onNext(BaseListResponse<List<Voucher>> result) {
-                isLoaded = true;
+//                isLoaded = true;
                 Events.GetVoucherCount event = new Events.GetVoucherCount(result.getTotal(), type);
                 GlobalBus.getBus().post(event);
                 if(result!=null && result.getRows()!=null && result.getRows().size()>0){

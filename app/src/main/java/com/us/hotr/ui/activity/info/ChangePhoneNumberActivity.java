@@ -1,6 +1,7 @@
 package com.us.hotr.ui.activity.info;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -18,12 +19,17 @@ import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.BaseActivity;
+import com.us.hotr.ui.dialog.VoucherDialog;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.request.BoundMobileRequest;
+import com.us.hotr.webservice.request.LoginWithWechatRequest;
 import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
+import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
+
+import java.util.ArrayList;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.model.UserInfo;
@@ -42,8 +48,7 @@ public class ChangePhoneNumberActivity extends BaseActivity {
 
     private String myNumber;
     private int type;
-    private User mUser;
-    private String jSessionid;
+    private GetLoginResponse.WechatUser mUser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,8 +58,7 @@ public class ChangePhoneNumberActivity extends BaseActivity {
         }
         if(type == TYPE_SET_PASSWORD) {
             setMyTitle(R.string.bound_mobile);
-            mUser = (User)getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
-            jSessionid = getIntent().getExtras().getString(Constants.PARAM_ID);
+            mUser = (GetLoginResponse.WechatUser)getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
         }else{
             setMyTitle(R.string.update_phone_number);
             myNumber = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getMobile();
@@ -150,26 +154,24 @@ public class ChangePhoneNumberActivity extends BaseActivity {
         else if(etPhoneNumber.getText().toString().trim().equals(myNumber))
             Tools.Toast(ChangePhoneNumberActivity.this, getString(R.string.key_in_new_number));
         else {
-            SubscriberListener mListener = new SubscriberListener<String>() {
-                @Override
-                public void onNext(String result) {
-                    if(type == TYPE_SET_PASSWORD){
-                        mUser.setMobile(etPhoneNumber.getText().toString().trim());
-                        JMessageClient.register("user" + mUser.getUserId(), "123456", new BasicCallback() {
+            if(type == TYPE_SET_PASSWORD){
+                SubscriberListener mListener = new SubscriberListener<GetLoginResponse>() {
+                    @Override
+                    public void onNext(final GetLoginResponse result) {
+                        JMessageClient.register("user" + result.getUser().getUserId(), "123456", new BasicCallback() {
                             @Override
                             public void gotResult(int i, String s) {
                                 if (i == 0 || i == 898001) {
-                                    JMessageClient.login("user" + mUser.getUserId(), "123456", new BasicCallback() {
+                                    JMessageClient.login("user" + result.getUser().getUserId(), "123456", new BasicCallback() {
                                         @Override
                                         public void gotResult(int i, String s) {
                                             if (i == 0) {
                                                 UserInfo userInfo = JMessageClient.getMyInfo();
-                                                userInfo.setNickname(mUser.getNickname());
-                                                userInfo.setAddress(mUser.getHead_portrait());
+                                                userInfo.setNickname(result.getUser().getNickname());
+                                                userInfo.setAddress(result.getUser().getHead_portrait());
                                                 JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
                                                     @Override
                                                     public void gotResult(int i, String s) {
-
                                                     }
                                                 });
                                             }
@@ -178,23 +180,34 @@ public class ChangePhoneNumberActivity extends BaseActivity {
                                 }
                             }
                         });
-                        HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(jSessionid);
-                        HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(mUser);
-                        setResult(RESULT_OK);
-                        finish();
-                    }else {
+                        HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(result.getJsessionid());
+                        HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(result.getUser());
+                        getNewUserVoucher();
+                    }
+                };
+                LoginWithWechatRequest request = new LoginWithWechatRequest(mUser.getName(),
+                        mUser.getHeadImgUrl(),
+                        mUser.getOpenId(),
+                        mUser.getSex(),
+                        etPhoneNumber.getText().toString().trim(),
+                        etCode.getText().toString().trim());
+                ServiceClient.getInstance().registerWithWechat(new ProgressSubscriber(mListener, ChangePhoneNumberActivity.this),
+                        request);
+            }else{
+                SubscriberListener mListener = new SubscriberListener<String>() {
+                    @Override
+                    public void onNext(String result) {
                         Tools.Toast(ChangePhoneNumberActivity.this, getString(R.string.password_changed));
                         User user = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo();
                         user.setMobile(etPhoneNumber.getText().toString().trim());
                         HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(user);
                         finish();
                     }
-                }
-            };
-            String id = type ==TYPE_SET_PASSWORD?jSessionid:HOTRSharePreference.getInstance(getApplicationContext()).getUserID();
-            ServiceClient.getInstance().boundMobile(new ProgressSubscriber(mListener, ChangePhoneNumberActivity.this),
-                    id,
-                    new BoundMobileRequest(etPhoneNumber.getText().toString().trim(), etCode.getText().toString().trim()));
+                };
+                ServiceClient.getInstance().boundMobile(new ProgressSubscriber(mListener, ChangePhoneNumberActivity.this),
+                        HOTRSharePreference.getInstance(getApplicationContext()).getUserID(),
+                        new BoundMobileRequest(etPhoneNumber.getText().toString().trim(), etCode.getText().toString().trim()));
+            }
         }
     }
 
@@ -215,6 +228,25 @@ public class ChangePhoneNumberActivity extends BaseActivity {
             ServiceClient.getInstance().requestForValidationCodePhone(new ProgressSubscriber(mListener, ChangePhoneNumberActivity.this),
                     new RequestForValidationCodeRequest(etPhoneNumber.getText().toString().trim()));
         }
+    }
+
+    private void getNewUserVoucher(){
+        SubscriberListener mListener = new SubscriberListener<String>() {
+            @Override
+            public void onNext(final String result) {
+                VoucherDialog dialog = new VoucherDialog(ChangePhoneNumberActivity.this, R.style.CustomDialog);
+                dialog.show();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        setResult(RESULT_OK);
+                        finish();
+                    }
+                });
+            }
+        };
+        ServiceClient.getInstance().addAllVoucher(new ProgressSubscriber(mListener, ChangePhoneNumberActivity.this),
+                HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), Constants.NEW_USER_VOUCHER);
     }
 
 

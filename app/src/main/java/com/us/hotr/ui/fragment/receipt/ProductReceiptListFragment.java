@@ -271,7 +271,7 @@ public class ProductReceiptListFragment extends BaseLoadingFragment {
             if(type == Constants.RECEIPT_STATUS_EXPIRED){
                 holder.tvNumber.setText(getString(R.string.expired_title));
                 holder.tvDate.setText(Tools.getReceiptTime(getContext(), productReceipt.getRepeal_time()));
-                holder.tvOption.setVisibility(View.VISIBLE);
+                holder.tvOption.setVisibility(View.GONE);
                 holder.tvOption.setText(R.string.apply_refund);
                 holder.tvOption.setOnClickListener(new View.OnClickListener() {
                     @Override

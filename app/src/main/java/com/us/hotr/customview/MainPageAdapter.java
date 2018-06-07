@@ -22,6 +22,7 @@ import com.us.hotr.storage.bean.Group;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.storage.bean.Module;
 import com.us.hotr.storage.bean.Post;
+import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.Spa;
 import com.us.hotr.ui.activity.WebViewActivity;
 import com.us.hotr.ui.activity.beauty.CaseActivity;
@@ -40,6 +41,7 @@ import com.us.hotr.ui.activity.massage.SpaActivity;
 import com.us.hotr.ui.view.CaseView;
 import com.us.hotr.ui.view.MasseurView;
 import com.us.hotr.ui.view.PostView;
+import com.us.hotr.ui.view.ProductView;
 import com.us.hotr.ui.view.SpaView;
 import com.us.hotr.webservice.response.GetHomePageResponse;
 
@@ -93,7 +95,8 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final int TYPE_DIVIDER = 9;
     private final int TYPE_MASSEUR = 10;
     private final int TYPE_SPA = 11;
-    public static final int TYPE_GROUP = 12;
+    private final int TYPE_PRODUCT = 12;
+    public static final int TYPE_GROUP = 13;
 
     Context mContext;
     private List<Item> itemList;
@@ -115,10 +118,14 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     if (response.getRecommendMassagistList() != null && response.getRecommendMassagistList().size() > 0)
                         for (Masseur c : response.getRecommendMassagistList())
                             itemList.add(new Item(TYPE_MASSEUR, c));
-                }else if(module.getModuleTypeId() == TYPE_SPA){
+                }else if(module.getModuleTypeId() == TYPE_SPA) {
                     if (response.getRecommendMassageList() != null && response.getRecommendMassageList().size() > 0)
                         for (Spa c : response.getRecommendMassageList())
                             itemList.add(new Item(TYPE_SPA, c));
+                }else if(module.getModuleTypeId() == TYPE_PRODUCT){
+                    if (response.getRecommendYmProductList() != null && response.getRecommendYmProductList().size() > 0)
+                        for (Product p : response.getRecommendYmProductList())
+                            itemList.add(new Item(TYPE_PRODUCT, p));
                 }else if (module.getModuleTypeId() == TYPE_GROUP) {
                     itemList.add(new Item(TYPE_GROUP, response.getMyGrouList()));
                 }else
@@ -236,6 +243,14 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    public class ProductHolder extends RecyclerView.ViewHolder {
+        ProductView productView;
+        public ProductHolder(View view) {
+            super(view);
+            productView = (ProductView) view;
+        }
+    }
+
 
     public class GroupListHolder extends RecyclerView.ViewHolder {
         RecyclerView mRecyclerView;
@@ -288,6 +303,9 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_SPA:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_spa, parent, false);
                 return new SPAHolder(view);
+            case TYPE_PRODUCT:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
+                return new ProductHolder(view);
             case TYPE_GROUP:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_list, parent, false);
                 return new GroupListHolder(view);
@@ -435,6 +453,10 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 spaHolder.spaView.setData((Spa)itemList.get(position).getContent(), position);
                 break;
 
+            case TYPE_PRODUCT:
+                ProductHolder productHolder = (ProductHolder) holder;
+                productHolder.productView.setData((Product)itemList.get(position).getContent());
+                break;
 
             case TYPE_GROUP:
                 final GroupListHolder groupListHolder = (GroupListHolder) holder;
@@ -485,6 +507,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         case TYPE_CASE:
                         case TYPE_POST:
                         case TYPE_GROUP:
+                        case TYPE_PRODUCT:
                             return 2;
                         default:
                             return 2;

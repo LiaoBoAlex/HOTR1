@@ -582,6 +582,8 @@
     <string name="camera">拍摄</string>
     <string name="pls_upload_photo_before">请上传术前照片</string>
     <string name="pls_upload_photo_after">请上传术后照片</string>
+    <string name="invite_friend_title">你的享乐  HOTR买单</string>
+    <string name="invite_friend_content">超高颜值按摩技师，高品质医美机构，肌肉男神遍地的趴体，你还在等什么！\n安卓、IOS全新版本上线，1500元现金红包送给你！</string>
 
     <string-array name="gender">
         <item>男</item>

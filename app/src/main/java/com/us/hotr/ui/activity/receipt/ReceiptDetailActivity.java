@@ -94,7 +94,7 @@ public class ReceiptDetailActivity extends BaseLoadingActivity {
                         tvSubTitle.setText(msp);
                     }else
                         tvSubTitle.setText(getString(R.string.no_need_to_pay_at_shop));
-                    ivCode.setImageBitmap(Tools.createQRCodeBitmap(result.getEncryption_QR_code(), 100, 100));
+                    ivCode.setImageBitmap(Tools.createQRCodeBitmap(Constants.RECIEPT_URL + result.getEncryption_QR_code(), 100, 100));
                     tvMap.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -148,7 +148,7 @@ public class ReceiptDetailActivity extends BaseLoadingActivity {
                     tvAmount.setText(msp);
                     tvCode.setText(getString(R.string.receipt_code)+result.getEncryption_QR_code());
                     tvSubTitle.setText(String.format(getString(R.string.masseur3), result.getMassagist_name()));
-                    ivCode.setImageBitmap(Tools.createQRCodeBitmap(result.getEncryption_QR_code(), 100, 100));
+                    ivCode.setImageBitmap(Tools.createQRCodeBitmap(Constants.RECIEPT_URL + result.getEncryption_QR_code(), 100, 100));
                     tvMap.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

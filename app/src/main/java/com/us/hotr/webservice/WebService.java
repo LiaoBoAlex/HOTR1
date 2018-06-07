@@ -277,6 +277,10 @@ public interface WebService {
                                                                             @Query("page_number") int page_number,
                                                                             @Query("page_size") Integer page_size);
 
+    @POST("user_method/coupon/addUserCoupon.do?")
+    Observable<BaseResponse<String>> addAllVoucher(@Header("jsessionid") String jsessionid,
+                                                                            @Query("couponIdArr[]") List<Long> couponIdArr);
+
     @POST("product/checkCount.do?")
     Observable<BaseResponse<Integer>> checkOrderCount(@Query("productId") long productId,
                                                       @Query("type") int type);
@@ -560,14 +564,17 @@ public interface WebService {
                                                           @Query("verification_id") long verification_id);
 
     @POST("user/login.do?")
-    Call<BaseResponse<GetLoginResponse>> login(@Query("username") String username,
+    Observable<BaseResponse<GetLoginResponse>> login(@Query("username") String username,
                                                @Query("password") String password);
 
     @POST("user/loginByValidCode.do?")
-    Call<BaseResponse<GetLoginResponse>> loginAndRegister(@Body LoginAndRegisterRequest request);
+    Observable<BaseResponse<GetLoginResponse>> loginAndRegister(@Body LoginAndRegisterRequest request);
 
     @POST("user/loginByThird.do?")
     Call<BaseResponse<GetLoginResponse>> loginWithWechat(@Body LoginWithWechatRequest request);
+
+    @POST("user/userRegisterByThirdPlatform.do?")
+    Observable<BaseResponse<GetLoginResponse>> registerWithWechat(@Body LoginWithWechatRequest request);
 
     @POST("user/validCode.do?")
     Observable<BaseResponse<String>> requestForValidationCode(@Body RequestForValidationCodeRequest request);

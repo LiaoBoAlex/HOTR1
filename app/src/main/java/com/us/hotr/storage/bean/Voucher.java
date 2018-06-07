@@ -11,9 +11,9 @@ import java.io.Serializable;
 public class Voucher implements Serializable {
     private long id;
     private double coupon_money;
-    @SerializedName(value = "use_start_time", alternate = {"coupon_start_time"})
+//    @SerializedName(value = "use_start_time", alternate = {"coupon_start_time"})
     private String use_start_time;
-    @SerializedName(value = "use_end_time", alternate = {"coupon_end_time"})
+//    @SerializedName(value = "use_end_time", alternate = {"coupon_end_time"})
     private String use_end_time;
     private String coupon_name;
     private double full_money;

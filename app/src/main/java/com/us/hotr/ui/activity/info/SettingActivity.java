@@ -27,6 +27,7 @@ import com.us.hotr.webservice.request.GetAppVersionRequest;
 import com.us.hotr.webservice.response.GetAppVersionResponse;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
+import cn.jpush.android.api.JPushInterface;
 import cn.jpush.im.android.api.JMessageClient;
 
 /**
@@ -117,6 +118,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 Intent i = new Intent(SettingActivity.this, WebViewActivity.class);
                 Bundle b = new Bundle();
                 b.putString(Constants.PARAM_TITLE, getString(R.string.business_partner));
+                b.putString(Constants.PARAM_DATA, Constants.BUSINESS_PARTENER);
+                b.putInt(Constants.PARAM_TYPE,WebViewActivity.TYPE_URL);
                 i.putExtras(b);
                 startActivity(i);
                 break;
@@ -136,6 +139,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 alertDialogBuilder.setPositiveButton(getString(R.string.yes),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                int i = Integer.parseInt(HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getMobile().substring(2));
+                                JPushInterface.deleteAlias(SettingActivity.this, i);
                                 JMessageClient.logout();
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeUserID("");
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(null);

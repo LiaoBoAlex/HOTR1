@@ -5,6 +5,7 @@ import com.us.hotr.storage.bean.Group;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.storage.bean.Module;
 import com.us.hotr.storage.bean.Post;
+import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.Spa;
 
 import java.io.Serializable;
@@ -21,7 +22,16 @@ public class GetHomePageResponse implements Serializable {
     private List<Masseur> recommendMassagistList;
     private List<Spa> recommendMassageList;
     private List<Group>myGrouList;
+    private List<Product> recommendYmProductList;
     private int total;
+
+    public List<Product> getRecommendYmProductList() {
+        return recommendYmProductList;
+    }
+
+    public void setRecommendYmProductList(List<Product> recommendYmProductList) {
+        this.recommendYmProductList = recommendYmProductList;
+    }
 
     public int getTotal() {
         return total;

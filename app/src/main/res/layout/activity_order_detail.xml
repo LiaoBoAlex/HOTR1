@@ -459,7 +459,6 @@
                     android:gravity="center"
                     android:background="@color/text_black"/>
                 <TextView
-                    android:visibility="gone"
                     android:id="@+id/tv_buy_now"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"

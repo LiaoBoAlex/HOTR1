@@ -21,6 +21,7 @@ import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.beauty.ListWithSearchActivity;
 import com.us.hotr.ui.activity.info.FavoriteCategoryActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
+import com.us.hotr.ui.activity.info.InviteFriendActivity;
 import com.us.hotr.ui.activity.info.NoticeActivity;
 import com.us.hotr.ui.activity.info.OrderListActivity;
 import com.us.hotr.ui.activity.info.SettingActivity;
@@ -157,6 +158,14 @@ public class InfoFragment extends BaseLoadingFragment {
                 Bundle b = new Bundle();
                 b.putInt(Constants.PARAM_TYPE, DeliverAddressListActivity.TYPE_SHOW_LIST);
                 i.putExtras(b);
+                startActivity(i);
+            }
+        });
+
+        clFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), InviteFriendActivity.class);
                 startActivity(i);
             }
         });

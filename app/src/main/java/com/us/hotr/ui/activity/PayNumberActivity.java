@@ -89,7 +89,8 @@ public class PayNumberActivity extends BaseActivity{
                 Glide.with(this).load(Tools.getMainPhoto(Tools.gsonStringToMap(massage.getProductImg()))).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
             if(massage.getProduct_main_img()!=null)
                 Glide.with(this).load(massage.getProduct_main_img()).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
-            tvTitle.setText(getString(R.string.bracket_left)+massage.getProductName()+getString(R.string.bracket_right)+massage.getProductUsp());
+//            tvTitle.setText(getString(R.string.bracket_left)+massage.getProductName()+getString(R.string.bracket_right)+massage.getProductUsp());
+            tvTitle.setText(massage.getProductUsp());
             tvSubTitle.setText(spa.getMassageName());
             tvPayTitle.setVisibility(View.GONE);
             llPayOther.setVisibility(View.GONE);

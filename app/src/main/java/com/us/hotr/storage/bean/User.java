@@ -3,6 +3,7 @@ package com.us.hotr.storage.bean;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.net.URLDecoder;
 
 /**
  * Created by liaobo on 2017/12/18.
@@ -164,7 +165,12 @@ public class User implements Serializable {
     }
 
     public String getNickname() {
-        return nickname;
+        try {
+            return URLDecoder.decode(nickname, "UTF-8");
+        } catch (Throwable t) {
+            return null;
+        }
+
     }
 
     public void setNickname(String nickname) {

@@ -142,6 +142,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.AboutUsActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name="com.us.hotr.ui.activity.info.InviteFriendActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.LoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"/>
@@ -180,7 +182,8 @@
         <activity android:name="com.us.hotr.ui.activity.party.PartyPayNumberActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.party.PartyOrderActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity android:name="com.us.hotr.ui.activity.party.DeliverAddressListActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.party.EditDeliverAddressActivity"

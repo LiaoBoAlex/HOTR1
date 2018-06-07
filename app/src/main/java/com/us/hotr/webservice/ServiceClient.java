@@ -521,6 +521,15 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
+    public void addAllVoucher(DisposableObserver subscriber, String jsessionid, List<Long> couponIdArr){
+        webService.addAllVoucher(jsessionid, couponIdArr)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
     public void checkOrderCount(DisposableObserver subscriber, long productId, int type){
         webService.checkOrderCount(productId, type)
                 .subscribeOn(Schedulers.io())
@@ -1261,53 +1270,54 @@ public class ServiceClient {
     }
 
     public void loginAndRegister(DisposableObserver subscriber, final LoginAndRegisterRequest request) {
-        Observable.create(new ObservableOnSubscribe<BaseResponse<GetLoginResponse>>() {
-            @Override
-            public void subscribe(final ObservableEmitter<BaseResponse<GetLoginResponse>> emitter) throws Exception {
-                final BaseResponse<GetLoginResponse> response =  webService.loginAndRegister(request).execute().body();
-                if(response.getResult()!=null && response.getStatus()==200) {
-                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-                        @Override
-                        public void gotResult(int i, String s) {
-                            if (i == 0 || i == 898001) {
-                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-                                    @Override
-                                    public void gotResult(int i, String s) {
-                                        if (i == 0) {
-                                            UserInfo userInfo = JMessageClient.getMyInfo();
-                                            userInfo.setNickname(response.getResult().getUser().getNickname());
-                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
-                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
-                                                @Override
-                                                public void gotResult(int i, String s) {
-
-                                                }
-                                            });
-
-                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
-                                                @Override
-                                                public void gotResult(int i, String s) {
-                                                    emitter.onNext(response);
-                                                    emitter.onComplete();
-                                                }
-                                            });
-
-
-                                        } else
-                                            emitter.onError(new ApiException(500, ""));
-                                    }
-                                });
-                            } else
-                                emitter.onError(new ApiException(500, ""));
-                        }
-                    });
-                }else{
-                    emitter.onNext(response);
-                    emitter.onComplete();
-                }
-
-            }
-        })      .map(new HttpResultFunc<GetLoginResponse>())
+//        Observable.create(new ObservableOnSubscribe<BaseResponse<GetLoginResponse>>() {
+//            @Override
+//            public void subscribe(final ObservableEmitter<BaseResponse<GetLoginResponse>> emitter) throws Exception {
+//                final BaseResponse<GetLoginResponse> response =  webService.loginAndRegister(request).execute().body();
+//                if(response.getResult()!=null && response.getStatus()==200) {
+//                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+//                        @Override
+//                        public void gotResult(int i, String s) {
+//                            if (i == 0 || i == 898001) {
+//                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+//                                    @Override
+//                                    public void gotResult(int i, String s) {
+//                                        if (i == 0) {
+//                                            UserInfo userInfo = JMessageClient.getMyInfo();
+//                                            userInfo.setNickname(response.getResult().getUser().getNickname());
+//                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
+//                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+//                                                @Override
+//                                                public void gotResult(int i, String s) {
+//
+//                                                }
+//                                            });
+//
+//                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
+//                                                @Override
+//                                                public void gotResult(int i, String s) {
+//                                                    emitter.onNext(response);
+//                                                    emitter.onComplete();
+//                                                }
+//                                            });
+//
+//
+//                                        } else
+//                                            emitter.onError(new ApiException(500, ""));
+//                                    }
+//                                });
+//                            } else
+//                                emitter.onError(new ApiException(500, ""));
+//                        }
+//                    });
+//                }else{
+//                    emitter.onNext(response);
+//                    emitter.onComplete();
+//                }
+//
+//            }
+        webService.loginAndRegister(request)
+                .map(new HttpResultFunc<GetLoginResponse>())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -1335,51 +1345,67 @@ public class ServiceClient {
                         getWechatUserInfo.getOpenid(),
                         sex)).execute().body();
 
-                if(response.getResult()!=null && response.getStatus() == 200) {
-                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-                        @Override
-                        public void gotResult(int i, String s) {
-                            if (i == 0 || i == 898001) {
-                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-                                    @Override
-                                    public void gotResult(int i, String s) {
-                                        if (i == 0) {
-                                            UserInfo userInfo = JMessageClient.getMyInfo();
-                                            userInfo.setNickname(response.getResult().getUser().getNickname());
-                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
-                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
-                                                @Override
-                                                public void gotResult(int i, String s) {
-
-                                                }
-                                            });
-
-                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
-                                                @Override
-                                                public void gotResult(int i, String s) {
-                                                    emitter.onNext(response);
-                                                    emitter.onComplete();
-                                                }
-                                            });
-
-
-                                        } else
-                                            emitter.onError(new ApiException(500));
-                                    }
-                                });
-                            } else
-                                emitter.onError(new ApiException(500));
-                        }
-                    });
-                }else{
-                    emitter.onNext(response);
-                    emitter.onComplete();
+//                if(response.getResult()!=null && response.getStatus() == 200 && response.getResult().getUser() != null) {
+//                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+//                        @Override
+//                        public void gotResult(int i, String s) {
+//                            if (i == 0 || i == 898001) {
+//                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+//                                    @Override
+//                                    public void gotResult(int i, String s) {
+//                                        if (i == 0) {
+//                                            UserInfo userInfo = JMessageClient.getMyInfo();
+//                                            userInfo.setNickname(response.getResult().getUser().getNickname());
+//                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
+//                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+//                                                @Override
+//                                                public void gotResult(int i, String s) {
+//
+//                                                }
+//                                            });
+//
+//                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
+//                                                @Override
+//                                                public void gotResult(int i, String s) {
+//                                                    emitter.onNext(response);
+//                                                    emitter.onComplete();
+//                                                }
+//                                            });
+//
+//
+//                                        } else
+//                                            emitter.onError(new ApiException(500));
+//                                    }
+//                                });
+//                            } else
+//                                emitter.onError(new ApiException(500));
+//                        }
+//                    });
+//                }else{
+//                    emitter.onNext(response);
+//                    emitter.onComplete();
+//                }
+                if(response.getResult()!=null){
+                    response.getResult().setWechatUser(new GetLoginResponse.WechatUser(getWechatUserInfo.getOpenid(),
+                            getWechatUserInfo.getNickname(),
+                            getWechatUserInfo.getHeadimgurl(),
+                            sex));
                 }
-
+                emitter.onNext(response);
+                emitter.onComplete();
             }
         })
                 .map(new HttpResultFunc<GetLoginResponse>())
                 .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void registerWithWechat(DisposableObserver subscriber, LoginWithWechatRequest request){
+        webService.registerWithWechat(request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetLoginResponse>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -1431,53 +1457,54 @@ public class ServiceClient {
     }
 
     public void login(DisposableObserver subscriber, final String userName, final String password) {
-        Observable.create(new ObservableOnSubscribe<BaseResponse<GetLoginResponse>>() {
-            @Override
-            public void subscribe(final ObservableEmitter<BaseResponse<GetLoginResponse>> emitter) throws Exception {
-                final BaseResponse<GetLoginResponse> response =  webService.login(userName, password).execute().body();
-                if(response.getResult()!=null && response.getStatus() == 200) {
-                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-                        @Override
-                        public void gotResult(int i, String s) {
-                            if (i == 0 || i == 898001) {
-                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-                                    @Override
-                                    public void gotResult(int i, String s) {
-                                        if (i == 0) {
-                                            UserInfo userInfo = JMessageClient.getMyInfo();
-                                            userInfo.setNickname(response.getResult().getUser().getNickname());
-                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
-                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
-                                                @Override
-                                                public void gotResult(int i, String s) {
-
-                                                }
-                                            });
-
-                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
-                                                @Override
-                                                public void gotResult(int i, String s) {
-                                                    emitter.onNext(response);
-                                                    emitter.onComplete();
-                                                }
-                                            });
-
-
-                                        } else
-                                            emitter.onError(new ApiException(500, ""));
-                                    }
-                                });
-                            } else
-                                emitter.onError(new ApiException(500, ""));
-                        }
-                    });
-                }else {
-                    emitter.onNext(response);
-                    emitter.onComplete();
-                }
-
-            }
-        })
+//        Observable.create(new ObservableOnSubscribe<BaseResponse<GetLoginResponse>>() {
+//            @Override
+//            public void subscribe(final ObservableEmitter<BaseResponse<GetLoginResponse>> emitter) throws Exception {
+//                final BaseResponse<GetLoginResponse> response =  webService.login(userName, password).execute().body();
+//                if(response.getResult()!=null && response.getStatus() == 200) {
+//                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+//                        @Override
+//                        public void gotResult(int i, String s) {
+//                            if (i == 0 || i == 898001) {
+//                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
+//                                    @Override
+//                                    public void gotResult(int i, String s) {
+//                                        if (i == 0) {
+//                                            UserInfo userInfo = JMessageClient.getMyInfo();
+//                                            userInfo.setNickname(response.getResult().getUser().getNickname());
+//                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
+//                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+//                                                @Override
+//                                                public void gotResult(int i, String s) {
+//
+//                                                }
+//                                            });
+//
+//                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
+//                                                @Override
+//                                                public void gotResult(int i, String s) {
+//                                                    emitter.onNext(response);
+//                                                    emitter.onComplete();
+//                                                }
+//                                            });
+//
+//
+//                                        } else
+//                                            emitter.onError(new ApiException(500, ""));
+//                                    }
+//                                });
+//                            } else
+//                                emitter.onError(new ApiException(500, ""));
+//                        }
+//                    });
+//                }else {
+//                    emitter.onNext(response);
+//                    emitter.onComplete();
+//                }
+//
+//            }
+//        })
+        webService.login(userName, password)
                 .map(new HttpResultFunc<GetLoginResponse>())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())

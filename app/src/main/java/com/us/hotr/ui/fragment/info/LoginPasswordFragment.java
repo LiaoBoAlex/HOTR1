@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.activity.info.ForgotPasswordActivity;
 import com.us.hotr.ui.activity.info.LoginActivity;
@@ -118,10 +120,11 @@ public class LoginPasswordFragment extends Fragment {
             SubscriberListener mListener = new SubscriberListener<GetLoginResponse>() {
                 @Override
                 public void onNext(final GetLoginResponse result) {
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserID(result.getJsessionid());
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserInfo(result.getUser());
-                    ((LoginActivity) getActivity()).loginSuccess();
-                    getActivity().finish();
+//                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserID(result.getJsessionid());
+////                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserInfo(result.getUser());
+////                    ((LoginActivity) getActivity()).loginSuccess();
+////                    getActivity().finish();
+                    GlobalBus.getBus().post(new Events.Login(result));
 
                 }
             };

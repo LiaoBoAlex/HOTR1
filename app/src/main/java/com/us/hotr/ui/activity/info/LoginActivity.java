@@ -1,6 +1,7 @@
 package com.us.hotr.ui.activity.info;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,8 @@ import android.widget.ImageView;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
@@ -23,12 +26,17 @@ import com.us.hotr.customview.DeactivatedViewPager;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.ui.dialog.VoucherDialog;
 import com.us.hotr.ui.fragment.info.LoginPasswordFragment;
 import com.us.hotr.ui.fragment.info.LoginPhoneFragment;
 import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import cn.jpush.android.api.JPushInterface;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
@@ -145,47 +153,70 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void getMessage(final Events.WechatLogin wechatLogin) {
-        if (wechatLogin.getGetLoginResponse().getUser() != null) {
-            if (wechatLogin.getGetLoginResponse().getUser().getMobile() != null
-                    && !wechatLogin.getGetLoginResponse().getUser().getMobile().isEmpty()) {
-                JMessageClient.register("user" + wechatLogin.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
-                    @Override
-                    public void gotResult(int i, String s) {
-                        if (i == 0 || i == 898001) {
-                            JMessageClient.login("user" + wechatLogin.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
-                                @Override
-                                public void gotResult(int i, String s) {
-                                    if (i == 0) {
-                                        UserInfo userInfo = JMessageClient.getMyInfo();
-                                        userInfo.setNickname(wechatLogin.getGetLoginResponse().getUser().getNickname());
-                                        userInfo.setAddress(wechatLogin.getGetLoginResponse().getUser().getHead_portrait());
-                                        JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
-                                            @Override
-                                            public void gotResult(int i, String s) {
+    public void getMessage(final Events.Login login) {
+        if (login.getGetLoginResponse().getUser() != null
+                && login.getGetLoginResponse().getUser().getMobile() != null
+                && !login.getGetLoginResponse().getUser().getMobile().isEmpty()) {
+            JMessageClient.register("user" + login.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
+                @Override
+                public void gotResult(int i, String s) {
+                    if (i == 0 || i == 898001) {
+                        JMessageClient.login("user" + login.getGetLoginResponse().getUser().getUserId(), "123456", new BasicCallback() {
+                            @Override
+                            public void gotResult(int i, String s) {
+                                if (i == 0) {
+                                    UserInfo userInfo = JMessageClient.getMyInfo();
+                                    userInfo.setNickname(login.getGetLoginResponse().getUser().getNickname());
+                                    userInfo.setAddress(login.getGetLoginResponse().getUser().getHead_portrait());
+                                    JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
+                                        @Override
+                                        public void gotResult(int i, String s) {
 
-                                            }
-                                        });
-                                    }
+                                        }
+                                    });
                                 }
-                            });
-                        }
+                            }
+                        });
+                    }
+                }
+            });
+            int i = Integer.parseInt(login.getGetLoginResponse().getUser().getMobile().substring(2));
+            JPushInterface.setAlias(this, i, login.getGetLoginResponse().getUser().getMobile());
+            HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(login.getGetLoginResponse().getJsessionid());
+            HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(login.getGetLoginResponse().getUser());
+            if(login.getGetLoginResponse().isFirst_register()) {
+                getNewUserVoucher();
+            }else {
+                finish();
+            }
+            loginSuccess();
+        } else {
+            Intent i = new Intent(this, ChangePhoneNumberActivity.class);
+            Bundle b = new Bundle();
+            b.putInt(Constants.PARAM_TYPE, ChangePhoneNumberActivity.TYPE_SET_PASSWORD);
+            b.putSerializable(Constants.PARAM_DATA, login.getGetLoginResponse().getWechatUser());
+            b.putString(Constants.PARAM_ID, login.getGetLoginResponse().getJsessionid());
+            i.putExtras(b);
+            startActivityForResult(i, 0);
+        }
+    }
+
+    private void getNewUserVoucher(){
+        SubscriberListener mListener = new SubscriberListener<String>() {
+            @Override
+            public void onNext(final String result) {
+                VoucherDialog dialog = new VoucherDialog(LoginActivity.this, R.style.CustomDialog);
+                dialog.show();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        finish();
                     }
                 });
-                HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(wechatLogin.getGetLoginResponse().getJsessionid());
-                HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(wechatLogin.getGetLoginResponse().getUser());
-                loginSuccess();
-                finish();
-            } else {
-                Intent i = new Intent(this, ChangePhoneNumberActivity.class);
-                Bundle b = new Bundle();
-                b.putInt(Constants.PARAM_TYPE, ChangePhoneNumberActivity.TYPE_SET_PASSWORD);
-                b.putSerializable(Constants.PARAM_DATA, wechatLogin.getGetLoginResponse().getUser());
-                b.putString(Constants.PARAM_ID, wechatLogin.getGetLoginResponse().getJsessionid());
-                i.putExtras(b);
-                startActivityForResult(i, 0);
             }
-        }
+        };
+        ServiceClient.getInstance().addAllVoucher(new ProgressSubscriber(mListener, LoginActivity.this),
+                HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), Constants.NEW_USER_VOUCHER);
     }
 
     @Override

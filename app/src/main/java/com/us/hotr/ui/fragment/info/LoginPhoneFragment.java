@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.util.Tools;
@@ -158,32 +160,33 @@ public class LoginPhoneFragment extends Fragment {
             SubscriberListener mListener = new SubscriberListener<GetLoginResponse>() {
                 @Override
                 public void onNext(final GetLoginResponse result) {
-                    JMessageClient.register("user" + result.getUser().getUserId(), "123456", new BasicCallback() {
-                        @Override
-                        public void gotResult(int i, String s) {
-                            if(i == 0 || i ==898001){
-                                JMessageClient.login("user" + result.getUser().getUserId(), "123456", new BasicCallback() {
-                                    @Override
-                                    public void gotResult(int i, String s) {
-                                        if(i == 0){
-                                            UserInfo userInfo = JMessageClient.getMyInfo();
-                                            userInfo.setNickname(result.getUser().getNickname());
-                                            userInfo.setAddress(result.getUser().getHead_portrait());
-                                            JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
-                                                @Override
-                                                public void gotResult(int i, String s) {
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    });
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserID(result.getJsessionid());
-                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserInfo(result.getUser());
-                    ((LoginActivity) getActivity()).loginSuccess();
-                    getActivity().finish();
+//                    JMessageClient.register("user" + result.getUser().getUserId(), "123456", new BasicCallback() {
+////                        @Override
+////                        public void gotResult(int i, String s) {
+////                            if(i == 0 || i ==898001){
+////                                JMessageClient.login("user" + result.getUser().getUserId(), "123456", new BasicCallback() {
+////                                    @Override
+////                                    public void gotResult(int i, String s) {
+////                                        if(i == 0){
+////                                            UserInfo userInfo = JMessageClient.getMyInfo();
+////                                            userInfo.setNickname(result.getUser().getNickname());
+////                                            userInfo.setAddress(result.getUser().getHead_portrait());
+////                                            JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
+////                                                @Override
+////                                                public void gotResult(int i, String s) {
+////                                                }
+////                                            });
+////                                        }
+////                                    }
+////                                });
+////                            }
+////                        }
+////                    });
+////                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserID(result.getJsessionid());
+////                    HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeUserInfo(result.getUser());
+////                    ((LoginActivity) getActivity()).loginSuccess();
+////                    getActivity().finish();
+                    GlobalBus.getBus().post(new Events.Login(result));
                 }
             };
             ServiceClient.getInstance().loginAndRegister(new ProgressSubscriber(mListener, getContext()),

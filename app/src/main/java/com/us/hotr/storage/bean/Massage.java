@@ -27,7 +27,7 @@ public class Massage implements Serializable {
     private String productName;
     @SerializedName(value = "productType", alternate = {"product_type"})
     private int productType;
-    @SerializedName(value = "productUsp", alternate = {"product_usp"})
+//    @SerializedName(value = "productUsp", alternate = {"product_usp"})
     private String productUsp;
     @SerializedName(value = "serviceTime", alternate = {"service_time"})
     private int serviceTime;

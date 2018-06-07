@@ -110,9 +110,9 @@ public class Events {
         }
     }
 
-    public static class WechatLogin{
+    public static class Login{
         private GetLoginResponse getLoginResponse;
-        public WechatLogin(GetLoginResponse response){
+        public Login(GetLoginResponse response){
             getLoginResponse = response;
         }
 

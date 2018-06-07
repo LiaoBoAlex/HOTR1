@@ -30,8 +30,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
@@ -71,8 +69,6 @@ import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
-
-import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
