@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.us.hotr.Constants;
+import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.info.ChatActivity;
 
 import cn.jpush.im.android.api.JMessageClient;
@@ -36,14 +37,15 @@ public class NotificationClickEventReceiver {
         }
         Message msg = notificationClickEvent.getMessage();
         if (msg != null) {
-            String targetId = msg.getFromUser().getUserName();
-            ConversationType type = msg.getTargetType();
-            Conversation conv;
-            conv = JMessageClient.getSingleConversation(targetId, "");
+            Conversation conv = JMessageClient.getSingleConversation(msg.getFromUser().getUserName(), "");
             conv.resetUnreadCount();
             Intent notificationIntent = new Intent(mContext, ChatActivity.class);
             Bundle b = new Bundle();
-            b.putLong(Constants.PARAM_DATA, Long.parseLong(targetId.replace("user", "")));
+            User user = new User();
+            user.setUserId(Long.parseLong(msg.getFromUser().getUserName().replace("user", "")));
+            user.setNickname(msg.getFromUser().getNickname());
+            user.setHead_portrait(msg.getFromUser().getAddress());
+            b.putSerializable(Constants.PARAM_DATA, user);
             notificationIntent.putExtras(b);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_CLEAR_TOP);

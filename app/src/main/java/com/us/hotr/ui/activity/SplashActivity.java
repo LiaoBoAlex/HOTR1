@@ -1,10 +1,12 @@
 package com.us.hotr.ui.activity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,7 +18,9 @@ import android.widget.VideoView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.HOTRApplication;
+import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
@@ -31,6 +35,7 @@ public class SplashActivity extends AppCompatActivity {
     private ImageView ivImage;
     private VideoView vvVideo;
     private boolean isVideoPlaying = false;
+    private String videoPath;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +53,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void playVideo(final boolean isVideoDownloaded, final String videoPath){
+        this.videoPath = videoPath;
         AlphaAnimation alphaAnimation=new AlphaAnimation(1.0f, 0.0f);
         alphaAnimation.setDuration(1000);
         alphaAnimation.setStartOffset(1000);
@@ -61,19 +67,23 @@ public class SplashActivity extends AppCompatActivity {
             public void onAnimationEnd(Animation animation) {
                 ivImage.setVisibility(View.GONE);
                 if(isVideoDownloaded) {
-                    vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            isVideoPlaying = false;
-                            startActivity();
-                        }
-                    });
+                    if (PermissionUtil.hasStorageWritePermission(SplashActivity.this)) {
+                        vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                isVideoPlaying = false;
+                                startActivity();
+                            }
+                        });
 
-                    vvVideo.setVisibility(View.VISIBLE);
-                    Uri videoUri = Uri.parse(videoPath);
-                    vvVideo.setVideoURI(videoUri);
-                    vvVideo.start();
-                    isVideoPlaying = true;
+                        vvVideo.setVisibility(View.VISIBLE);
+                        Uri videoUri = Uri.parse(videoPath);
+                        vvVideo.setVideoURI(videoUri);
+                        vvVideo.start();
+                        isVideoPlaying = true;
+                    } else {
+                        PermissionUtil.requestStoragePermission(SplashActivity.this);
+                    }
                 }
                 else{
                     startActivity();
@@ -160,6 +170,45 @@ public class SplashActivity extends AppCompatActivity {
             i.putExtras(b);
             startActivity(i);
             SplashActivity.this.finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(isVideoPlaying = true && vvVideo!=null){
+            vvVideo.stopPlayback();
+            isVideoPlaying = false;
+            startActivity();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PermissionUtil.PERMISSIONS_REQUEST_STORAGE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            isVideoPlaying = false;
+                            startActivity();
+                        }
+                    });
+
+                    vvVideo.setVisibility(View.VISIBLE);
+                    Uri videoUri = Uri.parse(videoPath);
+                    vvVideo.setVideoURI(videoUri);
+                    vvVideo.start();
+                    isVideoPlaying = true;
+                }
+                else{
+                    startActivity();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 }

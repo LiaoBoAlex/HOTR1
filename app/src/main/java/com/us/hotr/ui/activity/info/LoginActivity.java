@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -168,10 +169,14 @@ public class LoginActivity extends AppCompatActivity {
                                     UserInfo userInfo = JMessageClient.getMyInfo();
                                     userInfo.setNickname(login.getGetLoginResponse().getUser().getNickname());
                                     userInfo.setAddress(login.getGetLoginResponse().getUser().getHead_portrait());
-                                    JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
+                                    JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
                                         @Override
                                         public void gotResult(int i, String s) {
-
+                                        }
+                                    });
+                                    JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
+                                        @Override
+                                        public void gotResult(int i, String s) {
                                         }
                                     });
                                 }

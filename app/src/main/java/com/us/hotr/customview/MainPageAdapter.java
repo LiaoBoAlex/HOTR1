@@ -19,6 +19,7 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Group;
+import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.storage.bean.Module;
 import com.us.hotr.storage.bean.Post;
@@ -39,6 +40,7 @@ import com.us.hotr.ui.activity.massage.MassageActivity;
 import com.us.hotr.ui.activity.massage.MasseurActivity;
 import com.us.hotr.ui.activity.massage.SpaActivity;
 import com.us.hotr.ui.view.CaseView;
+import com.us.hotr.ui.view.MassageView;
 import com.us.hotr.ui.view.MasseurView;
 import com.us.hotr.ui.view.PostView;
 import com.us.hotr.ui.view.ProductView;
@@ -96,7 +98,8 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final int TYPE_MASSEUR = 10;
     private final int TYPE_SPA = 11;
     private final int TYPE_PRODUCT = 12;
-    public static final int TYPE_GROUP = 13;
+    private final int TYPE_MASSAGE = 13;
+    public static final int TYPE_GROUP = 14;
 
     Context mContext;
     private List<Item> itemList;
@@ -126,6 +129,10 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     if (response.getRecommendYmProductList() != null && response.getRecommendYmProductList().size() > 0)
                         for (Product p : response.getRecommendYmProductList())
                             itemList.add(new Item(TYPE_PRODUCT, p));
+                }else if(module.getModuleTypeId() == TYPE_MASSAGE){
+                    if (response.getRecommendAmProductList() != null && response.getRecommendAmProductList().size() > 0)
+                        for (Massage m : response.getRecommendAmProductList())
+                            itemList.add(new Item(TYPE_MASSAGE, m));
                 }else if (module.getModuleTypeId() == TYPE_GROUP) {
                     itemList.add(new Item(TYPE_GROUP, response.getMyGrouList()));
                 }else
@@ -251,6 +258,14 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    public class MassageHolder extends RecyclerView.ViewHolder {
+        MassageView massageView;
+        public MassageHolder(View view) {
+            super(view);
+            massageView = (MassageView) view;
+        }
+    }
+
 
     public class GroupListHolder extends RecyclerView.ViewHolder {
         RecyclerView mRecyclerView;
@@ -306,6 +321,9 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_PRODUCT:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
                 return new ProductHolder(view);
+            case TYPE_MASSAGE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_massage, parent, false);
+                return new MassageHolder(view);
             case TYPE_GROUP:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_list, parent, false);
                 return new GroupListHolder(view);
@@ -458,6 +476,11 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 productHolder.productView.setData((Product)itemList.get(position).getContent());
                 break;
 
+            case TYPE_MASSAGE:
+                MassageHolder massageHolder = (MassageHolder) holder;
+                massageHolder.massageView.setData((Massage) itemList.get(position).getContent(), -1);
+                break;
+
             case TYPE_GROUP:
                 final GroupListHolder groupListHolder = (GroupListHolder) holder;
 
@@ -508,6 +531,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         case TYPE_POST:
                         case TYPE_GROUP:
                         case TYPE_PRODUCT:
+                        case TYPE_MASSAGE:
                             return 2;
                         default:
                             return 2;

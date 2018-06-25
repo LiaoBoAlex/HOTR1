@@ -23,6 +23,7 @@ import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.info.ChatActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
 import com.us.hotr.util.Tools;
@@ -259,7 +260,11 @@ public class NoticeMessageFragment extends BaseLoadingFragment {
                     conversation.resetUnreadCount();
                     Intent i = new Intent(getActivity(), ChatActivity.class);
                     Bundle b = new Bundle();
-                    b.putLong(Constants.PARAM_DATA, Long.parseLong(userInfo.getUserName().replace("user", "")));
+                    User user = new User();
+                    user.setUserId(Long.parseLong(userInfo.getUserName().replace("user", "")));
+                    user.setNickname(userInfo.getNickname());
+                    user.setHead_portrait(userInfo.getAddress());
+                    b.putSerializable(Constants.PARAM_DATA, user);
                     i.putExtras(b);
                     startActivity(i);
                 }

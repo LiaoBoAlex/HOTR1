@@ -99,7 +99,8 @@ public class ChatActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userId = "user"+getIntent().getExtras().getLong(Constants.PARAM_DATA);
+        user = (User)getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+        userId = "user"+user.getUserId();
         if(Tools.isUserLogin(getApplicationContext())) {
             me = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo();
             meId = "user"+me.getUserId();
@@ -184,21 +185,24 @@ public class ChatActivity extends BaseActivity {
                     mConversation = JMessageClient.getSingleConversation(userId);
                     if(mConversation == null)
                         mConversation =  Conversation.createSingleConversation(userId, "");
-                    JMessageClient.getUserInfo(((UserInfo)mConversation.getTargetInfo()).getUserName(), new GetUserInfoCallback() {
-                        @Override
-                        public void gotResult(int i, String s, UserInfo userInfo) {
-                            user = new User();
-                            user.setUserId(getIntent().getExtras().getLong(Constants.PARAM_DATA));
-                            String name = userInfo.getNickname();
-                            if(name == null || name.isEmpty())
-                                name = userInfo.getUserName();
-                            user.setNickname(name);
-                            user.setHead_portrait(userInfo.getAddress());
-                            List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
-                            emitter.onNext(list);
-                            emitter.onComplete();
-                        }
-                    });
+                    List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
+                    emitter.onNext(list);
+                    emitter.onComplete();
+//                    JMessageClient.getUserInfo(((UserInfo)mConversation.getTargetInfo()).getUserName(), new GetUserInfoCallback() {
+//                        @Override
+//                        public void gotResult(int i, String s, UserInfo userInfo) {
+//                            user = new User();
+//                            user.setUserId(getIntent().getExtras().getLong(Constants.PARAM_DATA));
+//                            String name = userInfo.getNickname();
+//                            if(name == null || name.isEmpty())
+//                                name = userInfo.getUserName();
+//                            user.setNickname(name);
+//                            user.setHead_portrait(userInfo.getAddress());
+//                            List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
+//                            emitter.onNext(list);
+//                            emitter.onComplete();
+//                        }
+//                    });
 
                 }else {
                     JMessageClient.login(meId, "123456", new BasicCallback() {
@@ -210,18 +214,21 @@ public class ChatActivity extends BaseActivity {
                                 mConversation = JMessageClient.getSingleConversation(userId);
                                 if (mConversation == null)
                                     mConversation = Conversation.createSingleConversation(userId, "");
-                                JMessageClient.getUserInfo(((UserInfo)mConversation.getTargetInfo()).getUserName(), new GetUserInfoCallback() {
-                                    @Override
-                                    public void gotResult(int i, String s, UserInfo userInfo) {
-                                        user = new User();
-                                        user.setUserId(getIntent().getExtras().getLong(Constants.PARAM_DATA));
-                                        user.setNickname(userInfo.getNickname());
-                                        user.setHead_portrait(userInfo.getAddress());
-                                        List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
-                                        emitter.onNext(list);
-                                        emitter.onComplete();
-                                    }
-                                });
+                                List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
+                                emitter.onNext(list);
+                                emitter.onComplete();
+//                                JMessageClient.getUserInfo(((UserInfo)mConversation.getTargetInfo()).getUserName(), new GetUserInfoCallback() {
+//                                    @Override
+//                                    public void gotResult(int i, String s, UserInfo userInfo) {
+//                                        user = new User();
+//                                        user.setUserId(getIntent().getExtras().getLong(Constants.PARAM_DATA));
+//                                        user.setNickname(userInfo.getNickname());
+//                                        user.setHead_portrait(userInfo.getAddress());
+//                                        List<Message> list = mConversation.getMessagesFromNewest(messageList.size(), MESSAGE_PER_PAGE);
+//                                        emitter.onNext(list);
+//                                        emitter.onComplete();
+//                                    }
+//                                });
                             }
                         }
                     });

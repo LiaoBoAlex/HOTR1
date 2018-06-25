@@ -169,7 +169,12 @@ public class ChangePhoneNumberActivity extends BaseActivity {
                                                 UserInfo userInfo = JMessageClient.getMyInfo();
                                                 userInfo.setNickname(result.getUser().getNickname());
                                                 userInfo.setAddress(result.getUser().getHead_portrait());
-                                                JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
+                                                JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+                                                    @Override
+                                                    public void gotResult(int i, String s) {
+                                                    }
+                                                });
+                                                JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
                                                     @Override
                                                     public void gotResult(int i, String s) {
                                                     }

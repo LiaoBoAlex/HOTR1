@@ -143,7 +143,7 @@ public class FriendActivity extends BaseLoadingActivity {
                     Bundle b = new Bundle();
                     b.putSerializable(Constants.PARAM_DATA, mUser);
                     i.putExtras(b);
-                    startActivity(i);
+                    startActivityForResult(i, 0);
                 }
             });
         }else{
@@ -190,7 +190,7 @@ public class FriendActivity extends BaseLoadingActivity {
                 public void onClick(View view) {
                     Intent i = new Intent(FriendActivity.this, ChatActivity.class);
                     Bundle b = new Bundle();
-                    b.putLong(Constants.PARAM_DATA, mUser.getUserId());
+                    b.putSerializable(Constants.PARAM_DATA, mUser);
                     i.putExtras(b);
                     startActivity(i);
                 }
@@ -239,6 +239,7 @@ public class FriendActivity extends BaseLoadingActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK) {
+            mUser = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo();
             updateUserInfo();
         }
     }

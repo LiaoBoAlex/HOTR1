@@ -73,14 +73,14 @@ import java.util.Map;
  */
 
 public class Tools {
-    //                                                  北京市， 上海市，   成都市，  重庆市， 广州市， 深圳市， 大连市，  杭州市， 南京市
-    private static final long[] backendMassageCityCode={120100, 200100,   210100,  220100, 230100, 230200, 240100,  250100, 260100};
-    private static final long[] backendProductCityCode={110100, 140100,   130100,  150100, 160100, 160200, 170100,  180100, 190100};
-    private static final long[] baiduCityCode=         {131,    289,      75,      132,    257,    340,    167,     179,    315};
+    //                                                  北京市， 上海市，   成都市，  重庆市， 广州市， 深圳市， 大连市，  杭州市， 南京市,  苏州,    郑州,   台北
+    private static final long[] backendMassageCityCode={120100, 200100,   210100,  220100, 230100, 230200, 240100,  250100, 260100, 260200, 270100, 280100};
+    private static final long[] backendProductCityCode={110100, 140100,   130100,  150100, 160100, 160200, 170100,  180100, 190100, 190200, 290100, 250100};
+    private static final long[] baiduCityCode=         {131,    289,      75,      132,    257,    340,    167,     179,    315,    224,    268,    9002};
 
-    private static final String[] baiduProvinceName =      {"北京市", "上海市", "四川省", "重庆市", "广东省", "辽宁省", "浙江省", "江苏省"};
-    private static final long[] backendMassageProvinceCode={120000,  200000,   210000,  220000,  230000,  240000,   250000,  260000};
-    private static final long[] backendProductProvinceCode={110000,  140000,   130000,  150000,  160000,  170000,   180000,  190000};
+    private static final String[] baiduProvinceName =      {"北京市", "上海市", "四川省", "重庆市", "广东省", "辽宁省", "浙江省", "江苏省", "河南省", "台湾省"};
+    private static final long[] backendMassageProvinceCode={120000,  200000,   210000,  220000,  230000,  240000,   250000,  260000, 270000, 280000};
+    private static final long[] backendProductProvinceCode={110000,  140000,   130000,  150000,  160000,  170000,   180000,  190000, 290000, 250000};
     public static int getScreenWidth(Context context){
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();

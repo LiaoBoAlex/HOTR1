@@ -325,7 +325,13 @@ public class EditInfoActivity extends BaseActivity {
                 if(userInfo!=null) {
                     userInfo.setNickname(result.getNickname());
                     userInfo.setAddress(result.getHead_portrait());
-                    JMessageClient.updateMyInfo(UserInfo.Field.all, userInfo, new BasicCallback() {
+                    JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+
+                        }
+                    });
+                    JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
                         @Override
                         public void gotResult(int i, String s) {
 
@@ -338,6 +344,7 @@ public class EditInfoActivity extends BaseActivity {
                     File file = new File(avatarPath.replace("ZIP", "crop"));
                     file.delete();
                 }
+                setResult(RESULT_OK);
                 finish();
             }
         };
