@@ -19,6 +19,7 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Group;
+import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.storage.bean.Module;
@@ -28,6 +29,7 @@ import com.us.hotr.storage.bean.Spa;
 import com.us.hotr.ui.activity.WebViewActivity;
 import com.us.hotr.ui.activity.beauty.CaseActivity;
 import com.us.hotr.ui.activity.beauty.DoctorActivity;
+import com.us.hotr.ui.activity.beauty.HospitalActivity;
 import com.us.hotr.ui.activity.beauty.ListActivity;
 import com.us.hotr.ui.activity.beauty.ListWithSearchActivity;
 import com.us.hotr.ui.activity.beauty.ProductActivity;
@@ -36,15 +38,19 @@ import com.us.hotr.ui.activity.beauty.SubjectActivity;
 import com.us.hotr.ui.activity.found.AllGroupActivity;
 import com.us.hotr.ui.activity.found.GroupDetailActivity;
 import com.us.hotr.ui.activity.found.NearbyActivity;
+import com.us.hotr.ui.activity.info.InviteFriendActivity;
+import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.ui.activity.massage.MassageActivity;
 import com.us.hotr.ui.activity.massage.MasseurActivity;
 import com.us.hotr.ui.activity.massage.SpaActivity;
 import com.us.hotr.ui.view.CaseView;
+import com.us.hotr.ui.view.HospitalView;
 import com.us.hotr.ui.view.MassageView;
 import com.us.hotr.ui.view.MasseurView;
 import com.us.hotr.ui.view.PostView;
 import com.us.hotr.ui.view.ProductView;
 import com.us.hotr.ui.view.SpaView;
+import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.response.GetHomePageResponse;
 
 import java.util.ArrayList;
@@ -99,10 +105,12 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final int TYPE_SPA = 11;
     private final int TYPE_PRODUCT = 12;
     private final int TYPE_MASSAGE = 13;
-    public static final int TYPE_GROUP = 14;
+    private final int TYPE_HOSPITAL = 14;
+    public static final int TYPE_GROUP = 15;
 
     Context mContext;
     private List<Item> itemList;
+    int masseurPosition, spaPosition;
 
     public MainPageAdapter(Context mContext, GetHomePageResponse response) {
         this.mContext = mContext;
@@ -118,10 +126,12 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         for (Post c : response.getRecommendHotTopicList())
                             itemList.add(new Item(TYPE_POST, c));
                 }else if(module.getModuleTypeId() == TYPE_MASSEUR){
+                    masseurPosition = itemList.size();
                     if (response.getRecommendMassagistList() != null && response.getRecommendMassagistList().size() > 0)
                         for (Masseur c : response.getRecommendMassagistList())
                             itemList.add(new Item(TYPE_MASSEUR, c));
                 }else if(module.getModuleTypeId() == TYPE_SPA) {
+                    spaPosition = itemList.size();
                     if (response.getRecommendMassageList() != null && response.getRecommendMassageList().size() > 0)
                         for (Spa c : response.getRecommendMassageList())
                             itemList.add(new Item(TYPE_SPA, c));
@@ -133,6 +143,10 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     if (response.getRecommendAmProductList() != null && response.getRecommendAmProductList().size() > 0)
                         for (Massage m : response.getRecommendAmProductList())
                             itemList.add(new Item(TYPE_MASSAGE, m));
+                }else if(module.getModuleTypeId() == TYPE_HOSPITAL){
+                    if (response.getRecommendHospitalList() != null && response.getRecommendHospitalList().size() > 0)
+                        for (Hospital h : response.getRecommendHospitalList())
+                            itemList.add(new Item(TYPE_HOSPITAL, h));
                 }else if (module.getModuleTypeId() == TYPE_GROUP) {
                     itemList.add(new Item(TYPE_GROUP, response.getMyGrouList()));
                 }else
@@ -266,6 +280,13 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    public class HospitalHolder extends RecyclerView.ViewHolder {
+        HospitalView hospitalView;
+        public HospitalHolder(View view) {
+            super(view);
+            hospitalView = (HospitalView) view;
+        }
+    }
 
     public class GroupListHolder extends RecyclerView.ViewHolder {
         RecyclerView mRecyclerView;
@@ -324,6 +345,9 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_MASSAGE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_massage, parent, false);
                 return new MassageHolder(view);
+            case TYPE_HOSPITAL:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_hospital, parent, false);
+                return new HospitalHolder(view);
             case TYPE_GROUP:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_list, parent, false);
                 return new GroupListHolder(view);
@@ -417,7 +441,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 final Module ad3Module = (Module) itemList.get(position).getContent();
                 for (int i = 0; i < ad3Holder.mImageViewList.size(); i++) {
                     final int finalI = i;
-                    Glide.with(mContext).load(ad3Module.getBannerList().get(i).getBannerImg()).dontAnimate().placeholder(R.drawable.placeholder_ad1).error(R.drawable.placeholder_ad1).into(ad3Holder.mImageViewList.get(i));
+                    Glide.with(mContext).load(ad3Module.getBannerList().get(i).getBannerImg()).dontAnimate().placeholder(R.drawable.placeholder_ad1).error(R.drawable.placeholder_ad3).into(ad3Holder.mImageViewList.get(i));
                     ad3Holder.mImageViewList.get(i).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -443,17 +467,21 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 PostHolder postHolder = (PostHolder) holder;
                 postHolder.postView.setData((Post)itemList.get(position).getContent());
                 postHolder.postView.enableEdit(false);
+                if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_POST)
+                    postHolder.postView.showDivider(false);
                 break;
 
             case TYPE_CASE:
                 CaseHolder caseHolder = (CaseHolder) holder;
                 caseHolder.caseView.setData((Case)itemList.get(position).getContent());
                 caseHolder.caseView.enableEdit(false);
+                if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_CASE)
+                    caseHolder.caseView.showDivider(false);
                 break;
 
             case TYPE_MASSEUR:
                 MasseurHolder masseurHolder = (MasseurHolder) holder;
-                masseurHolder.masseurView.setData((Masseur)itemList.get(position).getContent(), position);
+                masseurHolder.masseurView.setData((Masseur)itemList.get(position).getContent(), position-masseurPosition, true);
                 break;
 
 
@@ -468,17 +496,28 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             case TYPE_SPA:
                 SPAHolder spaHolder = (SPAHolder) holder;
-                spaHolder.spaView.setData((Spa)itemList.get(position).getContent(), position);
+                spaHolder.spaView.setData((Spa)itemList.get(position).getContent(), position-spaPosition, true);
                 break;
 
             case TYPE_PRODUCT:
                 ProductHolder productHolder = (ProductHolder) holder;
                 productHolder.productView.setData((Product)itemList.get(position).getContent());
+                if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_PRODUCT)
+                    productHolder.productView.showDivider(false);
                 break;
 
             case TYPE_MASSAGE:
                 MassageHolder massageHolder = (MassageHolder) holder;
                 massageHolder.massageView.setData((Massage) itemList.get(position).getContent(), -1);
+                if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_MASSAGE)
+                    massageHolder.massageView.showDivider(false);
+                break;
+
+            case TYPE_HOSPITAL:
+                HospitalHolder hospitalHolder = (HospitalHolder) holder;
+                hospitalHolder.hospitalView.setData((Hospital) itemList.get(position).getContent());
+                if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_HOSPITAL)
+                    hospitalHolder.hospitalView.showDivider(false);
                 break;
 
             case TYPE_GROUP:
@@ -532,6 +571,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         case TYPE_GROUP:
                         case TYPE_PRODUCT:
                         case TYPE_MASSAGE:
+                        case TYPE_HOSPITAL:
                             return 2;
                         default:
                             return 2;
@@ -577,29 +617,28 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case 4:
                 i = new Intent(mContext, SubjectActivity.class);
                 Bundle b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
             case 5:
                 i = new Intent(mContext, ProductActivity.class);
                 b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
             case 6:
                 i = new Intent(mContext, DoctorActivity.class);
                 b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
             case 7:
-                i = new Intent(mContext, ListWithSearchActivity.class);
+                i = new Intent(mContext, HospitalActivity.class);
                 b = new Bundle();
-                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.case_list_title):title);
-                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
@@ -624,21 +663,21 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case 11:
                 i = new Intent(mContext, MasseurActivity.class);
                 b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
             case 12:
                 i = new Intent(mContext, SpaActivity.class);
                 b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
             case 13:
                 i = new Intent(mContext, MassageActivity.class);
                 b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
@@ -646,7 +685,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 i = new Intent(mContext, ListWithSearchActivity.class);
                 i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.massage_list_title):title);
                 i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
-                i.putExtra(Constants.PARAM_ID, Integer.parseInt(content.getLinkUrl()));
+                i.putExtra(Constants.PARAM_ID, Integer.parseInt(content.getLinkUrl().trim()));
                 mContext.startActivity(i);
                 break;
             case 15:
@@ -658,7 +697,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case 16:
                 i = new Intent(mContext, CaseActivity.class);
                 b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
                 i.putExtras(b);
                 mContext.startActivity(i);
@@ -666,25 +705,39 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case 17:
                 i = new Intent(mContext, GroupDetailActivity.class);
                 b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
             case 18:
                 i = new Intent(mContext, CaseActivity.class);
                 b = new Bundle();
-                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl()));
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
             case 19:
-                i = new Intent(mContext, WebViewActivity.class);
-                b = new Bundle();
-                b.putString(Constants.PARAM_DATA, content.getLinkUrl());
-                b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_URL);
-                i.putExtras(b);
-                mContext.startActivity(i);
+                if(Constants.SHARE_URL.equals(content.getLinkUrl().trim())){
+                   if(Tools.isUserLogin(mContext)){
+                       mContext.startActivity(new Intent(mContext, InviteFriendActivity.class));
+                   }else{
+                       LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                           @Override
+                           public void onLoginSuccess() {
+                               mContext.startActivity(new Intent(mContext, InviteFriendActivity.class));
+                           }
+                       });
+                       mContext.startActivity(new Intent(mContext, LoginActivity.class));
+                   }
+                }else {
+                    i = new Intent(mContext, WebViewActivity.class);
+                    b = new Bundle();
+                    b.putString(Constants.PARAM_DATA, content.getLinkUrl().trim());
+                    b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_URL);
+                    i.putExtras(b);
+                    mContext.startActivity(i);
+                }
                 break;
             case 20:
                 i = new Intent(mContext, NearbyActivity.class);

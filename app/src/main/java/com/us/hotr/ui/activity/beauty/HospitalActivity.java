@@ -368,7 +368,9 @@ public class HospitalActivity extends BaseLoadingActivity {
                 case TYPE_HEADER:
                     final HospitalHeaderHolder hospitalHeaderHolder = (HospitalHeaderHolder) holder;
                     hospitalHeaderHolder.tvHospital.setText(hospitalDetail.getDetail().getHospital_type());
-                    hospitalHeaderHolder.tvAddress.setText(hospitalDetail.getDetail().getHospital_address());
+                    hospitalHeaderHolder.tvAddress.setText(hospitalDetail.getDetail().getCityName() +
+                            hospitalDetail.getDetail().getAreaName() +
+                            hospitalDetail.getDetail().getHospital_address());
                     hospitalHeaderHolder.tvTime.setText(Tools.convertTime(hospitalDetail.getDetail().getOpenTimeStart())+ "-" + Tools.convertTime(hospitalDetail.getDetail().getOpenTimeOver()));
                     hospitalHeaderHolder.rlAddress.setOnClickListener(new View.OnClickListener() {
                         @Override

@@ -24,6 +24,7 @@ import com.us.hotr.ui.activity.massage.SpaActivity;
 public class SpaView extends FrameLayout {
     private TextView tvName, tvAddress, tvAppointment;
     private ImageView ivAvatar;
+    private ConstraintLayout clContainer;
 
     public SpaView(Context context) {
         super(context);
@@ -41,18 +42,31 @@ public class SpaView extends FrameLayout {
         tvAddress = (TextView) findViewById(R.id.tv_place);
         tvAppointment = (TextView) findViewById(R.id.tv_number);
         ivAvatar = (ImageView) findViewById(R.id.iv_avatar);
+        clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
     }
 
-    public void setData(final Spa spa, int position){
-        if(position%2==0) {
-            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) ivAvatar.getLayoutParams();
-            lp.setMargins(12, 0, 6, 0);
-            ivAvatar.setLayoutParams(lp);
-        }
-        else {
-            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) ivAvatar.getLayoutParams();
-            lp.setMargins(6, 0, 12, 0);
-            ivAvatar.setLayoutParams(lp);
+    public void setData(final Spa spa, int position, boolean isWhiteFrame){
+        if(!isWhiteFrame){
+            if(position%2==0) {
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) clContainer.getLayoutParams();
+                lp.setMargins(12, 6, 6, 6);
+                clContainer.setLayoutParams(lp);
+            }
+            else {
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) clContainer.getLayoutParams();
+                lp.setMargins(6, 6, 12, 6);
+                clContainer.setLayoutParams(lp);
+            }
+        }else {
+            if (position % 2 == 0) {
+                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) ivAvatar.getLayoutParams();
+                lp.setMargins(12, 0, 6, 0);
+                ivAvatar.setLayoutParams(lp);
+            } else {
+                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) ivAvatar.getLayoutParams();
+                lp.setMargins(6, 0, 12, 0);
+                ivAvatar.setLayoutParams(lp);
+            }
         }
         Glide.with(getContext()).load(spa.getMassageLogo()).dontAnimate().placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
         tvAddress.setText(spa.getLandmarkName());

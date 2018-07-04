@@ -29,6 +29,7 @@ public class HospitalView extends FrameLayout {
     private TextView tvName, tvTitle1, tvTitle2, tvAppointment, tvCase;
     private ImageView ivAvatar, ivDelete;
     private FlowLayout flSubject;
+    private View vDivider;
 
     private ItemSelectedListener itemSelectedListener;
     private Hospital hospital;
@@ -54,6 +55,7 @@ public class HospitalView extends FrameLayout {
         ivAvatar = (ImageView) findViewById(R.id.img_avator);
         flSubject = (FlowLayout) findViewById(R.id.fl_subject);
         ivDelete = (ImageView) findViewById(R.id.iv_delete);
+        vDivider = findViewById(R.id.v_divider);
 
         flSubject.setHorizontalSpacing(6);
         flSubject.setTextPaddingH(14);
@@ -71,7 +73,12 @@ public class HospitalView extends FrameLayout {
         if(hospital.getGood_at_project_list()!=null && hospital.getGood_at_project_list().size()>0) {
             for (Hospital.Subject s : hospital.getGood_at_project_list())
                 subjects.add(s.getType_name());
-            flSubject.setFlowLayout(subjects, null);
+            flSubject.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
+                @Override
+                public void onItemClick(String content, int position) {
+
+                }
+            });
         }else
             flSubject.setVisibility(View.GONE);
 
@@ -85,6 +92,13 @@ public class HospitalView extends FrameLayout {
                 getContext().startActivity(i);
             }
         });
+    }
+
+    public void showDivider(boolean show){
+        if(show)
+            vDivider.setVisibility(View.VISIBLE);
+        else
+            vDivider.setVisibility(View.GONE);
     }
 
     public void setItemSelectedListener(ItemSelectedListener listener){

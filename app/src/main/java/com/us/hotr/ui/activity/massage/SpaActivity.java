@@ -349,7 +349,7 @@ public class SpaActivity extends BaseLoadingActivity {
                 case TYPE_MASSEUR:
                     final Masseur masseur = (Masseur)itemList.get(position).getContent();
                     MasseurHolder masseurHolder = (MasseurHolder) holder;
-                    masseurHolder.masseurView.setData(masseur, position);
+                    masseurHolder.masseurView.setData(masseur, position, true);
                     break;
                 case TYPE_HEADER:
                     final SpaHeaderHolder spaHeaderHolder = (SpaHeaderHolder) holder;

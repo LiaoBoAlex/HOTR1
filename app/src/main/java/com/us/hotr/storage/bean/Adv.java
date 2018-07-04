@@ -8,9 +8,18 @@ import java.io.Serializable;
 
 public class Adv implements Serializable {
     private String forwart_url;
+    private String forwart_type;
     private String forward_model;
     private String image;
-    private Params params;
+    private String params;
+
+    public String getForwart_type() {
+        return forwart_type;
+    }
+
+    public void setForwart_type(String forwart_type) {
+        this.forwart_type = forwart_type;
+    }
 
     public String getForwart_url() {
         return forwart_url;
@@ -36,11 +45,11 @@ public class Adv implements Serializable {
         this.image = image;
     }
 
-    public Params getParams() {
+    public String getParams() {
         return params;
     }
 
-    public void setParams(Params params) {
+    public void setParams(String params) {
         this.params = params;
     }
 

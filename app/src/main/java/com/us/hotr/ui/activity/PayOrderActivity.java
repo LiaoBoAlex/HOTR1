@@ -22,7 +22,9 @@ import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.AliPayResult;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.request.GetAppVersionRequest;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -74,6 +76,13 @@ public class PayOrderActivity extends BaseActivity {
 
     @Subscribe
     public void getMessage(Events.PaymentSuccess paymentSuccess) {
+        SubscriberListener mListener = new SubscriberListener<String>() {
+            @Override
+            public void onNext(String result) {
+            }
+        };
+        ServiceClient.getInstance().isFirstOrder(new SilentSubscriber(mListener, this, null),
+                HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), new GetAppVersionRequest());
         Intent i = new Intent(this, PaySuccessActivity.class);
         Bundle b = new Bundle();
         b.putBoolean(PARAM_FROM_ORDED_LIST, getIntent().getExtras().getBoolean(PARAM_FROM_ORDED_LIST, false));

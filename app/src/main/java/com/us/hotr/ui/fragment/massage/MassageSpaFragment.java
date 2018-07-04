@@ -150,7 +150,7 @@ public class MassageSpaFragment extends Fragment {
                 case VIEW_TYPE_MASSEUR:
                     final Masseur masseur = (Masseur) itemList.get(position).getContent();
                     MasseurHolder masseurHolder = (MasseurHolder) holder;
-                    masseurHolder.masseurView.setData(masseur, position);
+                    masseurHolder.masseurView.setData(masseur, position, true);
                     break;
                 case VIEW_TYPE_IMAGE:
                     ImageHolder imageHolder = (ImageHolder) holder;

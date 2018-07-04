@@ -25,6 +25,8 @@ import com.sina.weibo.sdk.utils.Utility;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.receiver.Share;
 import com.us.hotr.ui.HOTRApplication;
 import com.us.hotr.util.Tools;
@@ -93,6 +95,7 @@ public class SinaShareActivity extends AppCompatActivity implements WbShareCallb
     @Override
     public void onWbShareSuccess() {
         Tools.Toast(this, getString(R.string.sina_share_success));
+        GlobalBus.getBus().post(new Events.CreateVoucher());
         finish();
     }
 

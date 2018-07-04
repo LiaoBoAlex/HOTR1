@@ -200,7 +200,7 @@ public class MasseurListFragment extends BaseLoadingFragment {
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             final Masseur masseur = masseurList.get(position);
-            holder.massageView.setData(masseur, position);
+            holder.massageView.setData(masseur, position, false);
         }
 
         @Override

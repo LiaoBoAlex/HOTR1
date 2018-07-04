@@ -56,6 +56,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
 
                 case BaseResp.ErrCode.ERR_OK:
                     Tools.Toast(this, getString(R.string.wechat_share_success));
+                    GlobalBus.getBus().post(new Events.CreateVoucher());
                     break;
             }
             finish();
@@ -70,6 +71,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                     break;
                 case BaseResp.ErrCode.ERR_OK:
                     Tools.Toast(this, getString(R.string.wechat_share_success));
+                    GlobalBus.getBus().post(new Events.CreateVoucher());
                     break;
             }
             finish();

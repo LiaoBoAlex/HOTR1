@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import java.io.InputStream;
@@ -220,6 +221,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         };
+        hideKeyBoard();
         ServiceClient.getInstance().addAllVoucher(new ProgressSubscriber(mListener, LoginActivity.this),
                 HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), Constants.NEW_USER_VOUCHER);
     }
@@ -238,4 +240,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onDestroy();
         GlobalBus.getBus().unregister(this);
     }
+
+    private void hideKeyBoard(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+
+    }
+
 }

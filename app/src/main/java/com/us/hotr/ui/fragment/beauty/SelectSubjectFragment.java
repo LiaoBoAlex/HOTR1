@@ -85,12 +85,14 @@ public class SelectSubjectFragment extends BaseLoadingFragment {
                 if (result != null && result.size() > 0) {
                     if (selectedId >= 0) {
                         for (int i = 0; i < result.size(); i++) {
-                            for (Subject.SubjectL2 s : result.get(i).getChildren()) {
-                                if (s.getProductChild() != null && s.getProductChild().size() > 0) {
-                                    for (Subject.SubjectL2.SubjectL3 s3 : s.getProductChild()) {
-                                        if (s3.getKey() == selectedId) {
-                                            row_index = i;
-                                            break;
+                            if(result.get(i).getChildren()!=null){
+                                for (Subject.SubjectL2 s : result.get(i).getChildren()) {
+                                    if (s.getProductChild() != null && s.getProductChild().size() > 0) {
+                                        for (Subject.SubjectL2.SubjectL3 s3 : s.getProductChild()) {
+                                            if (s3.getKey() == selectedId) {
+                                                row_index = i;
+                                                break;
+                                            }
                                         }
                                     }
                                 }

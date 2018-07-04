@@ -65,6 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/divider2"/>
+
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_subject"
                 android:layout_width="match_parent"
@@ -96,6 +97,7 @@
                     app:layout_constraintStart_toEndOf="@+id/textView11"
                     app:layout_constraintTop_toTopOf="@+id/textView11" />
             </android.support.constraint.ConstraintLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -117,18 +119,20 @@
                     android:textSize="13sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
                 <TextView
                     android:id="@+id/tv_intro"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="18dp"
                     android:layout_marginEnd="12dp"
+                    android:layout_marginTop="18dp"
                     android:textColor="@color/text_grey2"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/tv_payment_type"
-                    app:layout_constraintTop_toTopOf="@+id/tv_payment_type" />
+                    app:layout_constraintTop_toTopOf="parent" />
             </android.support.constraint.ConstraintLayout>
             <View
                 android:layout_width="match_parent"

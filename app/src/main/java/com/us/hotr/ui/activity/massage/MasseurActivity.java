@@ -476,7 +476,7 @@ public class MasseurActivity extends BaseLoadingActivity {
                     }else
                         masseurHeaderHolder.clSubject.setVisibility(View.GONE);
                     final List<String> photoes = Tools.mapToList(Tools.gsonStringToMap(masseurDetail.getMassagist().getMassagistPhotos()));
-                    List<String> bannerUrls = null;
+                    List<String> bannerUrls = new ArrayList<>();
                     if(photoes.size()<4)
                         bannerUrls = photoes;
                     else{

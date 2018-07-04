@@ -144,7 +144,7 @@ public class MassageIntroFragment extends Fragment {
                 case VIEW_TYPE_MASSEUR:
                     final Masseur masseur = (Masseur) itemList.get(position).getContent();
                     MasseurHolder masseurHolder = (MasseurHolder) holder;
-                    masseurHolder.masseurView.setData(masseur, position);
+                    masseurHolder.masseurView.setData(masseur, position, true);
                     break;
                 case VIEW_TYPE_WEBVIEW:
                     ((WebHolder)holder).wvContent.loadData(Tools.getHtmlData(massageDetail.getProduct().getProductDetail()), "text/html; charset=UTF-8", null);

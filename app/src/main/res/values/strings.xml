@@ -314,7 +314,7 @@
     <string name="massage_appointment">已预约 %1$d</string>
     <string name="height">%1$dcm</string>
     <string name="experience">从业经验：%1$d年</string>
-    <string name="all_masseur">查看本院全部技师</string>
+    <string name="all_masseur">查看全部技师</string>
     <string name="all_product">查看本院全部预约</string>
     <string name="masseur">技师团队</string>
     <string name="masseur2">技师</string>

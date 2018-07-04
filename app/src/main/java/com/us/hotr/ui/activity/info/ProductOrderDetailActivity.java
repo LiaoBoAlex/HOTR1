@@ -128,6 +128,7 @@ public class ProductOrderDetailActivity extends BaseLoadingActivity {
         tvPhone.setText(Constants.SUPPORT_LINE);
         if(result.getOrder_payment_state() == 1){
             tvBuyAgain.setVisibility(View.VISIBLE);
+            tvBuyNow.setVisibility(View.GONE);
             tvBuyNow.setText(R.string.go_to_coupon);
             tvBuyAgain.setText(R.string.buy_again);
             tvBuyAgain.setOnClickListener(new View.OnClickListener() {

@@ -1,6 +1,9 @@
 package com.us.hotr;
 
 
+import com.google.gson.Gson;
+import com.us.hotr.storage.bean.VoucherSet;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,7 @@ import java.util.List;
 public class Constants {
 
     public static final String SERVER_URL = "https://hotr.hotr-app.com/hotr-api-web/";
+    public static final String SHARE_URL = "https://hotr.hotr-app.com/hotr-api-web/share";
     public static final int SERVER_TIMEOUT = 30;
     public static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?";
     public static final String WECHAT_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?";
@@ -39,6 +43,27 @@ public class Constants {
         add(6l);add(6l);add(6l);add(6l);add(6l);
         add(7l);add(7l);add(7l);add(7l);add(7l);
         add(8l);add(9l);add(10l);}};
+
+    public static final List<Long> SHARE_FRIEND_VOUCHER = new ArrayList<Long>(){{
+        add(12l);}};
+
+//    public static String getNewUserVoucher(){
+//        List<VoucherSet> voucherSetList = new ArrayList<>();
+//        voucherSetList.add(new VoucherSet(4l, 5));
+//        voucherSetList.add(new VoucherSet(5l, 5));
+//        voucherSetList.add(new VoucherSet(6l, 5));
+//        voucherSetList.add(new VoucherSet(7l, 5));
+//        voucherSetList.add(new VoucherSet(8l, 1));
+//        voucherSetList.add(new VoucherSet(9l, 1));
+//        voucherSetList.add(new VoucherSet(10l, 1));
+//        return new Gson().toJson(voucherSetList);
+//    }
+//
+//    public static String getShareFriendVoucher(){
+//        List<VoucherSet> voucherSetList = new ArrayList<>();
+//        voucherSetList.add(new VoucherSet(12l, 1));
+//        return new Gson().toJson(voucherSetList);
+//    }
 
     public static final int TYPE_PRODUCT = 103;
     public static final int TYPE_HOSPITAL = 101;
@@ -83,8 +108,8 @@ public class Constants {
     public static final String PARAM_CATEGORY= "PARAM_CATEGORY";
 
     public static final int SORT_BY_DEFAULT = 6;
-    public static final int SORT_BY_APPOINTMENT_ASC = 11;
-    public static final int SORT_BY_APPOINTMENT_DESC = 12;
+//    public static final int SORT_BY_APPOINTMENT_ASC = 11;
+//    public static final int SORT_BY_APPOINTMENT_DESC = 12;
     public static final int SORT_BY_PRICE_ASC = 3;
     public static final int SORT_BY_PRICE_DESC = 4;
     public static final int SORT_BY_CASE_ASC = 9;

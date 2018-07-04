@@ -36,6 +36,7 @@ import java.util.List;
 public class CaseView extends FrameLayout {
     private ImageView imgBefore, imgAfter, ivDelete, ivAvatar;
     private TextView tvName, tvTime, tvFollow, tvContent, tvSubject, tvRead, tvComment, tvLike;
+    private View vDivider;
 
     private Case aCase;
     private boolean isFollow, isLiked;
@@ -66,7 +67,7 @@ public class CaseView extends FrameLayout {
         tvRead = (TextView) findViewById(R.id.tv_read);
         tvComment = (TextView) findViewById(R.id.tv_comment);
         tvLike = (TextView) findViewById(R.id.tv_like);
-
+        vDivider = findViewById(R.id.v_divider);
     }
 
     public void setData(final Case c){
@@ -142,6 +143,13 @@ public class CaseView extends FrameLayout {
                 getContext().startActivity(i);
             }
         });
+    }
+
+    public void showDivider(boolean show){
+        if(show)
+            vDivider.setVisibility(View.VISIBLE);
+        else
+            vDivider.setVisibility(View.GONE);
     }
 
     private void followUser(){

@@ -93,6 +93,12 @@ public class Events {
         }
     }
 
+    public static class CreateVoucher{
+        public CreateVoucher(){
+
+        }
+    }
+
     public static class PaymentSuccess{
         public PaymentSuccess(){
 

@@ -405,7 +405,7 @@ public class Tools {
         switch (type){
             case Constants.TYPE_DOCTOR:
             case Constants.TYPE_HOSPITAL:
-                types.add(new Type(Constants.SORT_BY_APPOINTMENT_ASC, mContext.getResources().getString(R.string.filter_appointment)));
+                types.add(new Type(Constants.SORT_BY_AMOUNT_ASC, mContext.getResources().getString(R.string.filter_appointment)));
                 types.add(new Type(Constants.SORT_BY_CASE_ASC, mContext.getResources().getString(R.string.filter_case)));
                 break;
             case Constants.TYPE_SPA:
@@ -436,7 +436,7 @@ public class Tools {
                 types.add(new Type(Constants.SORT_BY_AMOUNT_ASC, mContext.getResources().getString(R.string.filter_amount)));
                 types.add(new Type(Constants.SORT_BY_PRICE_ASC, mContext.getResources().getString(R.string.filter_price_asc)));
                 types.add(new Type(Constants.SORT_BY_PRICE_DESC, mContext.getResources().getString(R.string.filter_price_desc)));
-                types.add(new Type(Constants.SORT_BY_APPOINTMENT_ASC, mContext.getResources().getString(R.string.filter_appointment)));
+                types.add(new Type(Constants.SORT_BY_AMOUNT_ASC, mContext.getResources().getString(R.string.filter_appointment)));
                 break;
         }
         return types;

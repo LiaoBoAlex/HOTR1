@@ -146,22 +146,22 @@ public class ProductListFragment extends BaseLoadingFragment {
         }else{
             if (loadType == Constants.LOAD_MORE) {
                 ServiceClient.getInstance().getProductList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                        keyword, type, hospitalId, doctorId, typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                        keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
             } else {
                 currentPage = 1;
                 if (loadType == Constants.LOAD_PAGE) {
                     if (getActivity() instanceof BaseLoadingActivity)
                         ServiceClient.getInstance().getProductList(new LoadingSubscriber(mListener, (BaseLoadingActivity) getActivity()),
-                                keyword, type, hospitalId, doctorId, typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                                keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
                     else
                         ServiceClient.getInstance().getProductList(new LoadingSubscriber(mListener, this),
-                                keyword, type, hospitalId, doctorId, typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                                keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
                 } else if (loadType == Constants.LOAD_PULL_REFRESH)
                     ServiceClient.getInstance().getProductList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                            keyword, type, hospitalId, doctorId, typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                            keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
                 else if (loadType == Constants.LOAD_DIALOG)
                     ServiceClient.getInstance().getProductList(new ProgressSubscriber(mListener, getContext()),
-                            keyword, type, hospitalId, doctorId, typeId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                            keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
             }
         }
     }

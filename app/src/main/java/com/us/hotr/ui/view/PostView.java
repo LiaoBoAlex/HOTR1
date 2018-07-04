@@ -51,6 +51,7 @@ public class PostView extends FrameLayout {
     private RecyclerView recyclerView;
     private ImageView ivDelete, ivUserAvatar, ivPic;
     private TextView tvTitle, tvUserName, tvCertified, tvPostTime, tvFollowUser, tvContent, tvSubject, tvRead, tvComment, tvLike;
+    private View vDivider;
     private ConstraintLayout clInterestedSubject;
     private PicGridAdapter picAdapter;
 
@@ -85,6 +86,7 @@ public class PostView extends FrameLayout {
         tvLike = (TextView) findViewById(R.id.tv_like);
         clInterestedSubject = (ConstraintLayout) findViewById(R.id.cl_subject);
         ivPic = (ImageView) findViewById(R.id.iv_pic);
+        vDivider = findViewById(R.id.v_divider);
     }
 
     public void setData(final Post post){
@@ -142,9 +144,9 @@ public class PostView extends FrameLayout {
             if(post.getUser_type() != 6)
                 post.setIsOfficial(0);
             String content = post.getContent();
-//            content = content.replace(" &nbsp;", "");
-//            content = StringEscapeUtils.unescapeHtml4(content);
-//            content = content.replace("<p>", "").replace("</p>", "").replace("\n","").replace("\t","");
+            content = content.replace(" &nbsp;", "");
+            content = StringEscapeUtils.unescapeHtml4(content);
+            content = content.replace("<p>", "").replace("</p>", "").replace("\n","").replace("\t","");
             List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>() {}.getType());
             boolean found = false;
             for (PostOld postOld : postOldList) {
@@ -257,6 +259,13 @@ public class PostView extends FrameLayout {
 //                }
 //            });
 //        }
+    }
+
+    public void showDivider(boolean show){
+        if(show)
+            vDivider.setVisibility(View.VISIBLE);
+        else
+            vDivider.setVisibility(View.GONE);
     }
 
     private void gotoPost(){

@@ -449,7 +449,10 @@ public class PartyActivity extends BaseLoadingActivity{
                     headerHolder.tvAddress.setText(response.getTravel().getTravelAddress());
                     headerHolder.tvTitle.setText(response.getTravel().getTravel_name());
                     headerHolder.tvPrice.setText(new DecimalFormat("#").format(response.getTravel().getPriceRangeLow()) + "-" + new DecimalFormat("#").format(response.getTravel().getPriceRangeHigh()));
-                    Glide.with(PartyActivity.this).load(response.getTravel().getCityStrategyImg()).error(R.drawable.holder_city).placeholder(R.drawable.holder_city).into(headerHolder.ivCity);
+                    if(response.getTravel().getCityStrategyImg()!=null && !response.getTravel().getCityStrategyImg().isEmpty())
+                        Glide.with(PartyActivity.this).load(response.getTravel().getCityStrategyImg()).error(R.drawable.holder_city).placeholder(R.drawable.holder_city).into(headerHolder.ivCity);
+                    else
+                        headerHolder.ivCity.setVisibility(View.GONE);
                     headerHolder.ivCity.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

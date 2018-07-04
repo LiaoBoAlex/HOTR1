@@ -153,7 +153,6 @@ public interface WebService {
                                                                              @Query("type") Long type,
                                                                              @Query("hospitalId") Long hospitalId,
                                                                              @Query("doctorId") Long doctorId,
-                                                                             @Query("typeId") Long typeId,
                                                                              @Query("projectId") Long projectId,
                                                                              @Query("city_code") Long city_id,
                                                                              @Query("pos_latitude") Double pos_latitude,
@@ -279,7 +278,7 @@ public interface WebService {
 
     @POST("user_method/coupon/addUserCoupon.do?")
     Observable<BaseResponse<String>> addAllVoucher(@Header("jsessionid") String jsessionid,
-                                                                            @Query("couponIdArr[]") List<Long> couponIdArr);
+                                                   @Query("couponIdArr[]") List<Long> couponIdArr);
 
     @POST("product/checkCount.do?")
     Observable<BaseResponse<Integer>> checkOrderCount(@Query("productId") long productId,
@@ -325,15 +324,15 @@ public interface WebService {
 
     @POST("user_method/order/payment/getAliPayNumber.do?")
     Observable<BaseResponse<String>> createAlipayProductBill(@Header("jsessionid") String jsessionid,
-                                                                 @Query("order_id") long order_id);
+                                                             @Query("order_id") long order_id);
 
     @POST("user_method/order/payment/getAliPayNumberByMassage.do?")
     Observable<BaseResponse<String>> createAlipayMassageBill(@Header("jsessionid") String jsessionid,
-                                                                 @Query("order_id") long order_id);
+                                                             @Query("order_id") long order_id);
 
     @POST("user_method/order/payment/getAliPayNumberByTravel.do?")
     Observable<BaseResponse<String>> createAlipayPartyBill(@Header("jsessionid") String jsessionid,
-                                                                 @Query("order_id") long order_id);
+                                                           @Query("order_id") long order_id);
 
     @POST("apiCoshow/recommendCoshowList.do?")
     Observable<BaseResponse<GetGroupMainPageResponse>> getGroupMainPage(@Header("jsessionid") String jsessionid);
@@ -565,7 +564,7 @@ public interface WebService {
 
     @POST("user/login.do?")
     Observable<BaseResponse<GetLoginResponse>> login(@Query("username") String username,
-                                               @Query("password") String password);
+                                                     @Query("password") String password);
 
     @POST("user/loginByValidCode.do?")
     Observable<BaseResponse<GetLoginResponse>> loginAndRegister(@Body LoginAndRegisterRequest request);
@@ -721,15 +720,15 @@ public interface WebService {
 
     @POST("user_method/order/deleYmOrderById.do?")
     Observable<BaseResponse<String>> deleteProductOrder(@Header("jsessionid") String jsessionid,
-                                                              @Query("order_id") long order_id);
+                                                        @Query("order_id") long order_id);
 
     @POST("user_method/order/deleAmOrderById.do?")
     Observable<BaseResponse<String>> deleteMassageOrder(@Header("jsessionid") String jsessionid,
-                                                              @Query("order_id") long order_id);
+                                                        @Query("order_id") long order_id);
 
     @POST("user_method/order/deleTravelOrderById.do?")
     Observable<BaseResponse<String>> deletePartyOrder(@Header("jsessionid") String jsessionid,
-                                                          @Query("order_id") long order_id);
+                                                      @Query("order_id") long order_id);
 
     @POST("user/user_method/addUserFeedBack.do?")
     Observable<BaseResponse<String>> userFeedback(@Header("jsessionid") String jsessionid,
@@ -775,4 +774,8 @@ public interface WebService {
 
     @POST("dictionary/appVersion.do?")
     Observable<BaseResponse<GetAppVersionResponse>> getAppVersion(@Body GetAppVersionRequest request);
+
+    @POST("user_method/order/payment/isFirstOrder.do?")
+    Observable<BaseResponse<String>> isFirstOrder(@Header("jsessionid") String jsessionid,
+                                                  @Body GetAppVersionRequest request);
 }

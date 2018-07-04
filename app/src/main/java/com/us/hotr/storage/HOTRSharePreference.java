@@ -35,6 +35,7 @@ public class HOTRSharePreference {
     private static final String KEY_LONGITUDE = "KEY_LONGITUDE";
     private static final String KEY_TOTAL_NOTICE_COUNT = "KEY_TOTAL_NOTICE_COUNT";
     private static final String KEY_TOTAL_MESSAGE_COUNT = "KEY_TOTAL_MESSAGE_COUNT";
+    private static final String KEY_FIRST_INVITE_FRIEND = "KEY_TOTAL_MESSAGE_COUNT";
 
     private static SharedPreferences.Editor editor;
     private static SharedPreferences settings;
@@ -89,6 +90,16 @@ public class HOTRSharePreference {
     public static String getUserID(){
         return settings.getString(KEY_USER_ID, "");
     }
+
+    public static void storeFirstInviteFriend(boolean value){
+        editor.putBoolean(KEY_FIRST_INVITE_FRIEND, value);
+        editor.apply();
+    }
+
+    public static boolean isFirstinviteFriend(){
+        return settings.getBoolean(KEY_FIRST_INVITE_FRIEND, true);
+    }
+
 
     public static boolean isUserLogin(){
         if(settings.getString(KEY_USER_ID, null) == null

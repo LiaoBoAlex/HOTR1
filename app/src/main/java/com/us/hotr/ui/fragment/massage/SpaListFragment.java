@@ -171,7 +171,7 @@ public class SpaListFragment extends BaseLoadingFragment {
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             final Spa spa = spaList.get(position);
-            holder.spaView.setData(spa, position);
+            holder.spaView.setData(spa, position, false);
         }
 
         @Override

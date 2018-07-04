@@ -195,9 +195,9 @@ public class CaseListFragment extends BaseLoadingFragment {
                 ||totalSize == 0) {
             enableLoadMore(false);
             if(totalSize>0)
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+                myBaseAdapter.setFooterView(LayoutInflater.from(getActivity()).inflate(R.layout.footer_general, mRecyclerView, false));
             else
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_empty, mRecyclerView, false));
+                myBaseAdapter.setFooterView(LayoutInflater.from(getActivity()).inflate(R.layout.footer_empty, mRecyclerView, false));
         }
         else
             enableLoadMore(true);
@@ -246,6 +246,16 @@ public class CaseListFragment extends BaseLoadingFragment {
         }
     }
 
+    @Subscribe
+    public void getMessage(Events.TypeSelected typeSelected) {
+    }
+
+    public void getMessage(Events.CitySelected citySelectedEvent) {
+    }
+
+    @Subscribe
+    public void getMessage(Events.SubjectSelected subjectSelected) {
+    }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public List<Case> caseList;

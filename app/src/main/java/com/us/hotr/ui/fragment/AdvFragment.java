@@ -14,8 +14,26 @@ import com.bumptech.glide.Glide;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.bean.Adv;
+import com.us.hotr.storage.bean.Module;
 import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.WebViewActivity;
+import com.us.hotr.ui.activity.beauty.CaseActivity;
+import com.us.hotr.ui.activity.beauty.DoctorActivity;
+import com.us.hotr.ui.activity.beauty.HospitalActivity;
+import com.us.hotr.ui.activity.beauty.ListActivity;
+import com.us.hotr.ui.activity.beauty.ListWithSearchActivity;
+import com.us.hotr.ui.activity.beauty.ProductActivity;
+import com.us.hotr.ui.activity.beauty.SelectSubjectActivity;
+import com.us.hotr.ui.activity.beauty.SubjectActivity;
+import com.us.hotr.ui.activity.found.GroupDetailActivity;
+import com.us.hotr.ui.activity.found.NearbyActivity;
+import com.us.hotr.ui.activity.info.InviteFriendActivity;
+import com.us.hotr.ui.activity.info.LoginActivity;
+import com.us.hotr.ui.activity.massage.MassageActivity;
+import com.us.hotr.ui.activity.massage.MasseurActivity;
+import com.us.hotr.ui.activity.massage.SpaActivity;
+import com.us.hotr.ui.activity.party.PartyActivity;
+import com.us.hotr.util.Tools;
 
 /**
  * Created by liaobo on 2017/12/12.
@@ -60,16 +78,176 @@ public class AdvFragment extends Fragment {
         ivImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getActivity(), WebViewActivity.class);
-                Bundle b = new Bundle();
-                b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_URL);
-                b.putString(Constants.PARAM_DATA, mAdv.getForwart_url());
-                i.putExtras(b);
-                startActivity(i);
-                getActivity().finish();
-
+                handleClickEvent();
             }
         });
 
+    }
+
+    private void handleClickEvent(){
+        switch (Integer.valueOf(mAdv.getForwart_type())){
+            case 1:
+                Intent i = new Intent(getContext(), SelectSubjectActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.product1));
+                getContext().startActivity(i);
+                break;
+            case 2:
+                i = new Intent(getContext(), ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.doctor_list_title));
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_DOCTOR);
+                getContext().startActivity(i);
+                break;
+            case 3:
+                i = new Intent(getContext(), ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.hospital_list_title));
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_HOSPITAL);
+                getContext().startActivity(i);
+                break;
+            case 4:
+                i = new Intent(getContext(), SubjectActivity.class);
+                Bundle b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 5:
+                i = new Intent(getContext(), ProductActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 6:
+                i = new Intent(getContext(), DoctorActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 7:
+                i = new Intent(getContext(), HospitalActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 8:
+                i = new Intent(getContext(), ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.massage_list_title));
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                getContext().startActivity(i);
+                break;
+            case 9:
+                i = new Intent(getContext(), ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.masseur_list_title));
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSEUR);
+                getContext().startActivity(i);
+                break;
+            case 10:
+                i = new Intent(getContext(), ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.spa_list_title));
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_SPA);
+                getContext().startActivity(i);
+                break;
+            case 11:
+                i = new Intent(getContext(), MasseurActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 12:
+                i = new Intent(getContext(), SpaActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 13:
+                i = new Intent(getContext(), MassageActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 14:
+                i = new Intent(getContext(), ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.massage_list_title));
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                i.putExtra(Constants.PARAM_ID, Integer.parseInt(mAdv.getForwart_url().trim()));
+                getContext().startActivity(i);
+                break;
+            case 15:
+                i = new Intent(getContext(), ListWithSearchActivity.class);
+                i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.case_list_title));
+                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                getContext().startActivity(i);
+                break;
+            case 16:
+                i = new Intent(getContext(), CaseActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 17:
+                i = new Intent(getContext(), GroupDetailActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 18:
+                i = new Intent(getContext(), CaseActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 19:
+                if(Constants.SHARE_URL.equals(mAdv.getForwart_url().trim())){
+                    if(Tools.isUserLogin(getContext())){
+                        getContext().startActivity(new Intent(getContext(), InviteFriendActivity.class));
+                    }else{
+                        LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                            @Override
+                            public void onLoginSuccess() {
+                                getContext().startActivity(new Intent(getContext(), InviteFriendActivity.class));
+                            }
+                        });
+                        getContext().startActivity(new Intent(getContext(), LoginActivity.class));
+                    }
+                }else {
+                    i = new Intent(getContext(), WebViewActivity.class);
+                    b = new Bundle();
+                    b.putString(Constants.PARAM_DATA, mAdv.getForwart_url().trim());
+                    b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_URL);
+                    i.putExtras(b);
+                    getContext().startActivity(i);
+                }
+                break;
+            case 20:
+                i = new Intent(getContext(), NearbyActivity.class);
+                getContext().startActivity(i);
+                break;
+            case 21:
+                i = new Intent(getContext(), ListActivity.class);
+                b = new Bundle();
+                b.putString(Constants.PARAM_TITLE, getContext().getString(R.string.discovery_title));
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_OFFICIAL_POST);
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+            case 23:
+                i = new Intent(getContext(), PartyActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
+                i.putExtras(b);
+                getContext().startActivity(i);
+                break;
+        }
+        getActivity().finish();
     }
 }

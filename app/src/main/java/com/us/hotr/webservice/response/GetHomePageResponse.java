@@ -2,6 +2,7 @@ package com.us.hotr.webservice.response;
 
 import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Group;
+import com.us.hotr.storage.bean.Hospital;
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.storage.bean.Module;
@@ -25,7 +26,16 @@ public class GetHomePageResponse implements Serializable {
     private List<Group>myGrouList;
     private List<Product> recommendYmProductList;
     private List<Massage> recommendAmProductList;
+    private List<Hospital> recommendHospitalList;
     private int total;
+
+    public List<Hospital> getRecommendHospitalList() {
+        return recommendHospitalList;
+    }
+
+    public void setRecommendHospitalList(List<Hospital> recommendHospitalList) {
+        this.recommendHospitalList = recommendHospitalList;
+    }
 
     public List<Massage> getRecommendAmProductList() {
         return recommendAmProductList;

@@ -6,6 +6,7 @@
     <com.us.hotr.customview.ScrollThroughRecyclerView
         android:id="@+id/recyclerview"
         android:overScrollMode="never"
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
