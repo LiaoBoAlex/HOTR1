@@ -35,7 +35,8 @@ public class InviteFriendActivity extends BaseActivity {
                 share.setImageUrl(Constants.LOGO_URL);
                 share.setTitle(getString(R.string.invite_friend_title));
                 share.setUrl("http://hotr.hotr-app.com/hotr-api-web/gift/index.html?invitation_id="
-                        + HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getUserId());
+                        + HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getUserId()
+                +"&telephone=" + HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getMobile());
                 share.setSinaContent(getString(R.string.invite_friend_content));
                 ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
             }

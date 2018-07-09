@@ -29,6 +29,8 @@ import com.tencent.stat.MtaSDkException;
 import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.customview.HotrFooter;
+import com.us.hotr.customview.HotrHeader;
 import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.Tools;
@@ -57,7 +59,8 @@ public class HOTRApplication extends MultiDexApplication {
             @Override
             public RefreshHeader createRefreshHeader(Context context, RefreshLayout layout) {
                 layout.setPrimaryColorsId(R.color.divider2, R.color.text_black);//全局设置主题颜色
-                return new ClassicsHeader(context).setSpinnerStyle(SpinnerStyle.Translate).setPrimaryColorId(R.color.divider2);//指定为经典Header，默认是 贝塞尔雷达Header
+                return new HotrHeader(context).setPrimaryColorId(R.color.divider2);
+//                return new ClassicsHeader(context).setSpinnerStyle(SpinnerStyle.Translate).setPrimaryColorId(R.color.divider2);//指定为经典Header，默认是 贝塞尔雷达Header
             }
         });
         //设置全局的Footer构建器
@@ -65,7 +68,8 @@ public class HOTRApplication extends MultiDexApplication {
             @Override
             public RefreshFooter createRefreshFooter(Context context, RefreshLayout layout) {
                 //指定为经典Footer，默认是 BallPulseFooter
-                return new ClassicsFooter(context).setSpinnerStyle(SpinnerStyle.Translate).setPrimaryColorId(R.color.divider2).setFinishDuration(100);
+//                return new ClassicsFooter(context).setSpinnerStyle(SpinnerStyle.Translate).setPrimaryColorId(R.color.divider2).setFinishDuration(100);
+                return new HotrFooter(context).setPrimaryColorId(R.color.divider2);
             }
         });
     }
@@ -103,7 +107,7 @@ public class HOTRApplication extends MultiDexApplication {
         JPushInterface.init(this);
         BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(getApplicationContext());
         builder.statusBarDrawable = R.drawable.logo_hotr_round;
-        JPushInterface.setPushNotificationBuilder(0, builder);
+        JPushInterface.setPushNotificationBuilder(1, builder);
 
     }
 

@@ -17,6 +17,7 @@
         android:background="@color/divider2"/>
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:layout_weight="1"
+        android:background="@color/divider2"
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

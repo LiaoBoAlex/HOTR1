@@ -81,7 +81,7 @@
             app:layout_constraintEnd_toStartOf="@+id/iv_user_avatar"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.github.rahatarmanahmed.cpv.CircularProgressView
+        <com.us.hotr.customview.CircularProgressView
             android:id="@+id/progressBar"
             android:layout_width="23dp"
             android:layout_height="23dp"

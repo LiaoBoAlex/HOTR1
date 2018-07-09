@@ -2050,6 +2050,11 @@ public class ServiceClient {
 
         @Override
         public T apply(BaseResponse<T> tBaseResponse) throws Exception {
+//            try
+//            {
+//                Thread.currentThread().sleep(5000);//毫秒
+//            }
+//            catch(Exception e){}
             if (tBaseResponse.getStatus() != Constants.SUCCESS) {
                 throw new ApiException(tBaseResponse.getStatus(), tBaseResponse.getMemo());
             }

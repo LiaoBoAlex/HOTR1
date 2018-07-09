@@ -90,18 +90,21 @@ public class AdvFragment extends Fragment {
                 Intent i = new Intent(getContext(), SelectSubjectActivity.class);
                 i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.product1));
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 2:
                 i = new Intent(getContext(), ListWithSearchActivity.class);
                 i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.doctor_list_title));
                 i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_DOCTOR);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 3:
                 i = new Intent(getContext(), ListWithSearchActivity.class);
                 i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.hospital_list_title));
                 i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_HOSPITAL);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 4:
                 i = new Intent(getContext(), SubjectActivity.class);
@@ -109,6 +112,7 @@ public class AdvFragment extends Fragment {
                 b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 5:
                 i = new Intent(getContext(), ProductActivity.class);
@@ -116,6 +120,7 @@ public class AdvFragment extends Fragment {
                 b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 6:
                 i = new Intent(getContext(), DoctorActivity.class);
@@ -123,6 +128,7 @@ public class AdvFragment extends Fragment {
                 b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 7:
                 i = new Intent(getContext(), HospitalActivity.class);
@@ -130,24 +136,28 @@ public class AdvFragment extends Fragment {
                 b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 8:
                 i = new Intent(getContext(), ListWithSearchActivity.class);
                 i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.massage_list_title));
                 i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 9:
                 i = new Intent(getContext(), ListWithSearchActivity.class);
                 i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.masseur_list_title));
                 i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSEUR);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 10:
                 i = new Intent(getContext(), ListWithSearchActivity.class);
                 i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.spa_list_title));
                 i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_SPA);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 11:
                 i = new Intent(getContext(), MasseurActivity.class);
@@ -155,6 +165,7 @@ public class AdvFragment extends Fragment {
                 b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 12:
                 i = new Intent(getContext(), SpaActivity.class);
@@ -162,6 +173,7 @@ public class AdvFragment extends Fragment {
                 b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 13:
                 i = new Intent(getContext(), MassageActivity.class);
@@ -169,6 +181,7 @@ public class AdvFragment extends Fragment {
                 b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 14:
                 i = new Intent(getContext(), ListWithSearchActivity.class);
@@ -176,12 +189,14 @@ public class AdvFragment extends Fragment {
                 i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
                 i.putExtra(Constants.PARAM_ID, Integer.parseInt(mAdv.getForwart_url().trim()));
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 15:
                 i = new Intent(getContext(), ListWithSearchActivity.class);
                 i.putExtra(Constants.PARAM_TITLE, getContext().getString(R.string.case_list_title));
                 i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_CASE);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 16:
                 i = new Intent(getContext(), CaseActivity.class);
@@ -190,6 +205,7 @@ public class AdvFragment extends Fragment {
                 b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 17:
                 i = new Intent(getContext(), GroupDetailActivity.class);
@@ -197,6 +213,7 @@ public class AdvFragment extends Fragment {
                 b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 18:
                 i = new Intent(getContext(), CaseActivity.class);
@@ -205,16 +222,19 @@ public class AdvFragment extends Fragment {
                 b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 19:
                 if(Constants.SHARE_URL.equals(mAdv.getForwart_url().trim())){
                     if(Tools.isUserLogin(getContext())){
                         getContext().startActivity(new Intent(getContext(), InviteFriendActivity.class));
+                        getActivity().finish();
                     }else{
                         LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
                             @Override
                             public void onLoginSuccess() {
                                 getContext().startActivity(new Intent(getContext(), InviteFriendActivity.class));
+                                getActivity().finish();
                             }
                         });
                         getContext().startActivity(new Intent(getContext(), LoginActivity.class));
@@ -226,11 +246,13 @@ public class AdvFragment extends Fragment {
                     b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_URL);
                     i.putExtras(b);
                     getContext().startActivity(i);
+                    getActivity().finish();
                 }
                 break;
             case 20:
                 i = new Intent(getContext(), NearbyActivity.class);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 21:
                 i = new Intent(getContext(), ListActivity.class);
@@ -239,6 +261,7 @@ public class AdvFragment extends Fragment {
                 b.putInt(Constants.PARAM_TYPE, Constants.TYPE_OFFICIAL_POST);
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
             case 23:
                 i = new Intent(getContext(), PartyActivity.class);
@@ -246,8 +269,8 @@ public class AdvFragment extends Fragment {
                 b.putLong(Constants.PARAM_ID, Long.parseLong(mAdv.getForwart_url().trim()));
                 i.putExtras(b);
                 getContext().startActivity(i);
+                getActivity().finish();
                 break;
         }
-        getActivity().finish();
     }
 }

@@ -12,7 +12,6 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.us.hotr.R;
 
 public class PullRefreshLayout extends ViewGroup {

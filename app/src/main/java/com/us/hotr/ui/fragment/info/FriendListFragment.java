@@ -177,10 +177,10 @@ public class FriendListFragment extends BaseLoadingFragment {
             enableLoadMore(false);
             if(totalSize>0) {
                 View view = LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false);
-                if(type == Constants.TYPE_FAVORITE)
-                    ((TextView) view.findViewById(R.id.tv_footer)).setText(R.string.end_of_fav);
-                if(type == Constants.TYPE_FANS)
-                    ((TextView) view.findViewById(R.id.tv_footer)).setText(R.string.end_of_fan);
+//                if(type == Constants.TYPE_FAVORITE)
+//                    ((TextView) view.findViewById(R.id.tv_footer)).setText(R.string.end_of_fav);
+//                if(type == Constants.TYPE_FANS)
+//                    ((TextView) view.findViewById(R.id.tv_footer)).setText(R.string.end_of_fan);
                 myBaseAdapter.setFooterView(view);
             }
             else {

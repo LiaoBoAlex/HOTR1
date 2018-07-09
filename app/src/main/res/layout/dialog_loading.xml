@@ -7,7 +7,7 @@
     android:layout_centerInParent="true"
     android:orientation="vertical">
         android:orientation="vertical">
-        <com.github.rahatarmanahmed.cpv.CircularProgressView
+        <com.us.hotr.customview.CircularProgressView
             android:layout_centerInParent="true"
             android:id="@+id/progressBar"
             android:layout_width="40dp"

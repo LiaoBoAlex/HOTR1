@@ -293,7 +293,7 @@ public class Tools {
 
     public static void openApplicationMarket(Context mContext) {
 //        String packageName = mContext.getPackageName();
-        String packageName = "com.tencent.mm";
+        String packageName = "com.us.hotr";
         try {
             if (TextUtils.isEmpty(packageName)) return;
 

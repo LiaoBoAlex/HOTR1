@@ -3,6 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:descendantFocusability="blocksDescendants"
+    android:background="@color/white"
     android:layout_height="wrap_content">
 
     <android.support.constraint.ConstraintLayout
