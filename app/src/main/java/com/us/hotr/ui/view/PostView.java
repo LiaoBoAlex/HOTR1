@@ -22,6 +22,7 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ItemSelectedListener;
 import com.us.hotr.customview.ScrollThroughRecyclerView;
+import com.us.hotr.customview.ShapedImageView;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Post;
 import com.us.hotr.storage.bean.PostOld;
@@ -49,7 +50,8 @@ import java.util.List;
 
 public class PostView extends FrameLayout {
     private RecyclerView recyclerView;
-    private ImageView ivDelete, ivUserAvatar, ivPic;
+    private ShapedImageView ivUserAvatar;
+    private ImageView ivDelete, ivPic;
     private TextView tvTitle, tvUserName, tvCertified, tvPostTime, tvFollowUser, tvContent, tvSubject, tvRead, tvComment, tvLike;
     private View vDivider;
     private ConstraintLayout clInterestedSubject;
@@ -73,7 +75,7 @@ public class PostView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_post,this);
         recyclerView = (ScrollThroughRecyclerView) findViewById(R.id.recyclerview);
         ivDelete = (ImageView) findViewById(R.id.iv_delete);
-        ivUserAvatar = (ImageView) findViewById(R.id.iv_user_avatar);
+        ivUserAvatar = (ShapedImageView) findViewById(R.id.iv_user_avatar);
         tvTitle = (TextView) findViewById(R.id.tv_title);
         tvCertified = (TextView) findViewById(R.id.tv_certified);
         tvPostTime = (TextView) findViewById(R.id.tv_time);
@@ -144,9 +146,9 @@ public class PostView extends FrameLayout {
             if(post.getUser_type() != 6)
                 post.setIsOfficial(0);
             String content = post.getContent();
-            content = content.replace(" &nbsp;", "");
-            content = StringEscapeUtils.unescapeHtml4(content);
-            content = content.replace("<p>", "").replace("</p>", "").replace("\n","").replace("\t","");
+//            content = content.replace(" &nbsp;", "");
+//            content = StringEscapeUtils.unescapeHtml4(content);
+//            content = content.replace("<p>", "").replace("</p>", "").replace("\n","").replace("\t","");
             List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>() {}.getType());
             boolean found = false;
             for (PostOld postOld : postOldList) {

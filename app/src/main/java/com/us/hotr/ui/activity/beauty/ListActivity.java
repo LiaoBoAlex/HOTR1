@@ -52,7 +52,7 @@ public class ListActivity extends BaseActivity {
                 break;
             case Constants.TYPE_PRODUCT:
             case Constants.TYPE_MY_PRODUCT:
-                listFragment = new ProductListFragment().newInstance(null, true, type, -1, -1,-1, hospitalId, doctorId);
+                listFragment = new ProductListFragment().newInstance(null, true, type, -1, -1, -1,-1, hospitalId, doctorId);
                 break;
             case Constants.TYPE_MASSEUR:
                 listFragment = new MasseurListFragment().newInstance(null, -1, spaId);

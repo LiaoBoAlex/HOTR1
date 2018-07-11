@@ -21,6 +21,7 @@ import com.us.hotr.ui.view.MasseurView;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
@@ -114,11 +115,11 @@ public class MasseurListFragment extends BaseLoadingFragment {
                             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLongitude(), typeId, Constants.MAX_PAGE_ITEM, currentPage);
             else if (loadType == Constants.LOAD_DIALOG)
                 if (SpaId != null)
-                    ServiceClient.getInstance().getMasseurListBySpa(new LoadingSubscriber(mListener, this),
+                    ServiceClient.getInstance().getMasseurListBySpa(new ProgressSubscriber(mListener, getContext()),
                             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
                             SpaId, Constants.MAX_PAGE_ITEM, currentPage);
                 else
-                    ServiceClient.getInstance().getMasseurList(new LoadingSubscriber(mListener, this),
+                    ServiceClient.getInstance().getMasseurList(new ProgressSubscriber(mListener, getContext()),
                             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getUserID(),
                             keyword, SpaId, cityCode, subjectId,
                             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getLatitude(),

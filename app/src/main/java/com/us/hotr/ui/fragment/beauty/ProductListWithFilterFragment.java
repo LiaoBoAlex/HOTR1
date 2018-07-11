@@ -174,7 +174,7 @@ public class ProductListWithFilterFragment extends Fragment implements CloseFrag
 
         switch(type){
             case Constants.TYPE_PRODUCT:
-                productListFragment = new ProductListFragment().newInstance(keyword, getArguments().getBoolean(Constants.PARAM_ENABLE_REFRESH),type, -1, id, cityId, -1, -1);
+                productListFragment = new ProductListFragment().newInstance(keyword, getArguments().getBoolean(Constants.PARAM_ENABLE_REFRESH),type, -1, -1, id, cityId, -1, -1);
                 break;
             case Constants.TYPE_MASSAGE:
                 productListFragment = new MassageListFragment().newInstance(keyword,false, id, cityId, -1);

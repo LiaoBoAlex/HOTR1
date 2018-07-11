@@ -268,8 +268,8 @@ public class DoctorActivity extends BaseLoadingActivity {
                         public void onClick(View v) {
                             Intent i = new Intent(DoctorActivity.this, ListWithCategoryActivity.class);
                             Bundle b = new Bundle();
-                            b.putString(Constants.PARAM_TITLE, getString(R.string.case_title));
-                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                            b.putString(Constants.PARAM_TITLE, getString(R.string.doctor_appointment));
+                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_PRODUCT);
                             b.putLong(Constants.PARAM_DOCTOR_ID, doctorDetail.getDetail().getDoctor_id());
                             i.putExtras(b);
                             startActivity(i);

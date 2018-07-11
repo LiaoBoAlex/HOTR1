@@ -151,6 +151,7 @@ public interface WebService {
     @POST("product/list.do?")
     Observable<BaseResponse<BaseListResponse<List<Product>>>> getProductList(@Query("product_name") String product_name,
                                                                              @Query("type") Long type,
+                                                                             @Query("typeId") Long typeId,
                                                                              @Query("hospitalId") Long hospitalId,
                                                                              @Query("doctorId") Long doctorId,
                                                                              @Query("projectId") Long projectId,

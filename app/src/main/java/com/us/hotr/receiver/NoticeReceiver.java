@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.us.hotr.Constants;
+import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.WebViewActivity;
 import com.us.hotr.ui.activity.party.PartyActivity;
 
@@ -66,6 +67,11 @@ public class NoticeReceiver extends BroadcastReceiver{
                         context.startActivity(i);
                     } catch (NumberFormatException e) {
                     }
+                }
+                if(notice.getType() == 3){
+                    Intent i = new Intent(context, MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(i);
                 }
 
             } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {

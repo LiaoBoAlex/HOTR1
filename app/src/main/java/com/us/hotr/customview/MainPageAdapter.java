@@ -441,7 +441,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 final Module ad3Module = (Module) itemList.get(position).getContent();
                 for (int i = 0; i < ad3Holder.mImageViewList.size(); i++) {
                     final int finalI = i;
-                    Glide.with(mContext).load(ad3Module.getBannerList().get(i).getBannerImg()).dontAnimate().placeholder(R.drawable.placeholder_ad1).error(R.drawable.placeholder_ad3).into(ad3Holder.mImageViewList.get(i));
+                    Glide.with(mContext).load(ad3Module.getBannerList().get(i).getBannerImg()).dontAnimate().placeholder(R.drawable.placeholder_ad3).error(R.drawable.placeholder_ad3).into(ad3Holder.mImageViewList.get(i));
                     ad3Holder.mImageViewList.get(i).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

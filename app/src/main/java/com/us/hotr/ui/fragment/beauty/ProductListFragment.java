@@ -45,18 +45,20 @@ public class ProductListFragment extends BaseLoadingFragment {
     private static final String PARAM_SUBJECT = "PARAM_SUBJECT";
     private static final String PARAM_TYPE_ID = "PARAM_TYPE_ID";
     private static final String PARAM_DOCTOR = "PARAM_DOCTOR";
+    private static final String PARAM_PRODUCT_ID = "PARAM_PRODUCT_ID";
 
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private MyBaseAdapter myBaseAdapter;
     private int totalSize = 0;
     private int currentPage = 1;
-    private long type;
+    private int type;
     private boolean enableRefresh;
+    private Long productTypeId = null;
     private Long hospitalId = null;
     private Long doctorId = null;
 
-    public static ProductListFragment newInstance(String keyword, boolean enableRefresh, long type, long typeId, long subjectId, long cityId, long hospitalId, long doctorId) {
+    public static ProductListFragment newInstance(String keyword, boolean enableRefresh, int type, long typeId, long productTypeId, long subjectId, long cityId, long hospitalId, long doctorId) {
         ProductListFragment productListFragment = new ProductListFragment();
         Bundle b = new Bundle();
         b.putBoolean(Constants.PARAM_ENABLE_REFRESH, enableRefresh);
@@ -66,7 +68,8 @@ public class ProductListFragment extends BaseLoadingFragment {
         b.putLong(PARAM_CITY, cityId);
         b.putLong(PARAM_HOSPITAL, hospitalId);
         b.putLong(PARAM_DOCTOR, doctorId);
-        b.putLong(Constants.PARAM_TYPE, type);
+        b.putInt(Constants.PARAM_TYPE, type);
+        b.putLong(PARAM_PRODUCT_ID, productTypeId);
         productListFragment.setArguments(b);
         return productListFragment;
     }
@@ -84,11 +87,15 @@ public class ProductListFragment extends BaseLoadingFragment {
         keyword = getArguments().getString(Constants.PARAM_KEYWORD);
         subjectId = getArguments().getLong(PARAM_SUBJECT);
         typeId = getArguments().getLong(PARAM_TYPE_ID);
-        type = getArguments().getLong(Constants.PARAM_TYPE);
+        type = getArguments().getInt(Constants.PARAM_TYPE);
+        productTypeId = getArguments().getLong(PARAM_PRODUCT_ID);
+
         if(subjectId<=0)
             subjectId = null;
         if(typeId<=0)
             typeId = null;
+        if(productTypeId<=0)
+            productTypeId = null;
         cityCode = getArguments().getLong(PARAM_CITY);
         if(cityCode<=0 || (keyword != null && !keyword.isEmpty()))
             cityCode = null;
@@ -146,22 +153,22 @@ public class ProductListFragment extends BaseLoadingFragment {
         }else{
             if (loadType == Constants.LOAD_MORE) {
                 ServiceClient.getInstance().getProductList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                        keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                        keyword, typeId, productTypeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
             } else {
                 currentPage = 1;
                 if (loadType == Constants.LOAD_PAGE) {
                     if (getActivity() instanceof BaseLoadingActivity)
                         ServiceClient.getInstance().getProductList(new LoadingSubscriber(mListener, (BaseLoadingActivity) getActivity()),
-                                keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                                keyword, typeId, productTypeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
                     else
                         ServiceClient.getInstance().getProductList(new LoadingSubscriber(mListener, this),
-                                keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                                keyword, typeId, productTypeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
                 } else if (loadType == Constants.LOAD_PULL_REFRESH)
                     ServiceClient.getInstance().getProductList(new SilentSubscriber(mListener, getActivity(), refreshLayout),
-                            keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                            keyword, typeId, productTypeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
                 else if (loadType == Constants.LOAD_DIALOG)
                     ServiceClient.getInstance().getProductList(new ProgressSubscriber(mListener, getContext()),
-                            keyword, typeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
+                            keyword, typeId, productTypeId, hospitalId, doctorId, subjectId, cityCode, null, null, Constants.MAX_PAGE_ITEM, currentPage);
             }
         }
     }

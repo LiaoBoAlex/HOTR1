@@ -25,7 +25,7 @@ public abstract class BaseLoadingFragment extends BaseFragment {
     protected RefreshLayout refreshLayout;
     protected Long cityCode = null;
     protected Long subjectId = null;
-    protected Long typeId = null;
+    protected Long typeId = 6l;
     protected String keyword = null;
 
     @Override

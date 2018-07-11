@@ -286,6 +286,7 @@
     <string name="hospital_list">医院列表</string>
     <string name="product_list">产品列表</string>
     <string name="hospital_appointment">医院的预约</string>
+    <string name="doctor_appointment">医生的预约</string>
     <string name="sold_out">抢光了</string>
     <string name="hospital_environment">医院环境</string>
     <string name="popular_product_in_hospital">同院热门预约</string>

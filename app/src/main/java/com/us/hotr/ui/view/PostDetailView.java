@@ -33,6 +33,7 @@ import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ScrollThroughRecyclerView;
+import com.us.hotr.customview.ShapedImageView;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Post;
 import com.us.hotr.storage.bean.PostOld;
@@ -61,7 +62,8 @@ import java.util.List;
 
 public class PostDetailView extends FrameLayout {
     private RecyclerView rvPhoto, rvContent;
-    private ImageView ivDelete, ivUserAvatar;
+    private ImageView ivDelete;
+    private ShapedImageView ivUserAvatar;
     private TextView tvTitle, tvUserName, tvCertified, tvPostTime, tvFollowUser, tvContent, tvSubject, tvRead, tvComment, tvLike, tvIntro;
     private WebView wvContent;
     private ConstraintLayout clUser;
@@ -85,7 +87,7 @@ public class PostDetailView extends FrameLayout {
         rvPhoto = (ScrollThroughRecyclerView) findViewById(R.id.rv_photo);
         rvContent = (ScrollThroughRecyclerView) findViewById(R.id.rv_content);
         ivDelete = (ImageView) findViewById(R.id.iv_delete);
-        ivUserAvatar = (ImageView) findViewById(R.id.iv_user_avatar);
+        ivUserAvatar = (ShapedImageView) findViewById(R.id.iv_user_avatar);
         tvIntro = (TextView) findViewById(R.id.tv_intro);
         tvTitle = (TextView) findViewById(R.id.tv_title);
         tvCertified = (TextView) findViewById(R.id.tv_certified);
@@ -106,6 +108,8 @@ public class PostDetailView extends FrameLayout {
         isFav = post.getIs_collect()==1?true:false;
         isLiked = post.getIs_like()==1?true:false;
         Glide.with(getContext()).load(post.getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivUserAvatar);
+        if(post.getIs_new() != 1 && post.getUser_type() != 6)
+            post.setIsOfficial(0);
         if(post.getIsOfficial() == 1)
             tvIntro.setText(post.getNick_name() + "  " + String.format(getContext().getString(R.string.publish_when), Tools.getPostTime(getContext(), post.getCreate_time())));
         else{
@@ -160,40 +164,80 @@ public class PostDetailView extends FrameLayout {
             });
         }
         tvTitle.setText(post.getTitle());
-        if(post.getIsOfficial() != 1) {
-            tvContent.setVisibility(VISIBLE);
-            tvTitle.setVisibility(VISIBLE);
-            tvPostTime.setVisibility(VISIBLE);
-            wvContent.setVisibility(GONE);
+        if(post.getIs_new() == 1) {
             rvContent.setVisibility(GONE);
-            tvContent.setText(post.getContentWord());
-            if(post.getCreate_time()!=null)
-                tvPostTime.setText(Tools.getPostTime(getContext(), post.getCreate_time()));
-        }else{
-            tvContent.setVisibility(GONE);
-            tvTitle.setVisibility(VISIBLE);
-            tvPostTime.setVisibility(GONE);
-            if(post.getIs_new() == 1) {
+            if(post.getIsOfficial() != 1){
+                tvContent.setVisibility(VISIBLE);
+                tvPostTime.setVisibility(VISIBLE);
+                wvContent.setVisibility(GONE);
+                tvContent.setText(post.getContentWord());
+                if(post.getCreate_time()!=null)
+                    tvPostTime.setText(Tools.getPostTime(getContext(), post.getCreate_time()));
+            }else{
+                tvContent.setVisibility(GONE);
+                tvPostTime.setVisibility(GONE);
                 wvContent.setVisibility(VISIBLE);
                 wvContent.loadData(Tools.getHtmlData(post.getContent()), "text/html; charset=UTF-8", null);
-            }else{
-                rvContent.setVisibility(VISIBLE);
-                String content = post.getContent();
+            }
+        }else{
+            wvContent.setVisibility(GONE);
+            tvContent.setVisibility(GONE);
+            if(post.getIsOfficial() != 1){
+                tvPostTime.setVisibility(VISIBLE);
+                if(post.getCreate_time()!=null)
+                    tvPostTime.setText(Tools.getPostTime(getContext(), post.getCreate_time()));
+            }else
+                tvPostTime.setVisibility(GONE);
+            rvContent.setVisibility(VISIBLE);
+            String content = post.getContent();
 //                content = content.replace(" &nbsp;", "");
 //                content = StringEscapeUtils.unescapeHtml4(content);
 //                content = content.replace("<p>", "").replace("</p>", "").replace("\n","").replace("\t","");
-                List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>(){}.getType());
-                Iterator<PostOld> i = postOldList.iterator();
-                while (i.hasNext()) {
-                    if(i.next().getStatus()!=1)
-                        i.remove();
-                }
-
-                PostOldAdapter mAdapter = new PostOldAdapter(postOldList);
-                rvContent.setLayoutManager(new LinearLayoutManager(getContext()));
-                rvContent.setAdapter(mAdapter);
+            List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>(){}.getType());
+            Iterator<PostOld> i = postOldList.iterator();
+            while (i.hasNext()) {
+                if(i.next().getStatus()!=1)
+                    i.remove();
             }
+
+            PostOldAdapter mAdapter = new PostOldAdapter(postOldList);
+            rvContent.setLayoutManager(new LinearLayoutManager(getContext()));
+            rvContent.setAdapter(mAdapter);
         }
+//        if(post.getIsOfficial() != 1) {
+//            tvContent.setVisibility(VISIBLE);
+//            tvTitle.setVisibility(VISIBLE);
+//            tvPostTime.setVisibility(VISIBLE);
+//            wvContent.setVisibility(GONE);
+//            rvContent.setVisibility(GONE);
+//            tvContent.setText(post.getContentWord());
+//            if(post.getCreate_time()!=null)
+//                tvPostTime.setText(Tools.getPostTime(getContext(), post.getCreate_time()));
+//        }else{
+//            tvContent.setVisibility(GONE);
+//            tvTitle.setVisibility(VISIBLE);
+//            tvPostTime.setVisibility(GONE);
+//            if(post.getIs_new() == 1) {
+//                wvContent.setVisibility(VISIBLE);
+//                wvContent.loadData(Tools.getHtmlData(post.getContent()), "text/html; charset=UTF-8", null);
+//            }else{
+//                rvContent.setVisibility(VISIBLE);
+//                String content = post.getContent();
+////                content = content.replace(" &nbsp;", "");
+////                content = StringEscapeUtils.unescapeHtml4(content);
+////                content = content.replace("<p>", "").replace("</p>", "").replace("\n","").replace("\t","");
+//                List<PostOld> postOldList = new Gson().fromJson(content, new TypeToken<List<PostOld>>(){}.getType());
+//                Iterator<PostOld> i = postOldList.iterator();
+//                while (i.hasNext()) {
+//                    if(i.next().getStatus()!=1)
+//                        i.remove();
+//                }
+//
+//                PostOldAdapter mAdapter = new PostOldAdapter(postOldList);
+//                rvContent.setLayoutManager(new LinearLayoutManager(getContext()));
+//                rvContent.setAdapter(mAdapter);
+//            }
+//        }
         tvUserName.setText(post.getNick_name());
         if(post.getIsOfficial() != 1 && post.getListCoshow()!= null && post.getListCoshow().size()>0){
             tvSubject.setVisibility(VISIBLE);
