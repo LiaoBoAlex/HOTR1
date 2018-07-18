@@ -12,6 +12,8 @@ import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.widget.TextView;
 
+import com.tencent.stat.StatMultiAccount;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
@@ -148,6 +150,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedMassageCityID(-1);
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedProductCityID(-1);
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedCityName("");
+                                StatService.removeMultiAccount(SettingActivity.this, StatMultiAccount.AccountType.PHONE_NO);
                                 setResult(CODE_LOGOUT);
                                 finish();
                                 dialog.dismiss();

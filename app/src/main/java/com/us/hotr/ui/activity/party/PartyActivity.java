@@ -188,7 +188,7 @@ public class PartyActivity extends BaseLoadingActivity{
                         share.setDescription(getString(R.string.share_party));
                         share.setImageUrl(result.getTravel().getPartyDetailImg());
                         share.setTitle(result.getTravel().getTravel_name());
-                        share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/party?id="+result.getTravel().getId());
+                        share.setUrl(Constants.SERVER_URL + "#/party?id="+result.getTravel().getId());
                         share.setSinaContent(getString(R.string.share_party));
                         share.setType(Share.TYPE_NORMAL);
                         ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");

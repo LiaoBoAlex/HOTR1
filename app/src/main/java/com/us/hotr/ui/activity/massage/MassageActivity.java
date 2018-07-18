@@ -303,7 +303,7 @@ public class MassageActivity extends BaseLoadingActivity{
                         share.setDescription(getString(R.string.share_massage));
                         share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(mMassage.getProduct().getProductImg())));
                         share.setTitle(getString(R.string.bracket_left)+mMassage.getProduct().getProductName()+getString(R.string.bracket_right)+mMassage.getProduct().getProductUsp());
-                        share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/commodityAM?id="+mMassage.getProduct().getKey());
+                        share.setUrl(Constants.SERVER_URL + "#/commodityAM?id="+mMassage.getProduct().getKey());
                         share.setSinaContent(getString(R.string.share_massage));
                         share.setType(Share.TYPE_NORMAL);
                         ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");

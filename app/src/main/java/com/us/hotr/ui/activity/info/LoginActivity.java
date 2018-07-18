@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.tencent.stat.StatMultiAccount;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.DeactivatedViewPager;
@@ -190,6 +192,12 @@ public class LoginActivity extends AppCompatActivity {
             JPushInterface.setAlias(this, i, login.getGetLoginResponse().getUser().getMobile());
             HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(login.getGetLoginResponse().getJsessionid());
             HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(login.getGetLoginResponse().getUser());
+            StatMultiAccount account = new StatMultiAccount(
+                    StatMultiAccount.AccountType.PHONE_NO, login.getGetLoginResponse().getUser().getMobile());
+            long time = System.currentTimeMillis() / 1000;
+            account.setLastTimeSec(time);
+            account.setExpireTimeSec(time + 60*60*24*365*10);
+            StatService.reportMultiAccount(this, account);
             if(login.getGetLoginResponse().isFirst_register()) {
                 getNewUserVoucher();
             }else {

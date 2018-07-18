@@ -207,7 +207,7 @@ public class MasseurActivity extends BaseLoadingActivity {
                         share.setDescription(getString(R.string.share_masseur));
                         share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(result.getMassagist().getMassagistPhotos())));
                         share.setTitle(result.getMassagist().getMassagist_name());
-                        share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/massagist?id="+result.getMassagist().getId());
+                        share.setUrl(Constants.SERVER_URL + "#/massagist?id="+result.getMassagist().getId());
                         share.setSinaContent(getString(R.string.share_masseur));
                         share.setType(Share.TYPE_NORMAL);
                         ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");

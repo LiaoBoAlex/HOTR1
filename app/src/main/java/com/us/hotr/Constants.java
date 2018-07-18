@@ -88,7 +88,7 @@ public class Constants {
         add(8l);add(9l);add(10l);}};
 
     public static final List<Long> SHARE_FRIEND_VOUCHER = new ArrayList<Long>(){{
-        add(12l);}};
+        add(16l);}};
 
 //    public static String getNewUserVoucher(){
 //        List<VoucherSet> voucherSetList = new ArrayList<>();
@@ -177,7 +177,7 @@ public class Constants {
     public static final long ORDER_VALID_TIME_IN_MINISEC = 24*60*60*1000;
     public static final String SUPPORT_LINE = "01059458967";
     public static final String ABOUT_US = "https://hotr.us-app.com/share/about.html";
-    public static final String RECIEPT_URL = "https://hotr.hotr-app.com/toIndex.do#/?ticket_sn=";
+    public static final String RECIEPT_URL = "http://hotr.hotr-app.com/toIndex.do#/?ticket_sn=";
     public static final String BUSINESS_PARTENER = "https://hotr.us-app.com/share/activity/cooperation/index.html";
 
     public static final int ALL_CITY_ID = 5000;

@@ -45,6 +45,7 @@ import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.ui.activity.massage.MassageActivity;
 import com.us.hotr.ui.activity.massage.MasseurActivity;
 import com.us.hotr.ui.activity.massage.SpaActivity;
+import com.us.hotr.ui.activity.party.PartyActivity;
 import com.us.hotr.ui.view.CaseView;
 import com.us.hotr.ui.view.HospitalView;
 import com.us.hotr.ui.view.MassageView;
@@ -830,6 +831,13 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 b = new Bundle();
                 b.putString(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.discovery_title):title);
                 b.putInt(Constants.PARAM_TYPE, Constants.TYPE_OFFICIAL_POST);
+                i.putExtras(b);
+                mContext.startActivity(i);
+                break;
+            case 23:
+                i = new Intent(mContext, PartyActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;

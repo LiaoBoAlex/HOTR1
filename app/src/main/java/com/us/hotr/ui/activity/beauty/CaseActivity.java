@@ -169,7 +169,7 @@ public class CaseActivity extends BaseLoadingActivity {
                             else
                                 share.setImageUrl(Tools.validatePhotoString(result.getHotTopic().getContentImg()).split("\\s*,\\s*")[0]);
                             share.setTitle(result.getHotTopic().getTitle());
-                            share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/invitation?id="+result.getHotTopic().getId());
+                            share.setUrl(Constants.SERVER_URL + "#/invitation?id="+result.getHotTopic().getId());
                             share.setSinaContent(getString(R.string.share_post));
                             share.setType(Share.TYPE_NORMAL);
                             ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
