@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
@@ -20,6 +21,7 @@ import com.us.hotr.ui.activity.beauty.HospitalActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by liaobo on 2017/12/27.
@@ -33,6 +35,7 @@ public class HospitalView extends FrameLayout {
 
     private ItemSelectedListener itemSelectedListener;
     private Hospital hospital;
+    private boolean isLog = false;
 
     public HospitalView(Context context) {
         super(context);
@@ -85,6 +88,11 @@ public class HospitalView extends FrameLayout {
         setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(isLog){
+                    Properties prop = new Properties();
+                    prop.setProperty("id", hospital.getHospital_id()+"");
+                    StatService.trackCustomKVEvent(getContext(), Constants.MTA_ID_CLICK_PURPOSE_HOSPITAL, prop);
+                }
                 Intent i = new Intent(getContext(), HospitalActivity.class);
                 Bundle b = new Bundle();
                 b.putSerializable(Constants.PARAM_ID, hospital.getHospital_id());
@@ -92,6 +100,10 @@ public class HospitalView extends FrameLayout {
                 getContext().startActivity(i);
             }
         });
+    }
+
+    public void setLog(boolean isLog){
+        this.isLog = isLog;
     }
 
     public void showDivider(boolean show){

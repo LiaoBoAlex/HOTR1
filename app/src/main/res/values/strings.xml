@@ -288,6 +288,7 @@
     <string name="hospital_appointment">医院的预约</string>
     <string name="doctor_appointment">医生的预约</string>
     <string name="sold_out">抢光了</string>
+    <string name="not_on_sale">下架了</string>
     <string name="hospital_environment">医院环境</string>
     <string name="popular_product_in_hospital">同院热门预约</string>
     <string name="order_time_left">剩余付款时间</string>
@@ -622,7 +623,8 @@
     <string name="copied">已复制</string>
     <string name="share_product">只为男士独家定制美容计划,源于我们热爱高品质男性生活,了解更多请戳......</string>
     <string name="share_sina_product">只为男士独家定制美容计划,源于我们热爱高品质的男性生活.</string>
-    <string name="share_massage">我刚刚分享了一位颜值爆表的【摩术师】,下载HOTR即可轻松约见哦~</string>
+    <string name="share_masseur">我刚刚分享了一位颜值爆表的【摩术师】,下载HOTR即可轻松约见哦~</string>
+    <string name="share_massage">HOTR优质男士专业按摩项目，更有身材、颜值具在线的型男按摩师，等你来体验！</string>
     <string name="share_party">大趴旅行，说走就走！下载HOTR App！享你所想，无乐不作！</string>
     <string name="share_post">吐槽发文，晒照互撩，下载HOTR  App！享你所想，无乐不作！即刻加入「发现」乐趣聚“基”地！</string>
     <string name="open_market_fail">打开应用商店失败</string>

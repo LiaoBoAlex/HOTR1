@@ -12,8 +12,10 @@ import java.util.List;
  */
 
 public class Constants {
-
-    public static final String SERVER_URL = "https://hotr.hotr-app.com/hotr-api-web/";
+//development server
+//    public static final String SERVER_URL = "https://hotr.hotr-app.com/hotr-api-web/";
+//production server
+    public static final String SERVER_URL = "https://hotr.us-app.com/hotr-api-web/";
     public static final String SHARE_URL = "https://hotr.hotr-app.com/hotr-api-web/share";
     public static final int SERVER_TIMEOUT = 30;
     public static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?";
@@ -36,6 +38,47 @@ public class Constants {
     public static final String BAIDU_MAP_PACKAGE_NAME = "com.baidu.BaiduMap";
     public static final String AUTONAVI_MAP_PACKAGE_NAME = "com.autonavi.minimap";
     public static final String TENCENT_MAP_PACKAGE_NAME = "com.tencent.map";
+
+
+    public static final String MTA_ID_SPLASH_SCREEN = "splash_screen";
+    public static final String MTA_ID_CLICK_SHARE = "click_share";
+    public static final String MTA_ID_PRODUCT_MAIN_SCREEN = "product_main_screen";
+    public static final String MTA_ID_MASSAGE_MAIN_SCREEN = "massage_main_screen";
+    public static final String MTA_ID_PARTY_MAIN_SCREEN = "party_main_screen";
+    public static final String MTA_ID_POST_SCREEN = "post_screen";
+    public static final String MTA_ID_CASE_SCREEN = "case_screen";
+    public static final String MTA_ID_CLICK_POST_BUTTON = "click_post_button";
+    public static final String MTA_ID_CLICK_CASE_BUTTON = "click_case_button";
+    public static final String MTA_ID_ADD_FAV_PEOPLE = "add_favirote_people";
+    public static final String MTA_ID_SEARCH = "search";
+    public static final String MTA_ID_CLICK_PRODUCT_BANNER = "click_product_banner";
+    public static final String MTA_ID_CLICK_MASSAGE_BANNER = "click_massage_banner";
+    public static final String MTA_ID_CLICK_PRODUCT_MODULE = "click_product_module";
+    public static final String MTA_ID_CLICK_MASSAGE_MODULE = "click_massage_module";
+    public static final String MTA_ID_CLICK_PURPOSE_PRODUCT = "click_purpose_product";
+    public static final String MTA_ID_CLICK_PURPOSE_MASSAGE = "click_purpose_massage";
+    public static final String MTA_ID_CLICK_PRODUCT_ADV = "click_product_adv";
+    public static final String MTA_ID_CLICK_MASSAGE_ADV = "click_massage_adv";
+    public static final String MTA_ID_CLICK_PRODUCT_ADV_3 = "click_product_adv_3";
+    public static final String MTA_ID_CLICK_MASSAGE_ADV_3 = "click_massage_adv_3";
+    public static final String MTA_ID_CLICK_PURPOSE_HOSPITAL = "click_purpose_hospital";
+    public static final String MTA_ID_CLICK_PURPOSE_MASSEUR = "click_purpose_masseur";
+    public static final String MTA_ID_PARTY_DETAIL_SCREEN = "party_detail_screen";
+    public static final String MTA_ID_MASSEUR_DETAIL_SCREEN = "masseur_detail_screen";
+    public static final String MTA_ID_SPA_DETAIL_SCREEN = "spa_detail_screen";
+    public static final String MTA_ID_PRODUCT_DETAIL_SCREEN = "product_detail_screen";
+    public static final String MTA_ID_HOSPITAL_DETAIL_SCREEN = "hospital_detail_screen";
+    public static final String MTA_ID_GROUP_DETAIL_SCREEN = "group_detail_screen";
+    public static final String MTA_ID_FAV_MASSEUR = "fav_masseur";
+    public static final String MTA_ID_FAV_HOSPITAL = "fav_hospital";
+    public static final String MTA_ID_FAV_PRODUCT = "fav_product";
+    public static final String MTA_ID_FAV_DOCTOR = "fav_doctor";
+    public static final String MTA_ID_FAV_SPA = "fav_spa";
+    public static final String MTA_ID_FAV_MASSAGE = "fav_massage";
+
+
+
+
 
     public static final List<Long> NEW_USER_VOUCHER = new ArrayList<Long>(){{
         add(4l);add(4l);add(4l);add(4l);add(4l);

@@ -12,6 +12,15 @@ public class Adv implements Serializable {
     private String forward_model;
     private String image;
     private String params;
+    private int page;
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
 
     public String getForwart_type() {
         return forwart_type;

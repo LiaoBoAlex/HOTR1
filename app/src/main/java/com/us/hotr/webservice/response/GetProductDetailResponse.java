@@ -221,7 +221,24 @@ public class GetProductDetailResponse implements Serializable {
         private int activityCount;
         private String usableTime;
         private int onsaleState;
+        private int singleCount;
         private int checkState;
+
+        public int getSingleCount() {
+            return singleCount;
+        }
+
+        public void setSingleCount(int singleCount) {
+            this.singleCount = singleCount;
+        }
+
+        public int getOnsaleState() {
+            return onsaleState;
+        }
+
+        public void setOnsaleState(int onsaleState) {
+            this.onsaleState = onsaleState;
+        }
 
         public boolean isProductVaiable(){
             if(onsaleState == 1 && checkState ==1)

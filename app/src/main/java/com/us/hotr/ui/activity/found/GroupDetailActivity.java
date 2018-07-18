@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
 
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
@@ -28,6 +29,7 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/11/1.
@@ -70,6 +72,14 @@ public class GroupDetailActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Properties prop = new Properties();
+        prop.setProperty("id", mGroupId+"");
+        StatService.trackCustomKVEvent(this, Constants.MTA_ID_GROUP_DETAIL_SCREEN, prop);
+    }
+
     private void getMyGroup(){
             SubscriberListener mListener = new SubscriberListener<Group>() {
                 @Override
@@ -95,6 +105,7 @@ public class GroupDetailActivity extends BaseActivity {
         fabPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                StatService.trackCustomKVEvent(GroupDetailActivity.this, Constants.MTA_ID_CLICK_POST_BUTTON, new Properties());
                 Intent i = new Intent(GroupDetailActivity.this, UploadPostActivity1.class);
                 Bundle b = new Bundle();
                 b.putLong(Constants.PARAM_ID, mGroupId);

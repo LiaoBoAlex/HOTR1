@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ItemSelectedListener;
@@ -19,6 +20,7 @@ import com.us.hotr.storage.bean.Product;
 import com.us.hotr.ui.activity.beauty.ProductActivity;
 
 import java.text.DecimalFormat;
+import java.util.Properties;
 
 /**
  * Created by liaobo on 2017/12/27.
@@ -29,6 +31,7 @@ public class ProductView extends FrameLayout{
     private ImageView ivAvatar, ivGo, ivDelete, ivOnePrice, ivPromoPrice;
     private View vDivider;
     private Product product;
+    private boolean isLog = false;
 
     private ItemSelectedListener itemSelectedListener;
 
@@ -78,12 +81,19 @@ public class ProductView extends FrameLayout{
             if(product.getAmount()>0)
                 tvSoldOut.setVisibility(View.GONE);
             else
-                tvSoldOut.setVisibility(View.GONE);
-        }else
+                tvSoldOut.setVisibility(View.VISIBLE);
+        }else {
             ivPromoPrice.setVisibility(View.GONE);
+            tvSoldOut.setVisibility(View.GONE);
+        }
         setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(isLog){
+                    Properties prop = new Properties();
+                    prop.setProperty("id", product.getProductId()+"");
+                    StatService.trackCustomKVEvent(getContext(), Constants.MTA_ID_CLICK_PURPOSE_PRODUCT, prop);
+                }
                 Intent i = new Intent(getContext(), ProductActivity.class);
                 Bundle b= new Bundle();
                 b.putLong(Constants.PARAM_ID, product.getProductId());
@@ -91,6 +101,10 @@ public class ProductView extends FrameLayout{
                 getContext().startActivity(i);
             }
         });
+    }
+
+    public void setLog(boolean isLog){
+        this.isLog = isLog;
     }
 
     public void enableEdit(boolean isEdit){

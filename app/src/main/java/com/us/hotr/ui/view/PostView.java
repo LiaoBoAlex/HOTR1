@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ItemSelectedListener;
@@ -43,6 +44,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by liaobo on 2017/12/27.

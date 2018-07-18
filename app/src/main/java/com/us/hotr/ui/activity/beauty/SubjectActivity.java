@@ -52,6 +52,7 @@ public class SubjectActivity extends BaseLoadingActivity {
     private ArrayList<Fragment> fragmentList;
     private ProductListWithFilterFragment productListFragment;
     private long subjectId;
+    private boolean isSubjectSeletable = true;
 
     public boolean isSubjectListOpen = false;
 
@@ -60,6 +61,8 @@ public class SubjectActivity extends BaseLoadingActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         subjectId = getIntent().getExtras().getLong(Constants.PARAM_ID);
+        isSubjectSeletable = getIntent().getExtras().getBoolean(Constants.PARAM_TYPE, true);
+
         initStaticView();
     }
 
@@ -98,22 +101,26 @@ public class SubjectActivity extends BaseLoadingActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, selectSubjectFragment).commit();
 
         tvTitle.setText(getIntent().getExtras().getString(Constants.PARAM_NAME));
-        tvTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(productListFragment.isCityListOpen || productListFragment.isTypeListOpen){
-                    productListFragment.hideAnimation();
-                }else {
-                    if (!isSubjectListOpen) {
-                        showAnimation();
-                        enablePullDownRefresh(false);
+        if(!isSubjectSeletable)
+            tvTitle.setCompoundDrawables(null, null, null, null);
+        else {
+            tvTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (productListFragment.isCityListOpen || productListFragment.isTypeListOpen) {
+                        productListFragment.hideAnimation();
                     } else {
-                        hideAnimation();
-                        enablePullDownRefresh(true);
+                        if (!isSubjectListOpen) {
+                            showAnimation();
+                            enablePullDownRefresh(false);
+                        } else {
+                            hideAnimation();
+                            enablePullDownRefresh(true);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
         viewPager.setOffscreenPageLimit(2);
         tabLayout.setupWithViewPager(viewPager, true);

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.eventbus.Events;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/8/29.
@@ -205,6 +207,9 @@ public class TypeSearchFragment extends BaseLoadingFragment {
 
     @Subscribe
     public void getMessage(Events.SearchKeywordSearch searchKeywordSearch) {
+        Properties prop = new Properties();
+        prop.setProperty("keyword", searchKeywordSearch.getSearchKeywordSearch());
+        StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_SEARCH, prop);
         DataBaseHelper.getInstance(getActivity().getApplicationContext()).insertSearchHistory(searchKeywordSearch.getSearchKeywordSearch());
         keyword = searchKeywordSearch.getSearchKeywordSearch();
         loadData(Constants.LOAD_PAGE);

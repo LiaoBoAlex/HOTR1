@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MainPageAdapter;
@@ -27,6 +28,8 @@ import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.Properties;
 
 /**
  * Created by macb00k on 2017/8/25.
@@ -65,6 +68,7 @@ public class BeautyFragment extends BaseLoadingFragment {
             loadData(Constants.LOAD_PAGE);
         }
     }
+
     @Override
     protected void loadData(int type){
         SubscriberListener mListener = new SubscriberListener<GetHomePageResponse>() {
@@ -75,7 +79,7 @@ public class BeautyFragment extends BaseLoadingFragment {
                     showErrorPage();
                     return;
                 }
-                mAdapter = new MainPageAdapter(getActivity(), result);
+                mAdapter = new MainPageAdapter(getActivity(), result, MainPageAdapter.PAGE_PRODUCT);
                 MyBaseAdapter myBaseAdapter = new MyBaseAdapter(mAdapter);
                 myBaseAdapter.setFooterView();
                 mRecyclerView.setAdapter(myBaseAdapter);
@@ -108,6 +112,9 @@ public class BeautyFragment extends BaseLoadingFragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isResumed() && !isLoaded) {
             loadData(Constants.LOAD_PAGE);
+        }
+        if(isVisibleToUser && isResumed()){
+            StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_PRODUCT_MAIN_SCREEN, new Properties());
         }
     }
 

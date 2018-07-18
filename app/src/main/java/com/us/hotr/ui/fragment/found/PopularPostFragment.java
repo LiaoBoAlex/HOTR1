@@ -121,7 +121,7 @@ public class PopularPostFragment extends BaseLoadingFragment {
             module.setModuleTypeId(MainPageAdapter.TYPE_POST);
             result.getListHomePageModule().add(module);
         }
-        mAdapter = new MainPageAdapter(getActivity(), result);
+        mAdapter = new MainPageAdapter(getActivity(), result, MainPageAdapter.PAGE_GROUP);
         myBaseAdapter = new MyBaseAdapter(mAdapter);
         mRecyclerView.setAdapter(myBaseAdapter);
         currentPage ++;

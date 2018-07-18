@@ -7,11 +7,23 @@ import java.io.Serializable;
  */
 
 public class Share implements Serializable {
+    public static final int TYPE_NORMAL = 1;
+    public static final int TYPE_INVITE_FRIEND = 2;
+
     private String url;
     private String title;
     private String description;
     private String imageUrl;
     private String sinaContent;
+    private int type;
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public String getUrl() {
         return url;

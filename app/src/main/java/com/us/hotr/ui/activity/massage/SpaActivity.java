@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baidu.mapapi.model.LatLng;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
@@ -45,6 +46,7 @@ import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/9/29.
@@ -69,6 +71,14 @@ public class SpaActivity extends BaseLoadingActivity {
         ivShare.setVisibility(View.GONE);
         loadData(Constants.LOAD_PAGE);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Properties prop = new Properties();
+        prop.setProperty("id", mSpaId+"");
+        StatService.trackCustomKVEvent(this, Constants.MTA_ID_SPA_DETAIL_SCREEN, prop);
     }
 
     @Override
@@ -474,6 +484,9 @@ public class SpaActivity extends BaseLoadingActivity {
                                         notifyItemChanged(position);
                                     }
                                 };
+                                Properties prop = new Properties();
+                                prop.setProperty("id", spaDetail.getMassage().getKey()+"");
+                                StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_FAV_SPA, prop);
                                 ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, SpaActivity.this),
                                         HOTRSharePreference.getInstance(SpaActivity.this.getApplicationContext()).getUserID(), spaDetail.getMassage().getKey(), 4);
                             }

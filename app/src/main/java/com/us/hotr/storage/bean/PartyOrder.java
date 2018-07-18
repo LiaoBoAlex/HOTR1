@@ -29,6 +29,7 @@ public class PartyOrder implements Serializable{
     private long user_id;
     private String travel_start_time;
     private String addressee_email;
+    @SerializedName(value = "travel_id", alternate = {"travelId"})
     private long travel_id;
     private String purchaser_phone;
     private String travel_img;

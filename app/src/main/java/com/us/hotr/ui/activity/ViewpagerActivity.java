@@ -36,8 +36,12 @@ public class ViewpagerActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mPageIndicatorView = (PageIndicatorView) findViewById(R.id.pageIndicatorView);
         ArrayList<Fragment> fragmentList = new ArrayList<>();
-        for(Adv adv:advList)
+        int i = 1;
+        for(Adv adv:advList) {
+            adv.setPage(i);
+            i++;
             fragmentList.add(new AdvFragment().newInstance(adv));
+        }
         adapter = new PagerAdapter(getSupportFragmentManager(), fragmentList);
         mViewPager.setOffscreenPageLimit(advList.size());
         mViewPager.setAdapter(adapter);

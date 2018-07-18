@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.ui.activity.party.CalendarActivity;
@@ -19,6 +20,7 @@ import com.us.hotr.ui.activity.party.FilterActivity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import q.rorbin.badgeview.QBadgeView;
 
@@ -104,6 +106,9 @@ public class PartyFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isResumed() && !isLoaded) {
             loadData();
+        }
+        if(isVisibleToUser && isResumed()){
+            StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_PARTY_MAIN_SCREEN, new Properties());
         }
     }
 

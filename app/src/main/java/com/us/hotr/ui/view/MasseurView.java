@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
@@ -23,6 +24,7 @@ import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * Created by liaobo on 2017/12/27.
@@ -32,7 +34,7 @@ public class MasseurView extends FrameLayout {
     private TextView tvName, tvAddress, tvAppointment;
     private ImageView ivAvatar, ivLike;
     private ConstraintLayout clContainer;
-    private boolean isCollected;
+    private boolean isCollected, isLog = false;
 
     public MasseurView(Context context) {
         super(context);
@@ -89,6 +91,11 @@ public class MasseurView extends FrameLayout {
         setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(isLog){
+                    Properties prop = new Properties();
+                    prop.setProperty("id", masseur.getId()+"");
+                    StatService.trackCustomKVEvent(getContext(), Constants.MTA_ID_CLICK_PURPOSE_MASSEUR, prop);
+                }
                 Intent i = new Intent(getContext(), MasseurActivity.class);
                 Bundle b = new Bundle();
                 b.putLong(Constants.PARAM_ID, masseur.getId());
@@ -102,6 +109,10 @@ public class MasseurView extends FrameLayout {
                 favoriteItem(masseur);
             }
         });
+    }
+
+    public void setLog(boolean isLog){
+        this.isLog = isLog;
     }
 
     public void enableEdit(boolean isEdit){
@@ -128,6 +139,9 @@ public class MasseurView extends FrameLayout {
                     ivLike.setImageResource(R.mipmap.ic_masseur_liked);
                 }
             };
+            Properties prop = new Properties();
+            prop.setProperty("id", masseur.getId()+"");
+            StatService.trackCustomKVEvent(getContext(), Constants.MTA_ID_FAV_MASSEUR, prop);
             ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, getContext()),
                     HOTRSharePreference.getInstance(getContext().getApplicationContext()).getUserID(), masseur.getId(), 5);
         }

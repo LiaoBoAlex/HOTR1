@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
@@ -40,6 +41,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/9/7.
@@ -300,6 +302,8 @@ public class DoctorActivity extends BaseLoadingActivity {
                     CaseHolder caseHolder = (CaseHolder) holder;
                     caseHolder.caseView.setData((Case)itemList.get(position).getContent());
                     caseHolder.caseView.enableEdit(false);
+                    if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_CASE)
+                        caseHolder.caseView.showDivider(false);
                     break;
 
                 case TYPE_HEADER:
@@ -367,6 +371,9 @@ public class DoctorActivity extends BaseLoadingActivity {
                                         loadData(Constants.LOAD_DIALOG);
                                     }
                                 };
+                                Properties prop = new Properties();
+                                prop.setProperty("id", doctorDetail.getDetail().getDoctor_id()+"");
+                                StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_FAV_DOCTOR, prop);
                                 ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, DoctorActivity.this),
                                         HOTRSharePreference.getInstance(DoctorActivity.this.getApplicationContext()).getUserID(), doctorDetail.getDetail().getDoctor_id(), 2);
                             }else{

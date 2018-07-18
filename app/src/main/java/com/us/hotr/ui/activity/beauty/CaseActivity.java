@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
@@ -74,6 +75,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/9/15.
@@ -110,6 +112,15 @@ public class CaseActivity extends BaseLoadingActivity {
         PRODUCT_OFFSET = (int)Tools.dpToPx(this, 365);
         initStaticView();
         loadData(Constants.LOAD_PAGE);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(type == Constants.TYPE_POST)
+            StatService.trackCustomKVEvent(this, Constants.MTA_ID_POST_SCREEN, new Properties());
+        if(type == Constants.TYPE_CASE)
+            StatService.trackCustomKVEvent(this, Constants.MTA_ID_CASE_SCREEN, new Properties());
     }
 
     @Override
@@ -160,6 +171,7 @@ public class CaseActivity extends BaseLoadingActivity {
                             share.setTitle(result.getHotTopic().getTitle());
                             share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/invitation?id="+result.getHotTopic().getId());
                             share.setSinaContent(getString(R.string.share_post));
+                            share.setType(Share.TYPE_NORMAL);
                             ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
                         }
                     });

@@ -38,6 +38,7 @@ public class InviteFriendActivity extends BaseActivity {
                         + HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getUserId()
                 +"&telephone=" + HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getMobile());
                 share.setSinaContent(getString(R.string.invite_friend_content));
+                share.setType(Share.TYPE_INVITE_FRIEND);
                 ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
             }
         });

@@ -261,7 +261,7 @@ public class PayNumberActivity extends BaseActivity{
 
     private void purchaseCheckPersonalCount(){
         if(type == Constants.TYPE_PRODUCT) {
-            if (product.getProduct().getProductType() == Constants.PROMOTION_PRODUCT) {
+            if (product.getProduct().getProductType() == Constants.PROMOTION_PRODUCT && product.getProduct().getSingleCount()!=0) {
                 SubscriberListener mListener = new SubscriberListener<Integer>() {
                     @Override
                     public void onNext(Integer result) {
@@ -279,7 +279,7 @@ public class PayNumberActivity extends BaseActivity{
             }
         }
         if(type == Constants.TYPE_MASSAGE){
-            if (massage.getProductType() == Constants.PROMOTION_PRODUCT) {
+            if (massage.getProductType() == Constants.PROMOTION_PRODUCT && massage.getSingleCount()!=0) {
                 SubscriberListener mListener = new SubscriberListener<Integer>() {
                     @Override
                     public void onNext(Integer result) {

@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ImageBanner;
@@ -46,6 +47,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/9/11.
@@ -66,7 +68,6 @@ public class ProductActivity extends BaseLoadingActivity {
     private List<TextView> tvPromiseList = new ArrayList<>();
     private ArrayList<String> titleList;
     private ArrayList<Fragment> fragmentList;
-    private SnapBehavior mBehavior;
 
     private long productId;
     private GetProductDetailResponse mProduct;
@@ -78,6 +79,14 @@ public class ProductActivity extends BaseLoadingActivity {
         productId = getIntent().getExtras().getLong(Constants.PARAM_ID);
         initStaticView();
         loadData(Constants.LOAD_PAGE);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Properties prop = new Properties();
+        prop.setProperty("id", productId+"");
+        StatService.trackCustomKVEvent(this, Constants.MTA_ID_PRODUCT_DETAIL_SCREEN, prop);
     }
 
     @Override
@@ -249,6 +258,11 @@ public class ProductActivity extends BaseLoadingActivity {
                         }
                     });
                 }
+                if(product.getOnsaleState() == 0){
+                    tvPurchase.setText(R.string.not_on_sale);
+                    tvPurchase.setBackgroundResource(R.color.bg_button_grey);
+                    tvPurchase.setOnClickListener(null);
+                }
                 TextPaint tp = tvPriceAfter.getPaint();
                 tp.setFakeBoldText(true);
                 tvPriceBefore.setText(String.format(getString(R.string.price), new DecimalFormat("0.00").format(product.getShopPrice())));
@@ -277,7 +291,6 @@ public class ProductActivity extends BaseLoadingActivity {
                     tvHospitalType.setText(result.getHospital().getHospType());
                     tvHospitalAddress.setText(result.getHospital().getCityName()+result.getHospital().getAreaName()+result.getHospital().getHospAddress());
                     clHospital.setOnClickListener(new View.OnClickListener() {
-                        @Override
                         public void onClick(View v) {
                             Intent i = new Intent(ProductActivity.this, HospitalActivity.class);
                             Bundle b = new Bundle();
@@ -289,7 +302,7 @@ public class ProductActivity extends BaseLoadingActivity {
                 }else
                     clHospital.setVisibility(View.GONE);
 
-                if(result.getDoctor()!=null){
+                if(result.getDoctor()!=null && result.getDoctor().getDoctor_name()!=null){
                     clDoctor.setVisibility(View.VISIBLE);
                     tvDoctorName.setText(result.getDoctor().getDoctor_name());
                     tvDoctorSpecial.setText(getString(R.string.specialize2) + result.getDoctor().getTypeName());
@@ -337,6 +350,9 @@ public class ProductActivity extends BaseLoadingActivity {
                                     ivFav.setImageResource(R.mipmap.ic_fav_text_ed);
                                 }
                             };
+                            Properties prop = new Properties();
+                            prop.setProperty("id", product.getKey()+"");
+                            StatService.trackCustomKVEvent(ProductActivity.this, Constants.MTA_ID_FAV_PRODUCT, prop);
                             ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, ProductActivity.this),
                                     HOTRSharePreference.getInstance(ProductActivity.this.getApplicationContext()).getUserID(), product.getKey(), 3);
                         }
@@ -352,6 +368,7 @@ public class ProductActivity extends BaseLoadingActivity {
                         share.setTitle(getString(R.string.bracket_left)+product.getProductName()+getString(R.string.bracket_right)+product.getProductUsp());
                         share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/commodityYM?id="+product.getKey());
                         share.setSinaContent(getString(R.string.share_sina_product));
+                        share.setType(Share.TYPE_NORMAL);
                         ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
                     }
                 });

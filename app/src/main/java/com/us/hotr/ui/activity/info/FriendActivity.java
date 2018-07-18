@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
@@ -30,6 +31,7 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/9/21.
@@ -168,6 +170,7 @@ public class FriendActivity extends BaseLoadingActivity {
                                 loadData(Constants.LOAD_DIALOG);
                             }
                         };
+                        StatService.trackCustomKVEvent(FriendActivity.this, Constants.MTA_ID_ADD_FAV_PEOPLE, new Properties());
                         ServiceClient.getInstance().favoritePeople(new ProgressSubscriber(mListener, FriendActivity.this),
                                 HOTRSharePreference.getInstance(getApplicationContext()).getUserID(), mUser.getUserId());
                     }else{

@@ -16,6 +16,15 @@ public class Module implements Serializable {
     private int isShow;
     private int moduleTypeId;
     private List<ModuleContent> bannerList;
+    private int moduleSort;
+
+    public int getModuleSort() {
+        return moduleSort;
+    }
+
+    public void setModuleSort(int moduleSort) {
+        this.moduleSort = moduleSort;
+    }
 
     public long getModuleAreaId() {
         return moduleAreaId;

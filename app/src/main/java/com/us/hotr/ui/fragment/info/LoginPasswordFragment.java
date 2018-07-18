@@ -125,6 +125,8 @@ public class LoginPasswordFragment extends Fragment {
 ////                    ((LoginActivity) getActivity()).loginSuccess();
 ////                    getActivity().finish();
                     GlobalBus.getBus().post(new Events.Login(result));
+                    etPassword.setFocusable(false);
+                    etPhone.setFocusable(false);
 
                 }
             };

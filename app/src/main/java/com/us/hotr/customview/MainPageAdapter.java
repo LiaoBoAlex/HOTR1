@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.bean.Case;
@@ -26,6 +27,7 @@ import com.us.hotr.storage.bean.Module;
 import com.us.hotr.storage.bean.Post;
 import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.Spa;
+import com.us.hotr.storage.bean.Subject;
 import com.us.hotr.ui.activity.WebViewActivity;
 import com.us.hotr.ui.activity.beauty.CaseActivity;
 import com.us.hotr.ui.activity.beauty.DoctorActivity;
@@ -51,10 +53,16 @@ import com.us.hotr.ui.view.PostView;
 import com.us.hotr.ui.view.ProductView;
 import com.us.hotr.ui.view.SpaView;
 import com.us.hotr.util.Tools;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.response.GetHomePageResponse;
+import com.us.hotr.webservice.rxjava.LoadingSubscriber;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/9/7.
@@ -108,12 +116,17 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final int TYPE_HOSPITAL = 14;
     public static final int TYPE_GROUP = 15;
 
+    public static final int PAGE_PRODUCT = 100;
+    public static final int PAGE_MASSAGE = 101;
+    public static final int PAGE_GROUP = 102;
+
     Context mContext;
     private List<Item> itemList;
-    int masseurPosition, spaPosition;
+    int masseurPosition, spaPosition, type;
 
-    public MainPageAdapter(Context mContext, GetHomePageResponse response) {
+    public MainPageAdapter(Context mContext, GetHomePageResponse response, int type) {
         this.mContext = mContext;
+        this.type = type;
         itemList = new ArrayList<>();
         if(response.getListHomePageModule()!=null && response.getListHomePageModule().size()>0) {
             for(Module module:response.getListHomePageModule()) {
@@ -376,6 +389,19 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     bannerHolder.mBanner.setBannerItemClickListener(new ImageBanner.BannerClickListener() {
                         @Override
                         public void onBannerItemClicked(int p) {
+                            Properties prop = new Properties();
+                            prop.setProperty("page", (p+1)+"");
+                            switch (type){
+                                case PAGE_PRODUCT:
+                                    StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_PRODUCT_BANNER, prop);
+                                    break;
+                                case PAGE_MASSAGE:
+                                    StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_MASSAGE_BANNER, prop);
+                                    break;
+                                default:
+                                    break;
+                            }
+
                             handleClickEvent(bannerModule.getBannerList().get(p), null);
                         }
                     });
@@ -389,7 +415,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 ButtonHolder moduleHolder = (ButtonHolder) holder;
                 final Module buttonModule = (Module) itemList.get(position).getContent();
                 moduleHolder.recyclerView.setLayoutManager(new GridLayoutManager(mContext, buttonModule.getBannerList().size()));
-                ModuleAdapter mAdapter = new ModuleAdapter(buttonModule.getBannerList());
+                ModuleAdapter mAdapter = new ModuleAdapter(buttonModule.getBannerList(), buttonModule.getModuleSort());
                 moduleHolder.recyclerView.setAdapter(mAdapter);
                 break;
 
@@ -431,6 +457,19 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 ad1Holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Properties prop = new Properties();
+                        prop.setProperty("location", ad1Module.getModuleSort()+"");
+                        switch (type){
+                            case PAGE_PRODUCT:
+                                StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_PRODUCT_ADV, prop);
+                                break;
+                            case PAGE_MASSAGE:
+                                StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_MASSAGE_ADV, prop);
+                                break;
+                            default:
+                                break;
+                        }
+
                         handleClickEvent(ad1Module.getBannerList().get(0), null);
                     }
                 });
@@ -445,6 +484,19 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     ad3Holder.mImageViewList.get(i).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            Properties prop = new Properties();
+                            prop.setProperty("location", ad3Module.getModuleSort()+"");
+                            prop.setProperty("item", (finalI+1)+"");
+                            switch (type){
+                                case PAGE_PRODUCT:
+                                    StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_PRODUCT_ADV_3, prop);
+                                    break;
+                                case PAGE_MASSAGE:
+                                    StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_MASSAGE_ADV_3, prop);
+                                    break;
+                                default:
+                                    break;
+                            }
                             handleClickEvent(ad3Module.getBannerList().get(finalI), null);
                         }
                     });
@@ -481,6 +533,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             case TYPE_MASSEUR:
                 MasseurHolder masseurHolder = (MasseurHolder) holder;
+                masseurHolder.masseurView.setLog(true);
                 masseurHolder.masseurView.setData((Masseur)itemList.get(position).getContent(), position-masseurPosition, true);
                 break;
 
@@ -502,6 +555,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_PRODUCT:
                 ProductHolder productHolder = (ProductHolder) holder;
                 productHolder.productView.setData((Product)itemList.get(position).getContent());
+                productHolder.productView.setLog(true);
                 if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_PRODUCT)
                     productHolder.productView.showDivider(false);
                 break;
@@ -509,6 +563,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_MASSAGE:
                 MassageHolder massageHolder = (MassageHolder) holder;
                 massageHolder.massageView.setData((Massage) itemList.get(position).getContent(), -1);
+                massageHolder.massageView.setLog(true);
                 if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_MASSAGE)
                     massageHolder.massageView.showDivider(false);
                 break;
@@ -516,6 +571,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_HOSPITAL:
                 HospitalHolder hospitalHolder = (HospitalHolder) holder;
                 hospitalHolder.hospitalView.setData((Hospital) itemList.get(position).getContent());
+                hospitalHolder.hospitalView.setLog(true);
                 if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_HOSPITAL)
                     hospitalHolder.hospitalView.showDivider(false);
                 break;
@@ -592,10 +648,10 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void addPost(List<Post> postList){
         for(Post post:postList)
             itemList.add(new Item(TYPE_POST, post));
-        notifyDataSetChanged();;
+        notifyDataSetChanged();
     }
 
-    private void handleClickEvent(Module.ModuleContent content, String title){
+    private void handleClickEvent(final Module.ModuleContent content, final String title){
         switch (content.getLinkTypeId()){
             case 1:
                 Intent i = new Intent(mContext, SelectSubjectActivity.class);
@@ -618,6 +674,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 i = new Intent(mContext, SubjectActivity.class);
                 Bundle b = new Bundle();
                 b.putLong(Constants.PARAM_ID, Long.parseLong(content.getLinkUrl().trim()));
+                b.putBoolean(Constants.PARAM_TYPE, false);
                 i.putExtras(b);
                 mContext.startActivity(i);
                 break;
@@ -682,11 +739,36 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 mContext.startActivity(i);
                 break;
             case 14:
-                i = new Intent(mContext, ListWithSearchActivity.class);
-                i.putExtra(Constants.PARAM_TITLE, title==null?mContext.getString(R.string.massage_list_title):title);
-                i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
-                i.putExtra(Constants.PARAM_ID, Integer.parseInt(content.getLinkUrl().trim()));
-                mContext.startActivity(i);
+                SubscriberWithFinishListener mListener = new SubscriberWithFinishListener<BaseListResponse<List<Subject>>>() {
+                    @Override
+                    public void onNext(BaseListResponse<List<Subject>> result) {
+                        String t = mContext.getString(R.string.massage_list_title);
+                        for(Subject s:result.getRows()){
+                            if(s.getKey() == Integer.parseInt(content.getLinkUrl().trim()))
+                                t = s.getTypeName();
+                        }
+                        Intent i = new Intent(mContext, ListWithSearchActivity.class);
+                        i.putExtra(Constants.PARAM_TITLE, t);
+                        i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                        i.putExtra(Constants.PARAM_ID, Integer.parseInt(content.getLinkUrl().trim()));
+                        mContext.startActivity(i);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Intent i = new Intent(mContext, ListWithSearchActivity.class);
+                        i.putExtra(Constants.PARAM_TITLE, mContext.getString(R.string.massage_list_title));
+                        i.putExtra(Constants.PARAM_TYPE, Constants.TYPE_MASSAGE);
+                        i.putExtra(Constants.PARAM_ID, Integer.parseInt(content.getLinkUrl().trim()));
+                        mContext.startActivity(i);
+                    }
+                };
+                ServiceClient.getInstance().getMassageTypeList(new SilentSubscriber(mListener, mContext, null));
                 break;
             case 15:
                 i = new Intent(mContext, ListWithSearchActivity.class);
@@ -719,17 +801,17 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case 19:
                 if(Constants.SHARE_URL.equals(content.getLinkUrl().trim())){
-                   if(Tools.isUserLogin(mContext)){
-                       mContext.startActivity(new Intent(mContext, InviteFriendActivity.class));
-                   }else{
-                       LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
-                           @Override
-                           public void onLoginSuccess() {
-                               mContext.startActivity(new Intent(mContext, InviteFriendActivity.class));
-                           }
-                       });
-                       mContext.startActivity(new Intent(mContext, LoginActivity.class));
-                   }
+                    if(Tools.isUserLogin(mContext)){
+                        mContext.startActivity(new Intent(mContext, InviteFriendActivity.class));
+                    }else{
+                        LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
+                            @Override
+                            public void onLoginSuccess() {
+                                mContext.startActivity(new Intent(mContext, InviteFriendActivity.class));
+                            }
+                        });
+                        mContext.startActivity(new Intent(mContext, LoginActivity.class));
+                    }
                 }else {
                     i = new Intent(mContext, WebViewActivity.class);
                     b = new Bundle();
@@ -853,9 +935,11 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder> {
 
         private List<Module.ModuleContent> moduleContentList;
+        private int location;
 
-        public ModuleAdapter(List<Module.ModuleContent> moduleContentList) {
+        public ModuleAdapter(List<Module.ModuleContent> moduleContentList, int location) {
             this.moduleContentList = moduleContentList;
+            this.location = location;
         }
 
         // inflates the cell layout from xml when needed
@@ -874,6 +958,19 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Properties prop = new Properties();
+                    prop.setProperty("location", location+"");
+                    prop.setProperty("item", (p+1)+"");
+                    switch (type){
+                        case PAGE_PRODUCT:
+                            StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_PRODUCT_MODULE, prop);
+                            break;
+                        case PAGE_MASSAGE:
+                            StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_MASSAGE_MODULE, prop);
+                            break;
+                        default:
+                            break;
+                    }
                     handleClickEvent(moduleContent, moduleContent.getBannerName());
                 }
             });

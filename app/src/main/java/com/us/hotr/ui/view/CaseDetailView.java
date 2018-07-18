@@ -15,9 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.Subject;
 import com.us.hotr.ui.activity.ImageViewerActivity;
 import com.us.hotr.ui.activity.beauty.DoctorActivity;
 import com.us.hotr.ui.activity.beauty.HospitalActivity;
@@ -34,6 +36,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by liaobo on 2018/2/12.
@@ -253,6 +256,7 @@ public class CaseDetailView extends FrameLayout {
                 Bundle b = new Bundle();
                 b.putLong(Constants.PARAM_ID, response.getYmContrastPhoto().getProjectId());
                 b.putBoolean(SubjectActivity.PARAM_CASE, true);
+                b.putBoolean(Constants.PARAM_TYPE, false);
                 i.putExtras(b);
                 getContext().startActivity(i);
             }
@@ -294,8 +298,10 @@ public class CaseDetailView extends FrameLayout {
         if(isFav)
             ServiceClient.getInstance().deleteFavoritePeople(new ProgressSubscriber(mListener, getContext()),
                     HOTRSharePreference.getInstance(getContext().getApplicationContext()).getUserID(), response.getUser().getUserId());
-        else
+        else {
+            StatService.trackCustomKVEvent(getContext(), Constants.MTA_ID_ADD_FAV_PEOPLE, new Properties());
             ServiceClient.getInstance().favoritePeople(new ProgressSubscriber(mListener, getContext()),
                     HOTRSharePreference.getInstance(getContext().getApplicationContext()).getUserID(), response.getUser().getUserId());
+        }
     }
 }

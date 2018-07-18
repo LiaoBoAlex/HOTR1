@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
@@ -45,6 +46,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import cn.jpush.android.api.JPushInterface;
@@ -61,6 +63,7 @@ public class PartyActivity extends BaseLoadingActivity{
     private long partyId;
     private GetPartyDetailResponse getPartyDetailResponse;
     private boolean isCollected = false;
+    private long startTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +190,7 @@ public class PartyActivity extends BaseLoadingActivity{
                         share.setTitle(result.getTravel().getTravel_name());
                         share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/party?id="+result.getTravel().getId());
                         share.setSinaContent(getString(R.string.share_party));
+                        share.setType(Share.TYPE_NORMAL);
                         ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
                     }
                 });
@@ -316,6 +320,10 @@ public class PartyActivity extends BaseLoadingActivity{
         super.onStop();
         NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
         GlobalBus.getBus().unregister(this);
+        Properties prop = new Properties();
+        prop.setProperty("id", partyId+"");
+        prop.setProperty("time", ((System.currentTimeMillis()-startTime)/1000)+"");
+        StatService.trackCustomKVEvent(this, Constants.MTA_ID_PARTY_DETAIL_SCREEN, prop);
     }
 
     @Override
@@ -329,6 +337,8 @@ public class PartyActivity extends BaseLoadingActivity{
         super.onStart();
         if(!GlobalBus.getBus().isRegistered(this))
             GlobalBus.getBus().register(this);
+        startTime = System.currentTimeMillis();
+
     }
 
     @Subscribe

@@ -11,6 +11,7 @@ import java.io.Serializable;
 public class Massage implements Serializable {
     @SerializedName(value = "key", alternate = {"id"})
     private long key;
+    @SerializedName(value = "activityCount", alternate = {"activity_count"})
     private int activityCount;
     @SerializedName(value = "activityPrice", alternate = {"activity_price"})
     private Double activityPrice;
@@ -43,6 +44,9 @@ public class Massage implements Serializable {
     private String massage_name;
     private int onsaleState;
     private int checkState;
+
+
+
 
     public boolean isMassageVaiable(){
         if(onsaleState == 1 && checkState ==1)

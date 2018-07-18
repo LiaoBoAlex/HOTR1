@@ -32,8 +32,17 @@ public class Product implements Serializable {
     private long project_id;
     private String project_name;
     private String usableTime;
+    @SerializedName(value = "onsaleState", alternate = {"onsale_state"})
     private int onsaleState;
     private int checkState;
+
+    public int getOnsaleState() {
+        return onsaleState;
+    }
+
+    public void setOnsaleState(int onsaleState) {
+        this.onsaleState = onsaleState;
+    }
 
     public String getUsableTime() {
         return usableTime;

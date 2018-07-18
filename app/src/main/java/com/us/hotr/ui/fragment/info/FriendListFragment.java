@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
@@ -35,6 +36,7 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/9/21.
@@ -305,9 +307,11 @@ public class FriendListFragment extends BaseLoadingFragment {
                                         });
                                 alertDialogBuilder.create().show();
                             }
-                            else
+                            else {
+                                StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_ADD_FAV_PEOPLE, new Properties());
                                 ServiceClient.getInstance().favoritePeople(new ProgressSubscriber(mListener, getContext()),
                                         HOTRSharePreference.getInstance(getContext().getApplicationContext()).getUserID(), user.getUserId());
+                            }
                         }
                     });
                 }else

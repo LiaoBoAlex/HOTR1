@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ItemSelectedListener;
@@ -19,19 +20,21 @@ import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.ui.activity.massage.MassageActivity;
 
 import java.text.DecimalFormat;
+import java.util.Properties;
 
 /**
  * Created by liaobo on 2017/12/27.
  */
 
 public class MassageView extends FrameLayout{
-    private TextView tvTitle, tvDoctor, tvHospital, tvAppointment, tvPriceBefore, tvPriceAfter, tvMin;
+    private TextView tvTitle, tvDoctor, tvHospital, tvAppointment, tvPriceBefore, tvPriceAfter, tvMin, tvSoldOut;
     private ImageView ivAvatar, ivGo, ivDelete, ivPromoPrice, ivOnePrice;
     private View vDivider;
 
     private ItemSelectedListener itemSelectedListener;
     private Massage massage;
     private long masseurId;
+    private boolean isLog = false;
 
     public MassageView(Context context) {
         super(context);
@@ -58,6 +61,7 @@ public class MassageView extends FrameLayout{
         ivPromoPrice = (ImageView) findViewById(R.id.iv_promo_price);
         ivOnePrice = (ImageView) findViewById(R.id.iv_one_price);
         vDivider = findViewById(R.id.v_divider);
+        tvSoldOut = (TextView) findViewById(R.id.tv_sold_out);
     }
 
     public void setData(final Massage massage, final long masseurId){
@@ -72,10 +76,15 @@ public class MassageView extends FrameLayout{
         if(massage.getProductType() == Constants.PROMOTION_PRODUCT) {
             tvPriceAfter.setText(new DecimalFormat("0.00").format(massage.getActivityPrice()) + "/" + massage.getServiceTime());
             ivPromoPrice.setVisibility(View.VISIBLE);
+            if(massage.getActivityCount()>0)
+                tvSoldOut.setVisibility(View.GONE);
+            else
+                tvSoldOut.setVisibility(View.VISIBLE);
         }
         else {
             tvPriceAfter.setText(new DecimalFormat("0.00").format(massage.getOnlinePrice()) + "/" + massage.getServiceTime());
             ivPromoPrice.setVisibility(View.GONE);
+            tvSoldOut.setVisibility(View.GONE);
         }
         tvPriceBefore.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
         tvMin.setVisibility(View.VISIBLE);
@@ -84,6 +93,11 @@ public class MassageView extends FrameLayout{
         setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(isLog){
+                    Properties prop = new Properties();
+                    prop.setProperty("id", massage.getKey()+"");
+                    StatService.trackCustomKVEvent(getContext(), Constants.MTA_ID_CLICK_PURPOSE_MASSAGE, prop);
+                }
                 Intent i = new Intent(getContext(), MassageActivity.class);
                 Bundle b = new Bundle();
                 b.putLong(Constants.PARAM_ID, massage.getKey());
@@ -92,6 +106,10 @@ public class MassageView extends FrameLayout{
                 getContext().startActivity(i);
             }
         });
+    }
+
+    public void setLog(boolean isLog){
+        this.isLog = isLog;
     }
 
     public void enableEdit(boolean isEdit){

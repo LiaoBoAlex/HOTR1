@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.FlowLayout;
@@ -44,6 +45,7 @@ import com.us.hotr.webservice.rxjava.SubscriberWithReloadListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/9/29.
@@ -71,6 +73,14 @@ public class MasseurActivity extends BaseLoadingActivity {
         initStaticView();
         setMyTitle(R.string.masseur_detail);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Properties prop = new Properties();
+        prop.setProperty("id", mMasseurId+"");
+        StatService.trackCustomKVEvent(this, Constants.MTA_ID_MASSEUR_DETAIL_SCREEN, prop);
     }
 
     @Override
@@ -181,6 +191,9 @@ public class MasseurActivity extends BaseLoadingActivity {
                                     mAdapter.notifyItemChanged(0);
                                 }
                             };
+                            Properties prop = new Properties();
+                            prop.setProperty("id", result.getMassagist().getId()+"");
+                            StatService.trackCustomKVEvent(MasseurActivity.this, Constants.MTA_ID_FAV_MASSEUR, prop);
                             ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, MasseurActivity.this),
                                     HOTRSharePreference.getInstance(MasseurActivity.this.getApplicationContext()).getUserID(), result.getMassagist().getId(), 5);
                         }
@@ -191,11 +204,12 @@ public class MasseurActivity extends BaseLoadingActivity {
                     @Override
                     public void onClick(View view) {
                         Share share = new Share();
-                        share.setDescription(getString(R.string.share_massage));
+                        share.setDescription(getString(R.string.share_masseur));
                         share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(result.getMassagist().getMassagistPhotos())));
                         share.setTitle(result.getMassagist().getMassagist_name());
                         share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/massagist?id="+result.getMassagist().getId());
-                        share.setSinaContent(getString(R.string.share_massage));
+                        share.setSinaContent(getString(R.string.share_masseur));
+                        share.setType(Share.TYPE_NORMAL);
                         ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
                     }
                 });

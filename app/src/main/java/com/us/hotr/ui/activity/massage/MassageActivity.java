@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ImageBanner;
@@ -50,6 +51,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/9/30.
@@ -285,6 +287,9 @@ public class MassageActivity extends BaseLoadingActivity{
                                     ivFav.setImageResource(R.mipmap.ic_fav_text_ed);
                                 }
                             };
+                            Properties prop = new Properties();
+                            prop.setProperty("id", mMassage.getProduct().getKey()+"");
+                            StatService.trackCustomKVEvent(MassageActivity.this, Constants.MTA_ID_FAV_MASSAGE, prop);
                             ServiceClient.getInstance().favoriteItem(new ProgressSubscriber(mListener, MassageActivity.this),
                                     HOTRSharePreference.getInstance(MassageActivity.this.getApplicationContext()).getUserID(), mMassage.getProduct().getKey(), 6);
                         }
@@ -300,6 +305,7 @@ public class MassageActivity extends BaseLoadingActivity{
                         share.setTitle(getString(R.string.bracket_left)+mMassage.getProduct().getProductName()+getString(R.string.bracket_right)+mMassage.getProduct().getProductUsp());
                         share.setUrl("http://hotr.hotr-app.com/hotr-api-web/#/commodityAM?id="+mMassage.getProduct().getKey());
                         share.setSinaContent(getString(R.string.share_massage));
+                        share.setType(Share.TYPE_NORMAL);
                         ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
                     }
                 });

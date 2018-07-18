@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ItemSelectedListener;
@@ -28,6 +29,7 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by liaobo on 2017/12/27.
@@ -171,9 +173,11 @@ public class CaseView extends FrameLayout {
         if(isFollow)
             ServiceClient.getInstance().deleteFavoritePeople(new ProgressSubscriber(mListener, getContext()),
                     HOTRSharePreference.getInstance(getContext().getApplicationContext()).getUserID(), aCase.getUserId());
-        else
+        else {
             ServiceClient.getInstance().favoritePeople(new ProgressSubscriber(mListener, getContext()),
                     HOTRSharePreference.getInstance(getContext().getApplicationContext()).getUserID(), aCase.getUserId());
+            StatService.trackCustomKVEvent(getContext(), Constants.MTA_ID_ADD_FAV_PEOPLE, new Properties());
+        }
     }
 
     public void setItemSelectedListener(ItemSelectedListener listener){

@@ -8,6 +8,7 @@
     android:layout_height="wrap_content">
 
     <android.support.constraint.ConstraintLayout
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -114,6 +115,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_subject"
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -150,6 +152,7 @@
         android:layout_marginTop="16dp"
         android:background="@color/divider2"/>
     <TextView
+        android:background="@color/white"
         android:paddingLeft="12dp"
         android:textSize="14dp"
         android:textColor="@color/text_black"

@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.squareup.haha.perflib.Main;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.DeactivatedViewPager;
@@ -45,6 +46,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.event.MessageEvent;
@@ -267,6 +269,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, UploadPostActivity1.class));
+                StatService.trackCustomKVEvent(MainActivity.this, Constants.MTA_ID_CLICK_POST_BUTTON, new Properties());
                 buttonRollIn();
             }
         });
@@ -274,6 +277,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
         ivCompare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                StatService.trackCustomKVEvent(MainActivity.this, Constants.MTA_ID_CLICK_CASE_BUTTON, new Properties());
                 startActivity(new Intent(MainActivity.this, UploadCompareActivity1.class));
                 buttonRollIn();
             }

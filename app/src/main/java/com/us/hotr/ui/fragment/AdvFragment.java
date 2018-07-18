@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.bean.Adv;
@@ -34,6 +35,8 @@ import com.us.hotr.ui.activity.massage.MasseurActivity;
 import com.us.hotr.ui.activity.massage.SpaActivity;
 import com.us.hotr.ui.activity.party.PartyActivity;
 import com.us.hotr.util.Tools;
+
+import java.util.Properties;
 
 /**
  * Created by liaobo on 2017/12/12.
@@ -85,6 +88,10 @@ public class AdvFragment extends Fragment {
     }
 
     private void handleClickEvent(){
+        Properties prop = new Properties();
+        prop.setProperty("page", mAdv.getPage()+"");
+        StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_SPLASH_SCREEN, prop);
+
         switch (Integer.valueOf(mAdv.getForwart_type())){
             case 1:
                 Intent i = new Intent(getContext(), SelectSubjectActivity.class);

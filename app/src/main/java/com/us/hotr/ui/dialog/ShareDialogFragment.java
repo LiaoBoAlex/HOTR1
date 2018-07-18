@@ -10,11 +10,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.receiver.Share;
 import com.us.hotr.ui.activity.SinaShareActivity;
 import com.us.hotr.util.Tools;
+
+import java.util.Properties;
 
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
@@ -52,9 +55,14 @@ public class ShareDialogFragment extends BottomSheetDialogFragment {
         ivWeibo = (ImageView) view.findViewById(R.id.iv_weibo);
         tvCancel = (TextView) view.findViewById(R.id.tv_cancel);
 
+
+
         ivFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Properties prop = new Properties();
+                prop.setProperty("type", share.getType()+"");
+                StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_CLICK_SHARE, prop);
                 mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 Tools.shareToWechatFriend(getContext(), share);
             }
@@ -62,6 +70,9 @@ public class ShareDialogFragment extends BottomSheetDialogFragment {
         ivMoment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Properties prop = new Properties();
+                prop.setProperty("type", share.getType()+"");
+                StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_CLICK_SHARE, prop);
                 mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 Tools.shareToWechatTimeLine(getContext(), share);
             }
@@ -69,6 +80,9 @@ public class ShareDialogFragment extends BottomSheetDialogFragment {
         ivWeibo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Properties prop = new Properties();
+                prop.setProperty("type", share.getType()+"");
+                StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_CLICK_SHARE, prop);
                 mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 Intent i = new Intent(getActivity(), SinaShareActivity.class);
                 Bundle b = new Bundle();

@@ -2,9 +2,6 @@ package com.us.hotr.ui.view;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -21,15 +18,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.ScrollThroughRecyclerView;
@@ -37,7 +28,6 @@ import com.us.hotr.customview.ShapedImageView;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Post;
 import com.us.hotr.storage.bean.PostOld;
-import com.us.hotr.ui.HOTRApplication;
 import com.us.hotr.ui.activity.ImageViewerActivity;
 import com.us.hotr.ui.activity.found.GroupDetailActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
@@ -46,15 +36,13 @@ import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by liaobo on 2018/1/11.
@@ -317,9 +305,11 @@ public class PostDetailView extends FrameLayout {
         if(isFav)
             ServiceClient.getInstance().deleteFavoritePeople(new ProgressSubscriber(mListener, getContext()),
                     HOTRSharePreference.getInstance(getContext().getApplicationContext()).getUserID(), userId);
-        else
+        else {
+            StatService.trackCustomKVEvent(getContext(), Constants.MTA_ID_ADD_FAV_PEOPLE, new Properties());
             ServiceClient.getInstance().favoritePeople(new ProgressSubscriber(mListener, getContext()),
                     HOTRSharePreference.getInstance(getContext().getApplicationContext()).getUserID(), userId);
+        }
     }
 
     private void likePost(long postId){
