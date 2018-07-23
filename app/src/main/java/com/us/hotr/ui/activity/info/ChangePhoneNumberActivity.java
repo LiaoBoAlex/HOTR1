@@ -14,7 +14,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.tencent.stat.StatMultiAccount;
 import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
@@ -30,8 +29,6 @@ import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
 import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
-
-import java.util.ArrayList;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.model.UserInfo;
@@ -189,12 +186,12 @@ public class ChangePhoneNumberActivity extends BaseActivity {
                         });
                         HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(result.getJsessionid());
                         HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(result.getUser());
-                        StatMultiAccount account = new StatMultiAccount(
-                                StatMultiAccount.AccountType.PHONE_NO, result.getUser().getMobile());
-                        long time = System.currentTimeMillis() / 1000;
-                        account.setLastTimeSec(time);
-                        account.setExpireTimeSec(time + 60*60*24*365*10);
-                        StatService.reportMultiAccount(ChangePhoneNumberActivity.this, account);
+//                        StatMultiAccount account = new StatMultiAccount(
+//                                StatMultiAccount.AccountType.PHONE_NO, result.getUser().getMobile());
+//                        long time = System.currentTimeMillis() / 1000;
+//                        account.setLastTimeSec(time);
+//                        account.setExpireTimeSec(time + 60*60*24*365*10);
+//                        StatService.reportMultiAccount(ChangePhoneNumberActivity.this, account);
 
                         getNewUserVoucher();
                     }

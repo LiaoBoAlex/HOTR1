@@ -12,18 +12,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import com.tencent.stat.StatMultiAccount;
-import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.DeactivatedViewPager;
@@ -40,10 +32,15 @@ import com.us.hotr.webservice.rxjava.SubscriberListener;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
+
+//import com.tencent.stat.StatMultiAccount;
 
 /**
  * Created by Mloong on 2017/10/13.
@@ -192,12 +189,12 @@ public class LoginActivity extends AppCompatActivity {
             JPushInterface.setAlias(this, i, login.getGetLoginResponse().getUser().getMobile());
             HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(login.getGetLoginResponse().getJsessionid());
             HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(login.getGetLoginResponse().getUser());
-            StatMultiAccount account = new StatMultiAccount(
-                    StatMultiAccount.AccountType.PHONE_NO, login.getGetLoginResponse().getUser().getMobile());
-            long time = System.currentTimeMillis() / 1000;
-            account.setLastTimeSec(time);
-            account.setExpireTimeSec(time + 60*60*24*365*10);
-            StatService.reportMultiAccount(this, account);
+//            StatMultiAccount account = new StatMultiAccount(
+//                    StatMultiAccount.AccountType.PHONE_NO, login.getGetLoginResponse().getUser().getMobile());
+//            long time = System.currentTimeMillis() / 1000;
+//            account.setLastTimeSec(time);
+//            account.setExpireTimeSec(time + 60*60*24*365*10);
+//            StatService.reportMultiAccount(this, account);
             if(login.getGetLoginResponse().isFirst_register()) {
                 getNewUserVoucher();
             }else {

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Base64;
 
 import com.us.hotr.storage.bean.Address;
+import com.us.hotr.storage.bean.Contact;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
@@ -30,6 +31,7 @@ public class HOTRSharePreference {
     private static final String KEY_CURRENT_PROVINCE_NAME = "KEY_CURRENT_PROVINCE_NAME";
     private static final String KEY_CURRENT_CITY_ID = "KEY_CURRENT_CITY_ID";
     private static final String KEY_USER_INFO = "KEY_USER_INFO";
+    private static final String KEY_CONTACT_INFO = "KEY_CONTACT_INFO";
     private static final String KEY_DEFAULT_ADDRESS = "KEY_DEFAULT_ADDRESS";
     private static final String KEY_LATITUDE = "KEY_LATITUDE";
     private static final String KEY_LONGITUDE = "KEY_LONGITUDE";
@@ -215,6 +217,14 @@ public class HOTRSharePreference {
 
     public static User getUserInfo(){
         return (User) getObject(KEY_USER_INFO);
+    }
+
+    public static void storeContactInfo(Contact contact){
+        saveObject(KEY_CONTACT_INFO, contact);
+    }
+
+    public static Contact getContactInfo(){
+        return (Contact) getObject(KEY_CONTACT_INFO);
     }
 
     public static void storeDefaultAddress(Address address){

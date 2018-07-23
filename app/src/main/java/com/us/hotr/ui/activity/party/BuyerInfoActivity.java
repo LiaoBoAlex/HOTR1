@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyDatePicker;
+import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Contact;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.util.Tools;
@@ -46,7 +47,7 @@ public class BuyerInfoActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setMyTitle(R.string.buyer_info);
         type = getIntent().getExtras().getInt(Constants.PARAM_TYPE);
-        mContact = (Contact) getIntent().getExtras().getSerializable(Constants.PARAM_DATA);
+        mContact = HOTRSharePreference.getInstance(getApplicationContext()).getContactInfo();
         if(mContact == null)
             mContact = new Contact();
         initStaticView();
@@ -130,37 +131,19 @@ public class BuyerInfoActivity extends BaseActivity {
                 else if(!isDateSelected)
                     Tools.Toast(BuyerInfoActivity.this, getString(R.string.choose_doc_date));
                 else{
-                    setupContact();
-                    Intent i = new Intent();
-                    Bundle b = new Bundle();
-                    b.putSerializable(Constants.PARAM_DATA, mContact);
-                    i.putExtras(b);
-                    setResult(100, i);
+                    mContact.setGender(isMale?0:1);
+                    mContact.setPurchaser_credentials_numb(etDoc.getText().toString().trim());
+                    mContact.setPurchaser_name(etName.getText().toString().trim());
+                    mContact.setPurchaser_phone(etPhone.getText().toString().trim());
+                    if(isDateSelected)
+                        mContact.setTerm_of_validity(tvDocDate.getText().toString().trim());
+                    mContact.setValideDate(ValideDate);
+                    HOTRSharePreference.getInstance(getApplicationContext()).storeContactInfo(mContact);
+                    setResult(RESULT_OK);
                     finish();
                 }
             }
         });
-    }
-
-    @Override
-    public void onBackPressed() {
-        setupContact();
-        Intent i = new Intent();
-        Bundle b = new Bundle();
-        b.putSerializable(Constants.PARAM_DATA, mContact);
-        i.putExtras(b);
-        setResult(101, i);
-        super.onBackPressed();
-    }
-
-    private void setupContact(){
-        mContact.setGender(isMale?0:1);
-        mContact.setPurchaser_credentials_numb(etDoc.getText().toString().trim());
-        mContact.setPurchaser_name(etName.getText().toString().trim());
-        mContact.setPurchaser_phone(etPhone.getText().toString().trim());
-        if(isDateSelected)
-            mContact.setTerm_of_validity(tvDocDate.getText().toString().trim());
-        mContact.setValideDate(ValideDate);
     }
 
     private void showSelectDateDialog() {

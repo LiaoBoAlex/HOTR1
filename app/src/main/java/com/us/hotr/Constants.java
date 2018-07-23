@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Constants {
 //development server
-//    public static final String SERVER_URL = "https://hotr.hotr-app.com/hotr-api-web/";
+//    public static final String SERVER_URL = "http://.hotr-app.com/hotr-api-web/";
 //production server
     public static final String SERVER_URL = "https://hotr.us-app.com/hotr-api-web/";
     public static final String SHARE_URL = "https://hotr.hotr-app.com/hotr-api-web/share";

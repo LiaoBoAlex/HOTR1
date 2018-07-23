@@ -48,7 +48,6 @@ public class PartyOrderActivity extends BaseActivity {
     private GetPartyDetailResponse data;
     private double total;
     private CreatePartyOrderRequest request;
-    private Contact mContact = new Contact();
     private boolean isBuyerInfoSelected = false, isGetterInfoSelected = false;
     @Override
     protected int getLayout() {
@@ -82,6 +81,7 @@ public class PartyOrderActivity extends BaseActivity {
         request.setTicket_count(count);
         request.setPurchaser_credentials(data.getTravel().getIdType());
         initStaticView();
+        setupBuyerInfor();
     }
 
     private void initStaticView(){
@@ -127,7 +127,6 @@ public class PartyOrderActivity extends BaseActivity {
                 Intent i = new Intent(PartyOrderActivity.this, BuyerInfoActivity.class);
                 Bundle b = new Bundle();
                 b.putInt(Constants.PARAM_TYPE, data.getTravel().getIdType());
-                b.putSerializable(Constants.PARAM_DATA, mContact);
                 i.putExtras(b);
                 startActivityForResult(i, 1);
             }
@@ -184,23 +183,25 @@ public class PartyOrderActivity extends BaseActivity {
             }
         }
         if(requestCode == 1){
+            if (resultCode == RESULT_OK) {
+                setupBuyerInfor();
+            }
+        }
+    }
 
-            if(resultCode == 100 || resultCode == 101) {
-                mContact = (Contact) data.getExtras().getSerializable(Constants.PARAM_DATA);
-            }
-            if (resultCode == 100) {
-                Contact contact = (Contact) data.getExtras().getSerializable(Constants.PARAM_DATA);
-                clBuyerInfo.setVisibility(View.VISIBLE);
-                tvBuyerName.setText(contact.getPurchaser_name());
-                tvBuyerAddress.setText(String.format(getString(R.string.buyer_info1), contact.getPurchaser_credentials_numb(), contact.getPurchaser_phone()));
-                request.setPurchaser_credentials_numb(contact.getPurchaser_credentials_numb());
-                request.setPurchaser_name(contact.getPurchaser_name());
-                request.setPurchaser_phone(contact.getPurchaser_phone());
-                request.setTerm_of_validity(contact.getValideDate());
-                request.setGender(contact.getGender());
-                isBuyerInfoSelected = true;
-                tvBuyerTitle.setVisibility(View.INVISIBLE);
-            }
+    private void setupBuyerInfor(){
+        Contact contact = HOTRSharePreference.getInstance(getApplicationContext()).getContactInfo();
+        if(contact != null) {
+            clBuyerInfo.setVisibility(View.VISIBLE);
+            tvBuyerName.setText(contact.getPurchaser_name());
+            tvBuyerAddress.setText(String.format(getString(R.string.buyer_info1), contact.getPurchaser_credentials_numb(), contact.getPurchaser_phone()));
+            request.setPurchaser_credentials_numb(contact.getPurchaser_credentials_numb());
+            request.setPurchaser_name(contact.getPurchaser_name());
+            request.setPurchaser_phone(contact.getPurchaser_phone());
+            request.setTerm_of_validity(contact.getValideDate());
+            request.setGender(contact.getGender());
+            isBuyerInfoSelected = true;
+            tvBuyerTitle.setVisibility(View.INVISIBLE);
         }
     }
 

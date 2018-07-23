@@ -12,13 +12,10 @@ import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.widget.TextView;
 
-import com.tencent.stat.StatMultiAccount;
-import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.activity.BaseActivity;
-import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.WebViewActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.util.DataCleanManager;
@@ -31,6 +28,8 @@ import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.im.android.api.JMessageClient;
+
+//import com.tencent.stat.StatMultiAccount;
 
 /**
  * Created by Mloong on 2017/10/10.
@@ -150,7 +149,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedMassageCityID(-1);
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedProductCityID(-1);
                                 HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedCityName("");
-                                StatService.removeMultiAccount(SettingActivity.this, StatMultiAccount.AccountType.PHONE_NO);
+                                HOTRSharePreference.getInstance(getApplicationContext()).storeContactInfo(null);
+//                                StatService.removeMultiAccount(SettingActivity.this, StatMultiAccount.AccountType.PHONE_NO);
                                 setResult(CODE_LOGOUT);
                                 finish();
                                 dialog.dismiss();
