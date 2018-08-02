@@ -11,6 +11,7 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.activity.WebViewActivity;
+import com.us.hotr.util.Tools;
 
 /**
  * Created by Mloong on 2017/10/13.
@@ -48,7 +49,7 @@ public class AboutUsActivity extends BaseActivity {
         clComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Tools.openApplicationMarket(getApplicationContext());
             }
         });
 

@@ -98,8 +98,10 @@ public class HomeFragment extends Fragment {
         }};
 
         if(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedMassageCityID()<=0
-                && HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedProductCityID()<=0)
-            tvCity.setText(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getCurrentCityName());
+                && HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedProductCityID()<=0) {
+            if(!HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getCurrentCityName().isEmpty())
+                tvCity.setText(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getCurrentCityName());
+        }
         else
             tvCity.setText(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedCityName());
 
@@ -197,8 +199,10 @@ public class HomeFragment extends Fragment {
     private void startLocationService(){
         if(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedCityName().isEmpty())
             mLocationClient.start();
-        else
-            tvCity.setText(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedCityName());
+        else {
+            if(!HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedCityName().isEmpty())
+                tvCity.setText(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedCityName());
+        }
     }
 
     public class PagerAdapter extends FragmentStatePagerAdapter {
@@ -271,8 +275,10 @@ public class HomeFragment extends Fragment {
             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeLatitude(location.getLatitude());
             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeLongitude(location.getLongitude());
             if(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedProductCityID()<=0
-                    &&HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedMassageCityID()<=0)
-                tvCity.setText(location.getCity());
+                    &&HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedMassageCityID()<=0) {
+                if (location.getCity() != null && !location.getCity().isEmpty())
+                    tvCity.setText(location.getCity());
+            }
             else {
                 tvCity.setText(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedCityName());
             }

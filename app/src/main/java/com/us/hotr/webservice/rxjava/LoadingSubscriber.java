@@ -80,8 +80,7 @@ public class LoadingSubscriber<T> extends DisposableObserver<T>{
                 mFragment.showErrorPage();
                 if(((ApiException) e).getErrorCode() == Constants.ERROR_INVALID_SESSIONID){
                     Tools.Toast(mFragment.getActivity(), ((ApiException) e).getErrorMsg());
-                    HOTRSharePreference.getInstance(mFragment.getActivity().getApplicationContext()).storeUserID("");
-                    JMessageClient.logout();
+                    Tools.logout(mFragment.getActivity().getApplicationContext());
                     LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
                         @Override
                         public void onLoginSuccess() {
@@ -107,8 +106,7 @@ public class LoadingSubscriber<T> extends DisposableObserver<T>{
                 mActivity.showErrorPage();
                 if(((ApiException) e).getErrorCode() == Constants.ERROR_INVALID_SESSIONID){
                     Tools.Toast(mFragment.getActivity(), ((ApiException) e).getErrorMsg());
-                    HOTRSharePreference.getInstance(mActivity.getApplicationContext()).storeUserID("");
-                    JMessageClient.logout();
+                    Tools.logout(mActivity.getApplicationContext());
                     LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
                         @Override
                         public void onLoginSuccess() {

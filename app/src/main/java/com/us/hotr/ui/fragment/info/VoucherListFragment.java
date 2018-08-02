@@ -163,7 +163,7 @@ public class VoucherListFragment extends BaseLoadingFragment {
         currentPage ++;
         if(mAdapter.getItemCount() >= totalSize) {
             enableLoadMore(false);
-            myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+            myBaseAdapter.setFooterView(LayoutInflater.from(getActivity()).inflate(R.layout.footer_general, mRecyclerView, false));
         }
         else
             enableLoadMore(true);

@@ -50,6 +50,7 @@ import com.us.hotr.storage.bean.CityCode;
 import com.us.hotr.storage.bean.Type;
 import com.us.hotr.storage.bean.WechatBill;
 import com.us.hotr.ui.HOTRApplication;
+import com.us.hotr.ui.activity.info.SettingActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,6 +68,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.im.android.api.JMessageClient;
 
 /**
  * Created by Mloong on 2017/8/31.
@@ -168,6 +172,22 @@ public class Tools {
         Toast toast = Toast.makeText(context, s, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
+    }
+
+    public static void logout(Context mContext){
+        if(HOTRSharePreference.getInstance(mContext).getUserInfo()!=null) {
+            int i = Integer.parseInt(HOTRSharePreference.getInstance(mContext).getUserInfo().getMobile().substring(2));
+            JPushInterface.deleteAlias(mContext, i);
+            JMessageClient.logout();
+        }
+        HOTRSharePreference.getInstance(mContext).storeUserID("");
+        HOTRSharePreference.getInstance(mContext).storeUserInfo(null);
+        HOTRSharePreference.getInstance(mContext).storeDefaultAddress(null);
+        HOTRSharePreference.getInstance(mContext).storeSelectedMassageCityID(-1);
+        HOTRSharePreference.getInstance(mContext).storeSelectedProductCityID(-1);
+        HOTRSharePreference.getInstance(mContext).storeSelectedCityName("");
+        HOTRSharePreference.getInstance(mContext).storeContactInfo(null);
+//                                 StatService.removeMultiAccount(SettingActivity.this, StatMultiAccount.AccountType.PHONE_NO);
     }
 
     public static void validatePasswordInput(EditText editText){

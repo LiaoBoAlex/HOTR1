@@ -232,7 +232,7 @@ public class AdvFragment extends Fragment {
                 getActivity().finish();
                 break;
             case 19:
-                if(Constants.SHARE_URL.equals(mAdv.getForwart_url().trim())){
+                if(Constants.INVITE_FRIENDS_SHARE_URL.equals(mAdv.getForwart_url().trim())){
                     if(Tools.isUserLogin(getContext())){
                         getContext().startActivity(new Intent(getContext(), InviteFriendActivity.class));
                         getActivity().finish();

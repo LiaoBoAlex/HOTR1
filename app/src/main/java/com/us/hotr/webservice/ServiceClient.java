@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.alipay.sdk.app.PayTask;
+import com.us.hotr.BuildConfig;
 import com.us.hotr.Constants;
 import com.us.hotr.storage.bean.Address;
 import com.us.hotr.storage.bean.Adv;
@@ -112,7 +113,7 @@ public class ServiceClient {
     private WebService webService;
 
     private ServiceClient() {
-        webService = RetrofitClient.getClient(Constants.SERVER_URL).create(WebService.class);
+        webService = RetrofitClient.getClient(BuildConfig.SERVER).create(WebService.class);
     }
 
     private static class SingletonHolder{

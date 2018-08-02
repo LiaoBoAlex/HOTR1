@@ -161,7 +161,7 @@ public class MassageOrderListFragment extends BaseLoadingFragment {
         if((mAdapter.getItemCount() >= totalSize && mAdapter.getItemCount() > 0)
                 ||totalSize == 0) {
             enableLoadMore(false);
-            myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+            myBaseAdapter.setFooterView(LayoutInflater.from(getActivity()).inflate(R.layout.footer_general, mRecyclerView, false));
         }
         else
             enableLoadMore(true);

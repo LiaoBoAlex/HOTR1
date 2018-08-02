@@ -140,17 +140,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 alertDialogBuilder.setPositiveButton(getString(R.string.yes),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                int i = Integer.parseInt(HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getMobile().substring(2));
-                                JPushInterface.deleteAlias(SettingActivity.this, i);
-                                JMessageClient.logout();
-                                HOTRSharePreference.getInstance(getApplicationContext()).storeUserID("");
-                                HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(null);
-                                HOTRSharePreference.getInstance(getApplicationContext()).storeDefaultAddress(null);
-                                HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedMassageCityID(-1);
-                                HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedProductCityID(-1);
-                                HOTRSharePreference.getInstance(getApplicationContext()).storeSelectedCityName("");
-                                HOTRSharePreference.getInstance(getApplicationContext()).storeContactInfo(null);
-//                                StatService.removeMultiAccount(SettingActivity.this, StatMultiAccount.AccountType.PHONE_NO);
+                                Tools.logout(getApplicationContext());
                                 setResult(CODE_LOGOUT);
                                 finish();
                                 dialog.dismiss();

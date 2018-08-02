@@ -66,12 +66,12 @@ public class ReceiptFragment extends BaseFragment {
         if(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).isUserLogin()) {
             isLoaded = true;
             titleList = new ArrayList<String>() {{
-                add(getString(R.string.beauty_title));
                 add(getString(R.string.massage_title));
+                add(getString(R.string.beauty_title));
             }};
             fragmentList = new ArrayList<Fragment>() {{
-                add(ReceiptCategoryFragment.newInstance(Constants.TYPE_PRODUCT));
                 add(ReceiptCategoryFragment.newInstance(Constants.TYPE_MASSAGE));
+                add(ReceiptCategoryFragment.newInstance(Constants.TYPE_PRODUCT));
             }};
             adapter = new PagerAdapter(getChildFragmentManager(), titleList, fragmentList);
             viewPager.setOffscreenPageLimit(2);

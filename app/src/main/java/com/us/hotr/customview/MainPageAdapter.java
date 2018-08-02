@@ -801,7 +801,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 mContext.startActivity(i);
                 break;
             case 19:
-                if(Constants.SHARE_URL.equals(content.getLinkUrl().trim())){
+                if(Constants.INVITE_FRIENDS_SHARE_URL.equals(content.getLinkUrl().trim())){
                     if(Tools.isUserLogin(mContext)){
                         mContext.startActivity(new Intent(mContext, InviteFriendActivity.class));
                     }else{

@@ -39,15 +39,17 @@ public class OrderListActivity extends BaseActivity {
 
     private void initStaticView(){
         titleList = new ArrayList<String>() {{
-            add(getString(R.string.beauty_title));
-            add(getString(R.string.massage_title));
             add(getString(R.string.party_title));
+            add(getString(R.string.massage_title));
+            add(getString(R.string.beauty_title));
+
+
         }};
 
         fragmentList = new ArrayList<Fragment>() {{
-            add(OrderCategoryFragment.newInstance(Constants.TYPE_PRODUCT));
-            add(OrderCategoryFragment.newInstance(Constants.TYPE_MASSAGE));
             add(OrderCategoryFragment.newInstance(Constants.TYPE_PARTY));
+            add(OrderCategoryFragment.newInstance(Constants.TYPE_MASSAGE));
+            add(OrderCategoryFragment.newInstance(Constants.TYPE_PRODUCT));
         }};
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);

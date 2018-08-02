@@ -171,17 +171,19 @@ public class ProductListWithFilterFragment extends Fragment implements CloseFrag
             Hospital h = new Hospital();
             hospitalList.add(h);
         }
-
+        int cityType = 0;
         switch(type){
             case Constants.TYPE_PRODUCT:
+                cityType = 0;
                 productListFragment = new ProductListFragment().newInstance(keyword, getArguments().getBoolean(Constants.PARAM_ENABLE_REFRESH),type, -1, -1, id, cityId, -1, -1);
                 break;
             case Constants.TYPE_MASSAGE:
+                cityType = 1;
                 productListFragment = new MassageListFragment().newInstance(keyword,false, id, cityId, -1);
                 break;
         }
 
-        selectCityFragment = new SelectCityFragment().newInstance(0, false);
+        selectCityFragment = new SelectCityFragment().newInstance(cityType, false);
         selectTypeFragment = new SelectTypeFragment().newInstance(type, true);
         getChildFragmentManager().beginTransaction().add(R.id.container2, productListFragment).commit();
         getChildFragmentManager().beginTransaction().add(R.id.container1, selectCityFragment).hide(selectCityFragment).commit();

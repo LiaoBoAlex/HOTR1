@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,8 +15,8 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import com.squareup.haha.perflib.Main;
 import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
@@ -52,11 +51,11 @@ import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.event.OfflineMessageEvent;
 import cn.jpush.im.android.api.model.Conversation;
-import q.rorbin.badgeview.QBadgeView;
 
 public class
 MainActivity extends AppCompatActivity implements View.OnClickListener{
-    private ImageView tabHome, tabFound, tabAll, tabVoucher, tabInfo, ivPost, ivCompare, ivAll1;
+    private ImageView tabHome, tabFound, tabAll, tabVoucher, tabInfo, ivPost, ivCompare, ivAll1, ivDot;
+    private TextView tvHome, tvFound, tvVoucher, tvInfo;
     private ArrayList<Fragment> fragmentList;
     private PagerAdapter adapter;
     private DeactivatedViewPager viewPager;
@@ -64,7 +63,6 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private InfoFragment infoFragment;
     private ReceiptFragment receiptFragment;
-    private QBadgeView badgeView;
 
     private int currentPage = 0;
     private int orderCount = 0, noticeCount = 0;
@@ -131,10 +129,12 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (tabInfo != null && orderCount + noticeCount > 0) {
-                                badgeView.setBadgeNumber(orderCount + noticeCount);
-                            } else if (badgeView != null) {
-                                badgeView.hide(false);
+                            if(ivDot!=null) {
+                                if (orderCount + noticeCount > 0) {
+                                    ivDot.setVisibility(View.VISIBLE);
+                                } else {
+                                    ivDot.setVisibility(View.GONE);
+                                }
                             }
                         }
                     });
@@ -147,10 +147,12 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (tabInfo != null && orderCount + noticeCount > 0) {
-                        badgeView.setBadgeNumber(orderCount + noticeCount);
-                    } else if (badgeView != null) {
-                        badgeView.hide(false);
+                    if(ivDot!=null) {
+                        if (orderCount + noticeCount > 0) {
+                            ivDot.setVisibility(View.VISIBLE);
+                        } else{
+                            ivDot.setVisibility(View.GONE);
+                        }
                     }
                 }
             });
@@ -228,18 +230,17 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
         tabFound = (ImageView)findViewById(R.id.tab_found);
         tabAll = (ImageView)findViewById(R.id.tab_all);
         tabVoucher = (ImageView)findViewById(R.id.tab_voucher);
+        tvHome = (TextView) findViewById(R.id.tv_main);
+        tvFound = (TextView) findViewById(R.id.tv_found);
+        tvVoucher = (TextView) findViewById(R.id.tv_receipt);
+        tvInfo = (TextView) findViewById(R.id.tv_info);
         tabInfo = (ImageView)findViewById(R.id.tab_info);
         viewPager = (DeactivatedViewPager) findViewById(R.id.pager);
         ivPost = (ImageView) findViewById(R.id.iv_post);
         ivCompare = (ImageView) findViewById(R.id.iv_compare);
         ivAll1 = (ImageView) findViewById(R.id.tab_all1);
+        ivDot = (ImageView) findViewById(R.id.iv_dot);
         mFrameLayout = (RelativeLayout) findViewById(R.id.fl_dim);
-
-        badgeView = new QBadgeView(this);
-        badgeView.bindTarget(tabInfo)
-                .setBadgeGravity(Gravity.TOP | Gravity.END)
-                .setBadgeBackgroundColor(getResources().getColor(R.color.red))
-                .setShowShadow(false);
 
         tabHome.setOnClickListener(this);
         tabFound.setOnClickListener(this);
@@ -358,6 +359,10 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 tabFound.setImageResource(R.mipmap.icon_found);
                 tabVoucher.setImageResource(R.mipmap.icon_voucher);
                 tabInfo.setImageResource(R.mipmap.icon_info);
+                tvHome.setTextColor(getResources().getColor(R.color.red));
+                tvFound.setTextColor(getResources().getColor(R.color.text_grey));
+                tvVoucher.setTextColor(getResources().getColor(R.color.text_grey));
+                tvInfo.setTextColor(getResources().getColor(R.color.text_grey));
                 viewPager.setCurrentItem(0, false);
                 break;
             case 1:
@@ -365,6 +370,10 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 tabFound.setImageResource(R.mipmap.icon_found_click);
                 tabVoucher.setImageResource(R.mipmap.icon_voucher);
                 tabInfo.setImageResource(R.mipmap.icon_info);
+                tvHome.setTextColor(getResources().getColor(R.color.text_grey));
+                tvFound.setTextColor(getResources().getColor(R.color.red));
+                tvVoucher.setTextColor(getResources().getColor(R.color.text_grey));
+                tvInfo.setTextColor(getResources().getColor(R.color.text_grey));
                 viewPager.setCurrentItem(1, false);
                 break;
             case 2:
@@ -372,6 +381,10 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 tabFound.setImageResource(R.mipmap.icon_found);
                 tabVoucher.setImageResource(R.mipmap.icon_voucher_click);
                 tabInfo.setImageResource(R.mipmap.icon_info);
+                tvHome.setTextColor(getResources().getColor(R.color.text_grey));
+                tvFound.setTextColor(getResources().getColor(R.color.text_grey));
+                tvVoucher.setTextColor(getResources().getColor(R.color.red));
+                tvInfo.setTextColor(getResources().getColor(R.color.text_grey));
                 viewPager.setCurrentItem(2, false);
                 break;
             case 3:
@@ -379,6 +392,10 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                 tabFound.setImageResource(R.mipmap.icon_found);
                 tabVoucher.setImageResource(R.mipmap.icon_voucher);
                 tabInfo.setImageResource(R.mipmap.icon_info_click);
+                tvHome.setTextColor(getResources().getColor(R.color.text_grey));
+                tvFound.setTextColor(getResources().getColor(R.color.text_grey));
+                tvVoucher.setTextColor(getResources().getColor(R.color.text_grey));
+                tvInfo.setTextColor(getResources().getColor(R.color.red));
                 viewPager.setCurrentItem(3, false);
                 break;
         }

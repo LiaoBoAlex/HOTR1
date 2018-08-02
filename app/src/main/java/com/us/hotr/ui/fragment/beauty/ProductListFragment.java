@@ -192,9 +192,9 @@ public class ProductListFragment extends BaseLoadingFragment {
                 ||totalSize == 0) {
             enableLoadMore(false);
             if(totalSize>0)
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_general, mRecyclerView, false));
+                myBaseAdapter.setFooterView(LayoutInflater.from(getActivity()).inflate(R.layout.footer_general, mRecyclerView, false));
             else
-                myBaseAdapter.setFooterView(LayoutInflater.from(getContext()).inflate(R.layout.footer_empty, mRecyclerView, false));
+                myBaseAdapter.setFooterView(LayoutInflater.from(getActivity()).inflate(R.layout.footer_empty, mRecyclerView, false));
         }
         else
             enableLoadMore(true);

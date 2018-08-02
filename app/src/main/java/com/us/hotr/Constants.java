@@ -12,11 +12,8 @@ import java.util.List;
  */
 
 public class Constants {
-//development server
-//    public static final String SERVER_URL = "http://.hotr-app.com/hotr-api-web/";
-//production server
-    public static final String SERVER_URL = "https://hotr.us-app.com/hotr-api-web/";
-    public static final String SHARE_URL = "https://hotr.hotr-app.com/hotr-api-web/share";
+    public static final String SHARE_URL = "http://www.hotr-app.com/hotr-api-web/";
+    public static final String INVITE_FRIENDS_SHARE_URL = "https://hotr.hotr-app.com/hotr-api-web/share";
     public static final int SERVER_TIMEOUT = 30;
     public static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?";
     public static final String WECHAT_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?";
@@ -38,6 +35,8 @@ public class Constants {
     public static final String BAIDU_MAP_PACKAGE_NAME = "com.baidu.BaiduMap";
     public static final String AUTONAVI_MAP_PACKAGE_NAME = "com.autonavi.minimap";
     public static final String TENCENT_MAP_PACKAGE_NAME = "com.tencent.map";
+
+    public static final String WATERMARK_EXTENSION = "?x-oss-process=image/watermark,image_c2h1aXlpbmJpZy5wbmc=,g_nw";
 
 
     public static final String MTA_ID_SPLASH_SCREEN = "splash_screen";
@@ -91,7 +90,7 @@ public class Constants {
         add(16l);}};
 
 //    public static String getNewUserVoucher(){
-//        List<VoucherSet> voucherSetList = new ArrayList<>();
+//        List<VoucherSet> voucherSetList = new ArrayList<>();y
 //        voucherSetList.add(new VoucherSet(4l, 5));
 //        voucherSetList.add(new VoucherSet(5l, 5));
 //        voucherSetList.add(new VoucherSet(6l, 5));

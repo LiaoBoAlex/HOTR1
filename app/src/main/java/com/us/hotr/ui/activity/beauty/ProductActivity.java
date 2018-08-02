@@ -366,7 +366,7 @@ public class ProductActivity extends BaseLoadingActivity {
                         share.setDescription(getString(R.string.share_product));
                         share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(product.getProductImg())));
                         share.setTitle(getString(R.string.bracket_left)+product.getProductName()+getString(R.string.bracket_right)+product.getProductUsp());
-                        share.setUrl(Constants.SERVER_URL + "#/commodityYM?id="+product.getKey());
+                        share.setUrl(Constants.SHARE_URL + "#/commodityYM?id="+product.getKey());
                         share.setSinaContent(getString(R.string.share_sina_product));
                         share.setType(Share.TYPE_NORMAL);
                         ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");

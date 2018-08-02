@@ -63,7 +63,6 @@ public class PartyActivity extends BaseLoadingActivity{
     private long partyId;
     private GetPartyDetailResponse getPartyDetailResponse;
     private boolean isCollected = false;
-    private long startTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,7 +187,7 @@ public class PartyActivity extends BaseLoadingActivity{
                         share.setDescription(getString(R.string.share_party));
                         share.setImageUrl(result.getTravel().getPartyDetailImg());
                         share.setTitle(result.getTravel().getTravel_name());
-                        share.setUrl(Constants.SERVER_URL + "#/party?id="+result.getTravel().getId());
+                        share.setUrl(Constants.SHARE_URL + "#/party?id="+result.getTravel().getId());
                         share.setSinaContent(getString(R.string.share_party));
                         share.setType(Share.TYPE_NORMAL);
                         ShareDialogFragment.newInstance(share).show(getSupportFragmentManager(), "dialog");
@@ -322,8 +321,7 @@ public class PartyActivity extends BaseLoadingActivity{
         GlobalBus.getBus().unregister(this);
         Properties prop = new Properties();
         prop.setProperty("id", partyId+"");
-        prop.setProperty("time", ((System.currentTimeMillis()-startTime)/1000)+"");
-        StatService.trackCustomKVEvent(this, Constants.MTA_ID_PARTY_DETAIL_SCREEN, prop);
+        StatService.trackCustomEndKVEvent(this, Constants.MTA_ID_PARTY_DETAIL_SCREEN, prop);
     }
 
     @Override
@@ -337,7 +335,9 @@ public class PartyActivity extends BaseLoadingActivity{
         super.onStart();
         if(!GlobalBus.getBus().isRegistered(this))
             GlobalBus.getBus().register(this);
-        startTime = System.currentTimeMillis();
+        Properties prop = new Properties();
+        prop.setProperty("id", partyId+"");
+        StatService.trackCustomBeginKVEvent(this, Constants.MTA_ID_PARTY_DETAIL_SCREEN, prop);
 
     }
 

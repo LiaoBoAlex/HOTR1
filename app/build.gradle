@@ -49,6 +49,33 @@ android {
         }
     }
 
+    productFlavors {
+        production {
+            versionName "1.0.2"
+            versionCode 3
+            applicationId 'com.us.hotr'
+            buildConfigField "String", "SERVER", "\"https://hotr.us-app.com/hotr-api-web/\""
+            manifestPlaceholders = [
+                    APP_ICON: "@drawable/logo_hotr",
+                    APP_NAME: "@string/app_name",
+            ]
+
+            signingConfig signingConfigs.release
+        }
+
+        dev {
+            versionName "1.0.2"
+            versionCode 3
+            applicationId "com.dev.hotr"
+            buildConfigField "String", "SERVER", "\"http://test.hotr-app.com/hotr-api-web/\""
+            manifestPlaceholders = [
+                    APP_ICON: "@drawable/logo_hotr_dev",
+                    APP_NAME: "@string/app_name_dev",
+            ]
+            signingConfig signingConfigs.release
+        }
+    }
+
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']

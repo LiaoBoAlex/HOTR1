@@ -7,12 +7,31 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
+import com.us.hotr.R;
 import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.WebViewActivity;
+import com.us.hotr.ui.activity.beauty.CaseActivity;
+import com.us.hotr.ui.activity.beauty.DoctorActivity;
+import com.us.hotr.ui.activity.beauty.HospitalActivity;
+import com.us.hotr.ui.activity.beauty.ListActivity;
+import com.us.hotr.ui.activity.beauty.ListWithSearchActivity;
+import com.us.hotr.ui.activity.beauty.ProductActivity;
+import com.us.hotr.ui.activity.beauty.SelectSubjectActivity;
+import com.us.hotr.ui.activity.beauty.SubjectActivity;
+import com.us.hotr.ui.activity.found.GroupDetailActivity;
+import com.us.hotr.ui.activity.found.NearbyActivity;
+import com.us.hotr.ui.activity.info.InviteFriendActivity;
+import com.us.hotr.ui.activity.info.LoginActivity;
+import com.us.hotr.ui.activity.massage.MassageActivity;
+import com.us.hotr.ui.activity.massage.MasseurActivity;
+import com.us.hotr.ui.activity.massage.SpaActivity;
 import com.us.hotr.ui.activity.party.PartyActivity;
+import com.us.hotr.util.Tools;
 
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import cn.jpush.android.api.JPushInterface;
@@ -44,35 +63,7 @@ public class NoticeReceiver extends BroadcastReceiver{
             } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
                 Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
                 Notice notice = new Gson().fromJson(bundle.getString(JPushInterface.EXTRA_EXTRA), Notice.class);
-                if(notice.getType() == 1) {
-                    Intent i = new Intent(context, WebViewActivity.class);
-                    Bundle b = new Bundle();
-                    b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_URL);
-                    b.putString(Constants.PARAM_DATA, notice.getThemeUrl());
-                    i.putExtras(b);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(i);
-                }
-                if(notice.getType() == 2){
-
-                    try {
-                        Set<String> set = new HashSet<String>();
-                        set.add(notice.getThemeUrl());
-                        JPushInterface.deleteTags(context.getApplicationContext(), -1, set);
-                        Intent i = new Intent(context, PartyActivity.class);
-                        Bundle b = new Bundle();
-                        b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
-                        i.putExtras(b);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(i);
-                    } catch (NumberFormatException e) {
-                    }
-                }
-                if(notice.getType() == 3){
-                    Intent i = new Intent(context, MainActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(i);
-                }
+                handleClickEvent(context, notice);
 
             } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {
                 Log.d(TAG, "[MyReceiver] 用户收到到RICH PUSH CALLBACK: " + bundle.getString(JPushInterface.EXTRA_EXTRA));
@@ -85,6 +76,113 @@ public class NoticeReceiver extends BroadcastReceiver{
             }
         } catch (Exception e){
 
+        }
+    }
+
+    private void handleClickEvent(Context mContext, Notice notice){
+        switch (Integer.valueOf(notice.getType())){
+            case 1:
+                Intent i = new Intent(mContext, WebViewActivity.class);
+                Bundle b = new Bundle();
+                b.putInt(Constants.PARAM_TYPE, WebViewActivity.TYPE_URL);
+                b.putString(Constants.PARAM_DATA, notice.getThemeUrl());
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 2:
+                try {
+                    Set<String> set = new HashSet<String>();
+                    set.add(notice.getThemeUrl());
+                    JPushInterface.deleteTags(mContext.getApplicationContext(), -1, set);
+                    i = new Intent(mContext, PartyActivity.class);
+                    b = new Bundle();
+                    b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                    i.putExtras(b);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(i);
+                } catch (NumberFormatException e) {
+                }
+                break;
+            case 3:
+                i = new Intent(mContext, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 5:
+                i = new Intent(mContext, ProductActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 6:
+                i = new Intent(mContext, DoctorActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 7:
+                i = new Intent(mContext, HospitalActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 11:
+                i = new Intent(mContext, MasseurActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 12:
+                i = new Intent(mContext, SpaActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 13:
+                i = new Intent(mContext, MassageActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 16:
+                i = new Intent(mContext, CaseActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_CASE);
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 18:
+                i = new Intent(mContext, CaseActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
+            case 23:
+                i = new Intent(mContext, PartyActivity.class);
+                b = new Bundle();
+                b.putLong(Constants.PARAM_ID, Long.parseLong(notice.getThemeUrl()));
+                i.putExtras(b);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(i);
+                break;
         }
     }
 }

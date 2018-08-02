@@ -80,8 +80,7 @@ public class ProgressSubscriber<T> extends DisposableObserver<T> implements Prog
         }else if (e instanceof ApiException){
             Tools.Toast(context, ((ApiException) e).getErrorMsg());
             if(((ApiException) e).getErrorCode() == Constants.ERROR_INVALID_SESSIONID){
-                HOTRSharePreference.getInstance(context.getApplicationContext()).storeUserID("");
-                JMessageClient.logout();
+                Tools.logout(context.getApplicationContext());
                 LoginActivity.setLoginListener(new LoginActivity.LoginListener() {
                     @Override
                     public void onLoginSuccess() {
