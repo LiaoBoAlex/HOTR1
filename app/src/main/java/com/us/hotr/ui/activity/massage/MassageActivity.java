@@ -63,7 +63,7 @@ public class MassageActivity extends BaseLoadingActivity{
     private ViewPager viewPager;
     private PagerAdapter adapter;
     private ObserveScrollView scrollView;
-    private ImageView ivBack, ivShare, ivBackHome, ivPromo, ivFav;
+    private ImageView ivShare, ivBackHome, ivPromo, ivFav;
     private ImageBanner mBanner;
     private TextView tvPurchase, tvTitle, tvPriceAfter, tvPriceBefore, tvAppointment, tvAddress, tvMasseurTitle, tvApplyTime, tvShowAll;
     private SpaBigView mSpaBigView;
@@ -94,7 +94,6 @@ public class MassageActivity extends BaseLoadingActivity{
     private void initStaticView(){
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        ivBack = (ImageView) findViewById(R.id.img_back);
         ivShare = (ImageView) findViewById(R.id.iv_share);
         ivFav = (ImageView) findViewById(R.id.iv_fav);
         scrollView = (ObserveScrollView) findViewById(R.id.scrollView);
@@ -339,6 +338,11 @@ public class MassageActivity extends BaseLoadingActivity{
                 @Override
                 public void onLoginSuccess() {
                     purchaseCheckCount();
+                }
+
+                @Override
+                public void onLoginCancel() {
+
                 }
             });
             startActivityForResult(new Intent(MassageActivity.this, LoginActivity.class), 0);

@@ -243,6 +243,11 @@ public class AdvFragment extends Fragment {
                                 getContext().startActivity(new Intent(getContext(), InviteFriendActivity.class));
                                 getActivity().finish();
                             }
+
+                            @Override
+                            public void onLoginCancel() {
+
+                            }
                         });
                         getContext().startActivity(new Intent(getContext(), LoginActivity.class));
                     }

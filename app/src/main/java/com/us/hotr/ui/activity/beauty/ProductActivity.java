@@ -406,6 +406,11 @@ public class ProductActivity extends BaseLoadingActivity {
                 public void onLoginSuccess() {
                     purchaseCheckCount();
                 }
+
+                @Override
+                public void onLoginCancel() {
+
+                }
             });
             startActivityForResult(new Intent(ProductActivity.this, LoginActivity.class), 0);
         }

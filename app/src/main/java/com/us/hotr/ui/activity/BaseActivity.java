@@ -19,7 +19,7 @@ import com.us.hotr.ui.dialog.ShareDialogFragment;
 
 public abstract class BaseActivity extends AppCompatActivity {
     protected TextView tvTitle, tvBack;
-    protected ImageView ivBack, ivSearch, ivShare;
+    protected ImageView ivBack, ivSearch, ivShare, ivClose;
     protected Toolbar mToolBar;
 
     @Override
@@ -29,6 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         mToolBar = (Toolbar) findViewById(R.id.toolbar);
         tvTitle = (TextView) findViewById(R.id.tb_title);
         ivBack = (ImageView) findViewById(R.id.img_back);
+        ivClose = (ImageView)findViewById(R.id.img_close);
         tvBack = (TextView) findViewById(R.id.tv_back);
         ivShare = (ImageView) findViewById(R.id.iv_share);
         ivSearch = (ImageView) findViewById(R.id.img_search);
@@ -44,6 +45,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     onBackPressed();
+                }
+            });
+        if(ivClose!=null)
+            ivClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
                 }
             });
         if(ivSearch!=null)

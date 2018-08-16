@@ -26,6 +26,7 @@
         android:background="@color/white">
 
         <ImageView
+            android:visibility="invisible"
             android:id="@+id/iv_dot"
             android:layout_width="6dp"
             android:layout_height="6dp"
@@ -93,7 +94,8 @@
         <ImageView
             android:id="@+id/tab_home"
             android:layout_width="wrap_content"
-            android:layout_height="28dp"
+            android:layout_height="38dp"
+            android:paddingBottom="10dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/tab_found"
             app:layout_constraintTop_toTopOf="parent"
@@ -102,7 +104,8 @@
         <ImageView
             android:id="@+id/tab_found"
             android:layout_width="wrap_content"
-            android:layout_height="28dp"
+            android:layout_height="38dp"
+            android:paddingBottom="10dp"
             app:layout_constraintLeft_toRightOf="@+id/tab_home"
             app:layout_constraintRight_toLeftOf="@+id/tab_all"
             app:layout_constraintTop_toTopOf="@+id/tab_home"
@@ -121,7 +124,8 @@
         <ImageView
             android:id="@+id/tab_voucher"
             android:layout_width="wrap_content"
-            android:layout_height="28dp"
+            android:layout_height="38dp"
+            android:paddingBottom="10dp"
             app:layout_constraintLeft_toRightOf="@+id/tab_all"
             app:layout_constraintRight_toLeftOf="@+id/tab_info"
             app:layout_constraintTop_toTopOf="@+id/tab_found"
@@ -130,7 +134,8 @@
         <ImageView
             android:id="@+id/tab_info"
             android:layout_width="wrap_content"
-            android:layout_height="28dp"
+            android:layout_height="38dp"
+            android:paddingBottom="10dp"
             app:layout_constraintLeft_toRightOf="@+id/tab_voucher"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tab_voucher"

@@ -11,6 +11,7 @@
     <string name="case_list_title">医美案例</string>
     <string name="massage_title">按摩</string>
     <string name="party_title">派对</string>
+    <string name="shop_title">商城</string>
     <string name="product_title">商品</string>
     <string name="case_title">案例</string>
     <string name="doctor_title">医生主页</string>
@@ -158,6 +159,7 @@
     <string name="post_item">帖子</string>
     <string name="compare">对比照</string>
     <string name="my_order">我的订单</string>
+    <string name="youzan_order">商城订单</string>
     <string name="announcement">通知</string>
     <string name="draft">草稿箱</string>
     <string name="favorite">收藏</string>

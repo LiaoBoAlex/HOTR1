@@ -212,6 +212,11 @@ public class PartyActivity extends BaseLoadingActivity{
                 public void onLoginSuccess() {
                     purchaseCheckCount();
                 }
+
+                @Override
+                public void onLoginCancel() {
+
+                }
             });
             startActivityForResult(new Intent(PartyActivity.this, LoginActivity.class), 0);
         }

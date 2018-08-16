@@ -38,6 +38,7 @@ import com.us.hotr.webservice.request.CreateMassageOrderRequest;
 import com.us.hotr.webservice.request.CreatePartyOrderRequest;
 import com.us.hotr.webservice.request.CreateProductOrderRequest;
 import com.us.hotr.webservice.request.GetAppVersionRequest;
+import com.us.hotr.webservice.request.GetYouzanTokenByUserIdRequest;
 import com.us.hotr.webservice.request.LoginAndRegisterRequest;
 import com.us.hotr.webservice.request.LoginWithWechatRequest;
 import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
@@ -66,6 +67,8 @@ import com.us.hotr.webservice.response.GetWechatAccessTokenResponse;
 import com.us.hotr.webservice.response.GetWechatUserInfo;
 import com.us.hotr.webservice.response.UpdateUserAvatarRespone;
 import com.us.hotr.webservice.response.UploadPostResponse;
+import com.us.hotr.webservice.response.YouzanTokenByUserIdResponse;
+import com.us.hotr.webservice.response.YouzanTokenResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -567,6 +570,10 @@ public interface WebService {
     Observable<BaseResponse<GetLoginResponse>> login(@Query("username") String username,
                                                      @Query("password") String password);
 
+    @POST("user/logout.do?")
+    Observable<BaseResponse<String>> logout(@Header("jsessionid") String jsessionid,
+                                            @Body Address request);
+
     @POST("user/loginByValidCode.do?")
     Observable<BaseResponse<GetLoginResponse>> loginAndRegister(@Body LoginAndRegisterRequest request);
 
@@ -779,4 +786,10 @@ public interface WebService {
     @POST("user_method/order/payment/isFirstOrder.do?")
     Observable<BaseResponse<String>> isFirstOrder(@Header("jsessionid") String jsessionid,
                                                   @Body GetAppVersionRequest request);
+
+    @POST("youzan/initYouzan.do")
+    Observable<BaseResponse<YouzanTokenResponse>> initYouzan();
+
+    @POST("youzan/getUserYouzanToken.do")
+    Observable<BaseResponse<YouzanTokenByUserIdResponse>> getYouzanTokenByUserId(@Body GetYouzanTokenByUserIdRequest request);
 }

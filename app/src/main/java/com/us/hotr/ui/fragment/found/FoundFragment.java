@@ -15,10 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.tencent.stat.StatService;
+import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.ui.activity.search.SearchHintActivity;
 
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/8/28.
@@ -42,6 +45,14 @@ public class FoundFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_found, container, false);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser && isResumed()){
+            StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_DISCOVERY_MAIN_SCREEN, new Properties());
+        }
     }
 
     @Override

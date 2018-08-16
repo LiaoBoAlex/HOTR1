@@ -23,6 +23,7 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.eventbus.Events;
@@ -33,9 +34,12 @@ import com.us.hotr.ui.activity.search.SearchHintActivity;
 import com.us.hotr.ui.fragment.beauty.BeautyFragment;
 import com.us.hotr.ui.fragment.massage.MassageFragment;
 import com.us.hotr.ui.fragment.party.PartyFragment;
+import com.us.hotr.ui.fragment.shop.ShopFragment;
 import com.us.hotr.util.PermissionUtil;
+import com.us.hotr.util.Tools;
 
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Created by macb00k on 2017/8/25.
@@ -89,12 +93,14 @@ public class HomeFragment extends Fragment {
             add(getString(R.string.massage_title));
             add(getString(R.string.beauty_title));
             add(getString(R.string.party_title));
+            add(getString(R.string.shop_title));
         }};
 
         fragmentList = new ArrayList<Fragment>() {{
             add(MassageFragment.newInstance());
             add(BeautyFragment.newInstance());
             add(PartyFragment.newInstance());
+            add(ShopFragment.newInstance());
         }};
 
         if(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedMassageCityID()<=0
@@ -269,6 +275,19 @@ public class HomeFragment extends Fragment {
 
         @Override
         public void onReceiveLocation(BDLocation location) {
+            if(!location.getCity().equals(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getMTACurrentCityName())){
+                Properties prop = new Properties();
+                prop.setProperty("city", location.getCity());
+                StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_LOCATION, prop);
+                HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeMTACurrrentCityName(location.getCity());
+            }
+            if(Tools.isUserLogin(getActivity().getApplicationContext())
+                    && !location.getCity().equals(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getMTAUserCurrentCityName())){
+                Properties prop = new Properties();
+                prop.setProperty("city", location.getCity());
+                StatService.trackCustomKVEvent(getActivity(), Constants.MTA_ID_USER_LOCATION, prop);
+                HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeMTAUserCurrrentCityName(location.getCity());
+            }
             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeCurrentProvinceName(location.getProvince());
             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeCurrentCityID(location.getCityCode());
             HOTRSharePreference.getInstance(getActivity().getApplicationContext()).storeCurrrentCityName(location.getCity());

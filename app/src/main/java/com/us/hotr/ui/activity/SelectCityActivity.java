@@ -15,6 +15,7 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.eventbus.Events;
@@ -25,6 +26,8 @@ import com.us.hotr.util.PermissionUtil;
 import com.us.hotr.util.Tools;
 
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.Properties;
 
 /**
  * Created by Mloong on 2017/8/28.
@@ -95,11 +98,25 @@ public class SelectCityActivity extends BaseActivity {
 
         @Override
         public void onReceiveLocation(BDLocation location) {
+            if(!location.getCity().equals(p.getMTACurrentCityName())){
+                Properties prop = new Properties();
+                prop.setProperty("city", location.getCity());
+                StatService.trackCustomKVEvent(SelectCityActivity.this, Constants.MTA_ID_LOCATION, prop);
+                p.storeMTACurrrentCityName(location.getCity());
+            }
+            if(Tools.isUserLogin(getApplicationContext())
+                    && !location.getCity().equals(p.getMTAUserCurrentCityName())){
+                Properties prop = new Properties();
+                prop.setProperty("city", location.getCity());
+                StatService.trackCustomKVEvent(SelectCityActivity.this, Constants.MTA_ID_USER_LOCATION, prop);
+                p.storeMTAUserCurrrentCityName(location.getCity());
+            }
             p.storeCurrentProvinceName(location.getProvince());
             p.storeCurrentCityID(location.getCityCode());
             p.storeCurrrentCityName(location.getCity());
             p.storeLatitude(location.getLatitude());
             p.storeLongitude(location.getLongitude());
+
             tvCurrentCity.setText(location.getCity());
             mLocationClient.stop();
         }

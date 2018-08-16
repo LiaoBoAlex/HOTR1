@@ -79,6 +79,11 @@ public class SilentSubscriber<T> extends DisposableObserver<T>{
                         if(mSubscriberWithReloadListener!=null)
                             mSubscriberWithReloadListener.reload();
                     }
+
+                    @Override
+                    public void onLoginCancel() {
+
+                    }
                 });
                 Intent i = new Intent(context, LoginActivity.class);
                 context.startActivity(i);

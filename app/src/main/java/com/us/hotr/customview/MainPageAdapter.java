@@ -399,6 +399,9 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 case PAGE_MASSAGE:
                                     StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_MASSAGE_BANNER, prop);
                                     break;
+                                case PAGE_GROUP:
+                                    StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_DISCOVERY_BANNER, prop);
+                                    break;
                                 default:
                                     break;
                             }
@@ -486,8 +489,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         @Override
                         public void onClick(View view) {
                             Properties prop = new Properties();
-                            prop.setProperty("location", ad3Module.getModuleSort()+"");
-                            prop.setProperty("item", (finalI+1)+"");
+                            prop.setProperty("location", ad3Module.getModuleSort()+"-"+(finalI+1));
                             switch (type){
                                 case PAGE_PRODUCT:
                                     StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_PRODUCT_ADV_3, prop);
@@ -810,6 +812,11 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             public void onLoginSuccess() {
                                 mContext.startActivity(new Intent(mContext, InviteFriendActivity.class));
                             }
+
+                            @Override
+                            public void onLoginCancel() {
+
+                            }
                         });
                         mContext.startActivity(new Intent(mContext, LoginActivity.class));
                     }
@@ -967,8 +974,7 @@ public class MainPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @Override
                 public void onClick(View v) {
                     Properties prop = new Properties();
-                    prop.setProperty("location", location+"");
-                    prop.setProperty("item", (p+1)+"");
+                    prop.setProperty("location", location+"-"+(p+1));
                     switch (type){
                         case PAGE_PRODUCT:
                             StatService.trackCustomKVEvent(mContext, Constants.MTA_ID_CLICK_PRODUCT_MODULE, prop);

@@ -25,6 +25,7 @@ import com.us.hotr.ui.activity.info.InviteFriendActivity;
 import com.us.hotr.ui.activity.info.NoticeActivity;
 import com.us.hotr.ui.activity.info.OrderListActivity;
 import com.us.hotr.ui.activity.info.SettingActivity;
+import com.us.hotr.ui.activity.info.ShopOrderActivity;
 import com.us.hotr.ui.activity.info.VoucherActivity;
 import com.us.hotr.ui.activity.party.DeliverAddressListActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
@@ -45,7 +46,7 @@ public class InfoFragment extends BaseLoadingFragment {
     private ImageView ivAvatar, ivFav, ivFollow, ivSetting;
     private TextView tvTitle, tvCertified, tvCase, tvPost;
     private TextView tvMyOrder, tvAnnouncment, tvVoucher, tvDraft, tvFav, tvFriend;
-    private ConstraintLayout clMyOrder, clAnnouncment, clVoucher, clDraft, clFav, clFriend, clAddress;
+    private ConstraintLayout clMyOrder, clAnnouncment, clVoucher, clDraft, clFav, clFriend, clAddress, clYouzanOrder;
     private HOTRSharePreference p;
     private boolean isLoaded = false;
     private QBadgeView messageBadgeView, noticeBadgeView;
@@ -87,6 +88,7 @@ public class InfoFragment extends BaseLoadingFragment {
         clFav = (ConstraintLayout) view.findViewById(R.id.cl_fav);
         clFriend = (ConstraintLayout) view.findViewById(R.id.cl_friend);
         clAddress = (ConstraintLayout) view.findViewById(R.id.cl_address);
+        clYouzanOrder = (ConstraintLayout) view.findViewById(R.id.cl_my_youzan_order);
 
         messageBadgeView = new QBadgeView(getContext());
         noticeBadgeView = new QBadgeView(getContext());
@@ -169,6 +171,18 @@ public class InfoFragment extends BaseLoadingFragment {
                 startActivity(i);
             }
         });
+
+        clYouzanOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), ShopOrderActivity.class);
+                Bundle b = new Bundle();
+                b.putString(Constants.PARAM_TITLE, getString(R.string.youzan_order));
+                b.putString(Constants.PARAM_DATA, Constants.YOUZAN_CLIENT_ORDER_URL);
+                i.putExtras(b);
+                startActivity(i);
+            }
+        });
         ivSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -214,11 +228,11 @@ public class InfoFragment extends BaseLoadingFragment {
             @Override
             public void onNext(User result) {
                 isLoaded = true;
-                p.storeUserInfo(result);
+                if(p.getUserInfo() == null)
+                    p.storeUserInfo(result);
                 updateUserInfo();
             }
 
-            @Override
             public void reload() {
                 loadData(Constants.LOAD_PAGE);
             }

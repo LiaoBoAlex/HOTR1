@@ -44,6 +44,8 @@ import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
+import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.CityCode;
@@ -51,6 +53,12 @@ import com.us.hotr.storage.bean.Type;
 import com.us.hotr.storage.bean.WechatBill;
 import com.us.hotr.ui.HOTRApplication;
 import com.us.hotr.ui.activity.info.SettingActivity;
+import com.us.hotr.webservice.ServiceClient;
+import com.us.hotr.webservice.response.GetLoginResponse;
+import com.us.hotr.webservice.rxjava.ProgressSubscriber;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
+import com.us.hotr.webservice.rxjava.SubscriberListener;
+import com.youzan.androidsdk.YouzanSDK;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -175,6 +183,13 @@ public class Tools {
     }
 
     public static void logout(Context mContext){
+        SubscriberListener mListener = new SubscriberListener<String>() {
+            @Override
+            public void onNext(final String result) {
+
+            }
+        };
+        ServiceClient.getInstance().logout(new SilentSubscriber(mListener, mContext, null), HOTRSharePreference.getInstance(mContext).getUserID());
         if(HOTRSharePreference.getInstance(mContext).getUserInfo()!=null) {
             int i = Integer.parseInt(HOTRSharePreference.getInstance(mContext).getUserInfo().getMobile().substring(2));
             JPushInterface.deleteAlias(mContext, i);
@@ -186,7 +201,10 @@ public class Tools {
         HOTRSharePreference.getInstance(mContext).storeSelectedMassageCityID(-1);
         HOTRSharePreference.getInstance(mContext).storeSelectedProductCityID(-1);
         HOTRSharePreference.getInstance(mContext).storeSelectedCityName("");
+        HOTRSharePreference.getInstance(mContext).storeMTAUserCurrrentCityName("");
         HOTRSharePreference.getInstance(mContext).storeContactInfo(null);
+
+        YouzanSDK.userLogout(mContext);
 //                                 StatService.removeMultiAccount(SettingActivity.this, StatMultiAccount.AccountType.PHONE_NO);
     }
 

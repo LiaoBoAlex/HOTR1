@@ -258,6 +258,18 @@ public static java.lang.String TABLENAME;
  -keep class com.google.protobuf.** {*;}
  -keep class * extends cn.jpush.android.helpers.JPushMessageReceiver { *; }
 
+ # Youzan SDK
+ -dontwarn com.youzan.androidsdk.***
+ -keep class com.youzan.androidsdk.**{*;}
+
+ # OkHttp
+ -dontwarn okhttp3.**
+ -dontwarn okio.**
+ -dontwarn com.squareup.okhttp.**
+ -keep class okio.**{*;}
+ -keep class com.squareup.okhttp.** { *; }
+ -keep interface com.squareup.okhttp.** { *; }
+
 
 
 

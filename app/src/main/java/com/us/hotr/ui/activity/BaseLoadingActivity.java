@@ -29,14 +29,12 @@ public abstract class BaseLoadingActivity extends BaseActivity {
             refreshLayout.setOnRefreshListener(new OnRefreshListener() {
                 @Override
                 public void onRefresh(RefreshLayout refreshlayout) {
-                    refreshlayout.finishRefresh(true);
                     loadData(Constants.LOAD_PULL_REFRESH);
                 }
             });
             refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
                 @Override
                 public void onLoadmore(RefreshLayout refreshlayout) {
-                    refreshlayout.finishLoadmore(true);
                     loadData(Constants.LOAD_MORE);
                 }
             });

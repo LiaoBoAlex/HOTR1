@@ -8,7 +8,9 @@ import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
@@ -38,6 +40,9 @@ import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.request.GetAppVersionRequest;
 import com.us.hotr.webservice.response.GetAppVersionResponse;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
+import com.youzan.androidsdk.YouzanPreloader;
+import com.youzan.androidsdk.YouzanSDK;
+import com.youzan.androidsdk.basic.YouzanBasicSDKAdapter;
 
 import cn.jpush.android.api.BasicPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
@@ -78,6 +83,9 @@ public class HOTRApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
+        YouzanSDK.init(this, Constants.YOUZAN_CLIENT_ID, new YouzanBasicSDKAdapter());
+        YouzanPreloader.preloadHtml(this, Constants.YOUZAN_CLIENT_URL);
+        
         ApplicationLifecycleHandler handler = new ApplicationLifecycleHandler();
         registerActivityLifecycleCallbacks(handler);
         registerComponentCallbacks(handler);

@@ -30,6 +30,8 @@ import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 
+import java.util.Properties;
+
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
@@ -194,6 +196,7 @@ public class ChangePhoneNumberActivity extends BaseActivity {
 //                        StatService.reportMultiAccount(ChangePhoneNumberActivity.this, account);
 
                         getNewUserVoucher();
+                        StatService.trackCustomKVEvent(ChangePhoneNumberActivity.this, Constants.MTA_ID_NEW_USER, new Properties());
                     }
                 };
                 LoginWithWechatRequest request = new LoginWithWechatRequest(mUser.getName(),

@@ -45,6 +45,7 @@ import com.us.hotr.webservice.request.CreateMassageOrderRequest;
 import com.us.hotr.webservice.request.CreatePartyOrderRequest;
 import com.us.hotr.webservice.request.CreateProductOrderRequest;
 import com.us.hotr.webservice.request.GetAppVersionRequest;
+import com.us.hotr.webservice.request.GetYouzanTokenByUserIdRequest;
 import com.us.hotr.webservice.request.LoginAndRegisterRequest;
 import com.us.hotr.webservice.request.LoginWithWechatRequest;
 import com.us.hotr.webservice.request.RequestForValidationCodeRequest;
@@ -73,6 +74,8 @@ import com.us.hotr.webservice.response.GetWechatAccessTokenResponse;
 import com.us.hotr.webservice.response.GetWechatUserInfo;
 import com.us.hotr.webservice.response.UpdateUserAvatarRespone;
 import com.us.hotr.webservice.response.UploadPostResponse;
+import com.us.hotr.webservice.response.YouzanTokenByUserIdResponse;
+import com.us.hotr.webservice.response.YouzanTokenResponse;
 import com.us.hotr.webservice.rxjava.ApiException;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
@@ -1319,6 +1322,15 @@ public class ServiceClient {
 //            }
         webService.loginAndRegister(request)
                 .map(new HttpResultFunc<GetLoginResponse>())
+                .map(new Function<GetLoginResponse, GetLoginResponse>() {
+                    @Override
+                    public GetLoginResponse apply(GetLoginResponse result) throws Exception {
+                        result.getUser().setYouzan_access_token(result.getYouzan_access_token());
+                        result.getUser().setYouzan_cookie_key(result.getYouzan_cookie_key());
+                        result.getUser().setYouzan_cookie_value(result.getYouzan_cookie_value());
+                        return result;
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -1391,6 +1403,9 @@ public class ServiceClient {
                             getWechatUserInfo.getNickname(),
                             getWechatUserInfo.getHeadimgurl(),
                             sex));
+                    response.getResult().getUser().setYouzan_access_token(response.getResult().getYouzan_access_token());
+                    response.getResult().getUser().setYouzan_cookie_key(response.getResult().getYouzan_cookie_key());
+                    response.getResult().getUser().setYouzan_cookie_value(response.getResult().getYouzan_cookie_value());
                 }
                 emitter.onNext(response);
                 emitter.onComplete();
@@ -1407,6 +1422,15 @@ public class ServiceClient {
         webService.registerWithWechat(request)
                 .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<GetLoginResponse>())
+                .map(new Function<GetLoginResponse, GetLoginResponse>() {
+                    @Override
+                    public GetLoginResponse apply(GetLoginResponse result) throws Exception {
+                        result.getUser().setYouzan_access_token(result.getYouzan_access_token());
+                        result.getUser().setYouzan_cookie_key(result.getYouzan_cookie_key());
+                        result.getUser().setYouzan_cookie_value(result.getYouzan_cookie_value());
+                        return result;
+                    }
+                })
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -1507,7 +1531,26 @@ public class ServiceClient {
 //        })
         webService.login(userName, password)
                 .map(new HttpResultFunc<GetLoginResponse>())
+                .map(new Function<GetLoginResponse, GetLoginResponse>() {
+                    @Override
+                    public GetLoginResponse apply(GetLoginResponse result) throws Exception {
+                        result.getUser().setYouzan_access_token(result.getYouzan_access_token());
+                        result.getUser().setYouzan_cookie_key(result.getYouzan_cookie_key());
+                        result.getUser().setYouzan_cookie_value(result.getYouzan_cookie_value());
+                        return result;
+                    }
+                })
                 .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void logout(DisposableObserver subscriber, String ssesionId) {
+        Address request = new Address();
+        webService.logout(ssesionId, request)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -2005,6 +2048,24 @@ public class ServiceClient {
         webService.isFirstOrder(ssesionId, request)
                 .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void initYouzan(DisposableObserver subscriber){
+        webService.initYouzan()
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<YouzanTokenResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getYouzanTokenByUserId(DisposableObserver subscriber, long userId){
+        webService.getYouzanTokenByUserId(new GetYouzanTokenByUserIdRequest(userId))
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<YouzanTokenByUserIdResponse>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);

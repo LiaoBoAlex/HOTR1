@@ -237,6 +237,11 @@ public class MasseurActivity extends BaseLoadingActivity {
                 public void onLoginSuccess() {
                     purchaseCheckCount();
                 }
+
+                @Override
+                public void onLoginCancel() {
+
+                }
             });
             startActivityForResult(new Intent(MasseurActivity.this, LoginActivity.class), 0);
         }

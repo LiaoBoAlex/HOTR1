@@ -35,6 +35,33 @@ public class User implements Serializable {
     private int hotTopicCount;
     private int contrastPhotoCount;
     private String openid;
+    private String youzan_cookie_key;
+    private String youzan_access_token;
+    private String youzan_cookie_value;
+
+    public String getYouzan_cookie_key() {
+        return youzan_cookie_key;
+    }
+
+    public void setYouzan_cookie_key(String youzan_cookie_key) {
+        this.youzan_cookie_key = youzan_cookie_key;
+    }
+
+    public String getYouzan_access_token() {
+        return youzan_access_token;
+    }
+
+    public void setYouzan_access_token(String youzan_access_token) {
+        this.youzan_access_token = youzan_access_token;
+    }
+
+    public String getYouzan_cookie_value() {
+        return youzan_cookie_value;
+    }
+
+    public void setYouzan_cookie_value(String youzan_cookie_value) {
+        this.youzan_cookie_value = youzan_cookie_value;
+    }
 
     public String getOpenid() {
         return openid;

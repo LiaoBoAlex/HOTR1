@@ -87,6 +87,11 @@ public class LoadingSubscriber<T> extends DisposableObserver<T>{
                             if(mSubscriberWithReloadListener!=null)
                                 mSubscriberWithReloadListener.reload();
                         }
+
+                        @Override
+                        public void onLoginCancel() {
+
+                        }
                     });
                     Intent i = new Intent(mFragment.getActivity(), LoginActivity.class);
 //                    i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT|Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -112,6 +117,11 @@ public class LoadingSubscriber<T> extends DisposableObserver<T>{
                         public void onLoginSuccess() {
                             if(mSubscriberWithReloadListener!=null)
                                 mSubscriberWithReloadListener.reload();
+                        }
+
+                        @Override
+                        public void onLoginCancel() {
+
                         }
                     });
                     Intent i = new Intent(mActivity, LoginActivity.class);

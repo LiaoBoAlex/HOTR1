@@ -319,6 +319,11 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                             setupButton(currentPage);
                             receiptFragment.loadData();
                         }
+
+                        @Override
+                        public void onLoginCancel() {
+
+                        }
                     });
                     Intent i = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(i);
@@ -333,6 +338,11 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                             currentPage = 3;
                             setupButton(currentPage);
                             infoFragment.loadData(Constants.LOAD_PAGE);
+                        }
+
+                        @Override
+                        public void onLoginCancel() {
+
                         }
                     });
                     Intent i = new Intent(MainActivity.this, LoginActivity.class);

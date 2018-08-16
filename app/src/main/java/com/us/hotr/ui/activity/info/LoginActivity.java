@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
+import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.DeactivatedViewPager;
@@ -34,6 +35,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.im.android.api.JMessageClient;
@@ -107,6 +109,14 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        if(loginListener!=null)
+            loginListener.onLoginCancel();
+        loginListener = null;
+        super.onBackPressed();
+    }
+
     public static Bitmap readBitMap(Context context, int resId){
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
@@ -151,6 +161,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public interface LoginListener{
         void onLoginSuccess();
+        void onLoginCancel();
     }
 
     @Subscribe
@@ -197,6 +208,7 @@ public class LoginActivity extends AppCompatActivity {
 //            StatService.reportMultiAccount(this, account);
             if(login.getGetLoginResponse().isFirst_register()) {
                 getNewUserVoucher();
+                StatService.trackCustomKVEvent(this, Constants.MTA_ID_NEW_USER, new Properties());
             }else {
                 finish();
             }

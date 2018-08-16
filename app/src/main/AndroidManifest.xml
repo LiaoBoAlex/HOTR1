@@ -139,6 +139,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.AboutUsActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name="com.us.hotr.ui.activity.info.ShopOrderActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.InviteFriendActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.LoginActivity"

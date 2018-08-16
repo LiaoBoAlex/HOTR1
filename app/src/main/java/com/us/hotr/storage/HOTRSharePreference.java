@@ -28,6 +28,8 @@ public class HOTRSharePreference {
     private static final String KEY_SELECTED_MASSAGE_CITY_ID = "KEY_SELECTED_MASSAGE_CITY_ID";
     private static final String KEY_SELECTED_CITY_NAME = "KEY_SELECTED_CITY_NAME";
     private static final String KEY_CURRENT_CITY_NAME = "KEY_CURRENT_CITY_NAME";
+    private static final String KEY_MTA_USER_CURRENT_CITY_NAME = "KEY_MTA_USER_CURRENT_CITY_NAME";
+    private static final String KEY_MTA_CURRENT_CITY_NAME = "KEY_MTA_CURRENT_CITY_NAME";
     private static final String KEY_CURRENT_PROVINCE_NAME = "KEY_CURRENT_PROVINCE_NAME";
     private static final String KEY_CURRENT_CITY_ID = "KEY_CURRENT_CITY_ID";
     private static final String KEY_USER_INFO = "KEY_USER_INFO";
@@ -38,6 +40,7 @@ public class HOTRSharePreference {
     private static final String KEY_TOTAL_NOTICE_COUNT = "KEY_TOTAL_NOTICE_COUNT";
     private static final String KEY_TOTAL_MESSAGE_COUNT = "KEY_TOTAL_MESSAGE_COUNT";
     private static final String KEY_FIRST_INVITE_FRIEND = "KEY_TOTAL_MESSAGE_COUNT";
+    private static final String KEY_YOUZAN_TOKEN_EXPIRED_TIME = "KEY_YOUZAN_TOKEN_EXPIRED_TIME";
 
     private static SharedPreferences.Editor editor;
     private static SharedPreferences settings;
@@ -74,19 +77,6 @@ public class HOTRSharePreference {
     public static void storeUserID(final String id){
         editor.putString(KEY_USER_ID, id);
         editor.apply();
-//        Observable.create(new ObservableOnSubscribe<Boolean>() {
-//            @Override
-//            public void subscribe(@NonNull ObservableEmitter<Boolean> subscriber) throws Exception {
-//                editor.putString(KEY_USER_ID, id);
-//                editor.apply();
-//                subscriber.onNext(true);
-//                subscriber.onComplete();
-//            }
-//        })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new ProgressSubscriber(mListener, mContext));
-
     }
 
     public static String getUserID(){
@@ -100,6 +90,15 @@ public class HOTRSharePreference {
 
     public static boolean isFirstinviteFriend(){
         return settings.getBoolean(KEY_FIRST_INVITE_FRIEND, true);
+    }
+
+    public static void storeYouzanTokenExpiredTime(long value){
+        editor.putLong(KEY_YOUZAN_TOKEN_EXPIRED_TIME, value);
+        editor.apply();
+    }
+
+    public static long getYouzanTokenExpiredTime(){
+        return settings.getLong(KEY_YOUZAN_TOKEN_EXPIRED_TIME, 0);
     }
 
 
@@ -178,6 +177,24 @@ public class HOTRSharePreference {
 
     public static String getCurrentCityName(){
         return settings.getString(KEY_CURRENT_CITY_NAME, "");
+    }
+
+    public static void storeMTACurrrentCityName(final String id){
+        editor.putString(KEY_MTA_CURRENT_CITY_NAME, id);
+        editor.apply();
+    }
+
+    public static String getMTAUserCurrentCityName(){
+        return settings.getString(KEY_MTA_USER_CURRENT_CITY_NAME, "");
+    }
+
+    public static void storeMTAUserCurrrentCityName(final String id){
+        editor.putString(KEY_MTA_USER_CURRENT_CITY_NAME, id);
+        editor.apply();
+    }
+
+    public static String getMTACurrentCityName(){
+        return settings.getString(KEY_MTA_CURRENT_CITY_NAME, "");
     }
 
     public static void storeCurrentCityID(final String id){

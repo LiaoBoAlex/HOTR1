@@ -87,6 +87,11 @@ public class ProgressSubscriber<T> extends DisposableObserver<T> implements Prog
                         if(mSubscriberWithReloadListener!=null)
                             mSubscriberWithReloadListener.reload();
                     }
+
+                    @Override
+                    public void onLoginCancel() {
+
+                    }
                 });
                 Intent i = new Intent(context, LoginActivity.class);
                 context.startActivity(i);

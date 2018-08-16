@@ -38,11 +38,16 @@ public class Constants {
 
     public static final String WATERMARK_EXTENSION = "?x-oss-process=image/watermark,image_c2h1aXlpbmJpZy5wbmc=,g_nw";
 
+    public static final String YOUZAN_CLIENT_ID = "3a9c0db3bf27e1640a";
+    public static final String YOUZAN_CLIENT_URL = "https://j.youzan.com/MXIfFY";
+    public static final String YOUZAN_CLIENT_ORDER_URL = "https://h5.youzan.com/v2/orders/all?kdt_id=41237944";
+
 
     public static final String MTA_ID_SPLASH_SCREEN = "splash_screen";
     public static final String MTA_ID_CLICK_SHARE = "click_share";
     public static final String MTA_ID_PRODUCT_MAIN_SCREEN = "product_main_screen";
     public static final String MTA_ID_MASSAGE_MAIN_SCREEN = "massage_main_screen";
+    public static final String MTA_ID_DISCOVERY_MAIN_SCREEN = "discovery_main_screen";
     public static final String MTA_ID_PARTY_MAIN_SCREEN = "party_main_screen";
     public static final String MTA_ID_POST_SCREEN = "post_screen";
     public static final String MTA_ID_CASE_SCREEN = "case_screen";
@@ -52,6 +57,7 @@ public class Constants {
     public static final String MTA_ID_SEARCH = "search";
     public static final String MTA_ID_CLICK_PRODUCT_BANNER = "click_product_banner";
     public static final String MTA_ID_CLICK_MASSAGE_BANNER = "click_massage_banner";
+    public static final String MTA_ID_CLICK_DISCOVERY_BANNER = "click_discovery_banner";
     public static final String MTA_ID_CLICK_PRODUCT_MODULE = "click_product_module";
     public static final String MTA_ID_CLICK_MASSAGE_MODULE = "click_massage_module";
     public static final String MTA_ID_CLICK_PURPOSE_PRODUCT = "click_purpose_product";
@@ -74,8 +80,9 @@ public class Constants {
     public static final String MTA_ID_FAV_DOCTOR = "fav_doctor";
     public static final String MTA_ID_FAV_SPA = "fav_spa";
     public static final String MTA_ID_FAV_MASSAGE = "fav_massage";
-
-
+    public static final String MTA_ID_LOCATION = "location";
+    public static final String MTA_ID_USER_LOCATION = "user_location";
+    public static final String MTA_ID_NEW_USER = "new_user";
 
 
 
