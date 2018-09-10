@@ -14,6 +14,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/tv_certified"
+            android:layout_width="30dp"
+            android:layout_height="14dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/bg_button_green"
+            android:gravity="center"
+            android:overScrollMode="never"
+            android:textColor="@color/white"
+            android:textSize="9sp"
+            app:layout_constraintLeft_toRightOf="@+id/tv_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_name" />
 
         <TextView
             android:id="@+id/tv_follow"

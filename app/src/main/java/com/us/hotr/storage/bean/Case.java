@@ -54,6 +54,24 @@ public class Case implements Serializable {
     private String filePathBefore;
     private String filePathAfter;
     private Product product;
+    private Integer u_user_type;
+    private Long massagist_id;
+
+    public Integer getU_user_type() {
+        return u_user_type;
+    }
+
+    public void setU_user_type(Integer u_user_type) {
+        this.u_user_type = u_user_type;
+    }
+
+    public Long getMassagist_id() {
+        return massagist_id;
+    }
+
+    public void setMassagist_id(Long massagist_id) {
+        this.massagist_id = massagist_id;
+    }
 
     public Product getProduct() {
         return product;

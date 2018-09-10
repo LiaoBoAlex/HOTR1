@@ -2,6 +2,7 @@ package com.us.hotr.webservice.response;
 
 import com.us.hotr.storage.bean.Case;
 import com.us.hotr.storage.bean.Comment;
+import com.us.hotr.storage.bean.Masseur;
 import com.us.hotr.storage.bean.Product;
 import com.us.hotr.storage.bean.User;
 
@@ -20,8 +21,17 @@ public class GetCaseDetailResponse implements Serializable {
     private int is_attention;
     private Case ymContrastPhoto;
     private User user;
+    private Masseur massagist;
 //    private Hospital hospital;
 //    private Doctor doctor;
+
+    public Masseur getMassagist() {
+        return massagist;
+    }
+
+    public void setMassagist(Masseur massagist) {
+        this.massagist = massagist;
+    }
 
     public Product getProduct() {
         return product;

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <include layout="@layout/toolbar_save"/>
+    <LinearLayout
+        android:id="@+id/ll_spa"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+    <TextView
+        android:layout_weight="1"
+        android:id="@+id/tv_spa_name"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/text_black"
+        android:ellipsize="end"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:paddingLeft="12dp"/>
+        <TextView
+            android:paddingLeft="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/choose_spa"
+            android:textSize="11sp"
+            android:textColor="@color/text_grey"
+            android:gravity="center"/>
+        <ImageView
+            android:paddingRight="12dp"
+            android:paddingLeft="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@mipmap/ic_right_arrow"/>
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="@color/divider2"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:textSize="14sp"
+            android:textColor="@color/text_black"
+            android:gravity="center_vertical"
+            android:text="@string/choose_massage"
+            android:paddingLeft="12dp"/>
+        <TextView
+            android:id="@+id/tv_massage_number"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/text_grey"
+            android:textSize="12sp"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical"
+            android:paddingRight="12dp"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider2"/>
+    <android.support.v7.widget.RecyclerView
+        android:layout_weight="1"
+        android:id="@+id/rv_massage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <TextView
+        android:id="@+id/tv_confirm"
+        android:text="@string/cofirm_connect"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:background="@color/cyan"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:gravity="center"/>
+
+</LinearLayout>

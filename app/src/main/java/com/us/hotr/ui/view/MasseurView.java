@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -31,10 +32,12 @@ import java.util.Properties;
  */
 
 public class MasseurView extends FrameLayout {
-    private TextView tvName, tvAddress, tvAppointment;
+    private TextView tvName, tvAddress, tvAppointment, tvMark;
     private ImageView ivAvatar, ivLike;
     private ConstraintLayout clContainer;
     private boolean isCollected, isLog = false;
+    private LinearLayout llMark;
+    private CommentView commentView;
 
     public MasseurView(Context context) {
         super(context);
@@ -54,6 +57,9 @@ public class MasseurView extends FrameLayout {
         ivAvatar = (ImageView) findViewById(R.id.iv_avatar);
         ivLike = (ImageView) findViewById(R.id.iv_like);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
+        tvMark = (TextView) findViewById(R.id.tv_mark);
+        llMark = (LinearLayout) findViewById(R.id.ll_mark);
+        commentView = (CommentView) findViewById(R.id.commentView);
     }
 
     public void setData(final Masseur masseur, int position, boolean isWhiteFrame){
@@ -109,6 +115,10 @@ public class MasseurView extends FrameLayout {
                 favoriteItem(masseur);
             }
         });
+        if(masseur.getComment_score() == 0)
+            masseur.setComment_score(5);
+        tvMark.setText(String.format(getContext().getString(R.string.mark), String.format("%.1f", masseur.getComment_score())));
+        commentView.setMark(masseur.getComment_score());
     }
 
     public void setLog(boolean isLog){

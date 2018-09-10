@@ -26,6 +26,7 @@ import com.us.hotr.ui.activity.beauty.HospitalActivity;
 import com.us.hotr.ui.activity.beauty.ProductActivity;
 import com.us.hotr.ui.activity.beauty.SubjectActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
+import com.us.hotr.ui.activity.massage.MasseurActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.response.GetCaseDetailResponse;
@@ -45,7 +46,7 @@ import java.util.Properties;
 public class CaseDetailView extends FrameLayout {
     private ImageView ivAvatar, ivProductAvatar, ivBefore, ivAfter;
     private TextView tvName, tvInfo, tvFollow, tvHospital, tvDoctor, tvProductName, tvProductHospital, tvProductDoctor, tvAppointment, tvTitle,
-            tvPriceBefore, tvPriceAfter, tvTime, tvContent, tvRead, tvLike, tvComment, tvSeeMore;
+            tvPriceBefore, tvPriceAfter, tvTime, tvContent, tvRead, tvLike, tvComment, tvSeeMore, tvCertified;
     private ConstraintLayout clHospital, clDoctor, clProduct, clPromise, clUser;
     private List<LinearLayout> llPromiseList = new ArrayList<>();
     private List<TextView> tvPromiseList = new ArrayList<>();
@@ -99,6 +100,7 @@ public class CaseDetailView extends FrameLayout {
         ivAfter = (ImageView) findViewById(R.id.iv_after);
         clUser = (ConstraintLayout) findViewById(R.id.cl_user);
         tvTitle = (TextView) findViewById(R.id.tv_case_title);
+        tvCertified = (TextView) findViewById(R.id.tv_certified);
     }
 
     public void setData(final GetCaseDetailResponse response) {
@@ -135,14 +137,41 @@ public class CaseDetailView extends FrameLayout {
                 }
             });
         }
+        switch (response.getUser().getUser_typ()) {
+            case 1:
+            case 7:
+                tvCertified.setVisibility(GONE);
+                break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                tvCertified.setVisibility(VISIBLE);
+                tvCertified.setText(R.string.certify);
+                break;
+            case 6:
+                tvCertified.setVisibility(VISIBLE);
+                tvCertified.setText(R.string.official);
+                break;
+        }
         clUser.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), FriendActivity.class);
-                Bundle b = new Bundle();
-                b.putLong(Constants.PARAM_ID, response.getUser().getUserId());
-                i.putExtras(b);
-                getContext().startActivity(i);
+                if(response.getUser().getUser_typ() == Constants.USER_TYPE_MASSEUR && response.getMassagist().getId()!=0
+                        && HOTRSharePreference.getInstance(getContext()).getUserInfo() != null
+                        && response.getUser().getUserId() != HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId()){
+                    Intent i = new Intent(getContext(), MasseurActivity.class);
+                    Bundle b = new Bundle();
+                    b.putLong(Constants.PARAM_ID, response.getMassagist().getId());
+                    i.putExtras(b);
+                    getContext().startActivity(i);
+                }else {
+                    Intent i = new Intent(getContext(), FriendActivity.class);
+                    Bundle b = new Bundle();
+                    b.putLong(Constants.PARAM_ID, response.getUser().getUserId());
+                    i.putExtras(b);
+                    getContext().startActivity(i);
+                }
             }
         });
         tvHospital.setText(response.getYmContrastPhoto().getHospitalName());

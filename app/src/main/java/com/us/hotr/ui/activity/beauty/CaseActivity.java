@@ -50,6 +50,7 @@ import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
+import com.us.hotr.ui.activity.massage.MasseurActivity;
 import com.us.hotr.ui.dialog.CommentDialogFragment;
 import com.us.hotr.ui.dialog.ShareDialogFragment;
 import com.us.hotr.ui.view.CaseDetailView;
@@ -909,11 +910,21 @@ public class CaseActivity extends BaseLoadingActivity {
                     commentHolder.clUser.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent i = new Intent(mContext, FriendActivity.class);
-                            Bundle b = new Bundle();
-                            b.putLong(Constants.PARAM_ID, comment.getUser_id());
-                            i.putExtras(b);
-                            mContext.startActivity(i);
+                            if(comment.getU_user_type() == Constants.USER_TYPE_MASSEUR && comment.getMassagist_id() > 0
+                                    && HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo() != null
+                                    && comment.getUser_id() != HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getUserId()){
+                                Intent i = new Intent(mContext, MasseurActivity.class);
+                                Bundle b = new Bundle();
+                                b.putLong(Constants.PARAM_ID, comment.getMassagist_id());
+                                i.putExtras(b);
+                                mContext.startActivity(i);
+                            }else {
+                                Intent i = new Intent(mContext, FriendActivity.class);
+                                Bundle b = new Bundle();
+                                b.putLong(Constants.PARAM_ID, comment.getUser_id());
+                                i.putExtras(b);
+                                mContext.startActivity(i);
+                            }
                         }
                     });
                     if(comment.getListReply()!=null && comment.getListReply().size()>0) {
@@ -1085,11 +1096,21 @@ public class CaseActivity extends BaseLoadingActivity {
             ClickableSpan clickableSpan = new ClickableSpan() {
                 @Override
                 public void onClick(View textView) {
-                    Intent i = new Intent(CaseActivity.this, FriendActivity.class);
-                    Bundle b = new Bundle();
-                    b.putLong(Constants.PARAM_ID, reply.getUser_id());
-                    i.putExtras(b);
-                    startActivity(i);
+                    if(reply.getU_user_type() == Constants.USER_TYPE_MASSEUR && reply.getMassagist_id() > 0
+                            && HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo() != null
+                            && reply.getUser_id() != HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo().getUserId()){
+                        Intent i = new Intent(CaseActivity.this, MasseurActivity.class);
+                        Bundle b = new Bundle();
+                        b.putLong(Constants.PARAM_ID, reply.getMassagist_id());
+                        i.putExtras(b);
+                        startActivity(i);
+                    }else {
+                        Intent i = new Intent(CaseActivity.this, FriendActivity.class);
+                        Bundle b = new Bundle();
+                        b.putLong(Constants.PARAM_ID, reply.getUser_id());
+                        i.putExtras(b);
+                        startActivity(i);
+                    }
                 }
 
                 @Override

@@ -81,8 +81,8 @@ public class EditInfoActivity extends BaseActivity {
         clCity = (ConstraintLayout) findViewById(R.id.cl_city);
         clSex = (ConstraintLayout) findViewById(R.id.cl_sex);
         tvGender = (TextView) findViewById(R.id.tv_gender);
-        tvAge = (TextView) findViewById(R.id.tv_age);
-        tvCity = (TextView) findViewById(R.id.tv_type);
+        tvAge = (TextView) findViewById(R.id.tv_worktime);
+        tvCity = (TextView) findViewById(R.id.tv_subjects);
         tvSex = (TextView) findViewById(R.id.tv_sex);
         tvSave = (TextView) findViewById(R.id.tv_save);
         etName = (EditText) findViewById(R.id.et_nickname);
@@ -339,7 +339,6 @@ public class EditInfoActivity extends BaseActivity {
                     });
                 }
                 HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(result);
-                setResult(Activity.RESULT_OK);
                 if(avatarPath!=null && !avatarPath.isEmpty()) {
                     File file = new File(avatarPath.replace("ZIP", "crop"));
                     file.delete();

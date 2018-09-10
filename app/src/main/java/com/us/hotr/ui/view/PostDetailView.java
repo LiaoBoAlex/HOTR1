@@ -31,6 +31,7 @@ import com.us.hotr.storage.bean.PostOld;
 import com.us.hotr.ui.activity.ImageViewerActivity;
 import com.us.hotr.ui.activity.found.GroupDetailActivity;
 import com.us.hotr.ui.activity.info.FriendActivity;
+import com.us.hotr.ui.activity.massage.MasseurActivity;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.rxjava.ProgressSubscriber;
@@ -108,15 +109,25 @@ public class PostDetailView extends FrameLayout {
         clUser.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), FriendActivity.class);
-                Bundle b = new Bundle();
-                b.putLong(Constants.PARAM_ID, post.getUser_id());
-                i.putExtras(b);
-                getContext().startActivity(i);
+                if(post.getU_user_type() == Constants.USER_TYPE_MASSEUR && post.getMassagist_id()!=0
+                        && HOTRSharePreference.getInstance(getContext()).getUserInfo() != null
+                        && post.getUser_id() != HOTRSharePreference.getInstance(getContext()).getUserInfo().getUserId()){
+                    Intent i = new Intent(getContext(), MasseurActivity.class);
+                    Bundle b = new Bundle();
+                    b.putLong(Constants.PARAM_ID, post.getMassagist_id());
+                    i.putExtras(b);
+                    getContext().startActivity(i);
+                }else {
+                    Intent i = new Intent(getContext(), FriendActivity.class);
+                    Bundle b = new Bundle();
+                    b.putLong(Constants.PARAM_ID, post.getUser_id());
+                    i.putExtras(b);
+                    getContext().startActivity(i);
+                }
             }
         });
 
-        switch (post.getUser_type()) {
+        switch (post.getU_user_type()) {
             case 1:
             case 7:
                 tvCertified.setVisibility(GONE);

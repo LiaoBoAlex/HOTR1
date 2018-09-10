@@ -188,6 +188,7 @@ public class ChangePhoneNumberActivity extends BaseActivity {
                         });
                         HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(result.getJsessionid());
                         HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(result.getUser());
+                        HOTRSharePreference.getInstance(getApplicationContext()).storeMasseurInfo(result.getMasseurData());
 //                        StatMultiAccount account = new StatMultiAccount(
 //                                StatMultiAccount.AccountType.PHONE_NO, result.getUser().getMobile());
 //                        long time = System.currentTimeMillis() / 1000;

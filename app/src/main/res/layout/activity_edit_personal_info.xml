@@ -238,7 +238,7 @@
                     app:srcCompat="@mipmap/ic_arror_more" />
 
                 <TextView
-                    android:id="@+id/tv_age"
+                    android:id="@+id/tv_worktime"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginBottom="0dp"
@@ -292,7 +292,7 @@
                     app:srcCompat="@mipmap/ic_arror_more" />
 
                 <TextView
-                    android:id="@+id/tv_type"
+                    android:id="@+id/tv_subjects"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginBottom="0dp"

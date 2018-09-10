@@ -15,6 +15,7 @@ import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.ui.fragment.BaseFragment;
+import com.us.hotr.ui.fragment.BaseLoadingFragment;
 
 import java.util.ArrayList;
 
@@ -29,7 +30,7 @@ public class ReceiptFragment extends BaseFragment {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private PagerAdapter adapter;
-    private boolean isLoaded = false;
+//    private boolean isLoaded = false;
 
     public static ReceiptFragment newInstance() {
         ReceiptFragment receiptFragment = new ReceiptFragment();
@@ -49,22 +50,22 @@ public class ReceiptFragment extends BaseFragment {
 
         tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         viewPager = (ViewPager) view.findViewById(R.id.pager);
-        if(getUserVisibleHint() && !isLoaded) {
+//        if(getUserVisibleHint() && !isLoaded) {
             loadData();
-        }
+//        }
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && isResumed() && !isLoaded) {
-            loadData();
-        }
-    }
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if (isVisibleToUser && isResumed() && !isLoaded) {
+//            loadData();
+//        }
+//    }
 
     public void loadData(){
         if(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).isUserLogin()) {
-            isLoaded = true;
+//            isLoaded = true;
             titleList = new ArrayList<String>() {{
                 add(getString(R.string.massage_title));
                 add(getString(R.string.beauty_title));

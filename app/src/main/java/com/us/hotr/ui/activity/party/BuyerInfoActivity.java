@@ -1,7 +1,6 @@
 package com.us.hotr.ui.activity.party;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -58,7 +57,7 @@ public class BuyerInfoActivity extends BaseActivity {
         etDoc = (EditText) findViewById(R.id.et_doc);
         etPhone = (EditText) findViewById(R.id.et_phone);
         tvDocDate = (TextView) findViewById(R.id.tv_doc_date);
-        tvDocType = (TextView) findViewById(R.id.tv_type);
+        tvDocType = (TextView) findViewById(R.id.tv_subjects);
         ivMale = (ImageView) findViewById(R.id.iv_male);
         ivFemale = (ImageView) findViewById(R.id.iv_female);
         llMale = (LinearLayout) findViewById(R.id.ll_male);

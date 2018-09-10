@@ -223,7 +223,7 @@ public class SelectCityFragment extends BaseLoadingFragment {
 
             public MyViewHolder(View view) {
                 super(view);
-                tvCity = (TextView) view.findViewById(R.id.tv_type);
+                tvCity = (TextView) view.findViewById(R.id.tv_subjects);
             }
         }
 

@@ -300,7 +300,7 @@ public class MassageActivity extends BaseLoadingActivity{
                     public void onClick(View view) {
                         Share share = new Share();
                         share.setDescription(getString(R.string.share_massage));
-                        share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(mMassage.getProduct().getProductImg())));
+                        share.setImageUrl(Tools.getMainPhoto(mMassage.getProduct().getProductImg()));
                         share.setTitle(getString(R.string.bracket_left)+mMassage.getProduct().getProductName()+getString(R.string.bracket_right)+mMassage.getProduct().getProductUsp());
                         share.setUrl(Constants.SHARE_URL + "#/commodityAM?id="+mMassage.getProduct().getKey());
                         share.setSinaContent(getString(R.string.share_massage));

@@ -18,7 +18,7 @@ public class User implements Serializable {
     private String head_portrait;
     @SerializedName(value = "attentionCount", alternate = {"follow_numb"})
     private int attentionCount;
-    @SerializedName(value = "user_typ", alternate = {"user_type"})
+    @SerializedName(value = "user_typ", alternate = {"user_type", "userType"})
     private int user_typ;
     @SerializedName(value = "fanCount", alternate = {"fans_numb"})
     private int fanCount;
@@ -38,6 +38,15 @@ public class User implements Serializable {
     private String youzan_cookie_key;
     private String youzan_access_token;
     private String youzan_cookie_value;
+    private long massagist_id;
+
+    public long getMassagist_id() {
+        return massagist_id;
+    }
+
+    public void setMassagist_id(long massagist_id) {
+        this.massagist_id = massagist_id;
+    }
 
     public String getYouzan_cookie_key() {
         return youzan_cookie_key;

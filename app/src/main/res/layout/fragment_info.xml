@@ -37,7 +37,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/placeholder_post3" />
                 <ImageView
-                    android:visibility="invisible"
                     android:id="@+id/iv_certificate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -46,6 +45,21 @@
                     app:layout_constraintStart_toStartOf="@+id/iv_user_avatar"
                     app:layout_constraintTop_toTopOf="@+id/iv_user_avatar"
                     app:srcCompat="@mipmap/ic_certified" />
+
+                <TextView
+                    android:visibility="invisible"
+                    android:id="@+id/tv_masseur_cert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/certificated_massuer"
+                    android:textColor="@color/text_grey2"
+                    android:textSize="11sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_certificate"
+                    app:layout_constraintStart_toStartOf="@+id/iv_certificate"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
                 <ImageView
                     android:id="@+id/iv_fav"
@@ -73,12 +87,12 @@
                     android:id="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
                     android:textColor="@color/white"
+                    android:textSize="16sp"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/iv_user_avatar" />
+                    app:layout_constraintTop_toBottomOf="@+id/iv_certificate" />
 
                 <TextView
                     android:visibility="gone"
@@ -157,6 +171,50 @@
                     app:layout_constraintTop_toTopOf="parent"
                     android:id="@+id/view41" />
             </android.support.constraint.ConstraintLayout>
+            <android.support.constraint.ConstraintLayout
+                android:visibility="gone"
+                android:id="@+id/cl_my_organization"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="52dp">
+
+
+                <ImageView
+                    android:id="@+id/imageView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginTop="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@mipmap/ic_arror_more" />
+
+                <View
+                    android:id="@+id/view1"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/divider2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_my_organization"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/connect_org"
+                    android:textColor="@color/text_black"
+                    android:textSize="13sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_my_order"
@@ -211,6 +269,7 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
+                android:visibility="gone"
                 android:id="@+id/cl_my_youzan_order"
                 android:background="@color/white"
                 android:layout_width="match_parent"
@@ -252,6 +311,7 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
+                android:visibility="visible"
                 android:id="@+id/cl_announcement"
                 android:background="@color/white"
                 android:layout_width="match_parent"
@@ -573,6 +633,45 @@
                     android:layout_marginLeft="12dp"
                     android:layout_marginTop="12dp"
                     android:text="@string/invite_friend"
+                    android:textColor="@color/text_black"
+                    android:textSize="13sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_apply"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="52dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginTop="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@mipmap/ic_arror_more" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/divider2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/my_identity"
                     android:textColor="@color/text_black"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"

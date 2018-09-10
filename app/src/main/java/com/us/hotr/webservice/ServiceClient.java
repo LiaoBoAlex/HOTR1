@@ -19,6 +19,7 @@ import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.MassageOrder;
 import com.us.hotr.storage.bean.MassageReceipt;
 import com.us.hotr.storage.bean.Masseur;
+import com.us.hotr.storage.bean.MasseurExtraData;
 import com.us.hotr.storage.bean.Party;
 import com.us.hotr.storage.bean.PartyOrder;
 import com.us.hotr.storage.bean.Post;
@@ -42,6 +43,7 @@ import com.us.hotr.webservice.request.BoundMobileRequest;
 import com.us.hotr.webservice.request.CancelOrderRequest;
 import com.us.hotr.webservice.request.ChangePasswordRequest;
 import com.us.hotr.webservice.request.CreateMassageOrderRequest;
+import com.us.hotr.webservice.request.CreateNewMasseurRequest;
 import com.us.hotr.webservice.request.CreatePartyOrderRequest;
 import com.us.hotr.webservice.request.CreateProductOrderRequest;
 import com.us.hotr.webservice.request.GetAppVersionRequest;
@@ -64,6 +66,7 @@ import com.us.hotr.webservice.response.GetHomePageResponse;
 import com.us.hotr.webservice.response.GetHospitalDetailResponse;
 import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.response.GetMassageDetailResponse;
+import com.us.hotr.webservice.response.GetMasseurCommentsResponse;
 import com.us.hotr.webservice.response.GetMasseurDetailResponse;
 import com.us.hotr.webservice.response.GetPartyDetailResponse;
 import com.us.hotr.webservice.response.GetPartyOrderDetailResponse;
@@ -88,12 +91,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.jpush.im.android.api.JMessageClient;
-import cn.jpush.im.android.api.model.UserInfo;
-import cn.jpush.im.api.BasicCallback;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -1331,6 +1332,33 @@ public class ServiceClient {
                         return result;
                     }
                 })
+                .map(new Function<GetLoginResponse, GetLoginResponse>() {
+                    @Override
+                    public GetLoginResponse apply(GetLoginResponse result) throws Exception {
+                        if(result.getUser().getUser_typ() == Constants.USER_TYPE_MASSEUR){
+                            MasseurExtraData response = webService.masseurCheckState1(result.getJsessionid()).execute().body().getResult();
+                            if(response!=null) {
+                                List<Subject> subjects = webService.getMassageTypeList1().execute().body().getResult().getRows();
+                                String s = "";
+                                String[] ids = response.getTypeIdArr().split(",");
+                                for(Subject subject:subjects){
+                                    for(int i=0;i<ids.length;i++){
+                                        if(subject.getKey() == Long.parseLong(ids[i])){
+                                            if(s.isEmpty())
+                                                s = subject.getTypeName();
+                                            else
+                                                s = s + "/" + subject.getTypeName();
+                                            break;
+                                        }
+                                    }
+                                }
+                                response.setSubjectName(s);
+                                result.setMasseurData(response);
+                            }
+                        }
+                        return result;
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -1357,46 +1385,6 @@ public class ServiceClient {
                         getWechatUserInfo.getHeadimgurl(),
                         getWechatUserInfo.getOpenid(),
                         sex)).execute().body();
-
-//                if(response.getResult()!=null && response.getStatus() == 200 && response.getResult().getUser() != null) {
-//                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-//                        @Override
-//                        public void gotResult(int i, String s) {
-//                            if (i == 0 || i == 898001) {
-//                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-//                                    @Override
-//                                    public void gotResult(int i, String s) {
-//                                        if (i == 0) {
-//                                            UserInfo userInfo = JMessageClient.getMyInfo();
-//                                            userInfo.setNickname(response.getResult().getUser().getNickname());
-//                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
-//                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
-//                                                @Override
-//                                                public void gotResult(int i, String s) {
-//
-//                                                }
-//                                            });
-//
-//                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
-//                                                @Override
-//                                                public void gotResult(int i, String s) {
-//                                                    emitter.onNext(response);
-//                                                    emitter.onComplete();
-//                                                }
-//                                            });
-//
-//
-//                                        } else
-//                                            emitter.onError(new ApiException(500));
-//                                    }
-//                                });
-//                            } else
-//                                emitter.onError(new ApiException(500));
-//                        }
-//                    });
-//                }else{
-//                    emitter.onNext(response);
-//                    emitter.onComplete();
 //                }
                 if(response.getResult()!=null){
                     response.getResult().setWechatUser(new GetLoginResponse.WechatUser(getWechatUserInfo.getOpenid(),
@@ -1406,6 +1394,27 @@ public class ServiceClient {
                     response.getResult().getUser().setYouzan_access_token(response.getResult().getYouzan_access_token());
                     response.getResult().getUser().setYouzan_cookie_key(response.getResult().getYouzan_cookie_key());
                     response.getResult().getUser().setYouzan_cookie_value(response.getResult().getYouzan_cookie_value());
+                }
+                if(response.getResult().getUser().getUser_typ() == Constants.USER_TYPE_MASSEUR){
+                    MasseurExtraData masseurResponse = webService.masseurCheckState1(response.getResult().getJsessionid()).execute().body().getResult();
+                    if(masseurResponse!=null) {
+                        List<Subject> subjects = webService.getMassageTypeList1().execute().body().getResult().getRows();
+                        String s = "";
+                        String[] ids = masseurResponse.getTypeIdArr().split(",");
+                        for(Subject subject:subjects){
+                            for(int i=0;i<ids.length;i++){
+                                if(subject.getKey() == Long.parseLong(ids[i])){
+                                    if(s.isEmpty())
+                                        s = subject.getTypeName();
+                                    else
+                                        s = s + "/" + subject.getTypeName();
+                                    break;
+                                }
+                            }
+                        }
+                        masseurResponse.setSubjectName(s);
+                        response.getResult().setMasseurData(masseurResponse);
+                    }
                 }
                 emitter.onNext(response);
                 emitter.onComplete();
@@ -1428,6 +1437,33 @@ public class ServiceClient {
                         result.getUser().setYouzan_access_token(result.getYouzan_access_token());
                         result.getUser().setYouzan_cookie_key(result.getYouzan_cookie_key());
                         result.getUser().setYouzan_cookie_value(result.getYouzan_cookie_value());
+                        return result;
+                    }
+                })
+                .map(new Function<GetLoginResponse, GetLoginResponse>() {
+                    @Override
+                    public GetLoginResponse apply(GetLoginResponse result) throws Exception {
+                        if(result.getUser().getUser_typ() == Constants.USER_TYPE_MASSEUR){
+                            MasseurExtraData response = webService.masseurCheckState1(result.getJsessionid()).execute().body().getResult();
+                            if(response!=null) {
+                                List<Subject> subjects = webService.getMassageTypeList1().execute().body().getResult().getRows();
+                                String s = "";
+                                String[] ids = response.getTypeIdArr().split(",");
+                                for(Subject subject:subjects){
+                                    for(int i=0;i<ids.length;i++){
+                                        if(subject.getKey() == Long.parseLong(ids[i])){
+                                            if(s.isEmpty())
+                                                s = subject.getTypeName();
+                                            else
+                                                s = s + "/" + subject.getTypeName();
+                                            break;
+                                        }
+                                    }
+                                }
+                                response.setSubjectName(s);
+                                result.setMasseurData(response);
+                            }
+                        }
                         return result;
                     }
                 })
@@ -1482,53 +1518,6 @@ public class ServiceClient {
     }
 
     public void login(DisposableObserver subscriber, final String userName, final String password) {
-//        Observable.create(new ObservableOnSubscribe<BaseResponse<GetLoginResponse>>() {
-//            @Override
-//            public void subscribe(final ObservableEmitter<BaseResponse<GetLoginResponse>> emitter) throws Exception {
-//                final BaseResponse<GetLoginResponse> response =  webService.login(userName, password).execute().body();
-//                if(response.getResult()!=null && response.getStatus() == 200) {
-//                    JMessageClient.register("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-//                        @Override
-//                        public void gotResult(int i, String s) {
-//                            if (i == 0 || i == 898001) {
-//                                JMessageClient.login("user" + response.getResult().getUser().getUserId(), "123456", new BasicCallback() {
-//                                    @Override
-//                                    public void gotResult(int i, String s) {
-//                                        if (i == 0) {
-//                                            UserInfo userInfo = JMessageClient.getMyInfo();
-//                                            userInfo.setNickname(response.getResult().getUser().getNickname());
-//                                            userInfo.setAddress(response.getResult().getUser().getHead_portrait());
-//                                            JMessageClient.updateMyInfo(UserInfo.Field.nickname, userInfo, new BasicCallback() {
-//                                                @Override
-//                                                public void gotResult(int i, String s) {
-//
-//                                                }
-//                                            });
-//
-//                                            JMessageClient.updateMyInfo(UserInfo.Field.address, userInfo, new BasicCallback() {
-//                                                @Override
-//                                                public void gotResult(int i, String s) {
-//                                                    emitter.onNext(response);
-//                                                    emitter.onComplete();
-//                                                }
-//                                            });
-//
-//
-//                                        } else
-//                                            emitter.onError(new ApiException(500, ""));
-//                                    }
-//                                });
-//                            } else
-//                                emitter.onError(new ApiException(500, ""));
-//                        }
-//                    });
-//                }else {
-//                    emitter.onNext(response);
-//                    emitter.onComplete();
-//                }
-//
-//            }
-//        })
         webService.login(userName, password)
                 .map(new HttpResultFunc<GetLoginResponse>())
                 .map(new Function<GetLoginResponse, GetLoginResponse>() {
@@ -1537,6 +1526,33 @@ public class ServiceClient {
                         result.getUser().setYouzan_access_token(result.getYouzan_access_token());
                         result.getUser().setYouzan_cookie_key(result.getYouzan_cookie_key());
                         result.getUser().setYouzan_cookie_value(result.getYouzan_cookie_value());
+                        return result;
+                    }
+                })
+                .map(new Function<GetLoginResponse, GetLoginResponse>() {
+                    @Override
+                    public GetLoginResponse apply(GetLoginResponse result) throws Exception {
+                        if(result.getUser().getUser_typ() == Constants.USER_TYPE_MASSEUR){
+                            MasseurExtraData response = webService.masseurCheckState1(result.getJsessionid()).execute().body().getResult();
+                            if(response!=null) {
+                                List<Subject> subjects = webService.getMassageTypeList1().execute().body().getResult().getRows();
+                                String s = "";
+                                String[] ids = response.getTypeIdArr().split(",");
+                                for(Subject subject:subjects){
+                                    for(int i=0;i<ids.length;i++){
+                                        if(subject.getKey() == Long.parseLong(ids[i])){
+                                            if(s.isEmpty())
+                                                s = subject.getTypeName();
+                                            else
+                                                s = s + "/" + subject.getTypeName();
+                                            break;
+                                        }
+                                    }
+                                }
+                                response.setSubjectName(s);
+                                result.setMasseurData(response);
+                            }
+                        }
                         return result;
                     }
                 })
@@ -1556,10 +1572,40 @@ public class ServiceClient {
                 .subscribe(subscriber);
     }
 
-    public void getMyDetail(DisposableObserver subscriber, String ssesionId) {
+    public void getMyDetail(DisposableObserver subscriber, final String ssesionId) {
         webService.getMyDetail(ssesionId)
                 .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<User>())
+                .map(new Function<User, GetLoginResponse>() {
+                    @Override
+                    public GetLoginResponse apply(User user) throws Exception {
+                        GetLoginResponse result = new GetLoginResponse();
+                        result.setUser(user);
+                        if(user.getUser_typ() == Constants.USER_TYPE_MASSEUR){
+                            MasseurExtraData response = webService.masseurCheckState1(ssesionId).execute().body().getResult();
+                            if(response!=null) {
+                                List<Subject> subjects = webService.getMassageTypeList1().execute().body().getResult().getRows();
+                                String s = "";
+                                String[] ids = response.getTypeIdArr().split(",");
+                                for(Subject subject:subjects){
+                                    for(int i=0;i<ids.length;i++){
+                                        if(subject.getKey() == Long.parseLong(ids[i])){
+                                            if(s.isEmpty())
+                                                s = subject.getTypeName();
+                                            else
+                                                s = s + "/" + subject.getTypeName();
+                                            break;
+                                        }
+                                    }
+                                }
+                                response.setSubjectName(s);
+
+                                result.setMasseurData(response);
+                            }
+                        }
+                        return result;
+                    }
+                })
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -1797,6 +1843,40 @@ public class ServiceClient {
                     @Override
                     public void onNext(Integer integer) {
                         mListener.onNext(integer);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    public void getReceiptCount(final DisposableObserver mListener, final String ssesionId){
+        Observable.create(new ObservableOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
+
+                BaseListResponse<List<MassageReceipt>> result = webService.getMassageReceiptList1(ssesionId, Constants.RECEIPT_STATUS_USED, 1, 1).execute().body().getResult();
+                if(result!=null && result.getRows()!=null && result.getRows().size()>0)
+                    emitter.onNext((result.getRows().get(0).getComment_score() == 0)?true:false);
+                else
+                    emitter.onNext(false);
+                emitter.onComplete();
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean b) {
+                        mListener.onNext(b);
                     }
 
                     @Override
@@ -2066,6 +2146,121 @@ public class ServiceClient {
         webService.getYouzanTokenByUserId(new GetYouzanTokenByUserIdRequest(userId))
                 .subscribeOn(Schedulers.io())
                 .map(new HttpResultFunc<YouzanTokenByUserIdResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void masseurCheckState(DisposableObserver subscriber, String ssesionId){
+        webService.masseurCheckState(ssesionId)
+                .subscribeOn(Schedulers.io())
+
+                .map(new HttpResultFunc<MasseurExtraData>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void editMasseur(DisposableObserver subscriber, final String ssesionId, final CreateNewMasseurRequest request, final List<String> photos, final List<Long> subjects, final boolean isCreate){
+        List<String> allPics = new ArrayList<>();
+        for(String s:photos) {
+            if (!s.contains("http"))
+                allPics.add(s);
+        }
+        if(request.getHealthCertificate()!=null && !request.getHealthCertificate().isEmpty() && !request.getHealthCertificate().contains("http"))
+            allPics.add(request.getHealthCertificate());
+        if(request.getPracticeLicense()!=null && !request.getPracticeLicense().isEmpty() && !request.getPracticeLicense().contains("http"))
+            allPics.add(request.getPracticeLicense());
+        if(allPics.size()>0) {
+            Map<String, RequestBody> bodyMap = new LinkedHashMap<>();
+            for (int i = 0; i < allPics.size(); i++) {
+                File file = new File(allPics.get(i));
+                bodyMap.put("file" + "\"; filename=\"" + file.getName(), RequestBody.create(MediaType.parse("image/jpeg"), file));
+
+            }
+            webService.uploadMultiImage("massagist", ssesionId, bodyMap)
+                    .subscribeOn(Schedulers.io())
+                    .map(new HttpResultFunc<List<String>>())
+                    .flatMap(new Function<List<String>, ObservableSource<BaseResponse<String>>>() {
+                        @Override
+                        public ObservableSource<BaseResponse<String>> apply(List<String> strings) throws Exception {
+                            if (request.getPracticeLicense() != null && !request.getPracticeLicense().isEmpty() && !request.getPracticeLicense().contains("http")) {
+                                request.setPracticeLicense(strings.get(strings.size()-1));
+                                strings.remove(strings.size()-1);
+                            }
+
+                            if (request.getHealthCertificate() != null && !request.getHealthCertificate().isEmpty() && !request.getHealthCertificate().contains("http")) {
+                                request.setHealthCertificate(strings.get(strings.size()-1));
+                                strings.remove(strings.size()-1);
+                            }
+                            int j = 0;
+                            for(int i=0;i<photos.size();i++){
+                                if(!photos.get(i).contains("http")){
+                                    photos.set(i, strings.get(j));
+                                    j++;
+                                }
+                            }
+                            request.setPhotosUnchecked(Tools.listToJson(photos));
+                            if(isCreate)
+                                return webService.createMasseur(ssesionId, subjects, request);
+                            else
+                                return webService.editMasseur(ssesionId, subjects, request);
+                        }
+                    })
+                    .map(new HttpResultFunc<String>())
+                    .unsubscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(subscriber);
+        }else{
+            request.setPhotosUnchecked(Tools.listToJson(photos));
+            if(isCreate)
+                webService.createMasseur(ssesionId, subjects, request)
+                        .subscribeOn(Schedulers.io())
+                        .map(new HttpResultFunc<String>())
+                        .unsubscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(subscriber);
+            else
+                webService.editMasseur(ssesionId, subjects, request)
+                        .subscribeOn(Schedulers.io())
+                        .map(new HttpResultFunc<String>())
+                        .unsubscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(subscriber);
+        }
+    }
+
+    public void connectSpa(DisposableObserver subscriber, String ssesionId, long spaId, List<Long> massageIds){
+        webService.connectSpa(ssesionId, spaId, massageIds)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void disconnectSpa(DisposableObserver subscriber, String ssesionId){
+        webService.disconnectSpa(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getMasseurCommentTable(DisposableObserver subscriber, String ssesionId){
+        webService.getMasseurCommentTable(ssesionId)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<GetMasseurCommentsResponse>())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void commentMasseur(DisposableObserver subscriber, String ssesionId, long id, List<Long> comments, int score){
+        webService.commentMasseur(ssesionId, id, comments, score)
+                .subscribeOn(Schedulers.io())
+                .map(new HttpResultFunc<String>())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);

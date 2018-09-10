@@ -10,6 +10,7 @@ import com.us.hotr.R;
 import com.us.hotr.storage.bean.Party;
 import com.us.hotr.ui.activity.BaseActivity;
 import com.us.hotr.ui.fragment.beauty.DoctorListFragment;
+import com.us.hotr.ui.fragment.beauty.PostListFragment;
 import com.us.hotr.ui.fragment.beauty.ProductListFragment;
 import com.us.hotr.ui.fragment.found.OfficialPostListFragment;
 import com.us.hotr.ui.fragment.massage.MasseurListFragment;
@@ -24,7 +25,7 @@ import java.util.List;
 public class ListActivity extends BaseActivity {
     private int type;
     private Fragment listFragment;
-    private long hospitalId = -1, doctorId = -1, spaId = -1;
+    private long hospitalId = -1, doctorId = -1, spaId = -1, userId = -1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class ListActivity extends BaseActivity {
         hospitalId = getIntent().getExtras().getLong(Constants.PARAM_HOSPITAL_ID, -1);
         doctorId = getIntent().getExtras().getLong(Constants.PARAM_DOCTOR_ID, -1);
         spaId = getIntent().getExtras().getLong(Constants.PARAM_SPA_ID, -1);
+        userId = getIntent().getExtras().getLong(Constants.PARAM_USER_ID, -1);
         setMyTitle(title);
         initStaticView();
     }
@@ -62,6 +64,9 @@ public class ListActivity extends BaseActivity {
                 break;
             case Constants.TYPE_OFFICIAL_POST:
                 listFragment = new OfficialPostListFragment().newInstance();
+                break;
+            case Constants.TYPE_POST:
+                listFragment = new PostListFragment().newInstance(userId);
                 break;
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();

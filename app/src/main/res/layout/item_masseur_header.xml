@@ -114,6 +114,88 @@
         android:background="@color/divider2"/>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_masseur_mark"
+        android:paddingBottom="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textView37"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="18dp"
+            android:text="@string/masseur_mark"
+            android:textColor="@color/text_black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_tag_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.us.hotr.ui.view.CommentView
+            android:id="@+id/commentView"
+            android:layout_width="130dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView37"
+            app:layout_constraintStart_toEndOf="@+id/textView37"
+            app:layout_constraintTop_toTopOf="@+id/textView37" />
+
+        <TextView
+            android:id="@+id/tv_mark_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="4."
+            android:textColor="@color/text_black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/commentView"
+            app:layout_constraintStart_toEndOf="@+id/commentView" />
+
+        <TextView
+            android:id="@+id/tv_mark_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6"
+            android:textColor="@color/text_black"
+            android:textSize="11sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_mark_1"
+            app:layout_constraintStart_toEndOf="@+id/tv_mark_1" />
+
+        <TextView
+            android:id="@+id/tv_tag_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="6dp"
+            android:text="@string/masseur_tag"
+            android:textColor="@color/text_black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView37" />
+
+        <com.us.hotr.customview.FlowLayout
+            android:id="@+id/fl_tag"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="8dp"
+            app:backgroundResource="@drawable/bg_search"
+            app:itemColor="@color/text_black"
+            app:itemSize="11sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_tag_title"
+            app:layout_constraintTop_toTopOf="@+id/tv_tag_title" />
+
+    </android.support.constraint.ConstraintLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="@color/divider2"/>
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_subject"
         android:background="@color/white"
         android:layout_width="match_parent"
@@ -150,6 +232,44 @@
         android:layout_width="match_parent"
         android:layout_height="6dp"
         android:layout_marginTop="16dp"
+        android:background="@color/divider2"/>
+    <TextView
+        android:id="@+id/tv_intro_title"
+        android:background="@color/white"
+        android:paddingLeft="12dp"
+        android:textSize="14dp"
+        android:textColor="@color/text_black"
+        android:gravity="center_vertical"
+        android:text="@string/masseur_intro"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider2"/>
+    <TextView
+        android:layout_marginTop="6dp"
+        android:textColor="@color/text_grey2"
+        android:textSize="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/tv_introduction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:gravity="center"
+        android:id="@+id/tv_expend"
+        android:textColor="@color/text_black"
+        android:textSize="12dp"
+        android:text="@string/see_all"
+        android:paddingTop="10dp"
+        android:paddingBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
         android:background="@color/divider2"/>
     <TextView
         android:background="@color/white"

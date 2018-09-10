@@ -65,7 +65,7 @@ public class EditDeliverAddressActivity extends BaseActivity {
         etPhone = (EditText) findViewById(R.id.et_phone);
         etAddress = (EditText) findViewById(R.id.et_address);
         etEmail = (EditText) findViewById(R.id.et_email);
-        tvCity = (TextView) findViewById(R.id.tv_type);
+        tvCity = (TextView) findViewById(R.id.tv_subjects);
         tvSave = (TextView) findViewById(R.id.tv_save);
         clCity = (ConstraintLayout) findViewById(R.id.cl_city);
         clDefault = (ConstraintLayout) findViewById(R.id.cl_defalut);

@@ -50,16 +50,18 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
     private int defaultMonth;
     private int defaultDay;
 
+    private boolean forward;
+    private int limit;
+
 
     private OnCityItemClickListener listener;
 
     @Override
     public void onValueChange(NumberPickerView picker, int oldVal, int newVal) {
         if (picker == mViewYear) {
-
-            updateMonths();
+            updateMonths(false);
         } else if (picker == mViewMonth) {
-            updateDays();
+            updateDays(false);
         } else if (picker == mViewDay) {
             mCurrentDay = mDays[newVal];
         }
@@ -89,6 +91,8 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
             this.defaultYear = builder.defaultYear;
         else
             this.defaultYear = c.get(Calendar.YEAR);
+        this.forward = builder.forward;
+        this.limit = builder.limit;
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         popview = layoutInflater.inflate(R.layout.pop_citypicker, null);
@@ -115,6 +119,7 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
                 setBackgroundAlpha(1.0f);
             }
         });
+
 
         // 添加change事件
         mViewYear.setOnValueChangedListener(this);
@@ -145,7 +150,9 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
         private Context mContext;
         private int defaultYear = -1;
         private int defaultMonth = -1;
-        private int defaultDay = 1;
+        private int defaultDay = -1;
+        private boolean forward = true;
+        private int limit = 50;
 
         public Builder(Context context) {
             this.mContext = context;
@@ -166,6 +173,16 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
             return this;
         }
 
+        public Builder setForward(boolean forward){
+            this.forward = forward;
+            return  this;
+        }
+
+        public Builder setLimit(int limit){
+            this.limit = limit;
+            return  this;
+        }
+
         public MyDatePicker build() {
             MyDatePicker myDatePicker = new MyDatePicker(this);
             return myDatePicker;
@@ -178,13 +195,20 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
         nowYear = c.get(Calendar.YEAR);
         nowMonth = c.get(Calendar.MONTH)+1;
         nowDay = c.get(Calendar.DAY_OF_MONTH);
-        mYears = new Integer[50];
-        String[] mYearsData = new String[50];
-        for(int i= 0;i<50;i++) {
-            mYears[i] = nowYear + i;
-            mYearsData[i] = mYears[i] + context.getString(R.string.year);
+        mYears = new Integer[limit];
+        String[] mYearsData = new String[limit];
+        if(forward) {
+            for (int i = 0; i < limit; i++) {
+                mYears[i] = nowYear + i;
+                mYearsData[i] = mYears[i] + context.getString(R.string.year);
+            }
+        }else{
+            for (int i = 0; i < limit; i++) {
+                mYears[i] = nowYear - i;
+                mYearsData[i] = mYears[i] + context.getString(R.string.year);
+            }
         }
-        int yearDefaultIndex = -1;
+        int yearDefaultIndex = 0;
         if (defaultYear>=0 && mYears.length > 0) {
             for (int i = 0; i < mYears.length; i++) {
                 if (mYears[i]==defaultYear) {
@@ -195,25 +219,37 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
         }
 
         mViewYear.setDisplayedValuesAndPickedIndex(mYearsData, yearDefaultIndex, true);
-        updateMonths();
-        updateDays();
+        mCurrentYear = mYears[yearDefaultIndex];
+        updateMonths(true);
+        updateDays(true);
     }
 
     /**
      * 根据当前的市，更新区WheelView的信息
      */
-    private void updateDays() {
-        int pCurrent = mViewMonth.getValue();
-        mCurrentMonth = mMonths[pCurrent];
+    private void updateDays(boolean isInit) {
+        if(!isInit) {
+            int pCurrent = mViewMonth.getValue();
+            mCurrentMonth = mMonths[pCurrent];
+        }
         Calendar mycal = new GregorianCalendar(mCurrentYear, mCurrentMonth-1, 1);
         int days = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
-        String[] mDaysData;
+        String[] mDaysData = null;
         if(mCurrentYear == nowYear && mCurrentMonth==nowMonth){
-            mDays = new Integer[days-nowDay+1];
-            mDaysData = new String[days-nowDay+1];
-            for (int i = 0; i < days-nowDay+1; i++) {
-                mDays[i] = nowDay + i;
-                mDaysData[i] = mDays[i] + context.getString(R.string.day);
+            if(forward) {
+                mDays = new Integer[days - nowDay + 1];
+                mDaysData = new String[days - nowDay + 1];
+                for (int i = 0; i < days - nowDay + 1; i++) {
+                    mDays[i] = nowDay + i;
+                    mDaysData[i] = mDays[i] + context.getString(R.string.day);
+                }
+            }else{
+                mDays = new Integer[nowDay];
+                mDaysData = new String[nowDay];
+                for (int i = 0; i < nowDay; i++) {
+                    mDays[i] = i + 1;
+                    mDaysData[i] = mDays[i] + context.getString(R.string.day);
+                }
             }
         }else {
             mDays = new Integer[days];
@@ -224,7 +260,7 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
             }
         }
         int dayDefaultIndex = 0;
-        if (defaultDay>=0 && mDays.length > 0 && defaultYear == mCurrentYear && defaultMonth == mCurrentMonth) {
+        if (defaultDay>=0 && mDays.length > 0 && defaultYear >=0 && defaultMonth >=0 && isInit) {
             for (int i = 0; i < mDays.length; i++) {
                 if (mDays[i]==defaultDay) {
                     dayDefaultIndex = i;
@@ -234,7 +270,8 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
         }
 
         mViewDay.setDisplayedValuesAndPickedIndex(mDaysData, dayDefaultIndex, true);
-        mCurrentDay = mDays[defaultDay];
+        mCurrentDay = mDays[dayDefaultIndex];
+
         int minValue = mViewDay.getMinValue();
         int oldMaxValue = mViewDay.getMaxValue();
         int oldSpan = oldMaxValue - minValue + 1;
@@ -250,18 +287,29 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
     /**
      * 根据当前的省，更新市WheelView的信息
      */
-    private void updateMonths() {
-        int pCurrent = mViewYear.getValue();
-        mCurrentYear = mYears[pCurrent];
+    private void updateMonths(boolean isInit) {
+        if(!isInit) {
+            int pCurrent = mViewYear.getValue();
+            mCurrentYear = mYears[pCurrent];
+        }
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         String[] mMonthData;
         if(mCurrentYear == year){
-            mMonths = new Integer[12-nowMonth+1];
-            mMonthData = new String[12-nowMonth+1];
-            for (int i = 0; i < 12-nowMonth+1; i++) {
-                mMonths[i] = nowMonth + i;
-                mMonthData[i] = mMonths[i] + context.getString(R.string.month);
+            if(forward) {
+                mMonths = new Integer[12 - nowMonth + 1];
+                mMonthData = new String[12 - nowMonth + 1];
+                for (int i = 0; i < 12 - nowMonth + 1; i++) {
+                    mMonths[i] = nowMonth + i;
+                    mMonthData[i] = mMonths[i] + context.getString(R.string.month);
+                }
+            }else{
+                mMonths = new Integer[nowMonth];
+                mMonthData = new String[nowMonth];
+                for (int i = 0; i < nowMonth; i++) {
+                    mMonths[i] = i + 1;
+                    mMonthData[i] = mMonths[i] + context.getString(R.string.month);
+                }
             }
         }else {
             mMonths = new Integer[12];
@@ -272,9 +320,9 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
             }
         }
         int cityDefaultIndex = 0;
-        if (defaultMonth>=0 && mMonths.length > 0 && defaultYear == mCurrentYear) {
+        if (defaultMonth>=0 && mMonths.length > 0 && defaultYear >= 0 && isInit) {
             for (int i = 0; i < mMonths.length; i++) {
-                if (mMonths[i]==defaultMonth) {
+                if (mMonths[i]==defaultMonth+1) {
                     cityDefaultIndex = i;
                     break;
                 }
@@ -282,6 +330,8 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
         }
 
         mViewMonth.setDisplayedValuesAndPickedIndex(mMonthData, cityDefaultIndex, true);
+        mCurrentMonth = mMonths[cityDefaultIndex];
+
         int minValue = mViewMonth.getMinValue();
         int oldMaxValue = mViewMonth.getMaxValue();
         int oldSpan = oldMaxValue - minValue + 1;
@@ -292,7 +342,7 @@ public class MyDatePicker implements NumberPickerView.OnValueChangeListener {
         } else {
             mViewMonth.setMaxValue(newMaxValue);
         }
-        updateDays();
+        updateDays(isInit);
     }
 
     public void show() {

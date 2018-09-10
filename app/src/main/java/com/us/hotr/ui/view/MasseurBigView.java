@@ -73,7 +73,7 @@ public class MasseurBigView extends FrameLayout {
         tvExperience.setText(String.format(getContext().getString(R.string.experience), masseur.getJob_time()));
         ivClick.setVisibility(GONE);
         if(masseur.getMassagistPhotos()!=null && !masseur.getMassagistPhotos().isEmpty())
-            Glide.with(getContext()).load(Tools.getMainPhoto(Tools.gsonStringToMap(masseur.getMassagistPhotos()))).dontAnimate().error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
+            Glide.with(getContext()).load(Tools.getMainPhoto(masseur.getMassagistPhotos())).dontAnimate().error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
         if(masseur.getMassagist_main_img()!=null && !masseur.getMassagist_main_img().isEmpty())
             Glide.with(getContext()).load(masseur.getMassagist_main_img()).dontAnimate().error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
         setOnClickListener(new View.OnClickListener() {

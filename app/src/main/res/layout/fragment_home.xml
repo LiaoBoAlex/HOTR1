@@ -15,7 +15,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/tv_type"
+                android:id="@+id/tv_subjects"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/locating"
@@ -37,7 +37,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:paddingEnd="12dp"
+                android:paddingRight="12dp"
                 android:src="@mipmap/icon_search" />
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>

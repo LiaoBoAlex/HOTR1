@@ -98,7 +98,7 @@ public class PostView extends FrameLayout {
         isLiked = post.getIs_like()==1?true:false;
         Glide.with(getContext()).load(post.getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivUserAvatar);
         tvTitle.setText(post.getTitle());
-        switch (post.getUser_type()) {
+        switch (post.getU_user_type()) {
             case 1:
             case 7:
                 tvCertified.setVisibility(GONE);

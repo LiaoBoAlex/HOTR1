@@ -67,7 +67,8 @@ android {
             versionName "1.0.2"
             versionCode 3
             applicationId "com.dev.hotr"
-            buildConfigField "String", "SERVER", "\"http://test.hotr-app.com/hotr-api-web/\""
+//            buildConfigField "String", "SERVER", "\"http://test.hotr-app.com/hotr-api-web/\""
+            buildConfigField "String", "SERVER", "\"http://192.168.0.102:8080/hotr-api-web/\""
             manifestPlaceholders = [
                     APP_ICON: "@drawable/logo_hotr_dev",
                     APP_NAME: "@string/app_name_dev",

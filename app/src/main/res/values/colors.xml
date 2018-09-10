@@ -5,6 +5,7 @@
     <color name="colorAccent">#5ac9c2</color>
 
     <color name="red">#fb0721</color>
+    <color name="red_transparent">#b0fb0721</color>
     <color name="yellow">#ffd200</color>
     <color name="pink">#ffebea</color>
     <color name="divider">#CED2E2</color>

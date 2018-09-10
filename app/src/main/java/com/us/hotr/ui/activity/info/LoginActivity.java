@@ -200,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
             JPushInterface.setAlias(this, i, login.getGetLoginResponse().getUser().getMobile());
             HOTRSharePreference.getInstance(getApplicationContext()).storeUserID(login.getGetLoginResponse().getJsessionid());
             HOTRSharePreference.getInstance(getApplicationContext()).storeUserInfo(login.getGetLoginResponse().getUser());
+            HOTRSharePreference.getInstance(getApplicationContext()).storeMasseurInfo(login.getGetLoginResponse().getMasseurData());
 //            StatMultiAccount account = new StatMultiAccount(
 //                    StatMultiAccount.AccountType.PHONE_NO, login.getGetLoginResponse().getUser().getMobile());
 //            long time = System.currentTimeMillis() / 1000;

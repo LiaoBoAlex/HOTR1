@@ -23,7 +23,9 @@ import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.eventbus.Events;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.MassageReceipt;
+import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.receipt.ReceiptDetailActivity;
+import com.us.hotr.ui.dialog.CommentMasseurDialogFragment;
 import com.us.hotr.ui.dialog.RefundDialog;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
@@ -97,6 +99,7 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
         SubscriberListener mListener = new SubscriberListener<BaseListResponse<List<MassageReceipt>>>() {
             @Override
             public void onNext(BaseListResponse<List<MassageReceipt>> result) {
+                ((MainActivity)getActivity()).updateReceiptCount();
                 updateList(loadType, result);
             }
         };
@@ -150,7 +153,7 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
 
     @Subscribe
     public void getMessage(Events.Refresh refresh) {
-        if(type == Constants.RECEIPT_STATUS_REFUNDING)
+        if(type == Constants.RECEIPT_STATUS_REFUNDING || type == Constants.RECEIPT_STATUS_USED)
             loadData(Constants.LOAD_PULL_REFRESH);
     }
 
@@ -219,11 +222,11 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                         b.putLong(Constants.PARAM_ID, massageReceipt.getId());
                         i.putExtras(b);
                         startActivity(i);
+
                     }
                 });
             }
             if(type == Constants.RECEIPT_STATUS_USED){
-                holder.tvNumber.setText(getString(R.string.used_title));
                 holder.tvDate.setText(getString(R.string.receipt_used_time)+massageReceipt.getVerification_time());
                 holder.tvOption.setVisibility(View.VISIBLE);
                 holder.tvOption.setText(R.string.delete);
@@ -264,6 +267,19 @@ public class MassageReceiptListFragment extends BaseLoadingFragment {
                         alertDialogBuilder.create().show();
                     }
                 });
+                if(massageReceipt.getComment_score()==0) {
+                    holder.tvNumber.setText(getString(R.string.un_comment));
+                    holder.tvNumber.setTextColor(getResources().getColor(R.color.text_black));
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            new CommentMasseurDialogFragment().newInstance(massageReceipt).show(getFragmentManager(), "dialog");
+                        }
+                    });
+                }else {
+                    holder.tvNumber.setText(getString(R.string.commented));
+                    holder.tvNumber.setTextColor(getResources().getColor(R.color.text_grey2));
+                }
             }
             if(type == Constants.RECEIPT_STATUS_EXPIRED) {
                 holder.tvNumber.setText(getString(R.string.expired_title));

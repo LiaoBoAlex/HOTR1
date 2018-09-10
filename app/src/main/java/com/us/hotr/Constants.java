@@ -149,6 +149,7 @@ public class Constants {
     public static final String PARAM_HOSPITAL_ID = "PARAM_HOSPITAL_ID";
     public static final String PARAM_DOCTOR_ID = "PARAM_DOCTOR_ID";
     public static final String PARAM_SPA_ID = "PARAM_SPA_ID";
+    public static final String PARAM_USER_ID = "PARAM_USER_ID";
     public static final String PARAM_SUBJECT_ID = "PARAM_SUBJECT_ID";
     public static final String PARAM_PRODUCT_ID = "PARAM_PRODUCT_ID";
     public static final String PARAM_MASSEUR_ID = "PARAM_MASSEUR_ID";
@@ -205,4 +206,6 @@ public class Constants {
     public static final int SUCCESS = 200;
     public static final int ERROR_WRONG_PASSWORD = 500;
     public static final int ERROR_INVALID_SESSIONID = 501;
+
+    public static final int USER_TYPE_MASSEUR = 5;
 }

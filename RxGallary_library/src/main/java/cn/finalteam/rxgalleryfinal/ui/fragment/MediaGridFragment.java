@@ -434,7 +434,11 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
             }
         }
         if (list != null && list.size() > 0) {
-            mMediaBeanList.addAll(list);
+            for(MediaBean mediaBean:list){
+                if(mediaBean.getOriginalPath() != null && mediaBean.getThumbnailSmallPath() != null && mediaBean.getThumbnailBigPath() != null)
+                    mMediaBeanList.add(mediaBean);
+            }
+//            mMediaBeanList.addAll(list);
             Logger.i(String.format("得到:%s张图片", list.size()));
         } else {
             Logger.i("没有更多图片");

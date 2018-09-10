@@ -13,7 +13,9 @@ import android.widget.TextView;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.customview.MyBaseAdapter;
+import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Group;
+import com.us.hotr.storage.bean.MasseurExtraData;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
@@ -36,6 +38,7 @@ public class PersonalIntroFragment  extends BaseLoadingFragment{
     private MyAdapter mAdapter;
 
     private User mUser;
+    private MasseurExtraData masseurExtraData;
 
     public static PersonalIntroFragment newInstance(User user) {
         PersonalIntroFragment personalIntroFragment = new PersonalIntroFragment();
@@ -54,7 +57,7 @@ public class PersonalIntroFragment  extends BaseLoadingFragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mUser = (User)getArguments().getSerializable(Constants.PARAM_DATA);
-
+        masseurExtraData = HOTRSharePreference.getInstance(getActivity()).getMasseurInfo();
         lrecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
 
         lrecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -100,6 +103,7 @@ public class PersonalIntroFragment  extends BaseLoadingFragment{
         public static final int VIEW_TYPE_GROUP = 101;
         public static final int VIEW_TYPE_GROUP_HEADER = 102;
         public static final int VIEW_TYPE_NO_GROUP = 103;
+        public static final int VIEW_TYPE_MASSEUR_HEADER =104;
 
         private List<Group> groupList;
 
@@ -112,9 +116,21 @@ public class PersonalIntroFragment  extends BaseLoadingFragment{
             public HeaderHolder(View view) {
                 super(view);
                 tvGender = (TextView) view.findViewById(R.id.tv_gender);
-                tvAge = (TextView) view.findViewById(R.id.tv_age);
-                tvArea = (TextView) view.findViewById(R.id.tv_type);
+                tvAge = (TextView) view.findViewById(R.id.tv_worktime);
+                tvArea = (TextView) view.findViewById(R.id.tv_subjects);
                 tvIntro = (TextView) view.findViewById(R.id.tv_intro);
+            }
+        }
+
+        public class MasseurHeaderHolder extends RecyclerView.ViewHolder {
+            TextView tvGender, tvWorkTime, tvHeight, tvSubjects, tvIntro;
+            public MasseurHeaderHolder(View view) {
+                super(view);
+                tvGender = (TextView) view.findViewById(R.id.tv_gender);
+                tvWorkTime = (TextView) view.findViewById(R.id.tv_worktime);
+                tvHeight = (TextView) view.findViewById(R.id.tv_height);
+                tvIntro = (TextView) view.findViewById(R.id.tv_intro);
+                tvSubjects = (TextView) view.findViewById(R.id.tv_subjects);
             }
         }
 
@@ -145,6 +161,9 @@ public class PersonalIntroFragment  extends BaseLoadingFragment{
                 case VIEW_TYPE_HEADER:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_personal_intro_header, parent, false);
                     return new HeaderHolder(view);
+                case VIEW_TYPE_MASSEUR_HEADER:
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_masseur_intro_header, parent, false);
+                    return new MasseurHeaderHolder(view);
                 case VIEW_TYPE_GROUP:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group1, parent, false);
                     return new GroupHolder(view);
@@ -173,6 +192,19 @@ public class PersonalIntroFragment  extends BaseLoadingFragment{
                     if(mUser.getSignature()!=null)
                         headerHolder.tvIntro.setText(mUser.getSignature());
                     break;
+                case VIEW_TYPE_MASSEUR_HEADER:
+                    MasseurHeaderHolder masseurHeaderHolder = (MasseurHeaderHolder) holder;
+                    if(masseurExtraData!=null) {
+                        masseurHeaderHolder.tvGender.setText(getString(R.string.male));
+                        if (masseurExtraData.getJobStartTime() != null)
+                            masseurHeaderHolder.tvWorkTime.setText(masseurExtraData.getJobStartTime());
+                        masseurHeaderHolder.tvHeight.setText(masseurExtraData.getMassagistHeight() + "cm");
+                        if (masseurExtraData.getSubjectName() != null)
+                            masseurHeaderHolder.tvSubjects.setText(masseurExtraData.getSubjectName());
+                        if (masseurExtraData.getMassagistInfo() != null)
+                            masseurHeaderHolder.tvIntro.setText(masseurExtraData.getMassagistInfo());
+                    }
+                    break;
                 case VIEW_TYPE_GROUP:
                     final Group group = groupList.get(position-2);
                     GroupHolder groupHolder = (GroupHolder)holder;
@@ -185,11 +217,16 @@ public class PersonalIntroFragment  extends BaseLoadingFragment{
 
         @Override
         public int getItemViewType(int position) {
-            if(position == 0)
-                return VIEW_TYPE_HEADER;
+            if(position == 0){
+                if(mUser.getUser_typ() == Constants.USER_TYPE_MASSEUR)
+                    return VIEW_TYPE_MASSEUR_HEADER;
+                else
+                    return VIEW_TYPE_HEADER;
+            }
             else if(groupList!=null && groupList.size()>0) {
-                if (position == 1)
+                if (position == 1) {
                     return VIEW_TYPE_GROUP_HEADER;
+                }
                 else
                     return VIEW_TYPE_GROUP;
             }else

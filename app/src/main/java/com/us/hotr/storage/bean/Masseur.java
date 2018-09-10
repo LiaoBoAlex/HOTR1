@@ -3,6 +3,7 @@ package com.us.hotr.storage.bean;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by liaobo on 2017/12/12.
@@ -32,6 +33,15 @@ public class Masseur implements Serializable {
     @SerializedName(value = "massagistPhotos", alternate = {"massagist_photos"})
     private String massagistPhotos;
     private int is_collected;
+    private double comment_score;
+
+    public double getComment_score() {
+        return comment_score;
+    }
+
+    public void setComment_score(double comment_score) {
+        this.comment_score = comment_score;
+    }
 
     public int getIs_collected() {
         return is_collected;

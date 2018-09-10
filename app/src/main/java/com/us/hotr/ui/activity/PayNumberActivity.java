@@ -86,7 +86,7 @@ public class PayNumberActivity extends BaseActivity{
 
         if(type == Constants.TYPE_MASSAGE){
             if(massage.getProductImg()!=null)
-                Glide.with(this).load(Tools.getMainPhoto(Tools.gsonStringToMap(massage.getProductImg()))).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
+                Glide.with(this).load(Tools.getMainPhoto(massage.getProductImg())).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
             if(massage.getProduct_main_img()!=null)
                 Glide.with(this).load(massage.getProduct_main_img()).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
 //            tvTitle.setText(getString(R.string.bracket_left)+massage.getProductName()+getString(R.string.bracket_right)+massage.getProductUsp());
@@ -104,7 +104,7 @@ public class PayNumberActivity extends BaseActivity{
             }
         }
         if(type == Constants.TYPE_PRODUCT){
-            Glide.with(this).load(Tools.getMainPhoto(Tools.gsonStringToMap(product.getProduct().getProductImg()))).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
+            Glide.with(this).load(Tools.getMainPhoto(product.getProduct().getProductImg())).placeholder(R.drawable.placeholder_post3).error(R.drawable.placeholder_post3).into(ivAvatar);
             tvTitle.setText(getString(R.string.bracket_left)+product.getProduct().getProductName()+getString(R.string.bracket_right)+product.getProduct().getProductUsp());
             tvSubTitle.setText(product.getHospital().getHospName());
             tvMin.setVisibility(View.GONE);

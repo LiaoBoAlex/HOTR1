@@ -23,6 +23,8 @@
     <string name="pay_order_title">支付订单</string>
     <string name="unused_title">待使用</string>
     <string name="used_title">已使用</string>
+    <string name="commented">已评价</string>
+    <string name="un_comment">未评价</string>
     <string name="expired_title">已过期</string>
     <string name="refunding_title">退款中</string>
     <string name="refunded_title">已退款</string>
@@ -37,6 +39,9 @@
     <string name="news_title">新闻头条</string>
     <string name="fav_title">我的收藏</string>
     <string name="edit_title">修改个人资料</string>
+    <string name="my_identity_audit">身份认证审核中</string>
+    <string name="connect_spa_audit">机构关联中</string>
+    <string name="personal_info_audit">个人资料审核中</string>
     <string name="upload_compare">发对比</string>
     <string name="upload_post">发帖子</string>
     <string name="product_bought">我购买过的产品</string>
@@ -159,6 +164,7 @@
     <string name="post_item">帖子</string>
     <string name="compare">对比照</string>
     <string name="my_order">我的订单</string>
+    <string name="my_identity">身份认证</string>
     <string name="youzan_order">商城订单</string>
     <string name="announcement">通知</string>
     <string name="draft">草稿箱</string>
@@ -213,6 +219,7 @@
     <string name="change_avatar">修改头像</string>
     <string name="nick_name">昵称：</string>
     <string name="age_number">%1$d岁</string>
+    <string name="year_number">%1$d年</string>
     <string name="choose_product">请选择商品</string>
     <string name="choose_doctor">请选择医生</string>
     <string name="upload_photo">上传术前术后照片</string>
@@ -281,6 +288,8 @@
     <string name="get_password">密码找回</string>
     <string name="not_use_voucher">不使用优惠券</string>
     <string name="cancel_draft">发布内容不会被保存哦，确认现在返回吗？</string>
+    <string name="cancel_connnect">确认取消和该机构关联吗？</string>
+    <string name="confirm_connnect">确认关联该机构吗？已经关联的机构将会自动取消哦</string>
     <string name="hospital_product">本院推荐</string>
     <string name="hospital_doctor">医生团队</string>
     <string name="check_product">查看全部%1$d项预约</string>
@@ -313,6 +322,7 @@
     <string name="contact_info">预约电话：下单成功后前往卡包查看</string>
     <!--massage-->
     <string name="masseur_album">技师相册</string>
+    <string name="masseur_intro">技师简介</string>
     <string name="operation_time">营业时间</string>
     <string name="operation_time1">营业时间：%1$s</string>
     <string name="mins">Min</string>
@@ -395,6 +405,7 @@
     <string name="address">所在地区</string>
     <string name="address_hint">请填写详细地址，不少于5个字</string>
     <string name="pls_choose">请选择</string>
+    <string name="pls_upload_photo">请上传照片</string>
     <string name="set_default">设为默认</string>
     <string name="default_address">默认地址</string>
     <string name="key_in_name">请填写收货人姓名</string>
@@ -514,6 +525,47 @@
     <string name="joined_group">加入的圈子</string>
     <string name="delivery_address">收货地址</string>
     <string name="colon">：</string>
+    <string name="certify_as">认证为：</string>
+    <string name="certify_as_masseur">技师认证</string>
+    <string name="input">请输入</string>
+    <string name="real_name">真实姓名</string>
+    <string name="id">身份证号码</string>
+    <string name="input_no_change">注册后不可更改</string>
+    <string name="have_healthy_certificate">是否有健康证</string>
+    <string name="have">有</string>
+    <string name="dont_have">没有</string>
+    <string name="please_upload_healthy_certificate">请上传健康证和有效期（非必填）</string>
+    <string name="please_upload_healthy_certificate1">请上传健康证和有效期</string>
+    <string name="healthy_certificate_date">健康证有效期</string>
+    <string name="other_certificate">其他职业证书</string>
+    <string name="please_upload_other_certificate">请上传其他职业证书（非必填）</string>
+    <string name="nick_name1">昵称</string>
+    <string name="work_time">从业时间</string>
+    <string name="work_time1">从业时间：</string>
+    <string name="title_height">身高(cm)</string>
+    <string name="title_height1">身高</string>
+    <string name="title_height2">身高：</string>
+    <string name="self_introduce">个人简介</string>
+    <string name="album_subtitle">默认第一张为头像，至少上传一张！</string>
+    <string name="self_introduce_hint">非必填，请在这里输入...</string>
+    <string name="auditing">审核中</string>
+    <string name="auditing_subtitle">审核时间为3-5个工作日，请耐心等待！</string>
+    <string name="certificated_massuer">已通过技师认证</string>
+    <string name="connect_org">关联机构</string>
+    <string name="found_spa">找到以下机构</string>
+    <string name="choose_massage">请选择服务商品(可多选)</string>
+    <string name="choose_massage1">请选择服务商品</string>
+    <string name="choose_massage_number">已勾选%1$d个</string>
+    <string name="cofirm_connect">确认关联</string>
+    <string name="cancel_connect">取消关联</string>
+    <string name="connection_rejected">关联机构审核未通过，请从新选择!</string>
+    <string name="comment">评价</string>
+    <string name="pls_comment">请对本次服务打分</string>
+    <string name="masseur_mark">综合评分</string>
+    <string name="masseur_tag">标签印象</string>
+    <string name="reject_reason">审核不通过原因：%1$s</string>
+    <string name="mark">%1$s分</string>
+    <string name="choose_spa">更换机构</string>
     <!--general-->
     <string name="validation_code_sent">短信已发送，请注意查收</string>
     <string name="delete_search_history">确认删除全部历史纪录？</string>
@@ -531,6 +583,7 @@
     <string name="next">下一步</string>
     <string name="post">发表</string>
     <string name="submit">提交</string>
+    <string name="submit1">提交审核</string>
     <string name="share">分享到</string>
     <string name="wechat">微信好友</string>
     <string name="moment">朋友圈</string>
@@ -563,6 +616,7 @@
     <string name="buy_limit">该商品限购%1$d个，不要太贪心哦！</string>
     <string name="search_total">在“%1$s”下共%2$d条搜索信息</string>
     <string name="empty_list">没有找到相应的内容，再看看别的吧</string>
+    <string name="empty_list1">没有找到任何内容</string>
     <string name="end_of_fav">没有更多关注了</string>
     <string name="end_of_fan">没有更多粉丝了</string>
     <string name="map_autonavi">开启高德地图导航</string>

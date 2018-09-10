@@ -16,6 +16,7 @@ import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.MassageOrder;
 import com.us.hotr.storage.bean.MassageReceipt;
 import com.us.hotr.storage.bean.Masseur;
+import com.us.hotr.storage.bean.MasseurExtraData;
 import com.us.hotr.storage.bean.Party;
 import com.us.hotr.storage.bean.PartyOrder;
 import com.us.hotr.storage.bean.Post;
@@ -35,6 +36,7 @@ import com.us.hotr.webservice.request.BoundMobileRequest;
 import com.us.hotr.webservice.request.CancelOrderRequest;
 import com.us.hotr.webservice.request.ChangePasswordRequest;
 import com.us.hotr.webservice.request.CreateMassageOrderRequest;
+import com.us.hotr.webservice.request.CreateNewMasseurRequest;
 import com.us.hotr.webservice.request.CreatePartyOrderRequest;
 import com.us.hotr.webservice.request.CreateProductOrderRequest;
 import com.us.hotr.webservice.request.GetAppVersionRequest;
@@ -57,6 +59,7 @@ import com.us.hotr.webservice.response.GetHomePageResponse;
 import com.us.hotr.webservice.response.GetHospitalDetailResponse;
 import com.us.hotr.webservice.response.GetLoginResponse;
 import com.us.hotr.webservice.response.GetMassageDetailResponse;
+import com.us.hotr.webservice.response.GetMasseurCommentsResponse;
 import com.us.hotr.webservice.response.GetMasseurDetailResponse;
 import com.us.hotr.webservice.response.GetPartyDetailResponse;
 import com.us.hotr.webservice.response.GetPartyOrderDetailResponse;
@@ -117,6 +120,9 @@ public interface WebService {
 
     @POST("massage_type/list.do")
     Observable<BaseResponse<BaseListResponse<List<Subject>>>> getMassageTypeList();
+
+    @POST("massage_type/list.do")
+    Call<BaseResponse<BaseListResponse<List<Subject>>>> getMassageTypeList1();
 
     @POST("travel/getTravelState.do")
     Observable<BaseResponse<BaseListResponse<List<Integer>>>> getPartyStatusList();
@@ -534,6 +540,12 @@ public interface WebService {
                                                                                            @Query("page_number") int page_number,
                                                                                            @Query("page_size") int page_size);
 
+    @POST("user_method/verification/list.do?type=1")
+    Call<BaseResponse<BaseListResponse<List<MassageReceipt>>>> getMassageReceiptList1(@Header("jsessionid") String jsessionid,
+                                                                                      @Query("state") int state,
+                                                                                      @Query("page_number") int page_number,
+                                                                                      @Query("page_size") int page_size);
+
     @POST("user_method/verification/ymDetail.do?")
     Observable<BaseResponse<ProductReceipt>> getProductReceiptDetailbyId(@Header("jsessionid") String jsessionid,
                                                                          @Query("verificationId") long verificationId);
@@ -792,4 +804,38 @@ public interface WebService {
 
     @POST("youzan/getUserYouzanToken.do")
     Observable<BaseResponse<YouzanTokenByUserIdResponse>> getYouzanTokenByUserId(@Body GetYouzanTokenByUserIdRequest request);
+
+    @POST("massagist/massagistCheckState.do")
+    Observable<BaseResponse<MasseurExtraData>> masseurCheckState(@Header("jsessionid") String jsessionid);
+
+    @POST("massagist/massagistCheckState.do")
+    Call<BaseResponse<MasseurExtraData>> masseurCheckState1(@Header("jsessionid") String jsessionid);
+
+    @POST("massagist/createMassagist.do")
+    Observable<BaseResponse<String>> createMasseur(@Header("jsessionid") String jsessionid,
+                                                   @Query("typeIdArr") List<Long> typeIdArr,
+                                                   @Body CreateNewMasseurRequest request);
+
+    @POST("massagist/editMassagist.do")
+    Observable<BaseResponse<String>> editMasseur(@Header("jsessionid") String jsessionid,
+                                                 @Query("typeIdArr") List<Long> typeIdArr,
+                                                 @Body CreateNewMasseurRequest request);
+
+    @POST("massagist/chooseMassage.do")
+    Observable<BaseResponse<String>> connectSpa(@Header("jsessionid") String jsessionid,
+                                                @Query("massageId") Long massageId ,
+                                                @Query("productIdArr") List<Long> productIdArr);
+
+    @POST("massagist/chooseNoMassage.do")
+    Observable<BaseResponse<String>> disconnectSpa(@Header("jsessionid") String jsessionid);
+
+    @POST("user_method/verification/getCommentTabInfo.do")
+    Observable<BaseResponse<GetMasseurCommentsResponse>> getMasseurCommentTable(@Header("jsessionid") String jsessionid);
+
+
+    @POST("user_method/verification/saveMassagistTab.do")
+    Observable<BaseResponse<String>> commentMasseur(@Header("jsessionid") String jsessionid,
+                                                    @Query("am_verification_id") long am_verification_id,
+                                                    @Query("tab_id_array") List<Long> tab_id_array,
+                                                    @Query("comment_score") int comment_score);
 }

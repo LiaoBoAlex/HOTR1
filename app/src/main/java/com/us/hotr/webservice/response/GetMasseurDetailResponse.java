@@ -2,6 +2,8 @@ package com.us.hotr.webservice.response;
 
 import com.us.hotr.storage.bean.Massage;
 import com.us.hotr.storage.bean.Masseur;
+import com.us.hotr.storage.bean.MasseurTag;
+import com.us.hotr.storage.bean.Post;
 import com.us.hotr.storage.bean.Spa;
 import com.us.hotr.storage.bean.Type;
 
@@ -20,6 +22,33 @@ public class GetMasseurDetailResponse implements Serializable {
     private Spa massage;
     private int sumOrderNum;
     private int is_collected;
+    private double comment_score;
+    private List<MasseurTag> tabInfoList;
+    private BaseListResponse<List<Post>> hotTopicList;
+
+    public BaseListResponse<List<Post>> getHotTopicList() {
+        return hotTopicList;
+    }
+
+    public void setHotTopicList(BaseListResponse<List<Post>> hotTopicList) {
+        this.hotTopicList = hotTopicList;
+    }
+
+    public double getComment_score() {
+        return comment_score;
+    }
+
+    public void setComment_score(double comment_score) {
+        this.comment_score = comment_score;
+    }
+
+    public List<MasseurTag> getTabInfoList() {
+        return tabInfoList;
+    }
+
+    public void setTabInfoList(List<MasseurTag> tabInfoList) {
+        this.tabInfoList = tabInfoList;
+    }
 
     public int getIs_collected() {
         return is_collected;

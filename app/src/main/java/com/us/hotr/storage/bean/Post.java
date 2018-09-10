@@ -49,6 +49,24 @@ public class Post implements Serializable {
     private Integer gender;
     @SerializedName(value = "topicType", alternate = {"topic_type"})
     private int topicType;
+    private Integer u_user_type;
+    private Long massagist_id;
+
+    public Integer getU_user_type() {
+        return u_user_type;
+    }
+
+    public void setU_user_type(Integer u_user_type) {
+        this.u_user_type = u_user_type;
+    }
+
+    public Long getMassagist_id() {
+        return massagist_id;
+    }
+
+    public void setMassagist_id(Long massagist_id) {
+        this.massagist_id = massagist_id;
+    }
 
     public Integer getIs_new() {
         return is_new;

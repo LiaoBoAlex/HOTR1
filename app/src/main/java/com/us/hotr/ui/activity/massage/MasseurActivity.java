@@ -24,14 +24,19 @@ import com.us.hotr.customview.MyBaseAdapter;
 import com.us.hotr.receiver.Share;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Massage;
+import com.us.hotr.storage.bean.MasseurTag;
+import com.us.hotr.storage.bean.Post;
 import com.us.hotr.storage.bean.Spa;
 import com.us.hotr.storage.bean.Type;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.activity.MainActivity;
 import com.us.hotr.ui.activity.PayNumberActivity;
+import com.us.hotr.ui.activity.beauty.ListActivity;
 import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.ui.dialog.ShareDialogFragment;
+import com.us.hotr.ui.view.CommentView;
 import com.us.hotr.ui.view.MassageView;
+import com.us.hotr.ui.view.PostView;
 import com.us.hotr.ui.view.SpaBigView;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
@@ -205,7 +210,7 @@ public class MasseurActivity extends BaseLoadingActivity {
                     public void onClick(View view) {
                         Share share = new Share();
                         share.setDescription(getString(R.string.share_masseur));
-                        share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(result.getMassagist().getMassagistPhotos())));
+                        share.setImageUrl(Tools.getMainPhoto(result.getMassagist().getMassagistPhotos()));
                         share.setTitle(result.getMassagist().getMassagist_name());
                         share.setUrl(Constants.SHARE_URL + "#/massagist?id="+result.getMassagist().getId());
                         share.setSinaContent(getString(R.string.share_masseur));
@@ -290,6 +295,7 @@ public class MasseurActivity extends BaseLoadingActivity {
         private List<Item> itemList = new ArrayList<>();
         private Context mContext;
         private int selectedPosition = 2;
+        private long userId;
 
         private final int TYPE_HEADER = 101;
         private final int TYPE_MASSAGE_HEADER = 102;
@@ -314,14 +320,15 @@ public class MasseurActivity extends BaseLoadingActivity {
             }
             if(masseurDetail.getMassage()!=null)
                 itemList.add(new Item(TYPE_SPA, masseurDetail.getMassage()));
-//            if(doctorDetail.getCaseList()!=null && doctorDetail.getCaseList().size()>0){
-//                itemList.add(new Item(TYPE_CASE_HEADER));
-//                itemList.add(new Item(TYPE_CASE_SUBJECT));
-//                for(int i=0;i<doctorDetail.getCaseList().size();i++)
-//                    itemList.add(new Item(TYPE_CASE, doctorDetail.getCaseList().get(i)));
-//                if(doctorDetail.getTotalCase()>3)
-//                    itemList.add(new Item(TYPE_CASE_FOOTER));
-//            }
+            if(masseurDetail.getHotTopicList()!=null && masseurDetail.getHotTopicList().getTotal()>0){
+                itemList.add(new Item(TYPE_POST_HEADER));
+                for(int i=0;i<(masseurDetail.getHotTopicList().getTotal()>3?3:masseurDetail.getHotTopicList().getTotal());i++)
+                    itemList.add(new Item(TYPE_POST, masseurDetail.getHotTopicList().getRows().get(i)));
+                if(masseurDetail.getHotTopicList().getTotal()>3) {
+                    itemList.add(new Item(TYPE_POST_FOOTER));
+                    userId = masseurDetail.getHotTopicList().getRows().get(0).getUser_id();
+                }
+            }
         }
 
         public long getSelectedProductId(){
@@ -349,11 +356,12 @@ public class MasseurActivity extends BaseLoadingActivity {
 
         public class MasseurHeaderHolder extends RecyclerView.ViewHolder {
             ImageView ivAdd, ivMsg;
-            TextView tvName, tvHeight, tvExperience, tvAppointment;
-            FlowLayout flSubject;
+            TextView tvName, tvHeight, tvExperience, tvAppointment, tvMark1, tvMark2, tvTagTitle, tvIndroduction, tvShowAll, TvIndroductionTitle;
+            FlowLayout flSubject, flComment;
             RecyclerView rvPhoto;
             ImageBannerCrop banner;
             ConstraintLayout clSubject;
+            CommentView commentView;
 
             public MasseurHeaderHolder(View view) {
                 super(view);
@@ -362,11 +370,19 @@ public class MasseurActivity extends BaseLoadingActivity {
                 ivMsg = (ImageView) view.findViewById(R.id.iv_msg);
                 tvName = (TextView) view.findViewById(R.id.tv_name);
                 tvHeight = (TextView) view.findViewById(R.id.tv_height);
+                tvMark1 = (TextView) view.findViewById(R.id.tv_mark_1);
+                tvMark2 = (TextView) view.findViewById(R.id.tv_mark_2);
+                tvTagTitle = (TextView) view.findViewById(R.id.tv_tag_title);
                 tvExperience = (TextView) view.findViewById(R.id.tv_time);
                 tvAppointment = (TextView) view.findViewById(R.id.tv_appointment);
                 flSubject = (FlowLayout) view.findViewById(R.id.fl_subject);
                 rvPhoto = (RecyclerView) view.findViewById(R.id.rv_photo);
                 clSubject = (ConstraintLayout) view.findViewById(R.id.cl_subject);
+                flComment = (FlowLayout) view.findViewById(R.id.fl_tag);
+                commentView = (CommentView) view.findViewById(R.id.commentView);
+                tvIndroduction = (TextView) view.findViewById(R.id.tv_introduction);
+                TvIndroductionTitle = (TextView) view.findViewById(R.id.tv_intro_title);
+                tvShowAll = (TextView) view.findViewById(R.id.tv_expend);
             }
         }
 
@@ -383,6 +399,15 @@ public class MasseurActivity extends BaseLoadingActivity {
             public SpaHolder(View view) {
                 super(view);
                 spaBigView = (SpaBigView) view;
+            }
+        }
+
+        public class PostHolder extends RecyclerView.ViewHolder {
+            PostView postView;
+
+            public PostHolder(View view) {
+                super(view);
+                postView = (PostView) view;
             }
         }
 
@@ -406,6 +431,9 @@ public class MasseurActivity extends BaseLoadingActivity {
                 case TYPE_SPA:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_spa_big, parent, false);
                     return new SpaHolder(view);
+                case TYPE_POST:
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent, false);
+                    return new PostHolder(view);
                 default:
                     return null;
             }
@@ -422,12 +450,24 @@ public class MasseurActivity extends BaseLoadingActivity {
                 case TYPE_MASSAGE_HEADER:
                     ((HeaderHolder) holder).textView.setText(getString(R.string.popular_massage));
                     break;
-//                case TYPE_POST_HEADER:
-//                    ((HeaderHolder) holder).textView.setText(getString(R.string.post_title));
-//                    break;
-//                case TYPE_POST_FOOTER:
-//                    ((FooterHolder) holder).textView.setText(String.format(getString(R.string.check_post), doctorDetail.getTotalCase()));
-//                    break;
+                case TYPE_POST_HEADER:
+                    ((HeaderHolder) holder).textView.setText(getString(R.string.post_title));
+                    break;
+                case TYPE_POST_FOOTER:
+                    ((FooterHolder) holder).textView.setText(String.format(getString(R.string.check_post), masseurDetail.getHotTopicList().getTotal()));
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent i = new Intent(MasseurActivity.this, ListActivity.class);
+                            Bundle b = new Bundle();
+                            b.putLong(Constants.PARAM_USER_ID, userId);
+                            b.putInt(Constants.PARAM_TYPE, Constants.TYPE_POST);
+                            b.putString(Constants.PARAM_TITLE, getString(R.string.post_title));
+                            i.putExtras(b);
+                            startActivity(i);
+                        }
+                    });
+                    break;
                 case TYPE_MASSAGE:
                     final MassageHolder massageHolder = (MassageHolder) holder;
                     final Massage massage = (Massage)itemList.get(position).getContent();
@@ -477,11 +517,65 @@ public class MasseurActivity extends BaseLoadingActivity {
                     break;
 
                 case TYPE_HEADER:
-                    MasseurHeaderHolder masseurHeaderHolder = (MasseurHeaderHolder) holder;
+                    final MasseurHeaderHolder masseurHeaderHolder = (MasseurHeaderHolder) holder;
                     masseurHeaderHolder.tvName.setText(masseurDetail.getMassagist().getMassagist_name());
                     masseurHeaderHolder.tvHeight.setText(String.format(getString(R.string.height), masseurDetail.getMassagist().getMassagist_height()));
                     masseurHeaderHolder.tvAppointment.setText(String.format(getString(R.string.masseur_appointment), masseurDetail.getSumOrderNum()));
                     masseurHeaderHolder.tvExperience.setText(String.format(getString(R.string.experience), masseurDetail.getJob_time()));
+                    if(masseurDetail.getComment_score() == 0)
+                        masseurDetail.setComment_score(5);
+                    String mark = String.format("%.1f", masseurDetail.getComment_score());
+                    masseurHeaderHolder.tvMark1.setText(mark.substring(0,2));
+                    masseurHeaderHolder.tvMark2.setText(mark.substring(2,3));
+                    masseurHeaderHolder.commentView.setMark(masseurDetail.getComment_score());
+
+                    if(masseurDetail.getTabInfoList()!=null && masseurDetail.getTabInfoList().size()>0) {
+                        List<String> subjects = new ArrayList<>();
+                        for(MasseurTag t:masseurDetail.getTabInfoList())
+                            subjects.add(t.getTab_content() + "(" + t.getTab_num()+")");
+                        masseurHeaderHolder.flComment.setFlowLayout(subjects, new FlowLayout.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(String content, int position) {
+
+                            }
+                        });
+                    }else {
+                        masseurHeaderHolder.flComment.setVisibility(View.GONE);
+                        masseurHeaderHolder.tvTagTitle.setVisibility(View.GONE);
+                    }
+
+                    if(masseurDetail.getMassagist().getMassagistInfo() !=null && !masseurDetail.getMassagist().getMassagistInfo().isEmpty()) {
+                        masseurHeaderHolder.tvIndroduction.setVisibility(View.VISIBLE);
+                        final String mData = masseurDetail.getMassagist().getMassagistInfo();
+                        if (mData.length() > 50) {
+                            final String displayData = mData.substring(0, 50) + "...";
+                            masseurHeaderHolder.tvIndroduction.setText(displayData);
+                            masseurHeaderHolder.tvShowAll.setTag(false);
+                            masseurHeaderHolder.tvShowAll.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if (!(boolean) view.getTag()) {
+                                        masseurHeaderHolder.tvIndroduction.setText(mData);
+                                        view.setTag(true);
+                                        masseurHeaderHolder.tvShowAll.setText(R.string.see_part);
+                                    } else {
+                                        masseurHeaderHolder.tvIndroduction.setText(displayData);
+                                        view.setTag(false);
+                                        masseurHeaderHolder.tvShowAll.setText(R.string.see_all);
+                                    }
+
+                                }
+                            });
+                        } else {
+                            masseurHeaderHolder.tvShowAll.setVisibility(View.GONE);
+                            masseurHeaderHolder.tvIndroduction.setText(mData);
+                        }
+                    }else {
+                        masseurHeaderHolder.tvIndroduction.setVisibility(View.GONE);
+                        masseurHeaderHolder.tvShowAll.setVisibility(View.GONE);
+                        masseurHeaderHolder.TvIndroductionTitle.setVisibility(View.GONE);
+                    }
+
                     if(masseurDetail.getTypeList()!=null && masseurDetail.getTypeList().size()>0) {
                         List<String> subjects = new ArrayList<>();
                         for(Type t:masseurDetail.getTypeList())
@@ -569,6 +663,14 @@ public class MasseurActivity extends BaseLoadingActivity {
                     SpaHolder spaHolder = (SpaHolder) holder;
                     spaHolder.spaBigView.setData(masseurDetail.getMassage());
                     break;
+                case TYPE_POST:
+                    PostHolder postHolder = (PostHolder) holder;
+                    postHolder.postView.setData((Post)itemList.get(position).getContent());
+                    postHolder.postView.enableEdit(false);
+                    if(itemList.size()>position+1 && itemList.get(position+1).getId()!=TYPE_POST)
+                        postHolder.postView.showDivider(false);
+                    break;
+
             }
 
         }

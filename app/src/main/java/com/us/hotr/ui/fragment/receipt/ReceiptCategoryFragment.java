@@ -7,15 +7,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.us.hotr.Constants;
 import com.us.hotr.R;
+import com.us.hotr.eventbus.Events;
 import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.fragment.BaseFragment;
+import com.us.hotr.ui.fragment.BaseLoadingFragment;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +31,7 @@ import java.util.List;
  * Created by Mloong on 2017/8/28.
  */
 
-public class ReceiptCategoryFragment extends BaseFragment{
+public class ReceiptCategoryFragment extends BaseLoadingFragment{
 
     private ArrayList<String> titleList;
     private ArrayList<Fragment> fragmentList;
@@ -33,6 +40,7 @@ public class ReceiptCategoryFragment extends BaseFragment{
     private ViewPager viewPager;
     private PagerAdapter adapter;
     private List<TextView> tvTitleList = new ArrayList<>();
+    private ImageView ivMyDot;
     private int type;
     private boolean isLoaded = false;
 
@@ -62,11 +70,25 @@ public class ReceiptCategoryFragment extends BaseFragment{
     }
 
     @Override
+    protected void loadData(int type) {
+
+    }
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isResumed() && !isLoaded) {
             loadData();
         }
+    }
+
+    @Subscribe
+    public void getMessage(final Events.GetReceiptCount getReceiptCount) {
+        if(getReceiptCount.isHaveCount())
+            ivMyDot.setVisibility(View.VISIBLE);
+        else
+            ivMyDot.setVisibility(View.INVISIBLE);
+
     }
 
     public void loadData(){
@@ -107,6 +129,7 @@ public class ReceiptCategoryFragment extends BaseFragment{
                     tab.setCustomView(adapter.getTabView(i));
                 }
             }
+
             tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
@@ -157,12 +180,15 @@ public class ReceiptCategoryFragment extends BaseFragment{
         public View getTabView(int position) {
             View view = LayoutInflater.from(getContext()).inflate(R.layout.view_tab, null);
             TextView tvTitle = (TextView) view.findViewById(R.id.title);
+            ImageView ivDot = (ImageView) view.findViewById(R.id.iv_dot);
             tvTitle.setText(getPageTitle(position));
             if(position == 0){
                 tvTitle.setTextColor(getResources().getColor(R.color.red));
                 tvTitle.setTextSize(14);
             }else
                 tvTitle.setTextSize(12);
+            if(position == 1)
+                ivMyDot = ivDot;
             tvTitleList.add(tvTitle);
             return view;
         }

@@ -24,6 +24,7 @@ import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.info.FriendActivity;
+import com.us.hotr.ui.activity.massage.MasseurActivity;
 import com.us.hotr.ui.dialog.TwoButtonDialog;
 import com.us.hotr.ui.fragment.BaseLoadingFragment;
 import com.us.hotr.util.Tools;
@@ -261,8 +262,13 @@ public class FriendListFragment extends BaseLoadingFragment {
                 holder.ivCertified2.setVisibility(View.GONE);
                 holder.tvDistance.setVisibility(View.GONE);
                 holder.ivCertified1.setVisibility(View.VISIBLE);
-                if(user.getUser_typ() == 6)
+                if(user.getUser_typ() == 6) {
                     holder.ivCertified1.setVisibility(View.VISIBLE);
+                    holder.ivCertified1.setImageResource(R.mipmap.ic_offical);
+                }else if(user.getUser_typ() == Constants.USER_TYPE_MASSEUR){
+                    holder.ivCertified1.setVisibility(View.VISIBLE);
+                    holder.ivCertified1.setImageResource(R.mipmap.ic_certified);
+                }
                 else
                     holder.ivCertified1.setVisibility(View.GONE);
                 if(type == Constants.TYPE_FAVORITE || type == Constants.TYPE_FANS) {
@@ -320,11 +326,19 @@ public class FriendListFragment extends BaseLoadingFragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(getActivity(), FriendActivity.class);
-                    Bundle b = new Bundle();
-                    b.putLong(Constants.PARAM_ID, user.getUserId());
-                    i.putExtras(b);
-                    startActivity(i);
+                    if(user.getUser_typ() == 5){
+                        Intent i = new Intent(getActivity(), MasseurActivity.class);
+                        Bundle b = new Bundle();
+                        b.putLong(Constants.PARAM_ID, user.getMassagist_id());
+                        i.putExtras(b);
+                        startActivity(i);
+                    }else {
+                        Intent i = new Intent(getActivity(), FriendActivity.class);
+                        Bundle b = new Bundle();
+                        b.putLong(Constants.PARAM_ID, user.getUserId());
+                        i.putExtras(b);
+                        startActivity(i);
+                    }
                 }
             });
         }

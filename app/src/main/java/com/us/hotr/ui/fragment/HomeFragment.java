@@ -80,7 +80,7 @@ public class HomeFragment extends Fragment {
 
         tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         viewPager = (ViewPager) view.findViewById(R.id.pager);
-        tvCity = (TextView) toolbar.findViewById(R.id.tv_type);
+        tvCity = (TextView) toolbar.findViewById(R.id.tv_subjects);
         imgSearch = (ImageView) toolbar.findViewById(R.id.img_search);
 
         if (PermissionUtil.hasLocationPermission(getActivity())) {
@@ -93,14 +93,14 @@ public class HomeFragment extends Fragment {
             add(getString(R.string.massage_title));
             add(getString(R.string.beauty_title));
             add(getString(R.string.party_title));
-            add(getString(R.string.shop_title));
+//            add(getString(R.string.shop_title));
         }};
 
         fragmentList = new ArrayList<Fragment>() {{
             add(MassageFragment.newInstance());
             add(BeautyFragment.newInstance());
             add(PartyFragment.newInstance());
-            add(ShopFragment.newInstance());
+//            add(ShopFragment.newInstance());
         }};
 
         if(HOTRSharePreference.getInstance(getActivity().getApplicationContext()).getSelectedMassageCityID()<=0

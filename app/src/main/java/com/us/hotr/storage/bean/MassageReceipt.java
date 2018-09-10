@@ -28,6 +28,24 @@ public class MassageReceipt implements Serializable {
     private double lon;
     private String address;
     private String contact_mobile;
+    private String main_img;
+    private double comment_score;
+
+    public String getMain_img() {
+        return main_img;
+    }
+
+    public void setMain_img(String main_img) {
+        this.main_img = main_img;
+    }
+
+    public double getComment_score() {
+        return comment_score;
+    }
+
+    public void setComment_score(double comment_score) {
+        this.comment_score = comment_score;
+    }
 
     public String getContact_mobile() {
         return contact_mobile;

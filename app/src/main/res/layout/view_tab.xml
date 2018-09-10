@@ -11,4 +11,11 @@
         android:text="Home"
         android:id="@+id/title"
         android:layout_centerInParent="true" />
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/iv_dot"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:src="@drawable/red_dot"
+        android:layout_alignParentRight="true"/>
 </RelativeLayout>

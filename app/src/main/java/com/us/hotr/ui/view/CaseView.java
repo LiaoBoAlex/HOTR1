@@ -37,7 +37,7 @@ import java.util.Properties;
 
 public class CaseView extends FrameLayout {
     private ImageView imgBefore, imgAfter, ivDelete, ivAvatar;
-    private TextView tvName, tvTime, tvFollow, tvContent, tvSubject, tvRead, tvComment, tvLike;
+    private TextView tvName, tvTime, tvFollow, tvContent, tvSubject, tvRead, tvComment, tvLike, tvCertified;
     private View vDivider;
 
     private Case aCase;
@@ -70,6 +70,7 @@ public class CaseView extends FrameLayout {
         tvComment = (TextView) findViewById(R.id.tv_comment);
         tvLike = (TextView) findViewById(R.id.tv_like);
         vDivider = findViewById(R.id.v_divider);
+        tvCertified = (TextView) findViewById(R.id.tv_certified);
     }
 
     public void setData(final Case c){
@@ -107,6 +108,23 @@ public class CaseView extends FrameLayout {
                     followUser();
                 }
             });
+        }
+        switch (aCase.getU_user_type()) {
+            case 1:
+            case 7:
+                tvCertified.setVisibility(GONE);
+                break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                tvCertified.setVisibility(VISIBLE);
+                tvCertified.setText(R.string.certify);
+                break;
+            case 6:
+                tvCertified.setVisibility(VISIBLE);
+                tvCertified.setText(R.string.official);
+                break;
         }
         tvContent.setText(aCase.getContrastPhotoContent());
         tvSubject.setText(aCase.getProjectName());

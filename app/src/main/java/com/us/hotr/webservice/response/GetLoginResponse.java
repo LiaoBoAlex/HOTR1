@@ -1,5 +1,6 @@
 package com.us.hotr.webservice.response;
 
+import com.us.hotr.storage.bean.MasseurExtraData;
 import com.us.hotr.storage.bean.User;
 
 import java.io.Serializable;
@@ -16,6 +17,15 @@ public class GetLoginResponse implements Serializable {
     private String youzan_cookie_key;
     private String youzan_access_token;
     private String youzan_cookie_value;
+    private MasseurExtraData masseurData;
+
+    public MasseurExtraData getMasseurData() {
+        return masseurData;
+    }
+
+    public void setMasseurData(MasseurExtraData masseurData) {
+        this.masseurData = masseurData;
+    }
 
     public String getYouzan_cookie_key() {
         return youzan_cookie_key;

@@ -16,6 +16,24 @@ public class Reply implements Serializable {
     private long comment_id;
     private long hot_topic_id;
     private String create_time;
+    private int u_user_type;
+    private long massagist_id;
+
+    public int getU_user_type() {
+        return u_user_type;
+    }
+
+    public void setU_user_type(int u_user_type) {
+        this.u_user_type = u_user_type;
+    }
+
+    public long getMassagist_id() {
+        return massagist_id;
+    }
+
+    public void setMassagist_id(long massagist_id) {
+        this.massagist_id = massagist_id;
+    }
 
     public String getContent() {
         return content;

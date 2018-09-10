@@ -37,6 +37,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.squareup.haha.guava.collect.Maps;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
@@ -73,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -85,14 +87,14 @@ import cn.jpush.im.android.api.JMessageClient;
  */
 
 public class Tools {
-    //                                                  北京市， 上海市，   成都市，  重庆市， 广州市， 深圳市， 大连市，  杭州市， 南京市,  苏州,    郑州,   台北
-    private static final long[] backendMassageCityCode={120100, 200100,   210100,  220100, 230100, 230200, 240100,  250100, 260100, 260200, 270100, 280100};
-    private static final long[] backendProductCityCode={110100, 140100,   130100,  150100, 160100, 160200, 170100,  180100, 190100, 190200, 290100, 250100};
-    private static final long[] baiduCityCode=         {131,    289,      75,      132,    257,    340,    167,     179,    315,    224,    268,    9002};
+    //                                                  北京市， 上海市，   成都市，  重庆市， 广州市， 深圳市， 大连市，  杭州市， 南京市,  苏州,    郑州,   台北,   厦门
+    private static final long[] backendMassageCityCode={120100, 200100,   210100,  220100, 230100, 230200, 240100,  250100, 260100, 260200, 270100, 280100, 310100};
+    private static final long[] backendProductCityCode={110100, 140100,   130100,  150100, 160100, 160200, 170100,  180100, 190100, 190200, 290100, 250100, 320100};
+    private static final long[] baiduCityCode=         {131,    289,      75,      132,    257,    340,    167,     179,    315,    224,    268,    9002,   194};
 
-    private static final String[] baiduProvinceName =      {"北京市", "上海市", "四川省", "重庆市", "广东省", "辽宁省", "浙江省", "江苏省", "河南省", "台湾省"};
-    private static final long[] backendMassageProvinceCode={120000,  200000,   210000,  220000,  230000,  240000,   250000,  260000, 270000, 280000};
-    private static final long[] backendProductProvinceCode={110000,  140000,   130000,  150000,  160000,  170000,   180000,  190000, 290000, 250000};
+    private static final String[] baiduProvinceName =      {"北京市", "上海市", "四川省", "重庆市", "广东省", "辽宁省", "浙江省", "江苏省", "河南省", "台湾省", "福建省"};
+    private static final long[] backendMassageProvinceCode={120000,  200000,   210000,  220000,  230000,  240000,   250000,  260000, 270000, 280000, 310000};
+    private static final long[] backendProductProvinceCode={110000,  140000,   130000,  150000,  160000,  170000,   180000,  190000, 290000, 250000, 320000};
     public static int getScreenWidth(Context context){
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -324,8 +326,7 @@ public class Tools {
     }
 
     private static boolean isWXAppInstalledAndSupported() {
-        boolean sIsWXAppInstalledAndSupported = HOTRApplication.getIwxApi().isWXAppInstalled()
-                && HOTRApplication.getIwxApi().isWXAppSupportAPI();
+        boolean sIsWXAppInstalledAndSupported = HOTRApplication.getIwxApi().isWXAppInstalled();
         return sIsWXAppInstalledAndSupported;
     }
 
@@ -712,6 +713,16 @@ public class Tools {
         }
     }
 
+    public static String getDate(Context mContext, String date){
+        try {
+            Calendar calCreate=Calendar.getInstance();
+            calCreate.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(date));
+            return String.format(mContext.getString(R.string.date1), calCreate.get(Calendar.YEAR)+"", (calCreate.get(Calendar.MONTH)+1)+"", calCreate.get(Calendar.DATE)+"");
+        } catch (Throwable tr) {
+            return "";
+        }
+    }
+
     public static String getChatTime(Context mContext, long minisec){
         Calendar c =Calendar.getInstance();
         c.setTimeInMillis(minisec);
@@ -787,7 +798,20 @@ public class Tools {
         return map;
     }
 
-    public static String getMainPhoto(Map<String, String> map){
+    public static String listToJson(List<String> list){
+        Gson gson = new Gson();
+        Map map = Maps.newHashMap();
+        for(int i=0;i<list.size();i++){
+            if(i==0)
+                map.put("index", list.get(i));
+            else
+                map.put(i+"", list.get(i));
+        }
+        return gson.toJson(map);
+    }
+
+    public static String getMainPhoto(String json){
+        Map<String, String> map = gsonStringToMap(json);
         for (String key : map.keySet()) {
             if(key.equals("index"))
                 return map.get(key);
@@ -813,8 +837,8 @@ public class Tools {
     }
 
     public static boolean isPackageInstalled(String packageName) {
-//        return new File("/data/data/" + packageName).exists();
-        return true;
+        return new File("/data/data/" + packageName).exists();
+//        return true;
     }
 
     public static String getIpAddress(Context context){

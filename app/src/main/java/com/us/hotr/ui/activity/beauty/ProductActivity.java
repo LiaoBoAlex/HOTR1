@@ -364,7 +364,7 @@ public class ProductActivity extends BaseLoadingActivity {
                     public void onClick(View view) {
                         Share share = new Share();
                         share.setDescription(getString(R.string.share_product));
-                        share.setImageUrl(Tools.getMainPhoto(Tools.gsonStringToMap(product.getProductImg())));
+                        share.setImageUrl(Tools.getMainPhoto(product.getProductImg()));
                         share.setTitle(getString(R.string.bracket_left)+product.getProductName()+getString(R.string.bracket_right)+product.getProductUsp());
                         share.setUrl(Constants.SHARE_URL + "#/commodityYM?id="+product.getKey());
                         share.setSinaContent(getString(R.string.share_sina_product));

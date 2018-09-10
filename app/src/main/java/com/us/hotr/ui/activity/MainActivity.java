@@ -25,6 +25,7 @@ import com.us.hotr.eventbus.Events;
 import com.us.hotr.eventbus.GlobalBus;
 import com.us.hotr.storage.HOTRSharePreference;
 import com.us.hotr.storage.bean.Adv;
+import com.us.hotr.storage.bean.MassageReceipt;
 import com.us.hotr.ui.activity.info.LoginActivity;
 import com.us.hotr.ui.activity.info.SettingActivity;
 import com.us.hotr.ui.activity.post.UploadCompareActivity1;
@@ -37,7 +38,9 @@ import com.us.hotr.ui.fragment.receipt.ReceiptFragment;
 import com.us.hotr.util.Tools;
 import com.us.hotr.webservice.ServiceClient;
 import com.us.hotr.webservice.request.GetAppVersionRequest;
+import com.us.hotr.webservice.response.BaseListResponse;
 import com.us.hotr.webservice.response.GetAppVersionResponse;
+import com.us.hotr.webservice.rxjava.SilentSubscriber;
 import com.us.hotr.webservice.rxjava.SubscriberListener;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
@@ -54,7 +57,7 @@ import cn.jpush.im.android.api.model.Conversation;
 
 public class
 MainActivity extends AppCompatActivity implements View.OnClickListener{
-    private ImageView tabHome, tabFound, tabAll, tabVoucher, tabInfo, ivPost, ivCompare, ivAll1, ivDot;
+    private ImageView tabHome, tabFound, tabAll, tabVoucher, tabInfo, ivPost, ivCompare, ivAll1, ivDotInfo, ivDotReceipt;
     private TextView tvHome, tvFound, tvVoucher, tvInfo;
     private ArrayList<Fragment> fragmentList;
     private PagerAdapter adapter;
@@ -85,6 +88,7 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
     protected void onResume() {
         super.onResume();
         updateNoticCount(true);
+        updateReceiptCount();
     }
 
     @Override
@@ -110,6 +114,29 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
         setupButton(currentPage);
     }
 
+    public void updateReceiptCount(){
+        SubscriberListener mListener = new SubscriberListener<Boolean>() {
+            @Override
+            public void onNext(final Boolean result) {
+                GlobalBus.getBus().post(new Events.GetReceiptCount(result));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(ivDotReceipt!=null) {
+                            if(result)
+                                ivDotReceipt.setVisibility(View.VISIBLE);
+                            else
+                                ivDotReceipt.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+            }
+        };
+        ServiceClient.getInstance().getReceiptCount(new SilentSubscriber(mListener, this, null),
+                HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+    }
+
     private void updateNoticCount(boolean updateorderCount){
         noticeCount = 0;
         List<Conversation> conversationList = JMessageClient.getConversationList();
@@ -129,29 +156,29 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(ivDot!=null) {
+                            if(ivDotInfo!=null) {
                                 if (orderCount + noticeCount > 0) {
-                                    ivDot.setVisibility(View.VISIBLE);
+                                    ivDotInfo.setVisibility(View.VISIBLE);
                                 } else {
-                                    ivDot.setVisibility(View.GONE);
+                                    ivDotInfo.setVisibility(View.GONE);
                                 }
                             }
                         }
                     });
                 }
             };
-                ServiceClient.getInstance().getUnpiadOrderCount(mListener,
-                        HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+            ServiceClient.getInstance().getUnpiadOrderCount(mListener,
+                    HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
         }else {
             GlobalBus.getBus().post(new Events.GetNoticeCount(noticeCount, orderCount));
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(ivDot!=null) {
+                    if(ivDotInfo!=null) {
                         if (orderCount + noticeCount > 0) {
-                            ivDot.setVisibility(View.VISIBLE);
+                            ivDotInfo.setVisibility(View.VISIBLE);
                         } else{
-                            ivDot.setVisibility(View.GONE);
+                            ivDotInfo.setVisibility(View.GONE);
                         }
                     }
                 }
@@ -239,7 +266,8 @@ MainActivity extends AppCompatActivity implements View.OnClickListener{
         ivPost = (ImageView) findViewById(R.id.iv_post);
         ivCompare = (ImageView) findViewById(R.id.iv_compare);
         ivAll1 = (ImageView) findViewById(R.id.tab_all1);
-        ivDot = (ImageView) findViewById(R.id.iv_dot);
+        ivDotInfo = (ImageView) findViewById(R.id.iv_dot_info);
+        ivDotReceipt = (ImageView) findViewById(R.id.iv_dot_receipt);
         mFrameLayout = (RelativeLayout) findViewById(R.id.fl_dim);
 
         tabHome.setOnClickListener(this);

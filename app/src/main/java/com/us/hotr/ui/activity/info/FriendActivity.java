@@ -17,6 +17,7 @@ import com.tencent.stat.StatService;
 import com.us.hotr.Constants;
 import com.us.hotr.R;
 import com.us.hotr.storage.HOTRSharePreference;
+import com.us.hotr.storage.bean.MasseurExtraData;
 import com.us.hotr.storage.bean.User;
 import com.us.hotr.ui.activity.BaseLoadingActivity;
 import com.us.hotr.ui.fragment.beauty.CaseListFragment;
@@ -51,11 +52,13 @@ public class FriendActivity extends BaseLoadingActivity {
 
     private boolean iSelf = false, isFav = false;
     private User mUser;
+    private MasseurExtraData masseurData;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUser = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo();
+        masseurData = HOTRSharePreference.getInstance(getApplicationContext()).getMasseurInfo();
         ivShare.setVisibility(View.GONE);
         initStaticView();
         loadData(Constants.LOAD_PAGE);
@@ -109,25 +112,37 @@ public class FriendActivity extends BaseLoadingActivity {
     }
 
     private void updateUserInfo(){
-        Glide.with(this).load(mUser.getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
         tvFollow.setText(String.format(getString(R.string.follow_count), mUser.getAttentionCount()));
         tvFollowedBy.setText(String.format(getString(R.string.followed_by_count), mUser.getFanCount()));
-        tvName.setText(mUser.getNickname());
+
         switch (mUser.getUser_typ()){
             case 1:
             case 7:
                 ivCertified.setVisibility(View.INVISIBLE);
+                Glide.with(this).load(mUser.getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
+                tvName.setText(mUser.getNickname());
                 break;
             case 2:
             case 3:
             case 4:
+                ivCertified.setVisibility(View.VISIBLE);
+                ivCertified.setImageResource(R.mipmap.ic_certified);
+                Glide.with(this).load(mUser.getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
+                tvName.setText(mUser.getNickname());
+                break;
             case 5:
                 ivCertified.setVisibility(View.VISIBLE);
                 ivCertified.setImageResource(R.mipmap.ic_certified);
+                if(masseurData.getMassagistPhotos()!=null)
+                    Glide.with(this).load(Tools.getMainPhoto(masseurData.getMassagistPhotos())).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
+                if(masseurData.getMassagistName()!=null)
+                    tvName.setText(masseurData.getMassagistName());
                 break;
             case 6:
                 ivCertified.setVisibility(View.VISIBLE);
                 ivCertified.setImageResource(R.mipmap.ic_offical);
+                Glide.with(this).load(mUser.getHead_portrait()).error(R.drawable.placeholder_post3).placeholder(R.drawable.placeholder_post3).into(ivAvatar);
+                tvName.setText(mUser.getNickname());
                 break;
         }
         if(iSelf) {
@@ -141,11 +156,52 @@ public class FriendActivity extends BaseLoadingActivity {
             ivAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(FriendActivity.this, EditInfoActivity.class);
-                    Bundle b = new Bundle();
-                    b.putSerializable(Constants.PARAM_DATA, mUser);
-                    i.putExtras(b);
-                    startActivityForResult(i, 0);
+                    if(mUser.getUser_typ() == Constants.USER_TYPE_MASSEUR){
+                        SubscriberListener mListener = new SubscriberListener<MasseurExtraData>() {
+                            @Override
+                            public void onNext(MasseurExtraData result) {
+                                if(result.getCheckState() == null){
+                                    Intent i = new Intent(FriendActivity.this, IdentityActivity.class);
+                                    Bundle b = new Bundle();
+                                    b.putInt(Constants.PARAM_TYPE, IdentityActivity.TYPE_NEW);
+                                    b.putString(Constants.PARAM_TITLE, getString(R.string.my_identity));
+                                    i.putExtras(b);
+                                    startActivity(i);
+                                }else if (result.getCheckState() == 2){
+                                    Intent i = new Intent(FriendActivity.this, IdentityActivity.class);
+                                    Bundle b = new Bundle();
+                                    b.putInt(Constants.PARAM_TYPE, IdentityActivity.TYPE_EDIT);
+                                    b.putString(Constants.PARAM_TITLE, getString(R.string.my_identity));
+                                    b.putSerializable(Constants.PARAM_DATA, result);
+                                    i.putExtras(b);
+                                    startActivity(i);
+                                }else if (result.getPhotosUnchecked() != null){
+                                    Intent i = new Intent(FriendActivity.this, AuditActivity.class);
+                                    Bundle b = new Bundle();
+                                    b.putString(Constants.PARAM_TITLE, getString(R.string.personal_info_audit));
+                                    i.putExtras(b);
+                                    startActivity(i);
+                                }else{
+                                    Intent i = new Intent(FriendActivity.this, IdentityActivity.class);
+                                    Bundle b = new Bundle();
+                                    b.putInt(Constants.PARAM_TYPE, IdentityActivity.TYPE_EDIT);
+                                    b.putString(Constants.PARAM_TITLE, getString(R.string.my_identity));
+                                    b.putSerializable(Constants.PARAM_DATA, result);
+                                    i.putExtras(b);
+                                    startActivity(i);
+                                }
+
+                            }
+                        };
+                        ServiceClient.getInstance().masseurCheckState(new ProgressSubscriber(mListener, FriendActivity.this),
+                                HOTRSharePreference.getInstance(getApplicationContext()).getUserID());
+                    }else {
+                        Intent i = new Intent(FriendActivity.this, EditInfoActivity.class);
+                        Bundle b = new Bundle();
+                        b.putSerializable(Constants.PARAM_DATA, mUser);
+                        i.putExtras(b);
+                        startActivityForResult(i, 0);
+                    }
                 }
             });
         }else{
@@ -243,6 +299,7 @@ public class FriendActivity extends BaseLoadingActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK) {
             mUser = HOTRSharePreference.getInstance(getApplicationContext()).getUserInfo();
+            masseurData = HOTRSharePreference.getInstance(getApplicationContext()).getMasseurInfo();
             updateUserInfo();
         }
     }

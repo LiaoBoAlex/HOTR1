@@ -213,6 +213,17 @@ public class Events {
         }
     }
 
+    public static class GetReceiptCount{
+        private boolean haveCount = false;
+        public GetReceiptCount(boolean haveCount){
+            this.haveCount = haveCount;
+        }
+
+        public boolean isHaveCount() {
+            return haveCount;
+        }
+    }
+
     public static class JPushSetTag{
         private boolean result;
         public JPushSetTag(boolean result){

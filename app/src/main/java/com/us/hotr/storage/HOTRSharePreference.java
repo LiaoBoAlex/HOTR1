@@ -7,6 +7,7 @@ import android.util.Base64;
 import com.us.hotr.storage.bean.Address;
 import com.us.hotr.storage.bean.Contact;
 import com.us.hotr.storage.bean.User;
+import com.us.hotr.storage.bean.MasseurExtraData;
 import com.us.hotr.webservice.rxjava.SubscriberWithFinishListener;
 
 import java.io.ByteArrayInputStream;
@@ -33,6 +34,7 @@ public class HOTRSharePreference {
     private static final String KEY_CURRENT_PROVINCE_NAME = "KEY_CURRENT_PROVINCE_NAME";
     private static final String KEY_CURRENT_CITY_ID = "KEY_CURRENT_CITY_ID";
     private static final String KEY_USER_INFO = "KEY_USER_INFO";
+    private static final String KEY_MASSERU_INFO = "KEY_MASSERU_INFO";
     private static final String KEY_CONTACT_INFO = "KEY_CONTACT_INFO";
     private static final String KEY_DEFAULT_ADDRESS = "KEY_DEFAULT_ADDRESS";
     private static final String KEY_LATITUDE = "KEY_LATITUDE";
@@ -234,6 +236,14 @@ public class HOTRSharePreference {
 
     public static User getUserInfo(){
         return (User) getObject(KEY_USER_INFO);
+    }
+
+    public static void storeMasseurInfo(MasseurExtraData user){
+        saveObject(KEY_MASSERU_INFO, user);
+    }
+
+    public static MasseurExtraData getMasseurInfo(){
+        return (MasseurExtraData) getObject(KEY_MASSERU_INFO);
     }
 
     public static void storeContactInfo(Contact contact){

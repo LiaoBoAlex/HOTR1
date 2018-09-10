@@ -94,6 +94,9 @@
         <activity android:name="com.us.hotr.ui.activity.search.SearchResultActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"/>
+        <activity android:name="com.us.hotr.ui.activity.search.SearchSpaActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
         <activity android:name="com.us.hotr.ui.activity.search.SearchTypeActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.OrderListActivity"
@@ -107,6 +110,8 @@
         <activity android:name="com.us.hotr.ui.activity.info.VoucherActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.NoticeActivity"
+        android:screenOrientation="portrait"/>
+        <activity android:name="com.us.hotr.ui.activity.info.LinkSpaActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.ChatActivity"
             android:screenOrientation="portrait"
@@ -140,6 +145,10 @@
         <activity android:name="com.us.hotr.ui.activity.info.AboutUsActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.ShopOrderActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.us.hotr.ui.activity.info.IdentityActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.us.hotr.ui.activity.info.AuditActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.us.hotr.ui.activity.info.InviteFriendActivity"
             android:screenOrientation="portrait"/>

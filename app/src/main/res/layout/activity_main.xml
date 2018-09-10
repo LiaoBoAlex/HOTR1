@@ -25,13 +25,25 @@
         android:layout_alignParentBottom="true"
         android:background="@color/white">
 
+
         <ImageView
-            android:visibility="invisible"
-            android:id="@+id/iv_dot"
+            android:id="@+id/iv_dot_receipt"
             android:layout_width="6dp"
             android:layout_height="6dp"
             android:layout_marginEnd="6dp"
             android:layout_marginTop="4dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/tab_voucher"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/red_dot" />
+
+        <ImageView
+            android:id="@+id/iv_dot_info"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginTop="4dp"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="@+id/tab_info"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/red_dot" />
